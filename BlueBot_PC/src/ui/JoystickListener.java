@@ -9,7 +9,7 @@ import java.util.EventListener;
  * 
  * @author Ruben Feyen
  */
-public interface ControllerListener extends EventListener {
+public interface JoystickListener extends EventListener {
 	
 	public void onControllerBackward(boolean flag);
 	

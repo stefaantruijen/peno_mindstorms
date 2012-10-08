@@ -22,14 +22,14 @@ import utils.Debug;
  * 
  * @author Ruben Feyen
  */
-public class ControllerComponent extends JPanel {
+public class JoystickComponent extends JPanel {
 	private static final long serialVersionUID = 1L;
 	
 	
 	private Button buttonBackward, buttonForward, buttonLeft, buttonRight, buttonStop;
 	
 	
-	public ControllerComponent() {
+	public JoystickComponent() {
 		initComponents();
 		setFocusable(true);
 		addKeyListener(createKeyListener());
@@ -37,8 +37,8 @@ public class ControllerComponent extends JPanel {
 	
 	
 	
-	public void addControllerListener(final ControllerListener listener) {
-		listenerList.add(ControllerListener.class, listener);
+	public void addControllerListener(final JoystickListener listener) {
+		listenerList.add(JoystickListener.class, listener);
 	}
 	
 	private final KeyListener createKeyListener() {
@@ -48,7 +48,7 @@ public class ControllerComponent extends JPanel {
 	private final void fireBackward(final boolean pressed) {
 //		Debug.print("Move backward:  %s", pressed);
 		buttonBackward.setPressed(pressed);
-		for (final ControllerListener listener : getListeners()) {
+		for (final JoystickListener listener : getListeners()) {
 			listener.onControllerBackward(pressed);
 		}
 	}
@@ -56,7 +56,7 @@ public class ControllerComponent extends JPanel {
 	private final void fireForward(final boolean pressed) {
 //		Debug.print("Move forward:  %s", pressed);
 		buttonForward.setPressed(pressed);
-		for (final ControllerListener listener : getListeners()) {
+		for (final JoystickListener listener : getListeners()) {
 			listener.onControllerForward(pressed);
 		}
 	}
@@ -64,7 +64,7 @@ public class ControllerComponent extends JPanel {
 	private final void fireLeft(final boolean pressed) {
 //		Debug.print("Turn left:  %s", pressed);
 		buttonLeft.setPressed(pressed);
-		for (final ControllerListener listener : getListeners()) {
+		for (final JoystickListener listener : getListeners()) {
 			listener.onControllerLeft(pressed);
 		}
 	}
@@ -72,7 +72,7 @@ public class ControllerComponent extends JPanel {
 	private final void fireRight(final boolean pressed) {
 //		Debug.print("Turn right:  %s", pressed);
 		buttonRight.setPressed(pressed);
-		for (final ControllerListener listener : getListeners()) {
+		for (final JoystickListener listener : getListeners()) {
 			listener.onControllerRight(pressed);
 		}
 	}
@@ -81,14 +81,14 @@ public class ControllerComponent extends JPanel {
 		buttonStop.setPressed(pressed);
 		if (pressed) {
 //			Debug.print("STOP");
-			for (final ControllerListener listener : getListeners()) {
+			for (final JoystickListener listener : getListeners()) {
 				listener.onControllerStop();
 			}
 		}
 	}
 	
-	private final ControllerListener[] getListeners() {
-		return listenerList.getListeners(ControllerListener.class);
+	private final JoystickListener[] getListeners() {
+		return listenerList.getListeners(JoystickListener.class);
 	}
 	
 	private final void initComponents() {
@@ -121,8 +121,8 @@ public class ControllerComponent extends JPanel {
 		add(buttonBackward, gbc);
 	}
 	
-	public void removeControllerListener(final ControllerListener listener) {
-		listenerList.remove(ControllerListener.class, listener);
+	public void removeControllerListener(final JoystickListener listener) {
+		listenerList.remove(JoystickListener.class, listener);
 	}
 	
 	

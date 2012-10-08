@@ -23,7 +23,7 @@ public class BTSpam {
 			System.out.println("CONNECTING ...");
 			final NXTConnection nxtc = Bluetooth.waitForConnection();
 			
-			final byte[] packet = "PseudoRandomData".getBytes();
+			final byte[] packet = "PseudoRandomDataqmgonqmrogiqnrmgoqinrgmqionfmqorgnqmorinqmfoqnumfqngfrmqugfrnmqnuqmrgioqnmgrqonurmqugmqrgnuqmrnuqmrgnu".getBytes();
 			
 			System.out.println("SPAMMING ...");
 			final DataOutputStream stream = nxtc.openDataOutputStream();
