@@ -78,19 +78,10 @@ public class BTController extends Thread{
 	}*/
 	
 	public NXTInfo[] getBricks(){
-		NXTComm nxtComm;
-		try {
-			nxtComm = NXTCommFactory.createNXTComm(NXTCommFactory.BLUETOOTH);
-			NXTInfo[] nxtInfo = nxtComm.search("NXT");
-			return nxtInfo;
-		} catch (NXTCommException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-		
-	}
+		connection = new NXTConnector();			
+		NXTInfo[] nxtInfo = connection.search(null,null,NXTCommFactory.BLUETOOTH);
+		return nxtInfo;
 	
-
+	}
 
 }
