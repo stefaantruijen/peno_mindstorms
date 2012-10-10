@@ -4,7 +4,7 @@ import lejos.robotics.navigation.DifferentialPilot;
 
 public class PilotController {
 	
-	DifferentialPilot pilot = new DifferentialPilot(53.2, 52.85,163, Motor.A, Motor.C, false);
+	private DifferentialPilot pilot = new DifferentialPilot(53.2, 52.85,163, Motor.A, Motor.C, false);
 
 	/**
 	 * @param args
@@ -20,7 +20,7 @@ public class PilotController {
 	 * 			the pilot moves forward. Given in mm.
 	 */
 	public void moveForward(double distance){
-		pilot.travel(Math.abs(distance));
+		pilot.travel(Math.abs(distance),true);
 	}
 	
 	/**
