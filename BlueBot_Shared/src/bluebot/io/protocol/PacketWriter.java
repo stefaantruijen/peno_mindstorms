@@ -22,9 +22,10 @@ public class PacketWriter {
 	
 	
 	public void writePacket(final Packet packet) throws IOException {
-		System.out.println("Writing packet # " + packet.getOpcode());
-		packet.write(output);
-		output.flush();
+		synchronized (output) {
+			packet.write(output);
+			output.flush();
+		}
 	}
 	
 }

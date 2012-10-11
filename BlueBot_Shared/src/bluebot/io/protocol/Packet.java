@@ -15,7 +15,6 @@ public abstract class Packet {
 	
 	public static final byte OP_STOP    = 0x01;
 	public static final byte OP_MOVE    = 0x02;
-	public static final byte OP_POLYGON = 0x10;
 	
 	
 	
@@ -30,6 +29,14 @@ public abstract class Packet {
 	
 	
 	protected abstract void readPayload(DataInput input) throws IOException;
+	
+	@Override
+	public String toString() {
+		return new StringBuilder("Packet[")
+		.append(getOpcode())
+		.append(']')
+		.toString();
+	}
 	
 	public void write(final DataOutput output) throws IOException {
 		writeOpcode(output);

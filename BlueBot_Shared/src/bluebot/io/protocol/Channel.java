@@ -1,9 +1,7 @@
 package bluebot.io.protocol;
 
 
-import java.io.DataInput;
 import java.io.DataInputStream;
-import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,26 +19,22 @@ public class Channel {
 	private PacketWriter writer;
 	
 	
-	public Channel(final DataInput input, final DataOutputStream output) {
+	public Channel(final DataInputStream input, final DataOutputStream output) {
 		this.reader = new PacketReader(input);
 		this.writer = new PacketWriter(output);
 	}
 	public Channel(final InputStream input, final OutputStream output) {
-		this((DataInput)new DataInputStream(input),new DataOutputStream(output));
+		this(new DataInputStream(input), new DataOutputStream(output));
 	}
 	
 	
 	
 	public Packet readPacket() throws IOException {
-		synchronized (reader) {
-			return reader.readPacket();
-		}
+		return reader.readPacket();
 	}
 	
 	public void writePacket(final Packet packet) throws IOException {
-		synchronized (writer) {
-			writer.writePacket(packet);
-		}
+		writer.writePacket(packet);
 	}
 	
 }
