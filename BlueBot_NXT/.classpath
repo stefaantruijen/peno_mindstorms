@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="NXT.java" kind="src" path="src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="/home/h4oxer/Lejos/leJOS_NXJ_0.9.1beta-3"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/opt/leJOS_NXJ/lib/nxt/classes.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/BlueBot_Shared"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
