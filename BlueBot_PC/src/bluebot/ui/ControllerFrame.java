@@ -43,7 +43,7 @@ public class ControllerFrame extends JFrame {
 		
 		final JoystickComponent component = new JoystickComponent();
 		panel.add(component, BorderLayout.CENTER);
-		component.addControllerListener(new JoystickListener() {
+		component.addListener(new JoystickListener() {
 			public void onControllerStop() {
 				controller.stop();
 			}

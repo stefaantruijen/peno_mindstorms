@@ -1,14 +1,17 @@
 package bluebot.core;
 
 
+import bluebot.util.EventDispatcher;
+
+
 
 /**
  * 
  * @author Ruben Feyen
  */
-public interface Controller {
+public interface Controller extends EventDispatcher<ControllerListener> {
 	
-	public void doPolygon(int corners, int length);
+	public void doPolygon(int corners, float length);
 	
 	public void moveBackward();
 	

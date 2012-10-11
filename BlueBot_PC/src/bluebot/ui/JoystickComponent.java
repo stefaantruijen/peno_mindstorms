@@ -37,7 +37,7 @@ public class JoystickComponent extends JPanel {
 	
 	
 	
-	public void addControllerListener(final JoystickListener listener) {
+	public void addListener(final JoystickListener listener) {
 		listenerList.add(JoystickListener.class, listener);
 	}
 	
@@ -121,7 +121,7 @@ public class JoystickComponent extends JPanel {
 		add(buttonBackward, gbc);
 	}
 	
-	public void removeControllerListener(final JoystickListener listener) {
+	public void removeListener(final JoystickListener listener) {
 		listenerList.remove(JoystickListener.class, listener);
 	}
 	

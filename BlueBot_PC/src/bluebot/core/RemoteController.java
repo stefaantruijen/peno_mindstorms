@@ -10,6 +10,7 @@ import bluebot.io.Connection;
 import bluebot.io.protocol.DelegatingPacketHandler;
 import bluebot.io.protocol.Packet;
 import bluebot.io.protocol.PacketHandler;
+import bluebot.util.AbstractEventDispatcher;
 
 
 
@@ -17,7 +18,8 @@ import bluebot.io.protocol.PacketHandler;
  * 
  * @author Ruben Feyen
  */
-public class RemoteController implements Controller {
+public class RemoteController extends AbstractEventDispatcher<ControllerListener>
+		implements Controller {
 	
 	private Communicator communicator;
 	private Connection connection;
@@ -31,6 +33,12 @@ public class RemoteController implements Controller {
 	}
 	
 	
+	
+	@Override
+	public void addListener(final ControllerListener listener) {
+		super.addListener(listener);
+		getConnection().addListener(listener);
+	}
 	
 	private final Communicator createCommunicator(final Connection connection) {
 		return new Communicator(connection, createPacketHandler());
@@ -47,8 +55,13 @@ public class RemoteController implements Controller {
 		getConnection().close();
 	}
 	
-	public void doPolygon(final int corners, final int length) {
-		sendPacket(getPacketFactory().createPolygon(corners, length));
+	public void doPolygon(final int corners, final float length) {
+		final Packet packetCorner = getPacketFactory().createMove(6, (360F / corners));
+		final Packet packetSide = getPacketFactory().createMove(8, length);
+		for (int i = corners; i > 0; i--) {
+			sendPacket(packetSide);
+			sendPacket(packetCorner);
+		}
 	}
 	
 	private final Communicator getCommunicator() {
@@ -65,6 +78,12 @@ public class RemoteController implements Controller {
 	
 	public void moveForward() {
 		sendPacket(getPacketFactory().createMove(8, 1000F));
+	}
+	
+	@Override
+	public void removeListener(final ControllerListener listener) {
+		super.removeListener(listener);
+		getConnection().removeListener(listener);
 	}
 	
 	private final void sendPacket(final Packet packet) {
