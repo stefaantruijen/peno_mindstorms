@@ -6,6 +6,7 @@ import bluebot.util.EventDispatcher;
 
 
 /**
+ * Represents the API of the client-side back-end
  * 
  * @author Ruben Feyen
  */

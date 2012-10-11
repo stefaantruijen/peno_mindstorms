@@ -6,6 +6,7 @@ import bluebot.io.ConnectionAdapter;
 
 
 /**
+ * An abstract adapter class for the {@link ControllerListener} interface
  * 
  * @author Ruben Feyen
  */

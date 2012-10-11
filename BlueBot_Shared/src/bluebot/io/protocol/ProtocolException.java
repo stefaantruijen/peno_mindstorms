@@ -6,6 +6,7 @@ import java.io.IOException;
 
 
 /**
+ * Indicates an error against the protocol
  * 
  * @author Ruben Feyen
  */

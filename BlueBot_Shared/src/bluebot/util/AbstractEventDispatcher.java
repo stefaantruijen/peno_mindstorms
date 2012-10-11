@@ -9,6 +9,7 @@ import java.util.List;
 
 
 /**
+ * Basic implementation of the {@link EventDispatcher} interface
  * 
  * @author Ruben Feyen
  */
@@ -23,6 +24,11 @@ public abstract class AbstractEventDispatcher<T extends EventListener>
 		listeners.add(listener);
 	}
 	
+	/**
+	 * Returns a list of all the listeners currently registered
+	 * 
+	 * @return a {@link List} containing instances of the appropriate {@link EventListener} type
+	 */
 	protected List<T> getListeners() {
 		return new ArrayList<>(listeners);
 	}

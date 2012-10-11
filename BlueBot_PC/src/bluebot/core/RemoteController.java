@@ -5,9 +5,11 @@ import static bluebot.io.protocol.PacketFactory.getPacketFactory;
 
 import java.io.IOException;
 
+import lejos.pc.comm.NXTCommException;
+
+import bluebot.io.ClientConnection;
 import bluebot.io.Communicator;
 import bluebot.io.Connection;
-import bluebot.io.protocol.DelegatingPacketHandler;
 import bluebot.io.protocol.Packet;
 import bluebot.io.protocol.PacketHandler;
 import bluebot.util.AbstractEventDispatcher;
@@ -15,6 +17,8 @@ import bluebot.util.AbstractEventDispatcher;
 
 
 /**
+ * Implementation of the {@link Controller} interface
+ * to be used when connecting to an NXT brick
  * 
  * @author Ruben Feyen
  */
@@ -40,14 +44,21 @@ public class RemoteController extends AbstractEventDispatcher<ControllerListener
 		getConnection().addListener(listener);
 	}
 	
+	public static Controller connect(final String name) throws NXTCommException {
+		return new RemoteController(ClientConnection.create(name));
+	}
+	
 	private final Communicator createCommunicator(final Connection connection) {
 		return new Communicator(connection, createPacketHandler());
 	}
 	
 	protected PacketHandler createPacketHandler() {
-		final DelegatingPacketHandler handlers = new DelegatingPacketHandler();
-		// TODO: Register packet handlers
-		return handlers;
+		// TODO: Return proper packet handler
+		return new PacketHandler() {
+			public void handlePacket(final Packet packet) {
+				// ignored
+			}
+		};
 	}
 	
 	public void disconnect() throws IOException {

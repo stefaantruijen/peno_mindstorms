@@ -10,11 +10,15 @@ import bluebot.io.protocol.Packet;
 
 
 /**
+ * Implementation of the {@link Packet} class representing the STOP packet
  * 
  * @author Ruben Feyen
  */
 public class StopPacket extends Packet {
 	
+	/**
+	 * The singleton instance of the {@link StopPacket} class
+	 */
 	public static final StopPacket SINGLETON = new StopPacket();
 	
 	
@@ -24,7 +28,7 @@ public class StopPacket extends Packet {
 	
 	
 	
-	public byte getOpcode() {
+	public int getOpcode() {
 		return OP_STOP;
 	}
 	
