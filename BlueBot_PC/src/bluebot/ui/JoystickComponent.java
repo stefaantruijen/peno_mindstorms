@@ -13,9 +13,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import utils.Debug;
-
-
 
 
 /**
@@ -171,7 +168,7 @@ public class JoystickComponent extends JPanel {
 		
 		@Override
 		public void keyPressed(final KeyEvent event) {
-			Debug.print("KEY CODE:  " + event.getKeyCode());
+//			Debug.print("KEY CODE:  " + event.getKeyCode());
 			switch (event.getKeyCode()) {
 				case KeyEvent.VK_W:
 				case KeyEvent.VK_Z:

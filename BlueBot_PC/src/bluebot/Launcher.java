@@ -4,6 +4,7 @@ package bluebot;
 import javax.swing.SwingUtilities;
 
 import bluebot.ui.MainFrame;
+import bluebot.ui.RepeatingKeyReleasedEventsFix;
 
 
 
@@ -17,6 +18,7 @@ public class Launcher {
 		try {
 			SwingUtilities.invokeAndWait(new Runnable() {
 				public void run() {
+					RepeatingKeyReleasedEventsFix.install();
 //					setLookAndFeel();
 					new MainFrame().setVisible(true);
 				}

@@ -16,15 +16,23 @@ import bluebot.io.protocol.Packet;
  */
 public class MovePacket extends Packet {
 	
+	public static final int MOVE_BACKWARD = 2;
+	public static final int MOVE_FORWARD  = 8;
+	public static final int TURN_LEFT     = 4;
+	public static final int TURN_RIGHT    = 6;
+	
 	private int direction;
-	private float quantity;
+	private Float quantity;
 	
 	
 	public MovePacket(final DataInput input) throws IOException {
 		super(input);
 	}
-	public MovePacket(final byte direction, final float quantity) {
+	public MovePacket(final int direction) {
 		setDirection(direction);
+	}
+	public MovePacket(final int direction, final float quantity) {
+		this(direction);
 		setQuantity(quantity);
 	}
 	
@@ -40,34 +48,55 @@ public class MovePacket extends Packet {
 	}
 	
 	/**
-	 * Returns the quantity
+	 * Returns the quantity or <code>-1.0</code> if not quantified
 	 * 
 	 * @return a <code>float</code> value
+	 * 
+	 * @see {@link #isQuantified()}
 	 */
 	public float getQuantity() {
-		return quantity;
+		return (isQuantified() ? quantity.floatValue() : -1F);
 	}
 	
 	public int getOpcode() {
 		return OP_MOVE;
 	}
 	
-	protected void readPayload(final DataInput input) throws IOException {
-		setDirection(input.readByte());
-		setQuantity(input.readFloat());
+	/**
+	 * Determines whether or not this move packet contains a quantity
+	 * 
+	 * @return <code>TRUE</code> if a quantity is given,
+	 * 			<code>FALSE</code> otherwise
+	 * 
+	 * @see {@link #getQuantity()}
+	 */
+	public boolean isQuantified() {
+		return (quantity != null);
 	}
 	
-	private final void setDirection(final byte direction) {
+	protected void readPayload(final DataInput input) throws IOException {
+		setDirection(input.readUnsignedByte());
+		if (input.readBoolean()) {
+			setQuantity(input.readFloat());
+		}
+	}
+	
+	private final void setDirection(final int direction) {
 		this.direction = direction;
 	}
 	
 	private final void setQuantity(final float quantity) {
-		this.quantity = quantity;
+		this.quantity = Float.valueOf(quantity);
 	}
 	
 	protected void writePayload(final DataOutput output) throws IOException {
 		output.writeByte(getDirection());
-		output.writeFloat(getQuantity());
+		if (isQuantified()) {
+			output.writeBoolean(true);
+			output.writeFloat(getQuantity());
+		} else {
+			output.writeBoolean(false);
+		}
 	}
 	
 }

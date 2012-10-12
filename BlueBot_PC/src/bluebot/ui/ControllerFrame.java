@@ -54,24 +54,35 @@ public class ControllerFrame extends JFrame {
 			}
 			
 			public void onJoystickRight(boolean flag) {
-				if (flag)
+				if (flag) {
 					controller.turnRight();
+				} else {
+					controller.stop();
+				}
 			}
 			
 			public void onJoystickLeft(boolean flag) {
-				if (flag)
+				if (flag) {
 					controller.turnLeft();
+				} else {
+					controller.stop();
+				}
 			}
 			
 			public void onJoystickForward(boolean flag) {
-				System.out.println("FORWARD:  " + flag);
-				if (flag)
+				if (flag) {
 					controller.moveForward();
+				} else {
+					controller.stop();
+				}
 			}
 			
 			public void onJoystickBackward(boolean flag) {
-				if (flag)
+				if (flag) {
 					controller.moveBackward();
+				} else {
+					controller.stop();
+				}
 			}
 		});
 		panel.add(component, BorderLayout.CENTER);
@@ -109,7 +120,7 @@ public class ControllerFrame extends JFrame {
 		tabs.addTab("Controls",			createTabControls());
 		tabs.addTab("Debug",			createTabDebug());
 		tabs.addTab("Errors",			createTabErrors());
-		tabs.setSelectedIndex(1);
+		tabs.setSelectedIndex(2);
 		return tabs;
 	}
 	

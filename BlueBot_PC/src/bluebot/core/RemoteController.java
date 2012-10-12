@@ -12,7 +12,6 @@ import bluebot.io.Communicator;
 import bluebot.io.Connection;
 import bluebot.io.protocol.Packet;
 import bluebot.io.protocol.PacketHandler;
-import bluebot.util.AbstractEventDispatcher;
 
 
 
@@ -22,8 +21,7 @@ import bluebot.util.AbstractEventDispatcher;
  * 
  * @author Ruben Feyen
  */
-public class RemoteController extends AbstractEventDispatcher<ControllerListener>
-		implements Controller {
+public class RemoteController extends AbstractController {
 	
 	private Communicator communicator;
 	private Connection connection;
@@ -67,8 +65,8 @@ public class RemoteController extends AbstractEventDispatcher<ControllerListener
 	}
 	
 	public void doPolygon(final int corners, final float length) {
-		final Packet packetCorner = getPacketFactory().createMove(6, (360F / corners));
-		final Packet packetSide = getPacketFactory().createMove(8, length);
+		final Packet packetCorner = getPacketFactory().createTurnRight(360F / corners);
+		final Packet packetSide = getPacketFactory().createMoveForward(length);
 		for (int i = corners; i > 0; i--) {
 			sendPacket(packetSide);
 			sendPacket(packetCorner);
@@ -84,11 +82,19 @@ public class RemoteController extends AbstractEventDispatcher<ControllerListener
 	}
 	
 	public void moveBackward() {
-		sendPacket(getPacketFactory().createMove(2, 1000F));
+		sendPacket(getPacketFactory().createMoveBackward());
+	}
+	
+	public void moveBackward(final float distance) {
+		sendPacket(getPacketFactory().createMoveBackward(distance));
 	}
 	
 	public void moveForward() {
-		sendPacket(getPacketFactory().createMove(8, 1000F));
+		sendPacket(getPacketFactory().createMoveForward());
+	}
+	
+	public void moveForward(final float distance) {
+		sendPacket(getPacketFactory().createMoveForward(distance));
 	}
 	
 	@Override
@@ -111,11 +117,19 @@ public class RemoteController extends AbstractEventDispatcher<ControllerListener
 	}
 	
 	public void turnLeft() {
-		sendPacket(getPacketFactory().createMove(4, 90F));
+		sendPacket(getPacketFactory().createTurnLeft());
+	}
+	
+	public void turnLeft(final float degrees) {
+		sendPacket(getPacketFactory().createTurnLeft(degrees));
 	}
 	
 	public void turnRight() {
-		sendPacket(getPacketFactory().createMove(6, 90F));
+		sendPacket(getPacketFactory().createTurnRight());
+	}
+	
+	public void turnRight(final float degrees) {
+		sendPacket(getPacketFactory().createTurnRight(degrees));
 	}
 	
 }

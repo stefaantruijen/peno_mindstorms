@@ -40,18 +40,42 @@ public class BlueBot implements PacketHandler {
 	
 	private final void handlePacketMove(final MovePacket packet) {
 		switch (packet.getDirection()) {
-			case 2:
-				pc.moveBackward(packet.getQuantity());
+			case MovePacket.MOVE_BACKWARD:
+				if (packet.isQuantified()) {
+					pc.moveBackward(packet.getQuantity());
+				} else {
+					// TODO
+//					pc.backward();
+				}
 				break;
-			case 4:
-				pc.turnLeft(packet.getQuantity());
+				
+			case MovePacket.MOVE_FORWARD:
+				if (packet.isQuantified()) {
+					pc.moveForward(packet.getQuantity());
+				} else {
+					// TODO
+//					pc.forward();
+				}
 				break;
-			case 6:
-				pc.turnRight(packet.getQuantity());
+				
+			case MovePacket.TURN_LEFT:
+				if (packet.isQuantified()) {
+					pc.turnLeft(packet.getQuantity());
+				} else {
+					// TODO
+//					pc.left();
+				}
 				break;
-			case 8:
-				pc.moveForward(packet.getQuantity());
+				
+			case MovePacket.TURN_RIGHT:
+				if (packet.isQuantified()) {
+					pc.turnRight(packet.getQuantity());
+				} else {
+					// TODO
+//					pc.right();
+				}
 				break;
+				
 			default:
 				// TODO: send error
 				System.err.println("Invalid direction:  " + packet.getDirection());
