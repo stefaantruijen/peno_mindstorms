@@ -11,14 +11,14 @@ import java.util.EventListener;
  */
 public interface JoystickListener extends EventListener {
 	
-	public void onControllerBackward(boolean flag);
+	public void onJoystickBackward(boolean flag);
 	
-	public void onControllerForward(boolean flag);
+	public void onJoystickForward(boolean flag);
 	
-	public void onControllerLeft(boolean flag);
+	public void onJoystickLeft(boolean flag);
 	
-	public void onControllerRight(boolean flag);
+	public void onJoystickRight(boolean flag);
 	
-	public void onControllerStop();
+	public void onJoystickStop();
 	
 }

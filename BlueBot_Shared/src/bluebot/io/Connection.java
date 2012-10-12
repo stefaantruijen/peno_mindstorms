@@ -10,6 +10,7 @@ import bluebot.util.AbstractEventDispatcher;
 
 
 /**
+ * Represents a link between two actors capable of transferring packets
  * 
  * @author Ruben Feyen
  */
@@ -24,6 +25,11 @@ public abstract class Connection extends AbstractEventDispatcher<ConnectionListe
 	
 	
 	
+	/**
+	 * Closes the connection
+	 * 
+	 * @throws IOException if an I/O error occurs
+	 */
 	public abstract void close() throws IOException;
 	
 	private final void fireMessageIncoming(final String msg) {
@@ -45,12 +51,26 @@ public abstract class Connection extends AbstractEventDispatcher<ConnectionListe
 		return channel;
 	}
 	
+	/**
+	 * Reads an incoming packet
+	 * 
+	 * @return a {@link Packet} object
+	 * 
+	 * @throws IOException if an I/O error occurs
+	 */
 	public Packet readPacket() throws IOException {
 		final Packet packet = getChannel().readPacket();
 		fireMessageIncoming(packet.toString());
 		return packet;
 	}
 	
+	/**
+	 * Writes an outgoing packet
+	 * 
+	 * @param packet - a {@link Packet} object
+	 * 
+	 * @throws IOException if an I/O error occurs
+	 */
 	public void writePacket(final Packet packet) throws IOException {
 		getChannel().writePacket(packet);
 		fireMessageOutgoing(packet.toString());

@@ -49,7 +49,7 @@ public class JoystickComponent extends JPanel {
 //		Debug.print("Move backward:  %s", pressed);
 		buttonBackward.setPressed(pressed);
 		for (final JoystickListener listener : getListeners()) {
-			listener.onControllerBackward(pressed);
+			listener.onJoystickBackward(pressed);
 		}
 	}
 	
@@ -57,7 +57,7 @@ public class JoystickComponent extends JPanel {
 //		Debug.print("Move forward:  %s", pressed);
 		buttonForward.setPressed(pressed);
 		for (final JoystickListener listener : getListeners()) {
-			listener.onControllerForward(pressed);
+			listener.onJoystickForward(pressed);
 		}
 	}
 	
@@ -65,7 +65,7 @@ public class JoystickComponent extends JPanel {
 //		Debug.print("Turn left:  %s", pressed);
 		buttonLeft.setPressed(pressed);
 		for (final JoystickListener listener : getListeners()) {
-			listener.onControllerLeft(pressed);
+			listener.onJoystickLeft(pressed);
 		}
 	}
 	
@@ -73,7 +73,7 @@ public class JoystickComponent extends JPanel {
 //		Debug.print("Turn right:  %s", pressed);
 		buttonRight.setPressed(pressed);
 		for (final JoystickListener listener : getListeners()) {
-			listener.onControllerRight(pressed);
+			listener.onJoystickRight(pressed);
 		}
 	}
 	
@@ -82,7 +82,7 @@ public class JoystickComponent extends JPanel {
 		if (pressed) {
 //			Debug.print("STOP");
 			for (final JoystickListener listener : getListeners()) {
-				listener.onControllerStop();
+				listener.onJoystickStop();
 			}
 		}
 	}

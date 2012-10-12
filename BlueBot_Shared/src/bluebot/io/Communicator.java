@@ -9,6 +9,8 @@ import bluebot.io.protocol.PacketHandler;
 
 
 /**
+ * The {@link Communicator} is responsible for dispatching incoming {@link Packet}s
+ * from a {@link Connection} to a {@link PacketHandler}
  * 
  * @author Ruben Feyen
  */
@@ -26,29 +28,26 @@ public class Communicator implements Runnable {
 	
 	
 	
+	/**
+	 * Executes the dispatching loop
+	 * 
+	 * @see {@link #start()}
+	 * @see {@link #stop()}
+	 */
 	public final void run() {
-		try {
-			for (Packet packet;;) {
-				try {
-					System.out.println("Reading packet");
-					packet = connection.readPacket();
-					System.out.println("Packet # " + packet.getOpcode());
-					handler.handlePacket(packet);
-				} catch (final IOException e) {
-					System.out.println("ERROR");
-					e.printStackTrace();
-					// TODO: Handle the error
-					continue;
-				} catch (final NullPointerException e) {
-					throw new InterruptedException("DEBUG");
-				}
+		while (!Thread.interrupted()) {
+			try {
+				handler.handlePacket(connection.readPacket());
+			} catch (final IOException e) {
+				e.printStackTrace();
+				// TODO: Handle the error
 			}
-		} catch (final InterruptedException e) {
-			// This will only occur when the thread has been requested to stop
-			System.out.println("INTERRUPTED");
 		}
 	}
 	
+	/**
+	 * Starts dispatching packets
+	 */
 	public synchronized void start() {
 		if (thread == null) {
 			thread = new Thread(this);
@@ -57,6 +56,9 @@ public class Communicator implements Runnable {
 		}
 	}
 	
+	/**
+	 * Stops dispatching packets
+	 */
 	public synchronized void stop() {
 		if (thread != null) {
 			thread.interrupt();

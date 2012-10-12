@@ -37,38 +37,44 @@ public class ControllerFrame extends JFrame {
 	
 	
 	
+	private final Component createTabCommunication() {
+		final CommunicationList list = new CommunicationList();
+		controller.addListener(list.createControllerListener());
+		return list.createScrollPane();
+	}
+	
 	private final Component createTabControls() {
 		final JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout(0, 0));
 		
 		final JoystickComponent component = new JoystickComponent();
-		panel.add(component, BorderLayout.CENTER);
 		component.addListener(new JoystickListener() {
-			public void onControllerStop() {
+			public void onJoystickStop() {
 				controller.stop();
 			}
 			
-			public void onControllerRight(boolean flag) {
+			public void onJoystickRight(boolean flag) {
 				if (flag)
 					controller.turnRight();
 			}
 			
-			public void onControllerLeft(boolean flag) {
+			public void onJoystickLeft(boolean flag) {
 				if (flag)
 					controller.turnLeft();
 			}
 			
-			public void onControllerForward(boolean flag) {
+			public void onJoystickForward(boolean flag) {
 				System.out.println("FORWARD:  " + flag);
 				if (flag)
 					controller.moveForward();
 			}
 			
-			public void onControllerBackward(boolean flag) {
+			public void onJoystickBackward(boolean flag) {
 				if (flag)
 					controller.moveBackward();
 			}
 		});
+		panel.add(component, BorderLayout.CENTER);
 		
 		// Focus is required to allow the controller buttons component to monitor key(board) events
 		component.requestFocus();
@@ -98,6 +104,7 @@ public class ControllerFrame extends JFrame {
 		final JTabbedPane tabs = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
 		// The next line is required to allow focus on the controller buttons component
 		tabs.setFocusable(false);
+		tabs.addTab("Communication",	createTabCommunication());
 		tabs.addTab("Configuration",	new JPanel());
 		tabs.addTab("Controls",			createTabControls());
 		tabs.addTab("Debug",			createTabDebug());

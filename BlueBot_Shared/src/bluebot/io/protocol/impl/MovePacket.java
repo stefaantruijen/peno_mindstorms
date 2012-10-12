@@ -10,12 +10,13 @@ import bluebot.io.protocol.Packet;
 
 
 /**
+ * Implementation of the {@link Packet} class for movement packets
  * 
  * @author Ruben Feyen
  */
 public class MovePacket extends Packet {
 	
-	private byte direction;
+	private int direction;
 	private float quantity;
 	
 	
@@ -29,15 +30,25 @@ public class MovePacket extends Packet {
 	
 	
 	
-	public byte getDirection() {
+	/**
+	 * Returns the direction
+	 * 
+	 * @return an <code>int</code> value from { 2, 4, 6, 8 }
+	 */
+	public int getDirection() {
 		return direction;
 	}
 	
+	/**
+	 * Returns the quantity
+	 * 
+	 * @return a <code>float</code> value
+	 */
 	public float getQuantity() {
 		return quantity;
 	}
 	
-	public byte getOpcode() {
+	public int getOpcode() {
 		return OP_MOVE;
 	}
 	

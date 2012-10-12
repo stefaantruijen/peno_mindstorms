@@ -3,9 +3,12 @@ package bluebot.ui;
 
 import javax.swing.Icon;
 import javax.swing.JFrame;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.TableColumnModel;
 
 
@@ -18,7 +21,10 @@ public class CommunicationTable extends JTable {
 	private static final long serialVersionUID = 1L;
 	
 	
-	public CommunicationTable(final CommunicationTableModel model) {
+	public CommunicationTable() {
+		this(new CommunicationTableModel());
+	}
+	private CommunicationTable(final CommunicationTableModel model) {
 		super(model);
 		setDefaultRenderer(Icon.class, new IconTableCellRenderer());
 //		setIntercellSpacing(new Dimension(25, 1));
@@ -33,6 +39,21 @@ public class CommunicationTable extends JTable {
 	
 	
 	
+	public JScrollPane createScrollPane() {
+		final JScrollPane scroller = new JScrollPane(this,
+				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		
+		getModel().addTableModelListener(new TableModelListener() {
+			public void tableChanged(final TableModelEvent event) {
+				final JScrollBar bar = scroller.getVerticalScrollBar();
+				bar.setValue(bar.getMaximum());
+			}
+		});
+		
+		return scroller;
+	}
+	
 	public static void main(final String... args) {
 		try {
 			final CommunicationTableModel model = new CommunicationTableModel();
@@ -40,13 +61,8 @@ public class CommunicationTable extends JTable {
 			
 			SwingUtilities.invokeAndWait(new Runnable() {
 				public void run() {
-					
-					final JScrollPane scroller = new JScrollPane(table,
-							JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-							JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-					
 					final JFrame frame = new JFrame("SHOWCASE");
-					frame.add(scroller);
+					frame.add(table.createScrollPane());
 					frame.pack();
 					frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 					frame.setLocationRelativeTo(null);

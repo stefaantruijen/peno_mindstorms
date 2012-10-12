@@ -10,6 +10,7 @@ import java.io.OutputStream;
 
 
 /**
+ * Provides bi-directional transportation of {@link Packet} objects
  * 
  * @author Ruben Feyen
  */
@@ -29,10 +30,24 @@ public class Channel {
 	
 	
 	
+	/**
+	 * Reads an incoming packet
+	 * 
+	 * @return a {@link Packet} object
+	 * 
+	 * @throws IOException if an I/O error occurs
+	 */
 	public Packet readPacket() throws IOException {
 		return reader.readPacket();
 	}
 	
+	/**
+	 * Writes an outgoing packet
+	 * 
+	 * @param packet - a {@link Packet} object
+	 * 
+	 * @throws IOException if an I/O error occurs
+	 */
 	public void writePacket(final Packet packet) throws IOException {
 		writer.writePacket(packet);
 	}
