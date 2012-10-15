@@ -164,8 +164,11 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 	
 	@Override
 	public void stop(){
+		setStopFlag(true);
+	}
+	
+	public void doStop(){
 		setCurrentAction(null,0);
-		setCurrentArgument(0);
 		queue.clear();
 		setIsMoving(false);
 		setStopFlag(false);
@@ -275,13 +278,33 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 	
 	@Override
 	public void run() {
+		while (!getKillFlag()) {
+			if (isMoving() && !getStopFlag()) {
+				try { Thread.sleep(10); } catch (final InterruptedException e) {}
+			} else if (getStopFlag()) {
+				doStop();
+			} else {
+				ActionPacket nextActionPacket= queue.poll();
+				if(nextActionPacket == null){
+					fireMessage("nextActionPacket is Null, no action will be taken.");
+				} else {
+					this.setCurrentArgument(nextActionPacket.getArgument());
+					nextActionPacket.getAction().execute(this);
+				}
+			}
+		}
+		doKill();
+		
+		/*
+//		System.out.println("RUN");
 		while(!isMoving() && !getStopFlag() && !getKillFlag()){
 //			fireMessage("Running in standby");
+			try { Thread.sleep(10); } catch (final InterruptedException e) {}
 		}
-		if(stopFlag){
+		if(getStopFlag()){
 			//This can interrupt an action so it has to note progress.
-			this.stop();
-		}else if(!killFlag){
+			this.doStop();
+		}else if(!getKillFlag()){
 			run();
 		} else {
 			doKill();
@@ -293,6 +316,7 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 			this.setCurrentArgument(nextActionPacket.getArgument());
 			nextActionPacket.getAction().execute(this);
 		}
+		*/
 	}
 	
 	/**

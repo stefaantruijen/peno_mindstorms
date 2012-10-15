@@ -2,6 +2,7 @@ package simulator;
 
 import static bluebot.io.protocol.PacketFactory.getPacketFactory;
 import bluebot.core.AbstractController;
+import bluebot.core.ControllerListener;
 import bluebot.io.protocol.Packet;
 
 public class SimulatorController extends AbstractController {
@@ -25,20 +26,30 @@ public class SimulatorController extends AbstractController {
 	public SimulatorController() {
 		simulatorRobot = new Robot();
 		simulatorThread = new Thread(simulatorRobot);
+		simulatorThread.start();
 	}
 
 	@Override
+	public void addListener(final ControllerListener listener) {
+		super.addListener(listener);
+		simulatorRobot.addListener(listener);
+	}
+	
+	@Override
 	public void moveBackward() {
+		fireMessageOutgoing("Move backward");
 		simulatorRobot.backward();
 	}
 
 	@Override
 	public void moveForward() {
+		fireMessageOutgoing("Move forward");
 		simulatorRobot.forward();
 	}
 
 	@Override
 	public void stop() {
+		fireMessageOutgoing("Stop");
 		simulatorRobot.stop();
 	}
 
@@ -60,6 +71,12 @@ public class SimulatorController extends AbstractController {
 	@Override
 	protected void moveForward(float distance) {
 		simulatorRobot.travel(distance);
+	}
+	
+	@Override
+	public void removeListener(final ControllerListener listener) {
+		super.removeListener(listener);
+		simulatorRobot.removeListener(listener);
 	}
 
 	@Override

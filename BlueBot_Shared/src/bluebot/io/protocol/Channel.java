@@ -1,11 +1,17 @@
 package bluebot.io.protocol;
 
 
+import static bluebot.io.protocol.Packet.OP_MOVE;
+import static bluebot.io.protocol.Packet.OP_STOP;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import bluebot.io.protocol.impl.MovePacket;
+import bluebot.io.protocol.impl.StopPacket;
 
 
 
@@ -16,13 +22,13 @@ import java.io.OutputStream;
  */
 public class Channel {
 	
-	private PacketReader reader;
-	private PacketWriter writer;
+	private DataInputStream input;
+	private DataOutputStream output;
 	
 	
 	public Channel(final DataInputStream input, final DataOutputStream output) {
-		this.reader = new PacketReader(input);
-		this.writer = new PacketWriter(output);
+		this.input = input;
+		this.output = output;
 	}
 	public Channel(final InputStream input, final OutputStream output) {
 		this(new DataInputStream(input), new DataOutputStream(output));
@@ -38,7 +44,17 @@ public class Channel {
 	 * @throws IOException if an I/O error occurs
 	 */
 	public Packet readPacket() throws IOException {
-		return reader.readPacket();
+		synchronized (input) {
+			final int opcode = input.readUnsignedByte();
+			switch (opcode) {
+				case OP_MOVE:
+					return new MovePacket(input);
+				case OP_STOP:
+					return StopPacket.SINGLETON;
+				default:
+					throw new ProtocolException("Invalid packet opcode:  " + opcode);
+			}
+		}
 	}
 	
 	/**
@@ -49,7 +65,10 @@ public class Channel {
 	 * @throws IOException if an I/O error occurs
 	 */
 	public void writePacket(final Packet packet) throws IOException {
-		writer.writePacket(packet);
+		synchronized (output) {
+			packet.write(output);
+			output.flush();
+		}
 	}
 	
 }

@@ -7,6 +7,9 @@ package simulator;
  *
  */
 public enum Action {
+	
+//	private static final long INF = Double.doubleToLongBits(Double.MAX_VALUE);
+	
 	//TODO: find and replace 'System.out.println(' with 'Debug.print('
 	
 	//Private abstract double progress in elke enum. met een functie 
@@ -15,10 +18,14 @@ public enum Action {
 			double distance = robot.getCurrentArgument();
 			robot.fireMessage("Simulator Robot begins traveling " + distance + " mm. This will take roughly " + distance/robot.getTravelSpeed() +" seconds.");
 			try {
-				sleepAtLeast((long) (distance*1000/robot.getTravelSpeed()), robot);
+				if ((distance == Double.MAX_VALUE) || (distance == Double.MIN_VALUE)) {
+					sleepUntilStopped(robot);
+				} else {
+					sleepAtLeast((long) (distance*1000/robot.getTravelSpeed()), robot);
+				}
 				//TODO: eventually draw it and/or update output values (traveled so far...)
 				robot.fireMessage("Stopping travel now.");
-				robot.stop();
+				robot.doStop();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -29,9 +36,13 @@ public enum Action {
 			double angle = robot.getCurrentArgument();
 			robot.fireMessage("Simulator Robot begins rotating " + angle + " degrees. This will take roughly "+ angle/robot.getRotateSpeed() +" seconds.");
 			try {
-				sleepAtLeast((long) (angle*1000/robot.getRotateSpeed()), robot);
+				if ((angle == Double.MAX_VALUE) || (angle == Double.MIN_VALUE)) {
+					sleepUntilStopped(robot);	
+				} else {
+					sleepAtLeast((long) (angle*1000/robot.getRotateSpeed()), robot);
+				}
 				robot.fireMessage("Stopping rotation now");
-				robot.stop();
+				robot.doStop();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -49,8 +60,15 @@ public enum Action {
 			millisLeft =millis - (t1-t0);
 			if(robot.getStopFlag()){
 				//TODO: notice the progress so far!
-				robot.run();
+//				robot.run();
+				return;
 			}
+		}
+	}
+	
+	public void sleepUntilStopped(Robot robot) throws InterruptedException {
+		while (!robot.getStopFlag()) {
+			Thread.sleep(10);
 		}
 	}
 	

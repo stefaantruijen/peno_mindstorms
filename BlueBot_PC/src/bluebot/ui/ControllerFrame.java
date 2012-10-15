@@ -94,7 +94,7 @@ public class ControllerFrame extends JFrame {
 	
 	private final Component createTabDebug() {
 		final StreamingTextArea debug = new StreamingTextArea();
-		System.setOut(debug.wrap(System.out));
+//		System.setOut(debug.wrap(System.out));
 		
 		final JScrollPane scroll = new JScrollPane(debug, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scroll.setPreferredSize(new Dimension(500, 500));
@@ -104,7 +104,7 @@ public class ControllerFrame extends JFrame {
 	private final Component createTabErrors() {
 		final StreamingTextArea errors = new StreamingTextArea();
 		errors.setForeground(Color.RED);
-		System.setErr(errors.wrap(System.err));
+//		System.setErr(errors.wrap(System.err));
 		
 		final JScrollPane scroll = new JScrollPane(errors, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scroll.setPreferredSize(new Dimension(500, 500));

@@ -11,6 +11,8 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import simulator.SimulatorController;
+
 import lejos.pc.comm.NXTCommException;
 
 import bluebot.core.Controller;
@@ -61,30 +63,11 @@ public class MainFrame extends JFrame {
 			return;
 		}
 		
-		final Controller controller = new RemoteController(connection);
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				new ControllerFrame(controller).setVisible(true);
-			}
-		});
+		showController(new RemoteController(connection));
 	}
 	
 	private final void connectToSimulator() {
-		// TODO: Add more jokes
-		final String[] jokes = {
-			"Dit zijn we echt nog nooit tegengekomen!",
-			"Onze hond heeft de simulator opgegeten.",
-			"Een ontbrekende simulator presteert gemiddeld beter\ndan die van de andere teams",
-			"Waar rook is, is vuur.\nWaar een knop is, is helaas geen simulator.",
-			"Et tu, simulator?",
-			"\"Ik ben het zat om altijd maar te moeten doen alsof.\"\n    - De Simulator"
-		};
-		
-		final String joke = jokes[(int)(Math.random() * jokes.length)];
-		JOptionPane.showMessageDialog(this,
-				joke,
-				"The simulator is unavailable",
-				JOptionPane.WARNING_MESSAGE);
+		showController(new SimulatorController());
 	}
 	
 	private static final JButton createButton(final String text) {
@@ -112,6 +95,14 @@ public class MainFrame extends JFrame {
 		
 		add(btnBrick, BorderLayout.NORTH);
 		add(btnSim, BorderLayout.SOUTH);
+	}
+	
+	private final void showController(final Controller controller) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				new ControllerFrame(controller).setVisible(true);
+			}
+		});
 	}
 	
 }
