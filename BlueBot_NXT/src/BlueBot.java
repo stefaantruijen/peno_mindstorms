@@ -44,8 +44,7 @@ public class BlueBot implements PacketHandler {
 				if (packet.isQuantified()) {
 					pc.moveBackward(packet.getQuantity());
 				} else {
-					// TODO
-//					pc.backward();
+					pc.backward();
 				}
 				break;
 				
@@ -53,8 +52,7 @@ public class BlueBot implements PacketHandler {
 				if (packet.isQuantified()) {
 					pc.moveForward(packet.getQuantity());
 				} else {
-					// TODO
-//					pc.forward();
+					pc.forward();
 				}
 				break;
 				
@@ -62,8 +60,7 @@ public class BlueBot implements PacketHandler {
 				if (packet.isQuantified()) {
 					pc.turnLeft(packet.getQuantity());
 				} else {
-					// TODO
-//					pc.left();
+					pc.left();
 				}
 				break;
 				
@@ -71,8 +68,7 @@ public class BlueBot implements PacketHandler {
 				if (packet.isQuantified()) {
 					pc.turnRight(packet.getQuantity());
 				} else {
-					// TODO
-//					pc.right();
+					pc.right();
 				}
 				break;
 				
