@@ -5,7 +5,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import bluebot.core.ControllerListener;
 import bluebot.util.AbstractEventDispatcher;
 
-import utils.Debug;
 import lejos.robotics.navigation.Move;
 import lejos.robotics.navigation.MoveController;
 import lejos.robotics.navigation.MoveListener;
@@ -30,6 +29,7 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 	
 	//TODO:Test how this works irl with the physical robot. Adapt the robot sim likewise.
 
+	/*
 	//TODO: find and replace 'system.out.println(' with 'fireMessage('
 	public static void main(String[] args) {
 		//TODO: extract to Junit test, only for quick and dirty testing here atm.
@@ -63,6 +63,7 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 		LennySim.fireMessage("starting mainThread now");
 		mainThread.start();
 	}
+	*/
 	
 	public static double STANDARD_TRAVEL_SPEED = 30; //Probably get this value from other class.//TODO: see what this is irl
 	
@@ -286,7 +287,8 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 			} else {
 				ActionPacket nextActionPacket= queue.poll();
 				if(nextActionPacket == null){
-					fireMessage("nextActionPacket is Null, no action will be taken.");
+					// DO NOT fire a message here, it will make the GUI explode
+//					fireMessage("nextActionPacket is Null, no action will be taken.");
 				} else {
 					this.setCurrentArgument(nextActionPacket.getArgument());
 					nextActionPacket.getAction().execute(this);
@@ -341,6 +343,7 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 
 	
 	public void fireMessage(final String msg){
+		System.out.printf("[%s]  %s%n", System.currentTimeMillis(), msg);
 		for (final ControllerListener listener : getListeners()) {
 				listener.onMessageIncoming(msg);
 		}

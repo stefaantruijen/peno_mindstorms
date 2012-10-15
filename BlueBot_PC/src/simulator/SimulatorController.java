@@ -1,20 +1,19 @@
 package simulator;
 
-import static bluebot.io.protocol.PacketFactory.getPacketFactory;
 import bluebot.core.AbstractController;
 import bluebot.core.ControllerListener;
-import bluebot.io.protocol.Packet;
 
 public class SimulatorController extends AbstractController {
 	private Robot simulatorRobot;
 	private Thread simulatorThread;
 	
+	/*
 	public static void main(String[] args) {
 		SimulatorController simc = new SimulatorController();
 		System.out.println("started moving at " + System.currentTimeMillis());
 		simc.moveForward();
 		try {
-			Thread.currentThread().sleep(10000);
+			Thread.sleep(10000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -22,6 +21,7 @@ public class SimulatorController extends AbstractController {
 		simc.stop();
 		System.out.println("stopped moving at " + System.currentTimeMillis());
 	}
+	*/
 	
 	public SimulatorController() {
 		simulatorRobot = new Robot();
