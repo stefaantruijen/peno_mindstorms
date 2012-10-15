@@ -64,15 +64,6 @@ public class RemoteController extends AbstractController {
 		getConnection().close();
 	}
 	
-	public void doPolygon(final int corners, final float length) {
-		final Packet packetCorner = getPacketFactory().createTurnRight(360F / corners);
-		final Packet packetSide = getPacketFactory().createMoveForward(length);
-		for (int i = corners; i > 0; i--) {
-			sendPacket(packetSide);
-			sendPacket(packetCorner);
-		}
-	}
-	
 	private final Communicator getCommunicator() {
 		return communicator;
 	}
@@ -85,7 +76,7 @@ public class RemoteController extends AbstractController {
 		sendPacket(getPacketFactory().createMoveBackward());
 	}
 	
-	public void moveBackward(final float distance) {
+	protected void moveBackward(final float distance) {
 		sendPacket(getPacketFactory().createMoveBackward(distance));
 	}
 	
@@ -93,7 +84,7 @@ public class RemoteController extends AbstractController {
 		sendPacket(getPacketFactory().createMoveForward());
 	}
 	
-	public void moveForward(final float distance) {
+	protected void moveForward(final float distance) {
 		sendPacket(getPacketFactory().createMoveForward(distance));
 	}
 	
@@ -120,7 +111,7 @@ public class RemoteController extends AbstractController {
 		sendPacket(getPacketFactory().createTurnLeft());
 	}
 	
-	public void turnLeft(final float degrees) {
+	protected void turnLeft(final float degrees) {
 		sendPacket(getPacketFactory().createTurnLeft(degrees));
 	}
 	
@@ -128,7 +119,7 @@ public class RemoteController extends AbstractController {
 		sendPacket(getPacketFactory().createTurnRight());
 	}
 	
-	public void turnRight(final float degrees) {
+	protected void turnRight(final float degrees) {
 		sendPacket(getPacketFactory().createTurnRight(degrees));
 	}
 	

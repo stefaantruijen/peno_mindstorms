@@ -14,6 +14,14 @@ public abstract class AbstractController
 		extends AbstractEventDispatcher<ControllerListener>
 		implements Controller {
 	
+	public void doPolygon(final int corners, final float length) {
+		final float angle = (360F / corners);
+		for (int i = corners; i > 0; i++) {
+			moveForward(length);
+			turnRight(angle);
+		}
+	}
+	
 	protected void fireMessageIncoming(final String msg) {
 		for (final ControllerListener listener : getListeners()) {
 			listener.onMessageIncoming(msg);
@@ -25,5 +33,13 @@ public abstract class AbstractController
 			listener.onMessageOutgoing(msg);
 		}
 	}
+	
+	protected abstract void moveBackward(float distance);
+	
+	protected abstract void moveForward(float distance);
+	
+	protected abstract void turnLeft(float angle);
+	
+	protected abstract void turnRight(float angle);
 	
 }
