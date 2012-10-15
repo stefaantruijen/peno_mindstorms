@@ -14,8 +14,7 @@ import javax.swing.ImageIcon;
  * 
  * @author Ruben Feyen
  */
-public class CommunicationListModel
-		extends AbstractListModel<CommunicationListModel.Entry> {
+public class CommunicationListModel extends AbstractListModel {
 	private static final long serialVersionUID = 1L;
 	
 	private ArrayList<Entry> entries;

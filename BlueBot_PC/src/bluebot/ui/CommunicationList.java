@@ -18,7 +18,7 @@ import bluebot.core.ControllerListener;
  * 
  * @author Ruben Feyen
  */
-public class CommunicationList extends JList<CommunicationListModel.Entry> {
+public class CommunicationList extends JList {
 	private static final long serialVersionUID = 1L;
 	
 	

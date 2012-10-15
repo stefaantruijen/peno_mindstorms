@@ -16,7 +16,7 @@ import bluebot.ui.CommunicationListModel.Entry;
  * @author Ruben Feyen
  */
 public class CommunicationListCellRenderer extends JLabel
-		implements ListCellRenderer<CommunicationListModel.Entry> {
+		implements ListCellRenderer {
 	private static final long serialVersionUID = 1L;
 	
 	
@@ -26,11 +26,12 @@ public class CommunicationListCellRenderer extends JLabel
 	
 	
 	
-	public Component getListCellRendererComponent(final JList<? extends Entry> list,
-			final Entry value, final int index,
+	public Component getListCellRendererComponent(final JList list,
+			final Object value, final int index,
 			final boolean selected, final boolean focus) {
-		setIcon(value.getIcon());
-		setText(value.getMessage());
+		final Entry entry = (Entry)value;
+		setIcon(entry.getIcon());
+		setText(entry.getMessage());
 		return this;
 	}
 	

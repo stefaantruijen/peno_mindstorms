@@ -16,7 +16,7 @@ import java.util.List;
 public abstract class AbstractEventDispatcher<T extends EventListener>
 		implements EventDispatcher<T> {
 	
-	private HashSet<T> listeners = new HashSet<>();
+	private HashSet<T> listeners = new HashSet<T>();
 	
 	
 	
@@ -30,7 +30,7 @@ public abstract class AbstractEventDispatcher<T extends EventListener>
 	 * @return a {@link List} containing instances of the appropriate {@link EventListener} type
 	 */
 	protected List<T> getListeners() {
-		return new ArrayList<>(listeners);
+		return new ArrayList<T>(listeners);
 	}
 	
 	public void removeListener(final T listener) {
