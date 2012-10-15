@@ -43,7 +43,7 @@ public class CommunicationList extends JList {
 	public JScrollPane createScrollPane() {
 		return new JScrollPane(this,
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 	}
 	
 	@Override

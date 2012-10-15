@@ -17,6 +17,8 @@ import javax.swing.ImageIcon;
 public class CommunicationListModel extends AbstractListModel {
 	private static final long serialVersionUID = 1L;
 	
+	public static final int MAX_ENTRIES = 1000;
+	
 	private ArrayList<Entry> entries;
 	
 	
@@ -28,11 +30,23 @@ public class CommunicationListModel extends AbstractListModel {
 	
 	private final void addMessage(final Entry entry) {
 		final int row;
+		final boolean trimmed;
 		synchronized (entries) {
-			row = entries.size();
+			if (entries.size() < MAX_ENTRIES) {
+				row = entries.size();
+				trimmed = false;
+			} else {
+				row = (MAX_ENTRIES - 1);
+				entries = new ArrayList<Entry>(entries.subList((entries.size() - row), row));
+				trimmed = true;
+			}
 			entries.add(entry);
 		}
-		fireIntervalAdded(this, row, row);
+		if (trimmed) {
+			fireContentsChanged(this, 0, row);
+		} else {
+			fireIntervalAdded(this, row, row);
+		}
 	}
 	
 	public void addMessageIncoming(final String msg) {
