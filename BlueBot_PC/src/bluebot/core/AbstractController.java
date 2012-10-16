@@ -16,7 +16,7 @@ public abstract class AbstractController
 	
 	public void doPolygon(final int corners, final float length) {
 		final float angle = (360F / corners);
-		for (int i = corners; i > 0; i++) {
+		for (int i = corners; i > 0; i--) {
 			moveForward(length);
 			turnRight(angle);
 		}

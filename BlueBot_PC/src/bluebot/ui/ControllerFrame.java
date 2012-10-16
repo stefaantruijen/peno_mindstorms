@@ -30,6 +30,7 @@ public class ControllerFrame extends JFrame {
 		this.controller = controller;
 		
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		setJMenuBar(new ControllerMenuBar(controller));
 		initComponents();
 		pack();
 		setLocationRelativeTo(null);
