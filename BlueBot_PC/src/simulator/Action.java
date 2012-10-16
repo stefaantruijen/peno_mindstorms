@@ -7,21 +7,19 @@ package simulator;
  *
  */
 public enum Action {
-	
-//	private static final long INF = Double.doubleToLongBits(Double.MAX_VALUE);
-	
-	//TODO: find and replace 'System.out.println(' with 'Debug.print('
-	
+		
 	//Private abstract double progress in elke enum. met een functie 
 	TRAVEL {
 		public  void execute(Robot robot){
 			double distance = robot.getCurrentArgument();
-			robot.fireMessage("Simulator Robot begins traveling " + distance + " mm. This will take roughly " + distance/robot.getTravelSpeed() +" seconds.");
 			try {
 				if ((distance == Double.MAX_VALUE) || (distance == Double.MIN_VALUE)) {
+					robot.fireMessage("Simulator Robot begins traveling.");
 					sleepUntilStopped(robot);
 				} else {
-					sleepAtLeast((long) (distance/robot.getTravelSpeed()), robot);
+					double time = Math.abs(distance/robot.getTravelSpeed()); // Time in seconds.
+					robot.fireMessage("Simulator Robot starts traveling " + distance + " mm. This will take roughly " + time +" seconds.");
+					sleepAtLeast((long) (1000*time), robot); //Time in milliseconds needed
 				}
 				//TODO: eventually draw it and/or update output values (traveled so far...)
 				robot.fireMessage("Stopping travel now.");
@@ -34,12 +32,14 @@ public enum Action {
 	ROTATE{
 		public  void execute(Robot robot){
 			double angle = robot.getCurrentArgument();
-			robot.fireMessage("Simulator Robot begins rotating " + angle + " degrees. This will take roughly "+ angle/robot.getRotateSpeed() +" seconds.");
 			try {
 				if ((angle == Double.MAX_VALUE) || (angle == Double.MIN_VALUE)) {
-					sleepUntilStopped(robot);	
+					robot.fireMessage("Simulator Robot begins rotating.");
+					sleepUntilStopped(robot);
 				} else {
-					sleepAtLeast((long) (angle/robot.getRotateSpeed()), robot);
+					double time = Math.abs(angle/robot.getRotateSpeed()); // Time in seconds.
+					robot.fireMessage("Simulator Robot starts rotating "+ angle + " degrees. This will take roughly "+ time +" seconds.");
+					sleepAtLeast((long) (1000*time), robot); // time in milliseconds needed
 				}
 				robot.fireMessage("Stopping rotation now");
 				robot.endMove();

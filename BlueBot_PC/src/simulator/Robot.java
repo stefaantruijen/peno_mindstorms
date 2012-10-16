@@ -2,6 +2,8 @@ package simulator;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.sun.org.apache.xml.internal.utils.UnImplNode;
+
 import bluebot.core.ControllerListener;
 import bluebot.util.AbstractEventDispatcher;
 
@@ -30,9 +32,7 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 	//TODO:Test how this works irl with the physical robot. Adapt the robot sim likewise.
 
 	/*
-	//TODO: find and replace 'system.out.println(' with 'fireMessage('
 	public static void main(String[] args) {
-		//TODO: extract to Junit test, only for quick and dirty testing here atm.
 		final Robot LennySim = new Robot(30,30);
 		final Thread simulatorThread = new Thread(LennySim);
 		Runnable mainProg = new Runnable(){
@@ -72,7 +72,7 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 	/**
 	 * Static that holds the standard rotate speed in degrees/s. This is the speed we measured in the real NXT robot.
 	 */
-	public static double STANDARD_ROTATE_SPEED = 30; //Probably get this value from other class.
+	public static double STANDARD_ROTATE_SPEED = 30; //Probably get this value from other class.//TODO: see what this is irl
 	/**
 	 * Variable representing the state of the robot
 	 */
@@ -86,11 +86,11 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 	 */
 	private double rotateSpeed;
 	/**
-	 * Variable representing the orientation in degrees since the last move.
+	 * Variable representing the orientation in degrees since the last action.
 	 */
 	private double currentOrientation;
 	/**
-	 *  Variable representing the distance traveled in *UNITS* since the last move.
+	 *  Variable representing the distance traveled in mm since the last action.
 	 */
 	private double currentDistanceTraveled;
 	
@@ -107,11 +107,12 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 	 * Flag for killing the robot (and the thread it's running in).
 	 */
 	private boolean killFlag;
-	
 	/**
 	 * Queue holding ActionPackets that will be executed in the given order bye the robot.
 	 */
 	LinkedBlockingQueue<ActionPacket> queue = new LinkedBlockingQueue<ActionPacket>();
+	
+	
 	
 	/**
 	 * No-argument constructor. Makes a new robot object with the standard travel and rotate speed.
@@ -182,7 +183,7 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 		queue.clear();
 		setIsMoving(false);
 		setStopFlag(false);
-		fireMessage("Simulator Robot stopped. Ready for new commands");
+		fireMessage("Simulator Robot stopped.");
 	}
 	
 	/**
@@ -190,7 +191,6 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 	 */
 	public void endMove(){
 		setIsMoving(false);
-		fireMessage("Simulator Robot stopped moving. Ready for new enqueued command.");
 	}
 	
 	@Override
@@ -221,13 +221,14 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 	@Override
 	public Move getMovement() {
 		// TODO Auto-generated method stub
-		return null;
+		// TODO take a look at Move, might be usable in further developement.
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void addMoveListener(MoveListener listener) {
 		// TODO Auto-generated method stub
-		
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -244,8 +245,7 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 
 	@Override
 	public void travel(double distance, boolean immediateReturn) {
-		// TODO Auto-generated method stub
-		
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -260,14 +260,12 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 
 	@Override
 	public double getMaxTravelSpeed() {
-		// TODO Auto-generated method stub
-		return 0;
+		return getTravelSpeed();
 	}
 
 	@Override
 	public void rotate(double angle, boolean immediateReturn) {
-		// TODO Auto-generated method stub
-		
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -282,8 +280,7 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 
 	@Override
 	public double getRotateMaxSpeed() {
-		// TODO Auto-generated method stub
-		return 0;
+		return getRotateSpeed();
 	}
 	
 	public boolean getStopFlag(){
@@ -312,7 +309,14 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 //					fireMessage("nextActionPacket is Null, no action will be taken.");
 				} else {
 					setCurrentActionPacket(nextActionPacket);
+//					long start = System.currentTimeMillis();
+//					fireMessage("exec started @" + start );
 					getCurrentAction().execute(this);
+//					long stop = System.currentTimeMillis();
+//					fireMessage("exec started @" + stop);
+//					long diff = stop - start;
+//					fireMessage("exec time =" + diff +"ms");
+
 				}
 			}
 		}
@@ -349,6 +353,10 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 		setKillFlag(true);
 	}
 	
+	/**
+	 * Executes the kill() command. 
+	 * Stops all movement, clears the queue, ends the thread and finalize the robot object.  
+	 */
 	private void doKill(){
 		doStop();
 		Thread.currentThread().interrupt();

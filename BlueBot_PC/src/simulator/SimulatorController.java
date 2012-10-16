@@ -55,21 +55,25 @@ public class SimulatorController extends AbstractController {
 
 	@Override
 	public void turnLeft() {
+		fireMessageOutgoing("Rotate left");
 		simulatorRobot.rotate(Double.MAX_VALUE);
 	}
 
 	@Override
 	public void turnRight() {
+		fireMessageOutgoing("Rotate right");
 		simulatorRobot.rotate(Double.MIN_VALUE);		
 	}
 
 	@Override
 	protected void moveBackward(float distance) {
+		fireMessageOutgoing("Move backward " + distance +"mm");
 		simulatorRobot.travel(-distance);
 	}
 
 	@Override
 	protected void moveForward(float distance) {
+		fireMessageOutgoing("Move forward " + distance +"mm");
 		simulatorRobot.travel(distance);
 	}
 	
@@ -81,11 +85,13 @@ public class SimulatorController extends AbstractController {
 
 	@Override
 	protected void turnLeft(float angle) {
+		fireMessageOutgoing("Turn left " + angle +"°");
 		simulatorRobot.rotate(angle);
 	}
 
 	@Override
 	protected void turnRight(float angle) {
+		fireMessageOutgoing("Turn right " + angle +"°");
 		simulatorRobot.rotate(-angle);
 	}
 

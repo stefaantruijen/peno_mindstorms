@@ -44,8 +44,8 @@ public class TestRobot {
 	@Test
 	public void testRotate(){
 		Robot r3 = new Robot();
-		Thread testThread2 = new Thread(r3);
-		testThread2.start();
+		Thread testThread = new Thread(r3);
+		testThread.start();
 		double angle = 1000*Robot.STANDARD_ROTATE_SPEED;
 		r3.rotate(angle);
 		try {
@@ -61,19 +61,34 @@ public class TestRobot {
 	
 	@Test
 	public void testTravel(){
-		Robot r = new Robot();
-		Thread testThread = new Thread(r);
-		testThread.start();
+		Robot r4 = new Robot();
+		Thread testThread2 = new Thread(r4);
+		testThread2.start();
 		double distance = 1000*Robot.STANDARD_TRAVEL_SPEED;
-		r.travel(distance);
+		r4.travel(distance);
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		assertEquals(Action.TRAVEL,r.getCurrentAction());
-		assertEquals(distance, r.getCurrentArgument(), 0);
-		r.kill();
+		assertEquals(Action.TRAVEL,r4.getCurrentAction());
+		assertEquals(distance, r4.getCurrentArgument(), 0);
+		r4.kill();
+	}
+	
+	@Test
+	public void testQueueing(){
+		Robot r5 = new Robot();
+		Thread testThread3 = new Thread(r5);
+
+		r5.travel(1000);
+		r5.rotate(60);
+		r5.travel(1000);
+		r5.rotate(60);
+		r5.travel(1000);
+		r5.rotate(60);
+		
+		testThread3.start();
 	}
 	
 
