@@ -29,6 +29,7 @@ import bluebot.io.Connection;
 public class MainFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
+	public static final String DEFAULT_BRICK_NAME = "BlueBot";
 	public static final String TITLE = "P&O BlueBot";
 	
 	
@@ -44,7 +45,7 @@ public class MainFrame extends JFrame {
 	
 	
 	private final void connectToBrick() {
-		final String name = JOptionPane.showInputDialog("What is the name of the NXT brick?");
+		final String name = JOptionPane.showInputDialog("What is the name of the NXT brick?", DEFAULT_BRICK_NAME);
 		if ((name != null) && !name.isEmpty()) {
 			connectToBrick(name);
 		}

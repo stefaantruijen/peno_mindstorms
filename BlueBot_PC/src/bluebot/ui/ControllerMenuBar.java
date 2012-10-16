@@ -47,12 +47,7 @@ public class ControllerMenuBar extends JMenuBar {
 	private final void doPolygon() {
 		final PolygonDialog dialog = new PolygonDialog();
 		if (dialog.confirm()) {
-			System.out.println("dialog confirmed");
-			System.out.println("corners:  " + dialog.getCorners());
-			System.out.println("length:  " + dialog.getLength());
 			controller.doPolygon(dialog.getCorners(), dialog.getLength());
-		} else {
-			System.out.println("dialog has been cancelled");
 		}
 	}
 	

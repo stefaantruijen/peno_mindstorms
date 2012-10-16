@@ -47,11 +47,13 @@ public class ControllerFrame2 extends JFrame {
 	}
 	
 	private final Component createModuleCommunication(final int width, final int height) {
-		final CommunicationList list = new CommunicationList();
-//		list.setPreferredSize(new Dimension(width, height));
-		controller.addListener(list.createControllerListener());
+//		final CommunicationList list = new CommunicationList();
+//		controller.addListener(list.createControllerListener());
 		
-		final JScrollPane scroller = list.createScrollPane();
+		final CommunicationTable table = new CommunicationTable();
+		controller.addListener(table.createControllerListener());
+		
+		final JScrollPane scroller = table.createScrollPane();
 		scroller.setPreferredSize(new Dimension(width, height));
 		return createModule(scroller, "Communication");
 	}

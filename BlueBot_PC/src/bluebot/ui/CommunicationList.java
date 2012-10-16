@@ -1,6 +1,9 @@
 package bluebot.ui;
 
 
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
@@ -30,7 +33,8 @@ public class CommunicationList extends JList {
 		setFocusable(false);
 		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
-		model.addListDataListener(new AutoScroll());
+		addComponentListener(new AutoScroll());
+//		model.addListDataListener(new AutoScroll());
 	}
 	
 	
@@ -59,7 +63,22 @@ public class CommunicationList extends JList {
 	
 	
 	
-	private final class AutoScroll implements ListDataListener, Runnable {
+	private final class AutoScroll extends ComponentAdapter
+			implements ListDataListener, Runnable {
+		
+		private boolean initial = true;
+		
+		
+		
+		@Override
+		public void componentResized(final ComponentEvent event) {
+			if (initial) {
+				initial = false;
+				return;
+			}
+			scroll();
+//			scrollRectToVisible(getCellRect((getRowCount() - 1), 0, true));
+		}
 		
 		public void contentsChanged(final ListDataEvent event) {
 			scroll();
