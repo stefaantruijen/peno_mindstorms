@@ -89,6 +89,41 @@ public class MovePacket extends Packet {
 		this.quantity = Float.valueOf(quantity);
 	}
 	
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder();
+		switch (getDirection()) {
+			case MOVE_BACKWARD:
+				sb.append("Move backward");
+				break;
+			case MOVE_FORWARD:
+				sb.append("Move forward");
+				break;
+			case TURN_LEFT:
+				sb.append("Turn left");
+				break;
+			case TURN_RIGHT:
+				sb.append("Turn right");
+				break;
+			default:
+				sb.append("Unknown move command");
+				break;
+		}
+		if (isQuantified()) {
+			switch (getDirection()) {
+				case MOVE_BACKWARD:
+				case MOVE_FORWARD:
+					sb.append(' ').append(getQuantity()).append(" mm");
+					break;
+				case TURN_LEFT:
+				case TURN_RIGHT:
+					sb.append(' ').append(getQuantity()).append(" degrees");
+					break;
+			}
+		}
+		return sb.toString();
+	}
+	
 	protected void writePayload(final DataOutput output) throws IOException {
 		output.writeByte(getDirection());
 		if (isQuantified()) {

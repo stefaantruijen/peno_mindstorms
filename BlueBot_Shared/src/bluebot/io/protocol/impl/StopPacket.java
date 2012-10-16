@@ -36,6 +36,11 @@ public class StopPacket extends Packet {
 		// ignored
 	}
 	
+	@Override
+	public String toString() {
+		return "Stop";
+	}
+	
 	protected void writePayload(final DataOutput output) throws IOException {
 		// ignored
 	}
