@@ -69,7 +69,6 @@ public class Channel {
 			packet.write(output);
 			output.flush();
 		}
-		System.out.println("WRITTEN:  " + packet);
 	}
 	
 }

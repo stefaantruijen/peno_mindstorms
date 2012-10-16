@@ -1,6 +1,7 @@
 package bluebot.io;
 
 
+import java.io.EOFException;
 import java.io.IOException;
 
 import bluebot.io.protocol.Packet;
@@ -37,8 +38,10 @@ public class Communicator implements Runnable {
 	public final void run() {
 		while (!Thread.interrupted()) {
 			try {
-				System.out.println("READ PACKET");
 				handler.handlePacket(connection.readPacket());
+			} catch (final EOFException e) {
+				// The connection has been closed
+				stop();
 			} catch (final IOException e) {
 				e.printStackTrace();
 				// TODO: Handle the error
