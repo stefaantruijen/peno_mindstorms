@@ -93,14 +93,12 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 	 *  Variable representing the distance traveled in *UNITS* since the last move.
 	 */
 	private double currentDistanceTraveled;
+	
 	/**
-	 * Action that will be executed next (now).
+	 * Action(Packet) that will be executed next (now).
 	 */
-	private Action currentAction;
-	/**
-	 * Optional argument of the action. (As specified by the lejos interfaces.)
-	 */
-	private double currentArgument;
+	private ActionPacket currentActionPacket;
+	
 	/**
 	 * Flag for stopping the robot.
 	 */
@@ -137,7 +135,7 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 		setStopFlag(false);
 		setKillFlag(false);
 		stop();
-		fireMessage("Simulator Robot initialized");
+//		fireMessage("Simulator Robot initialized"); GUI not yet listening
 	}
 	
 	/**
@@ -167,9 +165,8 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 	
 	@Override
 	public void rotate(double angle){
-		setCurrentAction(Action.ROTATE, angle);
+		enqueueAction(Action.ROTATE, angle);
 		setIsMoving(true);
-
 	}
 	
 	@Override
@@ -182,34 +179,43 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 	 * Clears the current action, clears the queue s
 	 */
 	public void doStop(){
-		setCurrentAction(null,0);
 		queue.clear();
 		setIsMoving(false);
 		setStopFlag(false);
 		fireMessage("Simulator Robot stopped. Ready for new commands");
 	}
 	
+	/**
+	 * Get's calls at the end of an action.
+	 */
+	public void endMove(){
+		setIsMoving(false);
+		fireMessage("Simulator Robot stopped moving. Ready for new enqueued command.");
+	}
+	
 	@Override
 	public void travel(double distance){
-		setCurrentAction(Action.TRAVEL, distance);
+		enqueueAction(Action.TRAVEL, distance);
 		setIsMoving(true);
 	}
 
-	private void setCurrentAction(Action action, double arg) {
+	private void enqueueAction(Action action, double arg) {
 		ActionPacket ap = new ActionPacket(action, arg);
 		queue.offer(ap);
 	}
 	
 	public Action getCurrentAction(){
-		return this.currentAction;
-	}
-
-	private void setCurrentArgument(double arg) {
-		this.currentArgument = arg;
+		if(currentActionPacket != null){
+			return this.currentActionPacket.getAction();
+		}
+		return null;
 	}
 	
 	public double getCurrentArgument(){
-		return this.currentArgument;
+		if(currentActionPacket != null){
+			return this.currentActionPacket.getArgument();
+		}
+		return 0;	
 	}
 
 	@Override
@@ -226,13 +232,13 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 
 	@Override
 	public void forward(){
-		setCurrentAction(Action.TRAVEL,Double.MAX_VALUE);
+		enqueueAction(Action.TRAVEL,Double.MAX_VALUE);
 		setIsMoving(true);	
 	}
 	
 	@Override
 	public void backward() {
-		setCurrentAction(Action.TRAVEL,Double.MIN_VALUE);
+		enqueueAction(Action.TRAVEL,Double.MIN_VALUE);
 		setIsMoving(true);		
 	}
 
@@ -288,7 +294,9 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 		return killFlag;
 	}
 
-	
+	private void setCurrentActionPacket(ActionPacket actionPacket) {
+		this.currentActionPacket = actionPacket;
+	}
 	
 	@Override
 	public void run() {
@@ -303,8 +311,8 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 					// DO NOT fire a message here, it will make the GUI explode
 //					fireMessage("nextActionPacket is Null, no action will be taken.");
 				} else {
-					this.setCurrentArgument(nextActionPacket.getArgument());
-					nextActionPacket.getAction().execute(this);
+					setCurrentActionPacket(nextActionPacket);
+					getCurrentAction().execute(this);
 				}
 			}
 		}
@@ -342,6 +350,7 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 	}
 	
 	private void doKill(){
+		doStop();
 		Thread.currentThread().interrupt();
 		try {
 			this.finalize();

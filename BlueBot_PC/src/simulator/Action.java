@@ -21,11 +21,11 @@ public enum Action {
 				if ((distance == Double.MAX_VALUE) || (distance == Double.MIN_VALUE)) {
 					sleepUntilStopped(robot);
 				} else {
-					sleepAtLeast((long) (distance*1000/robot.getTravelSpeed()), robot);
+					sleepAtLeast((long) (distance/robot.getTravelSpeed()), robot);
 				}
 				//TODO: eventually draw it and/or update output values (traveled so far...)
 				robot.fireMessage("Stopping travel now.");
-				robot.doStop();
+				robot.endMove();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -39,10 +39,10 @@ public enum Action {
 				if ((angle == Double.MAX_VALUE) || (angle == Double.MIN_VALUE)) {
 					sleepUntilStopped(robot);	
 				} else {
-					sleepAtLeast((long) (angle*1000/robot.getRotateSpeed()), robot);
+					sleepAtLeast((long) (angle/robot.getRotateSpeed()), robot);
 				}
 				robot.fireMessage("Stopping rotation now");
-				robot.doStop();
+				robot.endMove();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
