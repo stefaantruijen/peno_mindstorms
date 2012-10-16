@@ -1,7 +1,6 @@
 package bluebot.ui;
 
 
-import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
@@ -43,42 +42,12 @@ public class CommunicationList extends JList {
 	public JScrollPane createScrollPane() {
 		return new JScrollPane(this,
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	}
 	
 	@Override
 	public CommunicationListModel getModel() {
 		return (CommunicationListModel)super.getModel();
-	}
-	
-	public static void main(final String... args) {
-		try {
-			final CommunicationList list = new CommunicationList();
-			final CommunicationListModel model = list.getModel();
-			
-			SwingUtilities.invokeAndWait(new Runnable() {
-				public void run() {
-					final JFrame frame = new JFrame("SHOWCASE");
-					frame.add(list.createScrollPane());
-					frame.pack();
-					frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-					frame.setLocationRelativeTo(null);
-					frame.setResizable(false);
-					frame.setVisible(true);
-				}
-			});
-			
-			for (int i = 15; i > 0; i--) {
-				final String msg = Double.toString(Math.random());
-				if ((i & 0x1) == 0) {
-					model.addMessageIncoming(msg);
-				} else {
-					model.addMessageOutgoing(msg);
-				}
-			}
-		} catch (final Throwable e) {
-			e.printStackTrace();
-		}
 	}
 	
 	
@@ -109,7 +78,11 @@ public class CommunicationList extends JList {
 		}
 		
 		private final void scroll() {
-			SwingUtilities.invokeLater(this);
+			if (SwingUtilities.isEventDispatchThread()) {
+				run();
+			} else {
+				SwingUtilities.invokeLater(this);
+			}
 		}
 		
 	}

@@ -1,7 +1,12 @@
 package bluebot;
 
 
+import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
+import com.jtattoo.plaf.luna.LunaLookAndFeel;
 
 import bluebot.ui.MainFrame;
 import bluebot.ui.RepeatingKeyReleasedEventsFix;
@@ -19,7 +24,7 @@ public class Launcher {
 			SwingUtilities.invokeAndWait(new Runnable() {
 				public void run() {
 					RepeatingKeyReleasedEventsFix.install();
-//					setLookAndFeel();
+					setLookAndFeel();
 					new MainFrame().setVisible(true);
 				}
 			});
@@ -28,21 +33,16 @@ public class Launcher {
 		}
 	}
 	
-	/*
 	private static final void setLookAndFeel() {
 		final LookAndFeel laf;
 		try {
 			laf =
 //				new AcrylLookAndFeel();
 //				new AeroLookAndFeel();
-//				new AluminiumLookAndFeel();
-				new FastLookAndFeel();
+//				new FastLookAndFeel();
 //				new HiFiLookAndFeel();
-//				new LunaLookAndFeel();
-//				new McWinLookAndFeel();
-//				new MintLookAndFeel();
+				new LunaLookAndFeel();
 //				new NoireLookAndFeel();
-//				new SmartLookAndFeel();
 //				new TextureLookAndFeel();
 		} catch (final Throwable e) {
 			// L&F not available, perhaps the JTattoo library is missing
@@ -56,6 +56,5 @@ public class Launcher {
 			e.printStackTrace();
 		}
 	}
-	*/
 	
 }

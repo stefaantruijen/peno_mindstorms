@@ -63,7 +63,7 @@ public class ControllerFrame2 extends JFrame {
 				controller.stop();
 			}
 			
-			public void onJoystickRight(boolean flag) {
+			public void onJoystickRight(final boolean flag) {
 				if (flag) {
 					controller.turnRight();
 				} else {
@@ -71,7 +71,7 @@ public class ControllerFrame2 extends JFrame {
 				}
 			}
 			
-			public void onJoystickLeft(boolean flag) {
+			public void onJoystickLeft(final boolean flag) {
 				if (flag) {
 					controller.turnLeft();
 				} else {
@@ -79,7 +79,7 @@ public class ControllerFrame2 extends JFrame {
 				}
 			}
 			
-			public void onJoystickForward(boolean flag) {
+			public void onJoystickForward(final boolean flag) {
 				if (flag) {
 					controller.moveForward();
 				} else {
@@ -87,7 +87,7 @@ public class ControllerFrame2 extends JFrame {
 				}
 			}
 			
-			public void onJoystickBackward(boolean flag) {
+			public void onJoystickBackward(final boolean flag) {
 				if (flag) {
 					controller.moveBackward();
 				} else {

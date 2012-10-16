@@ -343,7 +343,6 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 
 	
 	public void fireMessage(final String msg){
-		System.out.printf("[%s]  %s%n", System.currentTimeMillis(), msg);
 		for (final ControllerListener listener : getListeners()) {
 				listener.onMessageIncoming(msg);
 		}
