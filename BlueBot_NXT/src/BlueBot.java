@@ -28,6 +28,7 @@ public class BlueBot implements PacketHandler {
 	
 	
 	public void handlePacket(final Packet packet) {
+		System.out.println("HANDLE:  " + packet);
 		switch (packet.getOpcode()) {
 			case Packet.OP_MOVE:
 				handlePacketMove((MovePacket)packet);
@@ -80,7 +81,9 @@ public class BlueBot implements PacketHandler {
 	}
 	
 	private final void handlePacketStop() {
+		System.out.println("STOP BEGIN");
 		pc.stop();
+		System.out.println("STOP END");
 	}
 	
 	public static void main(final String... args) {

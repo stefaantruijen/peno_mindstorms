@@ -37,6 +37,7 @@ public class Communicator implements Runnable {
 	public final void run() {
 		while (!Thread.interrupted()) {
 			try {
+				System.out.println("READ PACKET");
 				handler.handlePacket(connection.readPacket());
 			} catch (final IOException e) {
 				e.printStackTrace();

@@ -36,7 +36,9 @@ public class PilotController {
 	 * Stops the pilot 
 	 */
 	public void stop(){
-		pilot.quickStop();
+		System.out.println("STOPPING");
+		pilot.stop();
+		System.out.println("STOPPED");
 	}
 	
 	/**
