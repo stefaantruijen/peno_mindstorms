@@ -65,8 +65,13 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 	}
 	*/
 	
+	/**
+	 * Static that holds the standard travel speed in mm/s. This is the speed we measured in the real NXT robot.
+	 */
 	public static double STANDARD_TRAVEL_SPEED = 30; //Probably get this value from other class.//TODO: see what this is irl
-	
+	/**
+	 * Static that holds the standard rotate speed in degrees/s. This is the speed we measured in the real NXT robot.
+	 */
 	public static double STANDARD_ROTATE_SPEED = 30; //Probably get this value from other class.
 	/**
 	 * Variable representing the state of the robot
@@ -106,18 +111,21 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 	private boolean killFlag;
 	
 	/**
-	 * 
+	 * Queue holding ActionPackets that will be executed in the given order bye the robot.
 	 */
 	LinkedBlockingQueue<ActionPacket> queue = new LinkedBlockingQueue<ActionPacket>();
 	
-	
+	/**
+	 * No-argument constructor. Makes a new robot object with the standard travel and rotate speed.
+	 */
 	public Robot(){
-		new Robot(STANDARD_TRAVEL_SPEED,STANDARD_ROTATE_SPEED);
+		this(STANDARD_TRAVEL_SPEED,STANDARD_ROTATE_SPEED);
 	}
 	
 	/**
 	 * Constructor that makes a robot with given travel and rotate speed.
 	 * The robot is initially in a 'stop' state.
+	 * 
 	 * @param tSpeed 
 	 * 	The travel speed in centimeters per second. TODO: check unit.
 	 * @param rSpeed
@@ -132,20 +140,25 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 		fireMessage("Simulator Robot initialized");
 	}
 	
+	/**
+	 * Sets the stop flag on the given value.
+	 * @param s
+	 */
 	private void setStopFlag(boolean s) {
 		stopFlag = s;
 	}
 
 	/**
 	 * Returns if the robot is currently performing an action (moving).
-	 * @return Is the robot currently moving.
+	 * 
+	 * @return True if the is robot currently moving (an action has been started).
 	 */
 	public boolean isMoving(){
 		return isMoving;
 	}
 	
 	/**
-	 * Sets the isMoving field.
+	 * Sets the isMoving field to the given value.
 	 * @param moving
 	 */
 	private void setIsMoving(boolean moving){
@@ -159,15 +172,15 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 
 	}
 	
-	private void doRotate(double angle){
-		
-	}
-	
 	@Override
 	public void stop(){
 		setStopFlag(true);
 	}
 	
+	/**
+	 * Execution of the stop command associated with the stop flag.
+	 * Clears the current action, clears the queue s
+	 */
 	public void doStop(){
 		setCurrentAction(null,0);
 		queue.clear();
