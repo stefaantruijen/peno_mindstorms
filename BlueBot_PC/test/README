@@ -1,0 +1,21 @@
+README: 
+@Author: Dieter
+
+'test' source folder should contain Junit test classes for the classes in the corresponding package of the 'src' source folder.
+
+Convention proposal: Test*classname*.java
+e.g.
+
+In the main program:
+src\simulator\Robot.java
+has as corresponding test class
+test\simulator\TestRobot.java (a Junit 4 testcase)
+
+Using this file structure you can use protected/package fields that will be only used in testing.
+e.g.
+protected LinkedBlockingQueue<ActionPacket> queue 
+(in src\simulator\Robot.java) for use in test\simulator\TestRobot.java
+
+
+I strongly recommend writing a lot of tests. Certainly for future use.
+If you test the basics thoroughly then you are sure they are implemented correctly and you can rely on them.

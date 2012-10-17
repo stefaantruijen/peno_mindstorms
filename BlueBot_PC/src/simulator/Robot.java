@@ -110,7 +110,7 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 	/**
 	 * Queue holding ActionPackets that will be executed in the given order bye the robot.
 	 */
-	LinkedBlockingQueue<ActionPacket> queue = new LinkedBlockingQueue<ActionPacket>();
+	protected LinkedBlockingQueue<ActionPacket> queue = new LinkedBlockingQueue<ActionPacket>();
 	
 	
 	
