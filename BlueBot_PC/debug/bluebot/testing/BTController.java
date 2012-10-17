@@ -1,4 +1,4 @@
-package comms;
+package bluebot.testing;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
