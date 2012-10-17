@@ -83,12 +83,12 @@ public class PolygonDialog extends JDialog {
 		btn.setPreferredSize(new Dimension(275, 50));
 		btn.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {
-				if (getCorners() < 0) {
+				if (getCorners() < 3) {
 					showWarning("Invalid input (corners)");
 					return;
 				}
 				
-				if (getLength() < 0) {
+				if (getLength() < 10) {
 					showWarning("Invalid input (lenght)");
 					return;
 				}
