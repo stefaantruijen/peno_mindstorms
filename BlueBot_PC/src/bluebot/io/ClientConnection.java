@@ -13,6 +13,7 @@ import lejos.pc.comm.NXTInfo;
 
 
 /**
+ * Represents a client-side {@link Connection}
  * 
  * @author Ruben Feyen
  */
@@ -38,6 +39,15 @@ public class ClientConnection extends Connection {
 		}
 	}
 	
+	/**
+	 * Factory method for the {@link ClientConnection} class
+	 * 
+	 * @param name - the name of the NXT brick to connect to
+	 * 
+	 * @return a {@link ClientConnection} object
+	 * 
+	 * @throws NXTCommException if the connection to the NXT brick fails for any reason
+	 */
 	public static ClientConnection create(final String name) throws NXTCommException {
 		final NXTComm nxtc = NXTCommFactory.createNXTComm(NXTCommFactory.BLUETOOTH);
 		final NXTInfo[] devices = nxtc.search(name);

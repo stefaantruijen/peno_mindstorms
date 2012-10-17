@@ -1,4 +1,4 @@
-package bluebot.tests;
+package bluebot.testing;
 
 
 import java.io.InputStream;

@@ -7,7 +7,6 @@ import java.io.IOException;
 import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTConnector;
 import lejos.pc.comm.NXTInfo;
-import utils.Debug;
 
 public class BTController extends Thread{
 	
@@ -26,12 +25,12 @@ public class BTController extends Thread{
 	
 	public boolean connect(){
 		connection = new NXTConnector();
-		Debug.print("Connecting to a bluetooth device.");
+		System.out.println("Connecting to a bluetooth device.");
 		
 		boolean connected = connection.connectTo("btspp://");
 		
 		if (!connected) {
-			Debug.print("Failed to connect to a bluetooth device.");
+			System.out.println("Failed to connect to a bluetooth device.");
 			return false;
 		}else{
 			dos = new DataOutputStream(connection.getOutputStream());
@@ -54,7 +53,7 @@ public class BTController extends Thread{
 			dos.close();
 			dos = null;
 		}catch(IOException e){
-			Debug.print(e.getMessage());
+			System.out.println(e.getMessage());
 		}
 	}
 	/**

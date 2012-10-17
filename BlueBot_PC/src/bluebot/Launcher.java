@@ -14,23 +14,32 @@ import bluebot.ui.RepeatingKeyReleasedEventsFix;
 
 
 /**
+ * This class represents the entry point of the client-side application
  * 
  * @author Ruben Feyen
  */
-public class Launcher {
+public class Launcher implements Runnable {
 	
-	public static void main(final String... args) {
+	protected static final void execute(final Launcher launcher) {
 		try {
-			SwingUtilities.invokeAndWait(new Runnable() {
-				public void run() {
-					RepeatingKeyReleasedEventsFix.install();
-					setLookAndFeel();
-					new MainFrame().setVisible(true);
-				}
-			});
+			SwingUtilities.invokeAndWait(launcher);
 		} catch (final Throwable e) {
 			e.printStackTrace();
 		}
+	}
+	
+	protected void init() {
+		RepeatingKeyReleasedEventsFix.install();
+		setLookAndFeel();
+	}
+	
+	public static void main(final String... args) {
+		execute(new Launcher());
+	}
+	
+	public void run() {
+		init();
+		showUserInterface();
 	}
 	
 	private static final void setLookAndFeel() {
@@ -55,6 +64,10 @@ public class Launcher {
 		} catch (final UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	protected void showUserInterface() {
+		new MainFrame().setVisible(true);
 	}
 	
 }

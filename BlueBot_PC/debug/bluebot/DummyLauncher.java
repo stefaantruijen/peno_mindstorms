@@ -1,13 +1,10 @@
 package bluebot;
 
 
-import javax.swing.SwingUtilities;
-
 import bluebot.core.Controller;
 import bluebot.core.RemoteController;
 import bluebot.io.DummyConnection;
 import bluebot.ui.ControllerFrame;
-import bluebot.ui.RepeatingKeyReleasedEventsFix;
 
 
 
@@ -16,7 +13,7 @@ import bluebot.ui.RepeatingKeyReleasedEventsFix;
  * 
  * @author Ruben Feyen
  */
-public class DummyLauncher {
+public class DummyLauncher extends Launcher {
 	
 	private static final Controller createController() {
 //		return DummyController.SINGLETON;
@@ -24,16 +21,12 @@ public class DummyLauncher {
 	}
 	
 	public static void main(final String... args) {
-		try {
-			SwingUtilities.invokeAndWait(new Runnable() {
-				public void run() {
-					RepeatingKeyReleasedEventsFix.install();
-					new ControllerFrame(createController()).setVisible(true);
-				}
-			});
-		} catch (final Throwable e) {
-			e.printStackTrace();
-		}
+		execute(new DummyLauncher());
+	}
+	
+	@Override
+	protected void showUserInterface() {
+		new ControllerFrame(createController()).setVisible(true);
 	}
 	
 }

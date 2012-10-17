@@ -10,6 +10,7 @@ import bluebot.io.protocol.Channel;
 
 
 /**
+ * Represents a server-side {@link Connection}
  * 
  * @author Ruben Feyen
  */
@@ -35,6 +36,11 @@ public class ServerConnection extends Connection {
 		}
 	}
 	
+	/**
+	 * Factory method for the {@link ServerConnection} class
+	 * 
+	 * @return a {@link ServerConnection} object
+	 */
 	public static ServerConnection create() {
 		return new ServerConnection(Bluetooth.waitForConnection());
 	}
