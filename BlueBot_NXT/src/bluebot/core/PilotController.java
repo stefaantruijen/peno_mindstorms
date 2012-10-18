@@ -1,3 +1,5 @@
+package bluebot.core;
+
 import lejos.nxt.Motor;
 import lejos.robotics.navigation.DifferentialPilot;
 

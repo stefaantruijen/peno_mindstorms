@@ -1,8 +1,5 @@
-import lejos.nxt.Button;
+package bluebot.core;
 
-import bluebot.io.Communicator;
-import bluebot.io.Connection;
-import bluebot.io.ServerConnection;
 import bluebot.io.protocol.Packet;
 import bluebot.io.protocol.PacketHandler;
 import bluebot.io.protocol.impl.MovePacket;
@@ -26,6 +23,7 @@ public class BlueBot implements PacketHandler, Runnable {
 	}
 	public BlueBot(final PilotController pc) {
 		this.pc = pc;
+		this.queue = new PacketQueue();
 	}
 	
 	
@@ -99,30 +97,6 @@ public class BlueBot implements PacketHandler, Runnable {
 		pc.stop();
 	}
 	
-	public static void main(final String... args) {
-		try {
-			System.out.println("Connecting ...");
-			final Connection connection = ServerConnection.create();
-			System.out.println("Connected!");
-			
-			final BlueBot bot = new BlueBot();
-			bot.start();
-			
-			final Communicator communicator = new Communicator(connection, bot);
-			communicator.start();
-			
-			System.out.println("Listening ...");
-			
-			Button.waitForAnyPress();
-			
-			communicator.stop();
-			bot.stop();
-			
-			System.out.println("Done!");
-		} catch (final Throwable e) {
-			e.printStackTrace();
-		}
-	}
 	
 	public void run() {
 		try {
@@ -134,14 +108,14 @@ public class BlueBot implements PacketHandler, Runnable {
 		}
 	}
 	
-	private synchronized void start() {
+	public synchronized void start() {
 		if (thread == null) {
 			thread = new Thread(this);
 			thread.start();
 		}
 	}
 	
-	private synchronized void stop() {
+	public synchronized void stop() {
 		if (thread != null) {
 			thread.interrupt();
 			thread = null;
