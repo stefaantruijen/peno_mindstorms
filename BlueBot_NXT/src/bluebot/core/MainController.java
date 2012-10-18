@@ -4,7 +4,11 @@ import lejos.nxt.Button;
 import bluebot.io.Communicator;
 import bluebot.io.Connection;
 import bluebot.io.ServerConnection;
-
+/**
+ * Create the Main application and fire up all necessary tools.
+ * @author  Incalza Dario
+ *
+ */
 public class MainController {
 	
 	public static void main(final String... args) {
