@@ -12,6 +12,7 @@ import bluebot.io.protocol.impl.StopPacket;
 
 
 /**
+ * Unit tests for the {@link PacketFactory} class
  * 
  * @author Ruben Feyen
  */
