@@ -8,6 +8,8 @@ import java.awt.GridBagLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -30,6 +32,12 @@ public class JoystickComponent extends JPanel {
 		initComponents();
 		setFocusable(true);
 		addKeyListener(createKeyListener());
+		addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(final MouseEvent event) {
+				requestFocusInWindow();
+			}
+		});
 	}
 	
 	
