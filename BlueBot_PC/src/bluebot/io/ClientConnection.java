@@ -17,7 +17,7 @@ import lejos.pc.comm.NXTInfo;
  * 
  * @author Ruben Feyen
  */
-public class ClientConnection extends Connection {
+public class ClientConnection extends RemoteConnection {
 	
 	private NXTComm nxtc;
 	

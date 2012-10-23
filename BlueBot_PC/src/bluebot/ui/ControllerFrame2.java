@@ -98,7 +98,7 @@ public class ControllerFrame2 extends JFrame {
 				}
 			}
 		});
-		joystick.requestFocus();
+		joystick.requestFocusInWindow();
 		return createModule(joystick, "Controls");
 	}
 	

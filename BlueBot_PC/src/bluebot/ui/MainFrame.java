@@ -1,6 +1,8 @@
 package bluebot.ui;
 
 
+import static bluebot.core.ControllerFactory.getControllerFactory;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -11,14 +13,9 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import simulator.SimulatorController;
-
 import lejos.pc.comm.NXTCommException;
 
 import bluebot.core.Controller;
-import bluebot.core.RemoteController;
-import bluebot.io.ClientConnection;
-import bluebot.io.Connection;
 
 
 
@@ -52,9 +49,8 @@ public class MainFrame extends JFrame {
 	}
 	
 	private final void connectToBrick(final String name) {
-		final Connection connection;
 		try {
-			connection = ClientConnection.create(name);
+			showController(getControllerFactory().connectToBrick(name));
 		} catch (final NXTCommException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this,
@@ -63,12 +59,10 @@ public class MainFrame extends JFrame {
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-		
-		showController(new RemoteController(connection));
 	}
 	
 	private final void connectToSimulator() {
-		showController(new SimulatorController());
+		showController(getControllerFactory().connectToSimulator());
 	}
 	
 	private static final JButton createButton(final String text) {
