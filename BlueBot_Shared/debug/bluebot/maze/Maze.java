@@ -2,7 +2,8 @@ package bluebot.maze;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.List;
 
 
@@ -13,11 +14,13 @@ import java.util.List;
  */
 public class Maze {
 	
-	private HashMap<Integer, Tile> map;
+//	private HashMap<Integer, Tile> map;
+	private Hashtable<Integer, Tile> table;
 	
 	
 	public Maze() {
-		map = new HashMap<Integer, Tile>();
+//		map = new HashMap<Integer, Tile>();
+		table = new Hashtable<Integer, Tile>();
 	}
 	
 	
@@ -27,7 +30,7 @@ public class Maze {
 		if (tile == null) {
 			tile = new Tile(x, y);
 			initBorders(tile);
-			map.put(key(x, y), tile);
+			table.put(key(x, y), tile);
 		}
 		return tile;
 	}
@@ -76,11 +79,20 @@ public class Maze {
 	}
 	
 	public Tile getTile(final int x, final int y) {
-		return map.get(key(x, y));
+		return table.get(key(x, y));
 	}
 	
 	public List<Tile> getTiles() {
-		return new ArrayList<Tile>(map.values());
+		final ArrayList<Tile> tiles = new ArrayList<Tile>();
+		
+		final Enumeration<Integer> keys = table.keys();
+		while (keys.hasMoreElements()) {
+			tiles.add(table.get(keys.nextElement()));
+		}
+		
+		return tiles;
+		
+//		return new ArrayList<Tile>(map.values());
 	}
 	
 	private final void initBorders(final Tile tile) {

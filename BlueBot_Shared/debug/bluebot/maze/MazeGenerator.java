@@ -182,25 +182,20 @@ public class MazeGenerator {
 		return maze;
 	}
 	
-	public static void main(final String... args) {
-		try {
-			final Maze maze = new MazeGenerator().generateMaze();
-			
-			final Tile start = maze.getTile(0, 4);
-			final Tile goal = maze.getTile(4, 0);
-			
-			final int iterations = 1;
-			
-			long time = 0;
-			for (int i = iterations; i > 0; i--) {
-				time += timePathFinder(maze, start, goal);
-			}
-			
-			final long avg = (time / iterations);
-			System.out.printf("Finding the path takes an average time of %d µs%n", avg);
-		} catch (final Throwable e) {
-			e.printStackTrace();
+	public long time() {
+		final Maze maze = new MazeGenerator().generateMaze();
+		
+		final Tile start = maze.getTile(0, 4);
+		final Tile goal = maze.getTile(4, 0);
+		
+		final int iterations = 1;
+		
+		long time = 0;
+		for (int i = iterations; i > 0; i--) {
+			time += timePathFinder(maze, start, goal);
 		}
+		
+		return (time / iterations);
 	}
 	
 	private static final long timePathFinder(final Maze maze,

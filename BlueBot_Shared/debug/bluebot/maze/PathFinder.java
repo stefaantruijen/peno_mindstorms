@@ -33,7 +33,8 @@ public class PathFinder {
 	private static final List<Tile> createPath(Node node) {
 		final LinkedList<Tile> path = new LinkedList<Tile>();
 		for (; node != null; node = node.back) {
-			path.addFirst(node.tile);
+//			path.addFirst(node.tile);
+			path.add(node.tile);
 		}
 		return path;
 	}
