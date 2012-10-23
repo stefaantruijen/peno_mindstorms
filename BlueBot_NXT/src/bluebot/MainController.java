@@ -1,6 +1,10 @@
-package bluebot.core;
+package bluebot;
 
 import lejos.nxt.Button;
+import bluebot.Driver;
+import bluebot.DriverHandler;
+import bluebot.Robot;
+import bluebot.core.PhysicalRobot;
 import bluebot.io.Communicator;
 import bluebot.io.Connection;
 import bluebot.io.ServerConnection;
@@ -17,10 +21,14 @@ public class MainController {
 			final Connection connection = ServerConnection.create();
 			System.out.println("Connected!");
 			
-			final BlueBot bot = new BlueBot();
-			bot.start();
+			final Robot robot = new PhysicalRobot();
 			
-			final Communicator communicator = new Communicator(connection, bot);
+			final Driver driver = new Driver(robot, connection);
+			
+			final DriverHandler handler = new DriverHandler(driver);
+			handler.start();
+			
+			final Communicator communicator = new Communicator(connection, handler);
 			communicator.start();
 			
 			System.out.println("Listening ...");
@@ -28,7 +36,7 @@ public class MainController {
 			Button.waitForAnyPress();
 			
 			communicator.stop();
-			bot.stop();
+			handler.stop();
 			
 			System.out.println("Done!");
 		} catch (final Throwable e) {

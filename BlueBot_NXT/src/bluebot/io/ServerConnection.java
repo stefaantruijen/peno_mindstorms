@@ -14,7 +14,7 @@ import bluebot.io.protocol.Channel;
  * 
  * @author Ruben Feyen
  */
-public class ServerConnection extends Connection {
+public class ServerConnection extends RemoteConnection {
 	
 	private NXTConnection nxtc;
 	
