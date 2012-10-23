@@ -9,6 +9,7 @@ import bluebot.util.BlockingQueue;
 
 
 /**
+ * {@link PacketHandler} implementation for the {@link Driver} class
  * 
  * @author Ruben Feyen
  */
