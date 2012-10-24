@@ -29,4 +29,8 @@ public interface Robot {
 	
 	public void turnRight(float angle);
 	
+	public void setTravelSpeed(double speed);
+	
+	public boolean isMoving();
+	
 }

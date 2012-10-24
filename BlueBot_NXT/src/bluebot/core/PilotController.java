@@ -92,6 +92,22 @@ public class PilotController {
 	public void right(){
 		pilot.rotateRight();
 	}
+	
+	/**
+	 * Sets the travelspeed of the pilot to the given speed. (wielomtrek/s)
+	 * @param speed
+	 */
+	public void setTravelSpeed(double speed){
+		pilot.setTravelSpeed(speed);
+	}
+	
+	/**
+	 * returns true if the pilot is moving.
+	 * @return	true if the pilot is moving.
+	 */
+	public boolean isMoving(){
+		return pilot.isMoving();
+	}
 
 	
 	
