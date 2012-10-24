@@ -28,12 +28,22 @@ public class DefaultController extends AbstractController {
 	
 	
 	
+	@Override
+	public void addListener(final ControllerListener listener) {
+		super.addListener(listener);
+		getCommunicator().addListener(listener);
+	}
+	
 	protected PacketHandler createPacketHandler() {
 		return new PacketHandler() {
 			public void handlePacket(final Packet packet) {
 				// TODO
 			}
 		};
+	}
+	
+	private final Communicator getCommunicator() {
+		return communicator;
 	}
 	
 	private final ClientTranslator getTranslator() {
@@ -44,7 +54,7 @@ public class DefaultController extends AbstractController {
 		getTranslator().moveBackward();
 	}
 	
-	protected void moveBackward(final float distance) {
+	public void moveBackward(final float distance) {
 		getTranslator().moveBackward(distance);
 	}
 	
@@ -52,8 +62,14 @@ public class DefaultController extends AbstractController {
 		getTranslator().moveForward();
 	}
 	
-	protected void moveForward(final float distance) {
+	public void moveForward(final float distance) {
 		getTranslator().moveForward(distance);
+	}
+	
+	@Override
+	public void removeListener(final ControllerListener listener) {
+		super.removeListener(listener);
+		getCommunicator().removeListener(listener);
 	}
 	
 	public void stop() {
@@ -65,7 +81,7 @@ public class DefaultController extends AbstractController {
 		getTranslator().turnLeft();
 	}
 	
-	protected void turnLeft(final float angle) {
+	public void turnLeft(final float angle) {
 		getTranslator().turnLeft(angle);
 	}
 	
@@ -73,7 +89,7 @@ public class DefaultController extends AbstractController {
 		getTranslator().turnRight();
 	}
 	
-	protected void turnRight(final float angle) {
+	public void turnRight(final float angle) {
 		getTranslator().turnRight(angle);
 	}
 

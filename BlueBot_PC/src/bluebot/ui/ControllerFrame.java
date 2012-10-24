@@ -2,14 +2,14 @@ package bluebot.ui;
 
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 
 import bluebot.core.Controller;
 
@@ -39,95 +39,110 @@ public class ControllerFrame extends JFrame {
 	
 	
 	
-	private final Component createTabCommunication() {
-		final CommunicationList list = new CommunicationList();
-		controller.addListener(list.createControllerListener());
-		return list.createScrollPane();
-	}
-	
-	private final Component createTabControls() {
-		final JPanel panel = new JPanel();
-		panel.setLayout(new BorderLayout(0, 0));
-		
-		final JoystickComponent component = new JoystickComponent();
-		component.addListener(new JoystickListener() {
-			public void onJoystickStop() {
-				controller.stop();
-			}
-			
-			public void onJoystickRight(boolean flag) {
-				if (flag) {
-					controller.turnRight();
-				} else {
-					controller.stop();
-				}
-			}
-			
-			public void onJoystickLeft(boolean flag) {
-				if (flag) {
-					controller.turnLeft();
-				} else {
-					controller.stop();
-				}
-			}
-			
-			public void onJoystickForward(boolean flag) {
-				if (flag) {
-					controller.moveForward();
-				} else {
-					controller.stop();
-				}
-			}
-			
-			public void onJoystickBackward(boolean flag) {
-				if (flag) {
-					controller.moveBackward();
-				} else {
-					controller.stop();
-				}
-			}
-		});
-		panel.add(component, BorderLayout.CENTER);
-		
-		// Focus is required to allow the controller buttons component to monitor key(board) events
-		component.requestFocus();
+	private final Component createModule(final Component content, final String title) {
+		final JPanel panel = new JPanel(new BorderLayout(0, 0));
+		panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), title));
+		panel.add(content, BorderLayout.CENTER);
 		return panel;
 	}
 	
-	private final Component createTabDebug() {
-		final StreamingTextArea debug = new StreamingTextArea();
-		System.setOut(debug.wrap(System.out));
+	private final Component createModuleCommunication(final int width, final int height) {
+//		final CommunicationList list = new CommunicationList();
+//		controller.addListener(list.createControllerListener());
 		
-		final JScrollPane scroll = new JScrollPane(debug, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		scroll.setPreferredSize(new Dimension(500, 500));
-		return scroll;
+		final CommunicationTable table = new CommunicationTable();
+		controller.addListener(table.createControllerListener());
+		
+		final JScrollPane scroller = table.createScrollPane();
+		scroller.setPreferredSize(new Dimension(width, height));
+		return createModule(scroller, "Communication");
 	}
 	
-	private final Component createTabErrors() {
-		final StreamingTextArea errors = new StreamingTextArea();
-		errors.setForeground(Color.RED);
-		System.setErr(errors.wrap(System.err));
-		
-		final JScrollPane scroll = new JScrollPane(errors, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		scroll.setPreferredSize(new Dimension(500, 500));
-		return scroll;
+	private final Component createModuleJoystick(final int width, final int height) {
+		final JoystickComponent joystick = new JoystickComponent();
+		joystick.setPreferredSize(new Dimension(width, height));
+		joystick.addListener(new JoystickListener() {
+			public void onJoystickBackward(final boolean flag, final boolean mod) {
+				if (flag) {
+					if (mod) {
+						controller.moveBackward(400F);
+					} else {
+						controller.moveBackward();
+					}
+				} else if (!mod) {
+					controller.stop();
+				}
+			}
+			
+			public void onJoystickForward(final boolean flag, final boolean mod) {
+				if (flag) {
+					if (mod) {
+						controller.moveForward(400F);
+					} else {
+						controller.moveForward();
+					}
+				} else if (!mod) {
+					controller.stop();
+				}
+			}
+			
+			public void onJoystickLeft(final boolean flag, final boolean mod) {
+				if (flag) {
+					if (mod) {
+						controller.turnLeft(90F);
+					} else {
+						controller.turnLeft();
+					}
+				} else if (!mod) {
+					controller.stop();
+				}
+			}
+			
+			public void onJoystickRight(final boolean flag, final boolean mod) {
+				if (flag) {
+					if (mod) {
+						controller.turnRight(90F);
+					} else {
+						controller.turnRight();
+					}
+				} else if (!mod) {
+					controller.stop();
+				}
+			}
+			
+			public void onJoystickStop() {
+				controller.stop();
+			}
+		});
+		joystick.requestFocusInWindow();
+		return createModule(joystick, "Controls");
 	}
 	
-	private final Component createTabs() {
-		final JTabbedPane tabs = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
-		// The next line is required to allow focus on the controller buttons component
-		tabs.setFocusable(false);
-		tabs.addTab("Communication",	createTabCommunication());
-		tabs.addTab("Configuration",	new JPanel());
-		tabs.addTab("Controls",			createTabControls());
-		tabs.addTab("Debug",			createTabDebug());
-		tabs.addTab("Errors",			createTabErrors());
-		tabs.setSelectedIndex(2);
-		return tabs;
+	private final Component group(final int axis, final Component... components) {
+		final JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel, axis));
+		
+		for (final Component component : components) {
+			panel.add(component);
+		}
+		
+		return panel;
 	}
 	
 	private final void initComponents() {
-		add(createTabs());
+		setLayout(new BorderLayout(0, 0));
+		
+		final JPanel panel = new JPanel();
+		panel.setPreferredSize(new Dimension(250, 250));
+		
+		final Component moduleComm = createModuleCommunication(500, 250);
+		final Component moduleJoystick = createModuleJoystick(250, 250);
+		
+		add(group(BoxLayout.PAGE_AXIS,
+				group(BoxLayout.LINE_AXIS,
+						panel,
+						moduleJoystick),
+				moduleComm));
 	}
 	
 }

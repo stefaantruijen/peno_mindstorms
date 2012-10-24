@@ -50,35 +50,35 @@ public class JoystickComponent extends JPanel {
 		return new ThrottledKeyAdapter(new KeyMonitor());
 	}
 	
-	private final void fireBackward(final boolean pressed) {
+	private final void fireBackward(final boolean pressed, final boolean mod) {
 //		Debug.print("Move backward:  %s", pressed);
 		buttonBackward.setPressed(pressed);
 		for (final JoystickListener listener : getListeners()) {
-			listener.onJoystickBackward(pressed);
+			listener.onJoystickBackward(pressed, mod);
 		}
 	}
 	
-	private final void fireForward(final boolean pressed) {
+	private final void fireForward(final boolean pressed, final boolean mod) {
 //		Debug.print("Move forward:  %s", pressed);
 		buttonForward.setPressed(pressed);
 		for (final JoystickListener listener : getListeners()) {
-			listener.onJoystickForward(pressed);
+			listener.onJoystickForward(pressed, mod);
 		}
 	}
 	
-	private final void fireLeft(final boolean pressed) {
+	private final void fireLeft(final boolean pressed, final boolean mod) {
 //		Debug.print("Turn left:  %s", pressed);
 		buttonLeft.setPressed(pressed);
 		for (final JoystickListener listener : getListeners()) {
-			listener.onJoystickLeft(pressed);
+			listener.onJoystickLeft(pressed, mod);
 		}
 	}
 	
-	private final void fireRight(final boolean pressed) {
+	private final void fireRight(final boolean pressed, final boolean mod) {
 //		Debug.print("Turn right:  %s", pressed);
 		buttonRight.setPressed(pressed);
 		for (final JoystickListener listener : getListeners()) {
-			listener.onJoystickRight(pressed);
+			listener.onJoystickRight(pressed, mod);
 		}
 	}
 	
@@ -182,26 +182,26 @@ public class JoystickComponent extends JPanel {
 				case KeyEvent.VK_Z:
 				case KeyEvent.VK_UP:
 				case KeyEvent.VK_NUMPAD8:
-					fireForward(true);
+					fireForward(true, event.isControlDown());
 					break;
 					
 				case KeyEvent.VK_S:
 				case KeyEvent.VK_DOWN:
 				case KeyEvent.VK_NUMPAD2:
-					fireBackward(true);
+					fireBackward(true, event.isControlDown());
 					break;
 					
 				case KeyEvent.VK_A:
 				case KeyEvent.VK_Q:
 				case KeyEvent.VK_LEFT:
 				case KeyEvent.VK_NUMPAD4:
-					fireLeft(true);
+					fireLeft(true, event.isControlDown());
 					break;
 					
 				case KeyEvent.VK_D:
 				case KeyEvent.VK_RIGHT:
 				case KeyEvent.VK_NUMPAD6:
-					fireRight(true);
+					fireRight(true, event.isControlDown());
 					break;
 					
 				case KeyEvent.VK_H:
@@ -219,26 +219,26 @@ public class JoystickComponent extends JPanel {
 				case KeyEvent.VK_Z:
 				case KeyEvent.VK_UP:
 				case KeyEvent.VK_NUMPAD8:
-					fireForward(false);
+					fireForward(false, event.isControlDown());
 					break;
 					
 				case KeyEvent.VK_S:
 				case KeyEvent.VK_DOWN:
 				case KeyEvent.VK_NUMPAD2:
-					fireBackward(false);
+					fireBackward(false, event.isControlDown());
 					break;
 					
 				case KeyEvent.VK_A:
 				case KeyEvent.VK_Q:
 				case KeyEvent.VK_LEFT:
 				case KeyEvent.VK_NUMPAD4:
-					fireLeft(false);
+					fireLeft(false, event.isControlDown());
 					break;
 					
 				case KeyEvent.VK_D:
 				case KeyEvent.VK_RIGHT:
 				case KeyEvent.VK_NUMPAD6:
-					fireRight(false);
+					fireRight(false, event.isControlDown());
 					break;
 					
 				case KeyEvent.VK_H:

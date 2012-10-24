@@ -34,12 +34,4 @@ public abstract class AbstractController
 		}
 	}
 	
-	protected abstract void moveBackward(float distance);
-	
-	protected abstract void moveForward(float distance);
-	
-	protected abstract void turnLeft(float angle);
-	
-	protected abstract void turnRight(float angle);
-	
 }

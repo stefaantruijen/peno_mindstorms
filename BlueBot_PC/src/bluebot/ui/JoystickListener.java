@@ -11,13 +11,13 @@ import java.util.EventListener;
  */
 public interface JoystickListener extends EventListener {
 	
-	public void onJoystickBackward(boolean flag);
+	public void onJoystickBackward(boolean flag, boolean mod);
 	
-	public void onJoystickForward(boolean flag);
+	public void onJoystickForward(boolean flag, boolean mod);
 	
-	public void onJoystickLeft(boolean flag);
+	public void onJoystickLeft(boolean flag, boolean mod);
 	
-	public void onJoystickRight(boolean flag);
+	public void onJoystickRight(boolean flag, boolean mod);
 	
 	public void onJoystickStop();
 	

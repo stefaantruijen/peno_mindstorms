@@ -66,13 +66,13 @@ public class SimulatorController extends AbstractController {
 	}
 
 	@Override
-	protected void moveBackward(float distance) {
+	public void moveBackward(float distance) {
 		fireMessageOutgoing("Move backward " + distance +"mm");
 		simulatorRobot.travel(-distance);
 	}
 
 	@Override
-	protected void moveForward(float distance) {
+	public void moveForward(float distance) {
 		fireMessageOutgoing("Move forward " + distance +"mm");
 		simulatorRobot.travel(distance);
 	}
@@ -84,14 +84,14 @@ public class SimulatorController extends AbstractController {
 	}
 
 	@Override
-	protected void turnLeft(float angle) {
-		fireMessageOutgoing("Turn left " + angle +"°");
+	public void turnLeft(float angle) {
+		fireMessageOutgoing("Turn left " + angle +"ï¿½");
 		simulatorRobot.rotate(angle);
 	}
 
 	@Override
-	protected void turnRight(float angle) {
-		fireMessageOutgoing("Turn right " + angle +"°");
+	public void turnRight(float angle) {
+		fireMessageOutgoing("Turn right " + angle +"ï¿½");
 		simulatorRobot.rotate(-angle);
 	}
 

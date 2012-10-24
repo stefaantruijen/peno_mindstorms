@@ -29,6 +29,18 @@ public class Communicator implements Runnable {
 	
 	
 	
+	public void addListener(final ConnectionListener listener) {
+		getConnection().addListener(listener);
+	}
+	
+	private final Connection getConnection() {
+		return connection;
+	}
+	
+	public void removeListener(final ConnectionListener listener) {
+		getConnection().removeListener(listener);
+	}
+	
 	/**
 	 * Executes the dispatching loop
 	 * 
@@ -38,7 +50,7 @@ public class Communicator implements Runnable {
 	public final void run() {
 		while (!Thread.interrupted()) {
 			try {
-				handler.handlePacket(connection.readPacket());
+				handler.handlePacket(getConnection().readPacket());
 			} catch (final EOFException e) {
 				// The connection has been closed
 				stop();
