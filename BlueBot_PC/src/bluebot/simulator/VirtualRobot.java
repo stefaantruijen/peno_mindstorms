@@ -6,47 +6,51 @@ import bluebot.Robot;
 
 
 /**
- * Dummy implementation of the {@link Robot} interface
- * (for debugging purposes)
+ * The {@link Robot} implementation for the simulator
  * 
  * @author Ruben Feyen
  */
-public class DummyRobot implements Robot {
+public class VirtualRobot implements Robot {
 	
 	public void moveBackward() {
-		
+		// TODO
 	}
 	
 	public void moveBackward(final float distance) {
-		
+		// TODO
 	}
 	
 	public void moveForward() {
-		System.out.println("Moving forward");
+		// TODO
 	}
 	
 	public void moveForward(final float distance) {
-		
+		// TODO
+	}
+	
+	public int readSensorLight() {
+		// TODO
+		return 0;
 	}
 	
 	public void stop() {
-		System.out.println("Stopped");
+		// TODO
 	}
 	
 	public void turnLeft() {
-		
+		// TODO
 	}
 	
 	public void turnLeft(final float angle) {
-		
+		// TODO
 	}
 	
 	public void turnRight() {
-		
+		// TODO
 	}
 	
 	public void turnRight(final float angle) {
-		
+		// TODO
 	}
 	
 }

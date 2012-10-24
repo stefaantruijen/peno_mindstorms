@@ -10,7 +10,7 @@ import bluebot.io.ClientConnection;
 import bluebot.io.Communicator;
 import bluebot.io.Connection;
 import bluebot.io.VirtualConnection;
-import bluebot.simulator.DummyRobot;
+import bluebot.simulator.VirtualRobot;
 
 
 
@@ -49,8 +49,7 @@ public class ControllerFactory {
 	 * @return a {@link Controller} object
 	 */
 	public Controller connectToSimulator() {
-		//	TODO: Provide simulator implementation of the Robot interface
-		final Robot robot = new DummyRobot();
+		final Robot robot = new VirtualRobot();
 		
 		final VirtualConnection connection = new VirtualConnection();
 		

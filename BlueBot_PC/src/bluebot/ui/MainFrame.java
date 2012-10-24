@@ -95,9 +95,7 @@ public class MainFrame extends JFrame {
 	private final void showController(final Controller controller) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				final JFrame frame =
-//						new ControllerFrame(controller);
-						new ControllerFrame(controller);
+				final JFrame frame = new ControllerFrame(controller);
 				frame.setVisible(true);
 			}
 		});

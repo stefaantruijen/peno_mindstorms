@@ -17,6 +17,8 @@ public interface Robot {
 	
 	public void moveForward(float distance);
 	
+	public int readSensorLight();
+	
 	public void stop();
 	
 	public void turnLeft();
