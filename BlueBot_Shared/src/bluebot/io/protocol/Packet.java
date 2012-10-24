@@ -16,6 +16,7 @@ public abstract class Packet {
 	
 	public static final int OP_STOP    = 0x01;
 	public static final int OP_MOVE    = 0x02;
+	public static final int OP_COMMAND = 0x10;
 	
 	
 	protected Packet() {}

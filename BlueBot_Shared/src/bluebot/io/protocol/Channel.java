@@ -1,8 +1,7 @@
 package bluebot.io.protocol;
 
 
-import static bluebot.io.protocol.Packet.OP_MOVE;
-import static bluebot.io.protocol.Packet.OP_STOP;
+import static bluebot.io.protocol.Packet.*;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -10,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import bluebot.io.protocol.impl.CommandPacket;
 import bluebot.io.protocol.impl.MovePacket;
 import bluebot.io.protocol.impl.StopPacket;
 
@@ -47,6 +47,8 @@ public class Channel {
 		synchronized (input) {
 			final int opcode = input.readUnsignedByte();
 			switch (opcode) {
+				case OP_COMMAND:
+					return new CommandPacket(input);
 				case OP_MOVE:
 					return new MovePacket(input);
 				case OP_STOP:

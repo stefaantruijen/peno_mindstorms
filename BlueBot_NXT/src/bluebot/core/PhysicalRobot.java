@@ -23,8 +23,10 @@ public class PhysicalRobot implements Robot {
 		this(SensorPort.S1);
 	}
 	public PhysicalRobot(final SensorPort light) {
+		pc = new PilotController();
 		sensorLight = new LightSensor(light);
 	}
+	
 	
 	
 	@Override

@@ -42,6 +42,14 @@ public class DefaultController extends AbstractController {
 		};
 	}
 	
+	public void doCalibrate() {
+		getTranslator().doCalibrate();
+	}
+	
+	public void doWhiteLineOrientation() {
+		getTranslator().doWhiteLineOrientation();
+	}
+	
 	private final Communicator getCommunicator() {
 		return communicator;
 	}

@@ -16,6 +16,14 @@ public class ClientTranslator extends Translator {
 	
 	
 	
+	public void doCalibrate() {
+		sendPacket(getPacketFactory().createCommandCalibrate());
+	}
+	
+	public void doWhiteLineOrientation() {
+		sendPacket(getPacketFactory().createCommandWhiteLineOrientation());
+	}
+	
 	public void moveBackward() {
 		sendPacket(getPacketFactory().createMoveBackward());
 	}

@@ -1,6 +1,7 @@
 package bluebot.io.protocol;
 
 
+import bluebot.io.protocol.impl.CommandPacket;
 import bluebot.io.protocol.impl.MovePacket;
 import bluebot.io.protocol.impl.StopPacket;
 
@@ -21,6 +22,18 @@ public class PacketFactory {
 	}
 	
 	
+	
+	private final Packet createCommand(final String command) {
+		return new CommandPacket(command);
+	}
+	
+	public Packet createCommandCalibrate() {
+		return createCommand(CommandPacket.CALIBRATE);
+	}
+	
+	public Packet createCommandWhiteLineOrientation() {
+		return createCommand(CommandPacket.WHITE_LINE_ORIENTATION);
+	}
 	
 	private final Packet createMove(final int direction) {
 		return new MovePacket(direction);

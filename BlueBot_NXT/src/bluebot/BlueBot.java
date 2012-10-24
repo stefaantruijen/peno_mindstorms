@@ -13,7 +13,7 @@ import bluebot.io.ServerConnection;
  * @author  Incalza Dario
  *
  */
-public class MainController {
+public class BlueBot {
 	
 	public static void main(final String... args) {
 		try {

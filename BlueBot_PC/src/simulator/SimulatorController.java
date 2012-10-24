@@ -35,6 +35,14 @@ public class SimulatorController extends AbstractController {
 		simulatorRobot.addListener(listener);
 	}
 	
+	public void doCalibrate() {
+		// ignored
+	}
+	
+	public void doWhiteLineOrientation() {
+		// ignored
+	}
+	
 	@Override
 	public void moveBackward() {
 		fireMessageOutgoing("Move backward");
