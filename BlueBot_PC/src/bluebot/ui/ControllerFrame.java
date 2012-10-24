@@ -8,10 +8,12 @@ import java.awt.Dimension;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import bluebot.core.Controller;
+import bluebot.core.ControllerAdapter;
 
 
 
@@ -35,6 +37,16 @@ public class ControllerFrame extends JFrame {
 		pack();
 		setLocationRelativeTo(null);
 		setResizable(false);
+		
+		controller.addListener(new ControllerAdapter() {
+			@Override
+			public void onError(final String msg) {
+				JOptionPane.showMessageDialog(ControllerFrame.this,
+						msg,
+						"Error",
+						JOptionPane.ERROR_MESSAGE);
+			}
+		});
 	}
 	
 	

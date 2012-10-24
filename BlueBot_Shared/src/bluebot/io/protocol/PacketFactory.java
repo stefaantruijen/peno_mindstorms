@@ -2,6 +2,7 @@ package bluebot.io.protocol;
 
 
 import bluebot.io.protocol.impl.CommandPacket;
+import bluebot.io.protocol.impl.ErrorPacket;
 import bluebot.io.protocol.impl.MovePacket;
 import bluebot.io.protocol.impl.StopPacket;
 
@@ -33,6 +34,10 @@ public class PacketFactory {
 	
 	public Packet createCommandWhiteLineOrientation() {
 		return createCommand(CommandPacket.WHITE_LINE_ORIENTATION);
+	}
+	
+	public Packet createError(final String msg) {
+		return new ErrorPacket(msg);
 	}
 	
 	private final Packet createMove(final int direction) {

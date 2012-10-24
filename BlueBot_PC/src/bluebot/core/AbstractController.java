@@ -22,6 +22,12 @@ public abstract class AbstractController
 		}
 	}
 	
+	protected void fireError(final String msg) {
+		for (final ControllerListener listener : getListeners()) {
+			listener.onError(msg);
+		}
+	}
+	
 	protected void fireMessageIncoming(final String msg) {
 		for (final ControllerListener listener : getListeners()) {
 			listener.onMessageIncoming(msg);

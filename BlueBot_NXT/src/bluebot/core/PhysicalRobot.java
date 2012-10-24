@@ -29,55 +29,52 @@ public class PhysicalRobot implements Robot {
 	
 	
 	
-	@Override
+	public boolean isMoving() {
+		return pc.isMoving();
+	}
+	
 	public void moveBackward() {
 		pc.backward();
 	}
-	@Override
+	
 	public void moveBackward(final float distance) {
 		pc.moveBackward(distance);
 	}
-	@Override
+	
 	public void moveForward() {
 		pc.forward();
 	}
-	@Override
+	
 	public void moveForward(final float distance) {
 		pc.moveForward(distance);
 	}
-	@Override
+	
 	public int readSensorLight() {
 		return sensorLight.readValue();
 	}
-	@Override
+	
+	public void setTravelSpeed(double speed) {
+		pc.setTravelSpeed(speed);
+	}
+	
 	public void stop() {
 		pc.stop();
 	}
-	@Override
+	
 	public void turnLeft() {
 		pc.left();
 	}
-	@Override
+	
 	public void turnLeft(final float angle) {
 		pc.turnLeft(angle);
 	}
-
-	@Override
+	
 	public void turnRight() {
 		pc.right();
 	}
 	
 	public void turnRight(final float angle) {
 		pc.turnRight(angle);
-	}
-	@Override
-	public void setTravelSpeed(double speed) {
-		pc.setTravelSpeed(speed);
-		
-	}
-	@Override
-	public boolean isMoving() {
-		return pc.isMoving();
 	}
 	
 }

@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import bluebot.io.protocol.impl.CommandPacket;
+import bluebot.io.protocol.impl.ErrorPacket;
 import bluebot.io.protocol.impl.MovePacket;
 import bluebot.io.protocol.impl.StopPacket;
 
@@ -49,6 +50,8 @@ public class Channel {
 			switch (opcode) {
 				case OP_COMMAND:
 					return new CommandPacket(input);
+				case OP_ERROR:
+					return new ErrorPacket(input);
 				case OP_MOVE:
 					return new MovePacket(input);
 				case OP_STOP:

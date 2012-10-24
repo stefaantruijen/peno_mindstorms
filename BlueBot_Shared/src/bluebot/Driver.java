@@ -46,26 +46,28 @@ public class Driver {
 	
 	/**
 	 * Sets the robot perpendicular to the first white line the robot encounters.
-	 * @throws DriverException
-	 * 			if the robot is not calibrated
 	 */
-	public void doLineOrientation() throws DriverException {
+	public void doWhiteLineOrientation() {
 		// exception if not calibrated
 		if(WhiteThreshold==-1){
-			throw new DriverException("Robot not calibrated");
+			getTranslator().sendError("Calibration of the light sensor is required");
+			return;
 		}
+		
 		// forward until white line (fast)
 		robot.setTravelSpeed(fastSpeed);
 		robot.moveForward();
 		while(robot.readSensorLight()<=WhiteThreshold){
 		}
 		robot.stop();
+		
 		// backward until white line (slow)
 		robot.setTravelSpeed(slowSpeed);
 		robot.moveBackward();
 		while(robot.readSensorLight()<=WhiteThreshold){
 		}
 		robot.stop();
+		
 		// 7 cm (sensor to wheels) forward
 		robot.moveForward(70);
 		// right until white line
@@ -73,11 +75,13 @@ public class Driver {
 		while(robot.readSensorLight()<=WhiteThreshold){
 		}
 		robot.stop();
+		
 		// left until no white line
 		robot.turnLeft();
 		while(robot.readSensorLight()>WhiteThreshold){
 		}
 		robot.stop();
+		
 		// left until white line
 		robot.turnLeft();
 		long time1 = System.currentTimeMillis();
@@ -86,6 +90,7 @@ public class Driver {
 		robot.stop();
 		long time2 = System.currentTimeMillis();
 		long timeToRotate = (time2-time1)/2;
+		
 		// turn right until time (half of whole turn) is over 
 		robot.turnRight();
 		long time3 = System.currentTimeMillis();
@@ -98,7 +103,6 @@ public class Driver {
 		// TODO(?)
 	}
 	
-	@SuppressWarnings("unused")
 	private final ServerTranslator getTranslator() {
 		return translator;
 	}

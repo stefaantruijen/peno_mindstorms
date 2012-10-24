@@ -26,7 +26,7 @@ public class PilotController {
 	 * 			the pilot moves forward. Given in mm.
 	 */
 	public void moveForward(double distance){
-		pilot.travel(Math.abs(distance), false);
+		pilot.travel(Math.abs(distance), true);
 	}
 	
 	/**
@@ -35,16 +35,14 @@ public class PilotController {
 	 * 			the pilot moves backward. Given in mm.
 	 */
 	public void moveBackward(double distance){
-		pilot.travel(- Math.abs(distance), false);
+		pilot.travel(- Math.abs(distance), true);
 	}
 	
 	/**
 	 * Stops the pilot 
 	 */
 	public void stop(){
-		System.out.println("STOPPING");
 		pilot.stop();
-		System.out.println("STOPPED");
 	}
 	
 	/**
@@ -53,7 +51,7 @@ public class PilotController {
 	 * 			The wanted angle of rotation in degrees.
 	 */
 	public void turnLeft(double angle){
-		pilot.rotate(Math.abs(angle), false);
+		pilot.rotate(Math.abs(angle), true);
 	}
 	
 	/**
@@ -62,7 +60,7 @@ public class PilotController {
 	 * 			The wanted angle of rotation in degrees.
 	 */
 	public void turnRight(double angle){
-		pilot.rotate(- Math.abs(angle), false);
+		pilot.rotate(- Math.abs(angle), true);
 	}
 	
 	/**

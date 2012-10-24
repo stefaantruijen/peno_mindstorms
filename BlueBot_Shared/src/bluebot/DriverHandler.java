@@ -61,14 +61,7 @@ public class DriverHandler implements PacketHandler, Runnable {
 		} else if (command.equals(CommandPacket.CALIBRATE)) {
 			driver.calibrate();
 		} else if (command.equals(CommandPacket.WHITE_LINE_ORIENTATION)) {
-			try {
-				driver.doLineOrientation();
-			} catch (final DriverException e) {
-				// TODO: Error afhandelen binnen driver,
-				// aangezien de handler geen communicatie biedt
-				// richting client/GUI
-				e.printStackTrace();
-			}
+			driver.doWhiteLineOrientation();
 		}
 	}
 	

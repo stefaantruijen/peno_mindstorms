@@ -16,12 +16,8 @@ public class ServerTranslator extends Translator {
 	
 	
 	
-	/*
-	 * @ mensen die niet graag lege klassen zien:
-	 * 
-	 * Dit is geen lege klasse.
-	 * Hier komen methodes van zodra onze NXT/simulator
-	 * messages terug stuurt naar de client
-	 */
+	public void sendError(final String msg) {
+		sendPacket(getPacketFactory().createError(msg));
+	}
 	
 }
