@@ -40,7 +40,7 @@ public class Driver {
 				min = value;
 			}
 		}
-		WhiteThreshold = min;
+		WhiteThreshold = min - 2;
 	}
 	
 	
