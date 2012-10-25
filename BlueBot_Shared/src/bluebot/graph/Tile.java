@@ -1,4 +1,5 @@
-package bluebot.maze;
+package bluebot.graph;
+
 
 
 
@@ -20,7 +21,7 @@ public class Tile {
 	
 	
 	@Override
-	public boolean equals(final Object obj) {
+	public boolean equals(Object obj) {
 		if (obj == null) {
 			return false;
 		}
@@ -126,4 +127,44 @@ public class Tile {
 		setBorder(6, border);
 	}
 	
+	public boolean isEastFrom(Tile other){
+		return(other.getX()==this.getX()-1);
+	}
+	
+	public boolean isWestFrom(Tile other){
+		return(other.getX()==this.getX()+1);
+	}
+	
+	public boolean isSouthFrom(Tile other){
+		return(other.getY()==this.getY()+1);
+	}
+	
+	public boolean isNorthFrom(Tile other){
+		return(other.getY()==this.getY()-1);
+	}
+	
+	@Override
+	public String toString(){
+		return ("("+this.getX()+","+this.getY()+")");
+	}
+	
+	public boolean isNeighborFrom(Tile other){
+		if(this.isEastFrom(other) && other.getBorderEast() == Border.OPEN){
+			return true;
+		}
+		
+		if(this.isWestFrom(other) && other.getBorderWest() == Border.OPEN){
+			return true;
+		}
+		
+		if(this.isNorthFrom(other)&& other.getBorderNorth() == Border.OPEN){
+			return true;
+		}
+		
+		if(this.isSouthFrom(other)&& other.getBorderSouth()== Border.OPEN){
+			return true;
+		}
+		
+		return false;
+	}
 }

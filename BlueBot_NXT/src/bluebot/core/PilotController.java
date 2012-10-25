@@ -6,15 +6,22 @@ import lejos.robotics.navigation.DifferentialPilot;
 
 public class PilotController {
 	
-	private static DifferentialPilot pilot = new DifferentialPilot(55.37, 55,167.78, Motor.A, Motor.C, false);
-	private final static double defaultTravelSpeed = 300;
-	private final static int defaultAccelerationSpeed = 1000;
-	private final static double defaultRotationSpeed = 100;
-
+	private final DifferentialPilot pilot;
+	private final static double defaultTravelSpeed = 200;
+	private final static int defaultAccelerationSpeed = 500;
+	private final static double defaultRotationSpeed = 75;
+	
+	public PilotController(){
+		pilot = new DifferentialPilot(55.37F, 55F,167.78F, Motor.A, Motor.C, false);
+		pilot.setAcceleration(defaultAccelerationSpeed);
+		pilot.setRotateSpeed(defaultRotationSpeed);
+		pilot.setTravelSpeed(defaultTravelSpeed);
+	}
+	
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
+	public void main(String[] args) {
 		pilot.setAcceleration(defaultAccelerationSpeed);
 		pilot.setRotateSpeed(defaultRotationSpeed);
 		pilot.setTravelSpeed(defaultTravelSpeed);
