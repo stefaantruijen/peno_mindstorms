@@ -8,10 +8,12 @@ import java.awt.Dimension;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import bluebot.core.Controller;
+import bluebot.core.ControllerAdapter;
 
 
 
@@ -35,6 +37,16 @@ public class ControllerFrame extends JFrame {
 		pack();
 		setLocationRelativeTo(null);
 		setResizable(false);
+		
+		controller.addListener(new ControllerAdapter() {
+			@Override
+			public void onError(final String msg) {
+				JOptionPane.showMessageDialog(ControllerFrame.this,
+						msg,
+						"Error",
+						JOptionPane.ERROR_MESSAGE);
+			}
+		});
 	}
 	
 	
@@ -54,13 +66,13 @@ public class ControllerFrame extends JFrame {
 		controller.addListener(table.createControllerListener());
 		
 		final JScrollPane scroller = table.createScrollPane();
-		scroller.setPreferredSize(new Dimension(width, height));
+//		scroller.setPreferredSize(new Dimension(width, height));
 		return createModule(scroller, "Communication");
 	}
 	
 	private final Component createModuleJoystick(final int width, final int height) {
 		final JoystickComponent joystick = new JoystickComponent();
-		joystick.setPreferredSize(new Dimension(width, height));
+//		joystick.setPreferredSize(new Dimension(width, height));
 		joystick.addListener(new JoystickListener() {
 			public void onJoystickBackward(final boolean flag, final boolean mod) {
 				if (flag) {
@@ -118,6 +130,18 @@ public class ControllerFrame extends JFrame {
 		return createModule(joystick, "Controls");
 	}
 	
+	private final Component createModuleRenderer() {
+		final RenderComponent canvas = new RenderComponent();
+		canvas.setPreferredSize(new Dimension(512, 512));
+		return createModule(canvas, "Visualization");
+	}
+	
+	private final Component createModuleSensors() {
+		final SensorRenderComponent sensor = new SensorRenderComponent();
+		
+		return createModule(sensor, "Sensors");
+	}
+	
 	private final Component group(final int axis, final Component... components) {
 		final JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, axis));
@@ -132,17 +156,17 @@ public class ControllerFrame extends JFrame {
 	private final void initComponents() {
 		setLayout(new BorderLayout(0, 0));
 		
-		final JPanel panel = new JPanel();
-		panel.setPreferredSize(new Dimension(250, 250));
-		
 		final Component moduleComm = createModuleCommunication(500, 250);
 		final Component moduleJoystick = createModuleJoystick(250, 250);
+		final Component moduleRenderer = createModuleRenderer();
 		
-		add(group(BoxLayout.PAGE_AXIS,
-				group(BoxLayout.LINE_AXIS,
-						panel,
-						moduleJoystick),
-				moduleComm));
+		add(group(BoxLayout.LINE_AXIS,
+				moduleRenderer,
+				group(BoxLayout.PAGE_AXIS,
+						group(BoxLayout.LINE_AXIS,
+								createModuleSensors(),
+								moduleJoystick),
+						moduleComm)));
 	}
 	
 }

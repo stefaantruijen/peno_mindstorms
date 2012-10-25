@@ -52,5 +52,17 @@ public class VirtualRobot implements Robot {
 	public void turnRight(final float angle) {
 		// TODO
 	}
+
+	@Override
+	public void setTravelSpeed(double speed) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isMoving() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 }

@@ -1,11 +1,14 @@
 package bluebot.core;
 
 
+import static bluebot.io.protocol.Packet.*;
+
 import bluebot.io.ClientTranslator;
 import bluebot.io.Communicator;
 import bluebot.io.Connection;
 import bluebot.io.protocol.Packet;
 import bluebot.io.protocol.PacketHandler;
+import bluebot.io.protocol.impl.ErrorPacket;
 
 
 
@@ -35,11 +38,15 @@ public class DefaultController extends AbstractController {
 	}
 	
 	protected PacketHandler createPacketHandler() {
-		return new PacketHandler() {
-			public void handlePacket(final Packet packet) {
-				// TODO
-			}
-		};
+		return new BrainzHandler();
+	}
+	
+	public void doCalibrate() {
+		getTranslator().doCalibrate();
+	}
+	
+	public void doWhiteLineOrientation() {
+		getTranslator().doWhiteLineOrientation();
 	}
 	
 	private final Communicator getCommunicator() {
@@ -91,6 +98,27 @@ public class DefaultController extends AbstractController {
 	
 	public void turnRight(final float angle) {
 		getTranslator().turnRight(angle);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	private final class BrainzHandler implements PacketHandler {
+		
+		public void handlePacket(final Packet packet) {
+			switch (packet.getOpcode()) {
+				case OP_ERROR:
+					fireError(((ErrorPacket)packet).getMessage());
+					break;
+			}
+		}
+		
 	}
 
 }

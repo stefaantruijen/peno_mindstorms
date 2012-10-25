@@ -13,6 +13,8 @@ import bluebot.io.ConnectionAdapter;
 public abstract class ControllerAdapter extends ConnectionAdapter
 		implements ControllerListener {
 	
-	
+	public void onError(final String msg) {
+		// ignored
+	}
 	
 }

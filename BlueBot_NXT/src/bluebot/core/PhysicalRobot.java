@@ -23,10 +23,15 @@ public class PhysicalRobot implements Robot {
 		this(SensorPort.S1);
 	}
 	public PhysicalRobot(final SensorPort light) {
+		pc = new PilotController();
 		sensorLight = new LightSensor(light);
 	}
 	
 	
+	
+	public boolean isMoving() {
+		return pc.isMoving();
+	}
 	
 	public void moveBackward() {
 		pc.backward();
@@ -48,6 +53,10 @@ public class PhysicalRobot implements Robot {
 		return sensorLight.readValue();
 	}
 	
+	public void setTravelSpeed(double speed) {
+		pc.setTravelSpeed(speed);
+	}
+	
 	public void stop() {
 		pc.stop();
 	}
@@ -59,8 +68,7 @@ public class PhysicalRobot implements Robot {
 	public void turnLeft(final float angle) {
 		pc.turnLeft(angle);
 	}
-
-	@Override
+	
 	public void turnRight() {
 		pc.right();
 	}

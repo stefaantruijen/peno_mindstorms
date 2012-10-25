@@ -33,6 +33,22 @@ public class ControllerMenuBar extends JMenuBar {
 	private final JMenu createMenuCommands() {
 		final JMenu menu = new JMenu("Commands");
 		
+		final JMenuItem itemCalibrate = new JMenuItem("Calibrate");
+		itemCalibrate.addActionListener(new ActionListener() {
+			public void actionPerformed(final ActionEvent event) {
+				controller.doCalibrate();
+			}
+		});
+		menu.add(itemCalibrate);
+		
+		final JMenuItem itemWhiteLine = new JMenuItem("Orientate on white line");
+		itemWhiteLine.addActionListener(new ActionListener() {
+			public void actionPerformed(final ActionEvent event) {
+				controller.doWhiteLineOrientation();
+			}
+		});
+		menu.add(itemWhiteLine);
+		
 		final JMenuItem itemPolygon = new JMenuItem("Polygon");
 		itemPolygon.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {

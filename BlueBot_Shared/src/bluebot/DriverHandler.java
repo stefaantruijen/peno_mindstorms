@@ -3,6 +3,7 @@ package bluebot;
 
 import bluebot.io.protocol.Packet;
 import bluebot.io.protocol.PacketHandler;
+import bluebot.io.protocol.impl.CommandPacket;
 import bluebot.io.protocol.impl.MovePacket;
 import bluebot.util.BlockingQueue;
 
@@ -41,12 +42,26 @@ public class DriverHandler implements PacketHandler, Runnable {
 	
 	private final void handlePacket0(final Packet packet) {
 		switch (packet.getOpcode()) {
+			case Packet.OP_COMMAND:
+				handlePacketCommand((CommandPacket)packet);
+				break;
 			case Packet.OP_MOVE:
 				handlePacketMove((MovePacket)packet);
 				break;
 			case Packet.OP_STOP:
 				handlePacketStop();
 				break;
+		}
+	}
+	
+	private final void handlePacketCommand(final CommandPacket packet) {
+		final String command = packet.getCommand();
+		if ((command == null) || command.isEmpty()) {
+			// ignored
+		} else if (command.equals(CommandPacket.CALIBRATE)) {
+			driver.calibrate();
+		} else if (command.equals(CommandPacket.WHITE_LINE_ORIENTATION)) {
+			driver.doWhiteLineOrientation();
 		}
 	}
 	

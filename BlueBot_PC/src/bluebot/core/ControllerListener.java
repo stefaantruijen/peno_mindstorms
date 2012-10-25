@@ -12,6 +12,6 @@ import bluebot.io.ConnectionListener;
  */
 public interface ControllerListener extends ConnectionListener {
 	
-	
+	public void onError(String msg);
 	
 }
