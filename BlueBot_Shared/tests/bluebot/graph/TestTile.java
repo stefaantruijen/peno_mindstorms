@@ -1,4 +1,4 @@
-package bluebot.maze;
+package bluebot.graph;
 
 
 import static org.junit.Assert.*;
