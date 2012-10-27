@@ -9,8 +9,14 @@ package bluebot;
  */
 public interface Driver extends Mobile {
 	
+	/**
+	 * Calibrates the sensors
+	 */
 	public void calibrate();
 	
+	/**
+	 * Executes the "white line" algorithm
+	 */
 	public void doWhiteLineOrientation();
 	
 }
