@@ -3,6 +3,7 @@ package bluebot.core;
 
 import lejos.pc.comm.NXTCommException;
 
+import bluebot.DefaultDriver;
 import bluebot.Driver;
 import bluebot.DriverHandler;
 import bluebot.Robot;
@@ -55,7 +56,7 @@ public class ControllerFactory {
 		
 		final Connection server = connection.createServer();
 		
-		final Driver driver = new Driver(robot, server);
+		final Driver driver = new DefaultDriver(robot, server);
 		
 		final DriverHandler handler = new DriverHandler(driver);
 		handler.start();

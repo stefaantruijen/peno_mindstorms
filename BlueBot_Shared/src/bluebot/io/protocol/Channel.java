@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import bluebot.io.protocol.impl.CommandPacket;
 import bluebot.io.protocol.impl.ErrorPacket;
 import bluebot.io.protocol.impl.MovePacket;
+import bluebot.io.protocol.impl.SensorPacket;
 import bluebot.io.protocol.impl.StopPacket;
 
 
@@ -54,6 +55,8 @@ public class Channel {
 					return new ErrorPacket(input);
 				case OP_MOVE:
 					return new MovePacket(input);
+				case OP_SENSOR:
+					return new SensorPacket(input);
 				case OP_STOP:
 					return StopPacket.SINGLETON;
 				default:

@@ -3,6 +3,7 @@ package bluebot.core;
 
 import lejos.nxt.LightSensor;
 import lejos.nxt.SensorPort;
+import lejos.nxt.UltrasonicSensor;
 
 import bluebot.Robot;
 
@@ -17,14 +18,16 @@ public class PhysicalRobot implements Robot {
 	
 	private PilotController pc;
 	private LightSensor sensorLight;
+	private UltrasonicSensor sensorUltraSonic;
 	
 	
 	public PhysicalRobot() {
-		this(SensorPort.S1);
+		this(SensorPort.S1, SensorPort.S2);
 	}
-	public PhysicalRobot(final SensorPort light) {
+	public PhysicalRobot(final SensorPort light, final SensorPort ultraSonic) {
 		pc = new PilotController();
 		sensorLight = new LightSensor(light);
+		sensorUltraSonic = new UltrasonicSensor(ultraSonic);
 	}
 	
 	
@@ -51,6 +54,10 @@ public class PhysicalRobot implements Robot {
 	
 	public int readSensorLight() {
 		return sensorLight.readValue();
+	}
+	
+	public int readSensorUltraSonic() {
+		return sensorUltraSonic.getDistance();
 	}
 	
 	public void setTravelSpeed(double speed) {

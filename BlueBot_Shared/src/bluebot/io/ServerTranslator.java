@@ -1,6 +1,9 @@
 package bluebot.io;
 
 
+import bluebot.sensors.SensorType;
+
+
 
 /**
  * This {@link Translator} implementation provides translation
@@ -18,6 +21,10 @@ public class ServerTranslator extends Translator {
 	
 	public void sendError(final String msg) {
 		sendPacket(getPacketFactory().createError(msg));
+	}
+	
+	public void sendSensorValue(final SensorType type, final int value) {
+		sendPacket(getPacketFactory().createSensorResponse(type, value));
 	}
 	
 }

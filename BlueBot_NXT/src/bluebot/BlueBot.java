@@ -23,7 +23,7 @@ public class BlueBot {
 			
 			final Robot robot = new PhysicalRobot();
 			
-			final Driver driver = new Driver(robot, connection);
+			final Driver driver = new DefaultDriver(robot, connection);
 			
 			final DriverHandler handler = new DriverHandler(driver);
 			handler.start();

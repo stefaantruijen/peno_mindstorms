@@ -4,7 +4,9 @@ package bluebot.io.protocol;
 import bluebot.io.protocol.impl.CommandPacket;
 import bluebot.io.protocol.impl.ErrorPacket;
 import bluebot.io.protocol.impl.MovePacket;
+import bluebot.io.protocol.impl.SensorPacket;
 import bluebot.io.protocol.impl.StopPacket;
+import bluebot.sensors.SensorType;
 
 
 
@@ -94,6 +96,29 @@ public class PacketFactory {
 	 */
 	public Packet createMoveForward(final float distance) {
 		return new MovePacket(MovePacket.MOVE_FORWARD, distance);
+	}
+	
+	/**
+	 * Creates a sensor (value) request packet
+	 * 
+	 * @param type - the type of sensor
+	 * 
+	 * @return a {@link Packet} object
+	 */
+	public Packet createSensorRequest(final SensorType type) {
+		return new SensorPacket(type);
+	}
+	
+	/**
+	 * Creates a sensor (value) response packet
+	 * 
+	 * @param type - the type of sensor
+	 * @param value - the value read from the sensor
+	 * 
+	 * @return a {@link Packet} object
+	 */
+	public Packet createSensorResponse(final SensorType type, final int value) {
+		return new SensorPacket(type, value);
 	}
 	
 	/**

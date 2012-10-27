@@ -1,6 +1,7 @@
 package bluebot.core;
 
 
+import bluebot.Mobile;
 import bluebot.util.EventDispatcher;
 
 
@@ -10,30 +11,12 @@ import bluebot.util.EventDispatcher;
  * 
  * @author Ruben Feyen
  */
-public interface Controller extends EventDispatcher<ControllerListener> {
+public interface Controller extends EventDispatcher<ControllerListener>, Mobile {
 	
 	public void doCalibrate();
 	
 	public void doPolygon(int corners, float length);
 	
 	public void doWhiteLineOrientation();
-	
-	public void moveBackward();
-	
-	public void moveBackward(float distance);
-	
-	public void moveForward();
-	
-	public void moveForward(float distance);
-	
-	public void stop();
-	
-	public void turnLeft();
-	
-	public void turnLeft(float angle);
-	
-	public void turnRight();
-	
-	public void turnRight(float angle);
 	
 }

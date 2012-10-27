@@ -7,30 +7,14 @@ package bluebot;
  * 
  * @author Ruben Feyen
  */
-public interface Robot {
+public interface Robot extends Mobile {
 	
-	public void moveBackward();
-	
-	public void moveBackward(float distance);
-	
-	public void moveForward();
-	
-	public void moveForward(float distance);
+	public boolean isMoving();
 	
 	public int readSensorLight();
 	
-	public void stop();
-	
-	public void turnLeft();
-	
-	public void turnLeft(float angle);
-	
-	public void turnRight();
-	
-	public void turnRight(float angle);
+	public int readSensorUltraSonic();
 	
 	public void setTravelSpeed(double speed);
-	
-	public boolean isMoving();
 	
 }

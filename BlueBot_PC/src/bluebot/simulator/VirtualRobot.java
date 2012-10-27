@@ -33,6 +33,11 @@ public class VirtualRobot implements Robot {
 		return 0;
 	}
 	
+	public int readSensorUltraSonic() {
+		// TODO
+		return 255;
+	}
+	
 	public void stop() {
 		// TODO
 	}
