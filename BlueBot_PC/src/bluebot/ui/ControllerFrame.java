@@ -1,172 +1,303 @@
 package bluebot.ui;
 
-
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import bluebot.core.Controller;
-import bluebot.core.ControllerAdapter;
-
-
+import bluebot.core.ControllerListener;
+import bluebot.util.Utils;
 
 /**
  * 
  * @author Ruben Feyen
  */
-public class ControllerFrame extends JFrame {
+public class ControllerFrame extends JFrame implements ControllerListener {
 	private static final long serialVersionUID = 1L;
-	
+
 	private Controller controller;
-	
-	
+
 	public ControllerFrame(final Controller controller) {
 		super(MainFrame.TITLE);
 		this.controller = controller;
-		
+
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		setJMenuBar(new ControllerMenuBar(controller));
 		initComponents();
+		// setPreferredSize(new Dimension(800, 600));
 		pack();
 		setLocationRelativeTo(null);
 		setResizable(false);
-		
-		controller.addListener(new ControllerAdapter() {
+
+		controller.addListener(this);
+		addWindowListener(new WindowAdapter() {
 			@Override
-			public void onError(final String msg) {
-				JOptionPane.showMessageDialog(ControllerFrame.this,
-						msg,
-						"Error",
-						JOptionPane.ERROR_MESSAGE);
+			public void windowClosing(final WindowEvent event) {
+				controller.removeListener(ControllerFrame.this);
 			}
 		});
 	}
-	
-	
-	
-	private final Component createModule(final Component content, final String title) {
-		final JPanel panel = new JPanel(new BorderLayout(0, 0));
-		panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), title));
-		panel.add(content, BorderLayout.CENTER);
-		return panel;
+
+	private final Component createModule(final JComponent content,
+			final String title) {
+		content.setBorder(BorderFactory.createEtchedBorder());
+		return content;
 	}
-	
-	private final Component createModuleCommunication(final int width, final int height) {
-//		final CommunicationList list = new CommunicationList();
-//		controller.addListener(list.createControllerListener());
-		
+
+	private final Component createModuleCommands() {
+		final JPanel panel = new JPanel();
+
+		final GridBagLayout layout = new GridBagLayout();
+		layout.columnWeights = new double[] { 1D };
+		layout.rowWeights = new double[] { 1D, 1D, 1D };
+		panel.setLayout(layout);
+
+		final Font font = new Font(Font.SANS_SERIF, Font.BOLD, 12);
+
+		final JButton buttonCalibrate = new JButton("Calibrate");
+		buttonCalibrate.setFocusable(false);
+		buttonCalibrate.setFont(font);
+		buttonCalibrate.addActionListener(new ActionListener() {
+			public void actionPerformed(final ActionEvent event) {
+				controller.doCalibrate();
+			}
+		});
+
+		final JButton buttonOrientate = new JButton("Orientate");
+		buttonOrientate.setFocusable(false);
+		buttonOrientate.setFont(font);
+		buttonOrientate.addActionListener(new ActionListener() {
+			public void actionPerformed(final ActionEvent event) {
+				controller.doWhiteLineOrientation();
+			}
+		});
+
+		final JButton buttonPolygon = new JButton("Polygon");
+		buttonPolygon.setFocusable(false);
+		buttonPolygon.setFont(font);
+		buttonPolygon.addActionListener(new ActionListener() {
+			public void actionPerformed(final ActionEvent event) {
+				final PolygonDialog dialog = new PolygonDialog();
+				if (dialog.confirm()) {
+					controller.doPolygon(dialog.getCorners(),
+							dialog.getLength());
+				}
+			}
+		});
+
+		final GridBagConstraints gbc = SwingUtils.createGBC();
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.insets.set(2, 2, 2, 2);
+
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		panel.add(buttonCalibrate, gbc);
+
+		gbc.gridy++;
+		panel.add(buttonOrientate, gbc);
+
+		gbc.gridy++;
+		panel.add(buttonPolygon, gbc);
+
+		return createModule(panel, "Commands");
+	}
+
+	private final Component createModuleCommunication() {
 		final CommunicationTable table = new CommunicationTable();
-		controller.addListener(table.createControllerListener());
-		
-		final JScrollPane scroller = table.createScrollPane();
-//		scroller.setPreferredSize(new Dimension(width, height));
-		return createModule(scroller, "Communication");
+		controller.addListener(table.getModel());
+
+		final JScrollPane scroll = table.createScrollPane();
+		scroll.setMinimumSize(new Dimension(1, 1));
+		return createModule(scroll, "Communication");
 	}
-	
-	private final Component createModuleJoystick(final int width, final int height) {
-		final JoystickComponent joystick = new JoystickComponent();
-//		joystick.setPreferredSize(new Dimension(width, height));
-		joystick.addListener(new JoystickListener() {
-			public void onJoystickBackward(final boolean flag, final boolean mod) {
-				if (flag) {
-					if (mod) {
-						controller.moveBackward(400F);
+
+	private final Component createModuleControls() {
+		final JoystickComponent joystick = new JoystickComponent(controller);
+		joystick.setEnabled(false);
+
+		final JSlider slider = new JSlider(JSlider.VERTICAL, 0, 3, 0);
+		slider.setBorder(BorderFactory.createEtchedBorder());
+		slider.setFocusable(false);
+		slider.setMajorTickSpacing(1);
+		slider.setPaintLabels(false);
+		slider.setPaintTicks(true);
+		slider.setPaintTrack(false);
+		slider.setSnapToTicks(true);
+		slider.addChangeListener(new ChangeListener() {
+			public void stateChanged(final ChangeEvent event) {
+				if (!slider.getValueIsAdjusting()) {
+					final int speed = slider.getValue();
+					if (speed > 0) {
+						joystick.setEnabled(true);
+						joystick.requestFocusInWindow();
+						switch (slider.getValue()) {
+						case 1:
+							controller.setSpeedLow();
+							break;
+						case 2:
+							controller.setSpeedMedium();
+							break;
+						case 3:
+							controller.setSpeedHigh();
+							break;
+						}
 					} else {
-						controller.moveBackward();
+						joystick.setEnabled(false);
 					}
-				} else if (!mod) {
-					controller.stop();
 				}
-			}
-			
-			public void onJoystickForward(final boolean flag, final boolean mod) {
-				if (flag) {
-					if (mod) {
-						controller.moveForward(400F);
-					} else {
-						controller.moveForward();
-					}
-				} else if (!mod) {
-					controller.stop();
-				}
-			}
-			
-			public void onJoystickLeft(final boolean flag, final boolean mod) {
-				if (flag) {
-					if (mod) {
-						controller.turnLeft(90F);
-					} else {
-						controller.turnLeft();
-					}
-				} else if (!mod) {
-					controller.stop();
-				}
-			}
-			
-			public void onJoystickRight(final boolean flag, final boolean mod) {
-				if (flag) {
-					if (mod) {
-						controller.turnRight(90F);
-					} else {
-						controller.turnRight();
-					}
-				} else if (!mod) {
-					controller.stop();
-				}
-			}
-			
-			public void onJoystickStop() {
-				controller.stop();
 			}
 		});
-		joystick.requestFocusInWindow();
-		return createModule(joystick, "Controls");
+
+		final GridBagLayout layout = new GridBagLayout();
+		layout.columnWeights = new double[] { 0D, 0D };
+		layout.rowWeights = new double[] { 0D };
+
+		final JPanel panel = new JPanel(layout);
+
+		final GridBagConstraints gbc = SwingUtils.createGBC();
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.insets.set(5, 5, 5, 5);
+
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		panel.add(slider, gbc);
+
+		gbc.gridx++;
+		panel.add(joystick, gbc);
+
+		return createModule(panel, "Controls");
 	}
-	
+
 	private final Component createModuleRenderer() {
-		final RenderComponent canvas = new RenderComponent();
-		canvas.setPreferredSize(new Dimension(512, 512));
+		final VisualizationComponent canvas = new VisualizationComponent();
+		canvas.setPreferredSize(new Dimension(640, 640));
+		// TODO: Remove after debugging
+		canvas.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(final MouseEvent event) {
+				canvas.removeMouseListener(this);
+				
+				final Thread thread = new Thread(new Runnable() {
+					public void run() {
+						float dir = 1F;
+						int turns = (int)(Math.random() * 200);
+						for (float heading = 0F; true; heading += dir) {
+							if (--turns < 0) {
+								dir = -dir;
+								turns = (int)(Math.random() * 200); 
+							}
+							heading = Utils.clampAngleDegrees(heading);
+							canvas.onMotion(0F, 0F, heading);
+							try {
+								Thread.sleep(25);
+							} catch (final InterruptedException e) {
+								break;
+							}
+						}
+					}
+				});
+				thread.setDaemon(true);
+				thread.start();
+				
+				canvas.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mouseClicked(final MouseEvent event) {
+						thread.interrupt();
+					}
+				});
+			}
+		});
 		return createModule(canvas, "Visualization");
 	}
-	
+
 	private final Component createModuleSensors() {
-		final SensorRenderComponent sensor = new SensorRenderComponent();
-		
-		return createModule(sensor, "Sensors");
+		final SensorsComponent sensors = new SensorsComponent();
+		// TODO: Remove after debugging
+		sensors.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(final MouseEvent event) {
+				sensors.removeMouseListener(this);
+
+				final Thread thread = new Thread(new Runnable() {
+					public void run() {
+						for (double x = 0.00; true; x += 0.05) {
+							sensors.onSensorValueLight(50 + (int) Math
+									.round(50 * Math.sin(x)));
+							sensors.onSensorValueUltraSonic(128 + (int) Math
+									.round(127 * Math.cos(x)));
+							try {
+								Thread.sleep(100);
+							} catch (final InterruptedException e) {
+								break;
+							}
+						}
+					}
+				});
+				thread.setDaemon(true);
+				thread.start();
+			}
+		});
+		controller.addListener(sensors);
+		return createModule(sensors, "Sensors");
 	}
-	
-	private final Component group(final int axis, final Component... components) {
-		final JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel, axis));
-		
-		for (final Component component : components) {
-			panel.add(component);
-		}
-		
-		return panel;
-	}
-	
+
 	private final void initComponents() {
-		setLayout(new BorderLayout(0, 0));
-		
-		final Component moduleComm = createModuleCommunication(500, 250);
-		final Component moduleJoystick = createModuleJoystick(250, 250);
-		final Component moduleRenderer = createModuleRenderer();
-		
-		add(group(BoxLayout.LINE_AXIS,
-				moduleRenderer,
-				group(BoxLayout.PAGE_AXIS,
-						group(BoxLayout.LINE_AXIS,
-								createModuleSensors(),
-								moduleJoystick),
-						moduleComm)));
+		final GridBagLayout layout = new GridBagLayout();
+		layout.columnWeights = new double[] { 0D, 0D, 0D, 0D };
+		layout.rowWeights = new double[] { 0D, 0D };
+		setLayout(layout);
+
+		final GridBagConstraints gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.insets.set(5, 5, 5, 5);
+
+		gbc.gridheight = 2;
+
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		add(createModuleRenderer(), gbc);
+
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.gridheight = 1;
+
+		gbc.gridx++;
+		add(createModuleSensors(), gbc);
+
+		gbc.gridx++;
+		add(createModuleCommands(), gbc);
+
+		gbc.gridx++;
+		add(createModuleControls(), gbc);
+
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridwidth = 3;
+
+		gbc.gridx = 1;
+		gbc.gridy++;
+		add(createModuleCommunication(), gbc);
 	}
-	
+
+	public void onError(final String msg) {
+		JOptionPane.showMessageDialog(this, msg, "Error",
+				JOptionPane.ERROR_MESSAGE);
+	}
+
 }

@@ -2,7 +2,9 @@ package bluebot.io.protocol;
 
 
 import bluebot.io.protocol.impl.CommandPacket;
+import bluebot.io.protocol.impl.ConfigPacket;
 import bluebot.io.protocol.impl.ErrorPacket;
+import bluebot.io.protocol.impl.MotionPacket;
 import bluebot.io.protocol.impl.MovePacket;
 import bluebot.io.protocol.impl.SensorPacket;
 import bluebot.io.protocol.impl.StopPacket;
@@ -38,8 +40,29 @@ public class PacketFactory {
 		return createCommand(CommandPacket.WHITE_LINE_ORIENTATION);
 	}
 	
+	private final Packet createConfigSpeed(final int speed) {
+		return new ConfigPacket(ConfigPacket.ID_SPEED, speed);
+	}
+	
+	public Packet createConfigSpeedHigh() {
+		return createConfigSpeed(3);
+	}
+	
+	public Packet createConfigSpeedLow() {
+		return createConfigSpeed(1);
+	}
+	
+	public Packet createConfigSpeedMedium() {
+		return createConfigSpeed(2);
+	}
+	
 	public Packet createError(final String msg) {
 		return new ErrorPacket(msg);
+	}
+	
+	public Packet createMotion(final float x, final float y,
+			final float heading) {
+		return new MotionPacket(x, y, heading);
 	}
 	
 	private final Packet createMove(final int direction) {

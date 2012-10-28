@@ -1,7 +1,7 @@
 package bluebot.ui;
 
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 
 
@@ -12,6 +12,6 @@ import java.awt.Graphics;
  */
 public interface Renderable {
 	
-	public void render(Graphics gfx);
+	public void render(Graphics2D gfx);
 	
 }

@@ -2,6 +2,7 @@ package bluebot.ui;
 
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
@@ -21,6 +22,7 @@ public class RenderComponent extends JComponent {
 	
 	
 	public RenderComponent() {
+		setOpaque(true);
 		addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(final ComponentEvent event) {
@@ -42,7 +44,7 @@ public class RenderComponent extends JComponent {
 	}
 	
 	public void render(final Renderable renderable) {
-		final Graphics gfx = buffer.createGraphics();
+		final Graphics2D gfx = buffer.createGraphics();
 		renderable.render(gfx);
 		gfx.dispose();
 		repaint(0L);

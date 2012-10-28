@@ -3,11 +3,15 @@ package bluebot.ui;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 
 import javax.swing.Icon;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
@@ -16,9 +20,6 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
-
-import bluebot.core.ControllerAdapter;
-import bluebot.core.ControllerListener;
 
 
 
@@ -35,10 +36,9 @@ public class CommunicationTable extends JTable {
 	}
 	private CommunicationTable(final CommunicationTableModel model) {
 		super(model);
+		setComponentPopupMenu(createContextMenu());
 		setDefaultRenderer(Icon.class, new IconTableCellRenderer());
 		setDefaultRenderer(String.class, new MessageCellRenderer());
-//		setIntercellSpacing(new Dimension(25, 1));
-//		setRowHeight(32);
 		setShowGrid(false);
 		setTableHeader(null);
 		
@@ -47,13 +47,22 @@ public class CommunicationTable extends JTable {
 		columns.getColumn(1).setMaxWidth(32);
 		
 		addComponentListener(new AutoScroll());
-//		model.addTableModelListener(new AutoScroll());
 	}
 	
 	
 	
-	public ControllerListener createControllerListener() {
-		return new ControllerMonitor();
+	private final JPopupMenu createContextMenu() {
+		final JPopupMenu menu = new JPopupMenu();
+		
+		final JMenuItem itemClear = new JMenuItem("Clear");
+		itemClear.addActionListener(new ActionListener() {
+			public void actionPerformed(final ActionEvent event) {
+				getModel().clear();
+			}
+		});
+		menu.add(itemClear);
+		
+		return menu;
 	}
 	
 	public JScrollPane createScrollPane() {
@@ -110,24 +119,6 @@ public class CommunicationTable extends JTable {
 		
 		public void tableChanged(final TableModelEvent event) {
 			scroll();
-		}
-		
-	}
-	
-	
-	
-	
-	
-	private final class ControllerMonitor extends ControllerAdapter {
-		
-		@Override
-		public void onMessageIncoming(final String msg) {
-			getModel().addMessageIncoming(msg);
-		}
-		
-		@Override
-		public void onMessageOutgoing(final String msg) {
-			getModel().addMessageOutgoing(msg);
 		}
 		
 	}

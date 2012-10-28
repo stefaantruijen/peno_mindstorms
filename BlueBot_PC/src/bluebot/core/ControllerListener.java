@@ -1,7 +1,7 @@
 package bluebot.core;
 
 
-import bluebot.io.ConnectionListener;
+import java.util.EventListener;
 
 
 
@@ -10,7 +10,7 @@ import bluebot.io.ConnectionListener;
  * 
  * @author Ruben Feyen
  */
-public interface ControllerListener extends ConnectionListener {
+public interface ControllerListener extends EventListener {
 	
 	public void onError(String msg);
 	

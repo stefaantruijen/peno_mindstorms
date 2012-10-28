@@ -3,10 +3,12 @@ package bluebot.ui;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.LinkedList;
+
+import javax.swing.JComponent;
 
 
 
@@ -14,34 +16,18 @@ import java.util.LinkedList;
  * 
  * @author Ruben Feyen
  */
-public class SensorRenderComponent extends RenderComponent
-		implements Renderable {
+public class GraphComponent extends JComponent {
 	private static final long serialVersionUID = 1L;
 	
 	private LinkedList<Integer> data;
 	private int max, min;
 	
 	
-	public SensorRenderComponent() {
-		addMouseListener(new MouseAdapter() {
+	public GraphComponent() {
+		addComponentListener(new ComponentAdapter() {
 			@Override
-			public void mouseClicked(final MouseEvent event) {
-				final Thread thread = new Thread(new Runnable() {
-					public void run() {
-//						final Random rng = new Random();
-						for (double x = 0.00;; x += 0.05) {
-							try {
-//								addData(rng.nextInt(100));
-								addData(50 + (int)Math.round(50 * Math.sin(x)));
-								Thread.sleep(100);
-							} catch (final InterruptedException e) {
-								break;
-							}
-						}
-					}
-				});
-				thread.setDaemon(true);
-				thread.start();
+			public void componentResized(final ComponentEvent event) {
+				data = new LinkedList<Integer>();
 			}
 		});
 	}
@@ -50,17 +36,20 @@ public class SensorRenderComponent extends RenderComponent
 	
 	public synchronized void addData(final int value) {
 		final LinkedList<Integer> data = this.data;
+		
 		data.addLast(Integer.valueOf(value));
 		for (int spill = (data.size() - getWidth()); spill > 0; spill--) {
 			data.removeFirst();
 		}
+		
 		if (value > max) {
 			max = value;
 		}
 		if (value < min) {
 			min = value;
 		}
-		render(this);
+		
+		repaint(0L);
 	}
 	
 	private synchronized final ArrayList<Integer> getData() {
@@ -68,19 +57,19 @@ public class SensorRenderComponent extends RenderComponent
 	}
 	
 	@Override
-	protected void onResize() {
-		super.onResize();
-		data = new LinkedList<Integer>();
-	}
-	
-	public void render(final Graphics gfx) {
+	protected void paintComponent(final Graphics gfx) {
+		if (data == null) {
+			// Wait for the component to be fully initialized
+			return;
+		}
+		
 		final int height = getHeight();
 		final int width = getWidth();
 		
-		gfx.setColor(Color.BLACK);
+		gfx.setColor(Color.WHITE);
 		gfx.fillRect(0, 0, width, height);
 		
-		gfx.setColor(Color.CYAN);
+		gfx.setColor(Color.BLACK);
 		
 		final ArrayList<Integer> data = getData();
 		for (int x = 0; ((x < width) && (x < data.size())); x++) {

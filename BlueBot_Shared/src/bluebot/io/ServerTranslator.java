@@ -23,6 +23,10 @@ public class ServerTranslator extends Translator {
 		sendPacket(getPacketFactory().createError(msg));
 	}
 	
+	public void sendMotion(final float x, final float y, final float heading) {
+		sendPacket(getPacketFactory().createMotion(x, y, heading));
+	}
+	
 	public void sendSensorValue(final SensorType type, final int value) {
 		sendPacket(getPacketFactory().createSensorResponse(type, value));
 	}

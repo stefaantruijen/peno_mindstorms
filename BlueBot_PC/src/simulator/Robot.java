@@ -373,9 +373,11 @@ public class Robot extends AbstractEventDispatcher<ControllerListener>implements
 
 	
 	public void fireMessage(final String msg){
-		for (final ControllerListener listener : getListeners()) {
-				listener.onMessageIncoming(msg);
-		}
+		// The following lines have been commented out
+		// due to incompatibility with the new code
+//		for (final ControllerListener listener : getListeners()) {
+//				listener.onMessageIncoming(msg);
+//		}
 	}
 	
 

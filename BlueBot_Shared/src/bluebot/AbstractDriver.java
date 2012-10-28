@@ -114,6 +114,18 @@ public abstract class AbstractDriver implements Driver {
 		getTranslator().sendError(msg);
 	}
 	
+	/**
+	 * Sends a motion update
+	 * 
+	 * @param x - the position on the X axis
+	 * @param y - the position on the Y axis
+	 * @param heading - the heading (in degrees), zero equals north
+	 */
+	protected void sendMotion(final float x, final float y,
+			final float heading) {
+		getTranslator().sendMotion(x, y, heading);
+	}
+	
 	private final void sendSensor(final int value, final SensorType type) {
 		getTranslator().sendSensorValue(type, value);
 	}

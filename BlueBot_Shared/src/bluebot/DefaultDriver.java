@@ -87,6 +87,21 @@ public class DefaultDriver extends AbstractDriver {
 		stop();
 	}
 	
+	public void setSpeedHigh() {
+		// TODO
+		setTravelSpeed(fastSpeed);
+	}
+	
+	public void setSpeedLow() {
+		// TODO
+		setTravelSpeed(slowSpeed);
+	}
+	
+	public void setSpeedMedium() {
+		// TODO
+		setTravelSpeed((slowSpeed + fastSpeed) / 2D);
+	}
+	
 	private final void waitForWhite(final boolean flag) {
 		final int threshold = WhiteThreshold;
 		if (flag) {

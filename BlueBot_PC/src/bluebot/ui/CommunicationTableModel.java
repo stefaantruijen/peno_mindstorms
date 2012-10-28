@@ -8,13 +8,16 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.table.AbstractTableModel;
 
+import bluebot.io.ConnectionListener;
+
 
 
 /**
  * 
  * @author Ruben Feyen
  */
-public class CommunicationTableModel extends AbstractTableModel {
+public class CommunicationTableModel extends AbstractTableModel
+		implements ConnectionListener {
 	private static final long serialVersionUID = 1L;
 	
 	private ArrayList<Entry> entries;
@@ -35,12 +38,16 @@ public class CommunicationTableModel extends AbstractTableModel {
 		fireTableRowsInserted(row, row);
 	}
 	
-	public void addMessageIncoming(final String msg) {
-		addMessage(new Entry.IncomingEntry(msg));
-	}
-	
-	public void addMessageOutgoing(final String msg) {
-		addMessage(new Entry.OutgoingEntry(msg));
+	public void clear() {
+		final int row;
+		synchronized (entries) {
+			if (entries.isEmpty()) {
+				return;
+			}
+			row = (entries.size() - 1);
+			entries.clear();
+		}
+		fireTableRowsDeleted(0, row);
 	}
 	
 	@Override
@@ -98,6 +105,14 @@ public class CommunicationTableModel extends AbstractTableModel {
 			default:
 				throw new RuntimeException();
 		}
+	}
+	
+	public void onMessageIncoming(final String msg) {
+		addMessage(new Entry.IncomingEntry(msg));
+	}
+	
+	public void onMessageOutgoing(final String msg) {
+		addMessage(new Entry.OutgoingEntry(msg));
 	}
 	
 	

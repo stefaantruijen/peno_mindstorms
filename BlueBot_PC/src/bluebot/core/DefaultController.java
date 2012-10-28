@@ -6,9 +6,13 @@ import static bluebot.io.protocol.Packet.*;
 import bluebot.io.ClientTranslator;
 import bluebot.io.Communicator;
 import bluebot.io.Connection;
+import bluebot.io.ConnectionListener;
 import bluebot.io.protocol.Packet;
 import bluebot.io.protocol.PacketHandler;
 import bluebot.io.protocol.impl.ErrorPacket;
+import bluebot.io.protocol.impl.SensorPacket;
+import bluebot.sensors.SensorListener;
+import bluebot.util.AbstractEventDispatcher;
 
 
 
@@ -19,11 +23,13 @@ import bluebot.io.protocol.impl.ErrorPacket;
 public class DefaultController extends AbstractController {
 	
 	private Communicator communicator;
+	private SensorDispatcher sensors;
 	private ClientTranslator translator;
 	
 	
 	public DefaultController(final Connection connection) {
 		this.communicator = new Communicator(connection, createPacketHandler());
+		this.sensors = new SensorDispatcher();
 		this.translator = new ClientTranslator(connection);
 		
 		this.communicator.start();
@@ -31,10 +37,12 @@ public class DefaultController extends AbstractController {
 	
 	
 	
-	@Override
-	public void addListener(final ControllerListener listener) {
-		super.addListener(listener);
+	public void addListener(final ConnectionListener listener) {
 		getCommunicator().addListener(listener);
+	}
+	
+	public void addListener(final SensorListener listener) {
+		sensors.addListener(listener);
 	}
 	
 	protected PacketHandler createPacketHandler() {
@@ -73,10 +81,24 @@ public class DefaultController extends AbstractController {
 		getTranslator().moveForward(distance);
 	}
 	
-	@Override
-	public void removeListener(final ControllerListener listener) {
-		super.removeListener(listener);
+	public void removeListener(final ConnectionListener listener) {
 		getCommunicator().removeListener(listener);
+	}
+	
+	public void removeListener(final SensorListener listener) {
+		sensors.removeListener(listener);
+	}
+	
+	public void setSpeedHigh() {
+		getTranslator().setSpeedHigh();
+	}
+	
+	public void setSpeedLow() {
+		getTranslator().setSpeedLow();
+	}
+	
+	public void setSpeedMedium() {
+		getTranslator().setSpeedMedium();
 	}
 	
 	public void stop() {
@@ -115,6 +137,40 @@ public class DefaultController extends AbstractController {
 			switch (packet.getOpcode()) {
 				case OP_ERROR:
 					fireError(((ErrorPacket)packet).getMessage());
+					break;
+				case OP_SENSOR:
+					sensors.handlePacket((SensorPacket)packet);
+					break;
+			}
+		}
+		
+	}
+	
+	
+	
+	
+	
+	private static final class SensorDispatcher extends AbstractEventDispatcher<SensorListener> {
+		
+		public void fireLight(final int value) {
+			for (final SensorListener listener : getListeners()) {
+				listener.onSensorValueLight(value);
+			}
+		}
+		
+		public void fireUltraSonic(final int value) {
+			for (final SensorListener listener : getListeners()) {
+				listener.onSensorValueUltraSonic(value);
+			}
+		}
+		
+		public void handlePacket(final SensorPacket packet) {
+			switch (packet.getSensorType()) {
+				case LIGHT:
+					fireLight(packet.getSensorValue());
+					break;
+				case ULTRA_SONIC:
+					fireUltraSonic(packet.getSensorValue());
 					break;
 			}
 		}
