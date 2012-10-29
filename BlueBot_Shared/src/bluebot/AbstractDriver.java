@@ -57,16 +57,16 @@ public abstract class AbstractDriver implements Driver {
 		getRobot().moveBackward();
 	}
 	
-	public void moveBackward(final float distance) {
-		getRobot().moveBackward(distance);
+	public void moveBackward(final float distance, final boolean wait) {
+		getRobot().moveBackward(distance, wait);
 	}
 	
 	public void moveForward() {
 		getRobot().moveForward();
 	}
 	
-	public void moveForward(final float distance) {
-		getRobot().moveForward(distance);
+	public void moveForward(final float distance, final boolean wait) {
+		getRobot().moveForward(distance, wait);
 	}
 	
 	/**
@@ -187,16 +187,16 @@ public abstract class AbstractDriver implements Driver {
 		getRobot().turnLeft();
 	}
 	
-	public void turnLeft(final float angle) {
-		getRobot().turnLeft(angle);
+	public void turnLeft(final float angle, final boolean wait) {
+		getRobot().turnLeft(angle, wait);
 	}
 	
 	public void turnRight() {
 		getRobot().turnRight();
 	}
 	
-	public void turnRight(final float angle) {
-		getRobot().turnRight(angle);
+	public void turnRight(final float angle, final boolean wait) {
+		getRobot().turnRight(angle, wait);
 	}
 	
 }

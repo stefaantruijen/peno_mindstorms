@@ -2,8 +2,10 @@ package bluebot.core;
 
 
 import lejos.nxt.LightSensor;
+import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
 import lejos.nxt.UltrasonicSensor;
+import lejos.robotics.navigation.DifferentialPilot;
 
 import bluebot.Robot;
 
@@ -16,7 +18,11 @@ import bluebot.Robot;
  */
 public class PhysicalRobot implements Robot {
 	
-	private PilotController pc;
+	private final static int DEFAULT_ACCELERATION	 = 500;
+	private final static double DEFAULT_SPEED_ROTATE = 75;
+	private final static double DEFAULT_SPEED_TRAVEL = 200;
+	
+	private final DifferentialPilot pilot;
 	private LightSensor sensorLight;
 	private UltrasonicSensor sensorUltraSonic;
 	
@@ -25,31 +31,43 @@ public class PhysicalRobot implements Robot {
 		this(SensorPort.S1, SensorPort.S2);
 	}
 	public PhysicalRobot(final SensorPort light, final SensorPort ultraSonic) {
-		pc = new PilotController();
+		pilot = createPilot();
 		sensorLight = new LightSensor(light);
 		sensorUltraSonic = new UltrasonicSensor(ultraSonic);
 	}
 	
 	
 	
+	protected DifferentialPilot createPilot() {
+		final DifferentialPilot pilot = new DifferentialPilot(55.37F, 55F,167.78F, Motor.A, Motor.C, false);
+		pilot.setAcceleration(DEFAULT_ACCELERATION);
+		pilot.setRotateSpeed(DEFAULT_SPEED_ROTATE);
+		pilot.setTravelSpeed(DEFAULT_SPEED_TRAVEL);
+		return pilot;
+	}
+	
+	private final DifferentialPilot getPilot() {
+		return pilot;
+	}
+	
 	public boolean isMoving() {
-		return pc.isMoving();
+		return getPilot().isMoving();
 	}
 	
 	public void moveBackward() {
-		pc.backward();
+		getPilot().backward();
 	}
 	
-	public void moveBackward(final float distance) {
-		pc.moveBackward(distance);
+	public void moveBackward(final float distance, final boolean wait) {
+		getPilot().travel(-Math.abs(distance), !wait);
 	}
 	
 	public void moveForward() {
-		pc.forward();
+		getPilot().forward();
 	}
 	
-	public void moveForward(final float distance) {
-		pc.moveForward(distance);
+	public void moveForward(final float distance, final boolean wait) {
+		getPilot().travel(Math.abs(distance), !wait);
 	}
 	
 	public int readSensorLight() {
@@ -60,28 +78,29 @@ public class PhysicalRobot implements Robot {
 		return sensorUltraSonic.getDistance();
 	}
 	
-	public void setTravelSpeed(double speed) {
-		pc.setTravelSpeed(speed);
+	public void setTravelSpeed(final double speed) {
+		getPilot().setTravelSpeed(speed);
 	}
 	
 	public void stop() {
-		pc.stop();
+//		getPilot().quickStop();
+		getPilot().stop();
 	}
 	
 	public void turnLeft() {
-		pc.left();
+		getPilot().rotateLeft();
 	}
 	
-	public void turnLeft(final float angle) {
-		pc.turnLeft(angle);
+	public void turnLeft(final float angle, final boolean wait) {
+		getPilot().rotate(Math.abs(angle), !wait);
 	}
 	
 	public void turnRight() {
-		pc.right();
+		getPilot().rotateRight();
 	}
 	
-	public void turnRight(final float angle) {
-		pc.turnRight(angle);
+	public void turnRight(final float angle, final boolean wait) {
+		getPilot().rotate(-Math.abs(angle), !wait);
 	}
 	
 }

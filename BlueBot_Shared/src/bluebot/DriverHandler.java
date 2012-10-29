@@ -69,7 +69,7 @@ public class DriverHandler implements PacketHandler, Runnable {
 		switch (packet.getDirection()) {
 			case MovePacket.MOVE_BACKWARD:
 				if (packet.isQuantified()) {
-					driver.moveBackward(packet.getQuantity());
+					driver.moveBackward(packet.getQuantity(), true);
 				} else {
 					driver.moveBackward();
 				}
@@ -77,7 +77,7 @@ public class DriverHandler implements PacketHandler, Runnable {
 				
 			case MovePacket.MOVE_FORWARD:
 				if (packet.isQuantified()) {
-					driver.moveForward(packet.getQuantity());
+					driver.moveForward(packet.getQuantity(), true);
 				} else {
 					driver.moveForward();
 				}
@@ -85,7 +85,7 @@ public class DriverHandler implements PacketHandler, Runnable {
 				
 			case MovePacket.TURN_LEFT:
 				if (packet.isQuantified()) {
-					driver.turnLeft(packet.getQuantity());
+					driver.turnLeft(packet.getQuantity(), true);
 				} else {
 					driver.turnLeft();
 				}
@@ -93,7 +93,7 @@ public class DriverHandler implements PacketHandler, Runnable {
 				
 			case MovePacket.TURN_RIGHT:
 				if (packet.isQuantified()) {
-					driver.turnRight(packet.getQuantity());
+					driver.turnRight(packet.getQuantity(), true);
 				} else {
 					driver.turnRight();
 				}

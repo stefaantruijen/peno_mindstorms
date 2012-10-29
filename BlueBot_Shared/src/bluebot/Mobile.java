@@ -18,8 +18,9 @@ public interface Mobile {
 	 * Moves backward
 	 * 
 	 * @param distance - the distance to move (in mm)
+	 * @param wait - if <code>TRUE</code>, this method blocks until the motion is finished
 	 */
-	public void moveBackward(float distance);
+	public void moveBackward(float distance, boolean wait);
 	
 	/**
 	 * Moves forward
@@ -30,8 +31,9 @@ public interface Mobile {
 	 * Moves forward
 	 * 
 	 * @param distance - the distance to move (in mm)
+	 * @param wait - if <code>TRUE</code>, this method blocks until the motion is finished
 	 */
-	public void moveForward(float distance);
+	public void moveForward(float distance, boolean wait);
 	
 	/**
 	 * Stops moving/turning
@@ -47,8 +49,9 @@ public interface Mobile {
 	 * Turns left
 	 * 
 	 * @param angle - the angle to turn (in degrees)
+	 * @param wait - if <code>TRUE</code>, this method blocks until the motion is finished
 	 */
-	public void turnLeft(float angle);
+	public void turnLeft(float angle, boolean wait);
 	
 	/**
 	 * Turns right
@@ -57,9 +60,9 @@ public interface Mobile {
 	
 	/**
 	 * Turns right
-	 * 
 	 * @param angle - the angle to turn (in degrees)
+	 * @param wait - if <code>TRUE</code>, this method blocks until the motion is finished
 	 */
-	public void turnRight(float angle);
+	public void turnRight(float angle, boolean wait);
 	
 }

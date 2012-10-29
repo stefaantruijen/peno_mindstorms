@@ -21,7 +21,7 @@ public class VirtualRobot implements Robot {
 		// TODO
 	}
 	
-	public void moveBackward(final float distance) {
+	public void moveBackward(final float distance, final boolean wait) {
 		// TODO
 	}
 	
@@ -29,7 +29,7 @@ public class VirtualRobot implements Robot {
 		// TODO
 	}
 	
-	public void moveForward(final float distance) {
+	public void moveForward(final float distance, final boolean wait) {
 		// TODO
 	}
 	
@@ -55,7 +55,7 @@ public class VirtualRobot implements Robot {
 		// TODO
 	}
 	
-	public void turnLeft(final float angle) {
+	public void turnLeft(final float angle, final boolean wait) {
 		// TODO
 	}
 	
@@ -63,7 +63,7 @@ public class VirtualRobot implements Robot {
 		// TODO
 	}
 	
-	public void turnRight(final float angle) {
+	public void turnRight(final float angle, final boolean wait) {
 		// TODO
 	}
 	

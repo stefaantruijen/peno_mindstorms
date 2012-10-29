@@ -27,7 +27,7 @@ public class DefaultDriver extends AbstractDriver {
 	public void calibrate(){
 		setTravelSpeed(slowSpeed);
 		int max = 100;
-		moveForward(300);
+		moveForward(300, false);
 		while(isMoving()){
 			int value = readSensorLight();
 			if(value>max){
@@ -61,7 +61,7 @@ public class DefaultDriver extends AbstractDriver {
 		stop();
 		
 		// 7 cm (sensor to wheels) forward
-		moveForward(70);
+		moveForward(70, true);
 		// right until white line
 		turnRight();
 		waitForWhite(true);
