@@ -37,5 +37,7 @@ public interface Robot extends Mobile {
 	 * @param speed - the desired travel speed (in [wheel diameter] units/s)
 	 */
 	public void setTravelSpeed(double speed);
+
+	public float getAngleIncrement();
 	
 }

@@ -102,5 +102,9 @@ public class PhysicalRobot implements Robot {
 	public void turnRight(final float angle, final boolean wait) {
 		getPilot().rotate(-Math.abs(angle), !wait);
 	}
+	@Override
+	public float getAngleIncrement() {
+		return getPilot().getAngleIncrement();
+	}
 	
 }

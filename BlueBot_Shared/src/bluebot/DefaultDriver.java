@@ -10,7 +10,7 @@ import bluebot.io.Connection;
  */
 public class DefaultDriver extends AbstractDriver {
 	
-	private double fastSpeed = 300;
+	private double fastSpeed = 150;
 	private double slowSpeed = 25;
 	private int WhiteThreshold = -1;
 	
@@ -69,24 +69,34 @@ public class DefaultDriver extends AbstractDriver {
 		
 		// left until no white line
 		turnLeft();
-		waitForWhite(false);
+		float arc = 0;
+		while(readSensorLight() > WhiteThreshold){
+			arc = getAngleIncrement();
+		}
 		stop();
 		
 		// left until white line
 		turnLeft();
-		long time1 = System.currentTimeMillis();
-		waitForWhite(true);
+		float arc1 = 0;
+		while(readSensorLight() <= WhiteThreshold){
+			arc1 = getAngleIncrement();
+		}
 		stop();
-		long time2 = System.currentTimeMillis();
-		long timeToRotate = (time2-time1)/2;
 		
-		// turn right until time (half of whole turn) is over 
+		float totalArc = Math.abs(arc) + Math.abs(arc1);
+		
+		if(totalArc<=90){
+			totalArc = totalArc + 90;
+		}
+		
+		// turn right until half of totalArc 
 		turnRight();
-		long time3 = System.currentTimeMillis();
-		while((System.currentTimeMillis()-time3) <timeToRotate);
+		
+		while(Math.abs(getAngleIncrement()) <= totalArc/2);
 		stop();
 	}
-	
+
+
 	public void setSpeedHigh() {
 		// TODO
 		setTravelSpeed(fastSpeed);
