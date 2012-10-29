@@ -199,4 +199,8 @@ public abstract class AbstractDriver implements Driver {
 		getRobot().turnRight(angle, wait);
 	}
 	
+	public float getAngleIncrement(){
+		return getRobot().getAngleIncrement();
+	}
+	
 }
