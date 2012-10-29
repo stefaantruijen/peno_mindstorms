@@ -37,6 +37,12 @@ public abstract class AbstractDriver implements Driver {
 		return robot;
 	}
 	
+	protected abstract double getSpeedHigh();
+	
+	protected abstract double getSpeedLow();
+	
+	protected abstract double getSpeedMedium();
+	
 	private final ServerTranslator getTranslator() {
 		return translator;
 	}
@@ -160,6 +166,21 @@ public abstract class AbstractDriver implements Driver {
 			throw new NullPointerException();
 		}
 		this.robot = robot;
+	}
+	
+	public void setSpeedHigh() {
+		setTravelSpeed(getSpeedHigh());
+		getTranslator().notifySpeedHigh();
+	}
+	
+	public void setSpeedLow() {
+		setTravelSpeed(getSpeedLow());
+		getTranslator().notifySpeedLow();
+	}
+	
+	public void setSpeedMedium() {
+		setTravelSpeed(getSpeedMedium());
+		getTranslator().notifySpeedMedium();
 	}
 	
 	private final void setTranslator(final ServerTranslator translator) {

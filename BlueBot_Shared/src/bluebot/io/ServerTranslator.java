@@ -19,6 +19,18 @@ public class ServerTranslator extends Translator {
 	
 	
 	
+	public void notifySpeedHigh() {
+		sendPacket(getPacketFactory().createConfigSpeedHigh());
+	}
+	
+	public void notifySpeedLow() {
+		sendPacket(getPacketFactory().createConfigSpeedLow());
+	}
+	
+	public void notifySpeedMedium() {
+		sendPacket(getPacketFactory().createConfigSpeedMedium());
+	}
+	
 	public void sendError(final String msg) {
 		sendPacket(getPacketFactory().createError(msg));
 	}

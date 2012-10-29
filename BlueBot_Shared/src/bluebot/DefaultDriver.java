@@ -95,21 +95,17 @@ public class DefaultDriver extends AbstractDriver {
 		while(Math.abs(getAngleIncrement()) <= totalArc/2);
 		stop();
 	}
-
-
-	public void setSpeedHigh() {
-		// TODO
-		setTravelSpeed(fastSpeed);
+	
+	protected double getSpeedHigh() {
+		return fastSpeed;
 	}
 	
-	public void setSpeedLow() {
-		// TODO
-		setTravelSpeed(slowSpeed);
+	protected double getSpeedLow() {
+		return slowSpeed;
 	}
 	
-	public void setSpeedMedium() {
-		// TODO
-		setTravelSpeed((slowSpeed + fastSpeed) / 2D);
+	protected double getSpeedMedium() {
+		return ((getSpeedLow() + getSpeedHigh()) / 2D);
 	}
 	
 	private final void waitForWhite(final boolean flag) {

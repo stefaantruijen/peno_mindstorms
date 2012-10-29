@@ -12,6 +12,11 @@ import bluebot.Robot;
  */
 public class VirtualRobot implements Robot {
 	
+	public float getAngleIncrement() {
+		// TODO
+		return 0;
+	}
+	
 	public boolean isMoving() {
 		// TODO
 		return false;

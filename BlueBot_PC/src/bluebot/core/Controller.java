@@ -1,6 +1,7 @@
 package bluebot.core;
 
 
+import bluebot.ConfigListener;
 import bluebot.io.ConnectionListener;
 import bluebot.sensors.SensorListener;
 import bluebot.util.EventDispatcher;
@@ -13,6 +14,8 @@ import bluebot.util.EventDispatcher;
  * @author Ruben Feyen
  */
 public interface Controller extends EventDispatcher<ControllerListener> {
+	
+	public void addListener(ConfigListener listener);
 	
 	public void addListener(ConnectionListener listener);
 	
@@ -47,6 +50,8 @@ public interface Controller extends EventDispatcher<ControllerListener> {
 	 * @param distance - the distance to move (in mm)
 	 */
 	public void moveForward(float distance);
+	
+	public void removeListener(ConfigListener listener);
 	
 	public void removeListener(ConnectionListener listener);
 	

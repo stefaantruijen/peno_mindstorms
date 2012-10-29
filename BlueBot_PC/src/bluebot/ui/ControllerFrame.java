@@ -24,6 +24,7 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import bluebot.ConfigListener;
 import bluebot.core.Controller;
 import bluebot.core.ControllerListener;
 import bluebot.util.Utils;
@@ -184,6 +185,20 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 
 		gbc.gridx++;
 		panel.add(joystick, gbc);
+		
+		controller.addListener(new ConfigListener() {
+			public void onSpeedHigh() {
+				slider.setValue(3);
+			}
+			
+			public void onSpeedLow() {
+				slider.setValue(1);
+			}
+			
+			public void onSpeedMedium() {
+				slider.setValue(2);
+			}
+		});
 
 		return createModule(panel, "Controls");
 	}
