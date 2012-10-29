@@ -4,15 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 
-
-import lejos.nxt.SensorPort;
-import lejos.nxt.UltrasonicSensor;
-import bluebot.core.PilotController;
 import bluebot.graph.Border;
 import bluebot.graph.Direction;
 import bluebot.graph.Graph;
-import bluebot.graph.Vertex;
-
 import bluebot.graph.Tile;
 
 /**
@@ -22,30 +16,17 @@ import bluebot.graph.Tile;
  *
  */
 public class MazeExplorer implements Runnable {
-	private final PilotController pc;
-	private final UltrasonicSensor us;
+	private final Robot robot;
 	private final static int DISTANCE_TO_EDGE = 17; //(cm)
 	private Direction currentDirection = Direction.UP;
 	private Graph maze;
 	private Tile currentTile;
 	
-	public MazeExplorer(PilotController pc){
-		this.pc = pc;
-		this.us = new UltrasonicSensor(SensorPort.S2);
+	public MazeExplorer(Robot robot){
+		this.robot = robot;
 		this.maze = new Graph();
 	}
 	
-	
-	
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		MazeExplorer exp = new MazeExplorer(new PilotController());
-		exp.run();
-
-	}
-
 	@Override
 	public void run() {
 		System.out.println("Exploring maze..");
@@ -57,10 +38,9 @@ public class MazeExplorer implements Runnable {
 				//in a deadEnd
 			}else{
 				this.checkTile(nextTile);
-				Vertex next = new Vertex(nextTile);
-				Vertex current = new Vertex(currentTile);
-				this.maze.addVertex(next);
-				this.maze.insertBiEdge(current,next);
+				
+				this.maze.addVertex(nextTile);
+				this.maze.addEdge(currentTile,nextTile);
 				this.moveTo(currentTile, nextTile);
 			}
 		}
@@ -96,20 +76,20 @@ public class MazeExplorer implements Runnable {
 	 */
 	private void moveEast(){
 		this.turnClockwise();
-		this.pc.moveForward(400F);
+		this.robot.moveForward(400F,true);
 	}
 	/**
 	 * Move one tile west.
 	 */
 	private void moveWest(){
 		this.turnCounterClockwise();
-		this.pc.moveForward(400F);
+		this.robot.moveForward(400F,true);
 	}
 	/**
 	 * Move one tile north.
 	 */
 	private void moveNorth(){
-		this.pc.moveForward(400F);
+		this.robot.moveForward(400F,true);
 	}
 	/**
 	 * Move one tile south.
@@ -117,15 +97,9 @@ public class MazeExplorer implements Runnable {
 	private void moveSouth(){
 		this.turnClockwise();
 		this.turnClockwise();
-		this.pc.moveForward(400F);
+		this.robot.moveForward(400F,true);
 	}
-	/**
-	 * Get the ultrasonic sensor.
-	 * @return
-	 */
-	public UltrasonicSensor getUs() {
-		return us;
-	}
+	
 	/**
 	 * Check the borders for a given tile.
 	 * 
@@ -133,8 +107,8 @@ public class MazeExplorer implements Runnable {
 	 */
 	private void checkTile(Tile tile){
 		for(int i = 0;i<=3;i++){
-			System.out.println("Distance = "+getUs().getDistance());
-			boolean wall = (getUs().getDistance() <= 20);
+			System.out.println("Distance = "+robot.readSensorUltraSonic());
+			boolean wall = (robot.readSensorUltraSonic() <= getDistanceToEdge());
 			
 			switch(currentDirection){
 				case DOWN:
@@ -199,7 +173,7 @@ public class MazeExplorer implements Runnable {
 		while(iter.hasNext()){
 			Tile t = iter.next();
 			if(maze.hasVertex(t) && currentTile.isNeighborFrom(t)){
-				this.maze.insertBiEdge(new Vertex(currentTile), new Vertex(t));
+				this.maze.addEdge(currentTile, t);
 				iter.remove();
 			}
 		}
@@ -230,7 +204,7 @@ public class MazeExplorer implements Runnable {
 	public Tile initialize(){
 		Tile first = new Tile(0,0);
 		this.checkTile(first);
-		this.maze.setRootVertex(new Vertex(first));
+		this.maze.setRootTile(first);
 		System.out.println("First tile : "+first);
 		return first;
 	}
@@ -243,14 +217,14 @@ public class MazeExplorer implements Runnable {
 	 * Turn this robot clockwise and update currentDirection.
 	 */
 	private void turnClockwise(){
-		pc.turnRight(90);
+		robot.turnRight(90,true);
 		this.currentDirection = currentDirection.turnCWise();
 	}
 	/**
 	 * Turn this robot counterclockwise and update currentDirection.
 	 */
 	private void turnCounterClockwise(){
-		pc.turnLeft(90);
+		robot.turnLeft(90,true);
 		this.currentDirection = currentDirection.turnCCWise();
 	}
 

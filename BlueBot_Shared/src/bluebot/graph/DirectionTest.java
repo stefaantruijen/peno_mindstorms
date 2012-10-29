@@ -3,7 +3,6 @@ package bluebot.graph;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-
 /**
  * Test for enum Direction
  * @author  Incalza Dario

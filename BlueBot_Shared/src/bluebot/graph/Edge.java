@@ -1,14 +1,15 @@
 package bluebot.graph;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * A directed edge in a graph
+ * An undirected edge in a graph
  * 
  * @author Incalza Dario
  */
 class Edge{
-  private Vertex from;
-
-  private Vertex to;
+  private Tile t1,t2;
 
   /**
    * Create a directed edge between from and to
@@ -18,39 +19,19 @@ class Edge{
    * @param to
    *          the ending vertex
    */
-  public Edge(Vertex from, Vertex to) {
-    this(from, to, 0);
+  public Edge(Tile t1, Tile t2) {
+    this.t1 = t1;
+    this.t2 = t2;
   }
 
-  /**
-   * Create an edge between from and to with the given cost.
-   * 
-   * @param from
-   *          the starting vertex
-   * @param to
-   *          the ending vertex
-   */
-  public Edge(Vertex from, Vertex to, int cost) {
-    this.from = from;
-    this.to = to;
-  }
+ 
 
-  /**
-   * Get the ending vertex
-   * 
-   * @return ending vertex
-   */
-  public Vertex getTo() {
-    return to;
-  }
-
-  /**
-   * Get the starting vertex
-   * 
-   * @return starting vertex
-   */
-  public Vertex getFrom() {
-    return from;
+  public List<Tile> getTiles(){
+	  List<Tile> tiles = new ArrayList<Tile>();
+	  tiles.add(t1);
+	  tiles.add(t2);
+	  
+	  return tiles;
   }
 
 
