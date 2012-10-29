@@ -87,14 +87,20 @@ public class SensorsComponent extends JPanel
 	
 	public void onSensorValueLight(final int value) {
 		graphLight.addData(value);
-		final int tint = (255 * value / 100);
-		labelLight.setBackground(new Color(tint, tint, tint));
+		
+		final int gray = (255 * value / 100);
+//		final float s = (1F - (Math.abs(value - 50) / 50F));
+//		final float b = (value / 100F);
+		
+		labelLight.setBackground(new Color(gray, gray, gray));
+//		labelLight.setBackground(Color.getHSBColor(0.15F, s, b));
 		labelLight.setForeground((value < 50) ? Color.WHITE : Color.BLACK);
 		labelLight.setText(Integer.toString(value));
 	}
 	
 	public void onSensorValueUltraSonic(final int value) {
 		graphUltraSonic.addData(value);
+		
 		final float hue;
 		if (value >= 20) {
 			hue = 0.33F;
@@ -103,6 +109,7 @@ public class SensorsComponent extends JPanel
 		} else {
 			hue = 0F;
 		}
+		
 		labelUltraSonic.setBackground(Color.getHSBColor(hue, 1F, 1F));
 		labelUltraSonic.setText(Integer.toString(value));
 	}

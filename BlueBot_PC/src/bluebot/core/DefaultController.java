@@ -139,6 +139,7 @@ public class DefaultController extends AbstractController {
 					fireError(((ErrorPacket)packet).getMessage());
 					break;
 				case OP_SENSOR:
+					System.out.println("RECEIVED");
 					sensors.handlePacket((SensorPacket)packet);
 					break;
 			}

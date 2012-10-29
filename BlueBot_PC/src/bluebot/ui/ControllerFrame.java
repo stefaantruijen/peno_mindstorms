@@ -1,5 +1,6 @@
 package bluebot.ui;
 
+
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -27,6 +28,8 @@ import bluebot.core.Controller;
 import bluebot.core.ControllerListener;
 import bluebot.util.Utils;
 
+
+
 /**
  * 
  * @author Ruben Feyen
@@ -42,7 +45,6 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		initComponents();
-		// setPreferredSize(new Dimension(800, 600));
 		pack();
 		setLocationRelativeTo(null);
 		setResizable(false);

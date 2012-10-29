@@ -12,6 +12,11 @@ import bluebot.Robot;
  */
 public class VirtualRobot implements Robot {
 	
+	public boolean isMoving() {
+		// TODO
+		return false;
+	}
+	
 	public void moveBackward() {
 		// TODO
 	}
@@ -38,6 +43,10 @@ public class VirtualRobot implements Robot {
 		return 255;
 	}
 	
+	public void setTravelSpeed(double speed) {
+		// TODO
+	}
+	
 	public void stop() {
 		// TODO
 	}
@@ -56,18 +65,6 @@ public class VirtualRobot implements Robot {
 	
 	public void turnRight(final float angle) {
 		// TODO
-	}
-
-	@Override
-	public void setTravelSpeed(double speed) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean isMoving() {
-		// TODO Auto-generated method stub
-		return false;
 	}
 	
 }
