@@ -86,6 +86,7 @@ public class SensorsComponent extends JPanel
 	}
 	
 	public void onSensorValueLight(final int value) {
+		System.out.println("light value = " + value);
 		graphLight.addData(value);
 		
 		final int gray = (255 * value / 100);
