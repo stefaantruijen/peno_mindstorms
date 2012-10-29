@@ -25,7 +25,7 @@ public class DefaultDriver extends AbstractDriver {
 	 * Calibrates the WhiteThreshold.
 	 */
 	public void calibrate(){
-		setTravelSpeed(slowSpeed);
+		setSpeedLow();
 		int max = 0;
 		moveForward(300, false);
 		while(isMoving()){
@@ -49,13 +49,13 @@ public class DefaultDriver extends AbstractDriver {
 		}
 		
 		// forward until white line (fast)
-		setTravelSpeed(fastSpeed);
+		setSpeedHigh();
 		moveForward();
 		waitForWhite(true);
 		stop();
 		
 		// backward until white line (slow)
-		setTravelSpeed(slowSpeed);
+		setSpeedLow();
 		moveBackward();
 		waitForWhite(true);
 		stop();
