@@ -26,15 +26,15 @@ public class DefaultDriver extends AbstractDriver {
 	 */
 	public void calibrate(){
 		setTravelSpeed(slowSpeed);
-		int min = 100;
+		int max = 100;
 		moveForward(300);
 		while(isMoving()){
 			int value = readSensorLight();
-			if(value<min){
-				min = value;
+			if(value>max){
+				max = value;
 			}
 		}
-		WhiteThreshold = min - 2;
+		WhiteThreshold = max + 2;
 	}
 	
 	
