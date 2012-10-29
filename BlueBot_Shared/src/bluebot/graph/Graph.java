@@ -45,6 +45,13 @@ public class Graph {
 	    boolean added = false;
 	    if (!this.verticies.contains(t)){
 	      added = verticies.add(t);
+	      //check for already added tiles if the given tile is a neighbor from all the other tiles already present in the graph.
+	      for(Tile tile : this.verticies){
+	    	  if(t.isNeighborFrom(tile)){
+	    		  this.addEdge(t, tile);
+	    		  
+	    	  }
+	      }
 	    }
 	    return added;
 	  }
@@ -120,9 +127,11 @@ public class Graph {
 	      throw new IllegalArgumentException(t1+ " is not in graph");
 	    if (!this.verticies.contains(t2))
 	      throw new IllegalArgumentException(t2+ " is not in graph");
-
+	    
 	    Edge e = new Edge(t1,t2);
-	    return edges.add(e);
+	    if(!this.edges.contains(e))
+	    	return edges.add(e);
+	    return false;
 	    
 	  }
 

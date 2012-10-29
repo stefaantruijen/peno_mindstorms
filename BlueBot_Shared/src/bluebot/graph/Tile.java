@@ -38,11 +38,9 @@ public class Tile {
 	private final Border getBorder(final int shift) {
 		switch ((borders & (0x3 << shift)) >>> shift) {
 			case 0:
-				return Border.UNKNOWN;
+				return Border.OPEN;
 			case 1:
 				return Border.CLOSED;
-			case 2:
-				return Border.OPEN;
 			default:
 				// It should not be possible to reach this
 				throw new RuntimeException("The universe has collapsed!");
@@ -99,9 +97,6 @@ public class Tile {
 				value = 1;
 				break;
 			case OPEN:
-				value = 2;
-				break;
-			case UNKNOWN:
 				value = 0;
 				break;
 			default:
@@ -128,19 +123,19 @@ public class Tile {
 	}
 	
 	public boolean isEastFrom(Tile other){
-		return(other.getX()==this.getX()-1);
+		return(other.getX()==this.getX()-1 && this.getY()==other.getY());
 	}
 	
 	public boolean isWestFrom(Tile other){
-		return(other.getX()==this.getX()+1);
+		return(other.getX()==this.getX()+1 && this.getY()==other.getY());
 	}
 	
 	public boolean isSouthFrom(Tile other){
-		return(other.getY()==this.getY()+1);
+		return(other.getY()==this.getY()+1 && this.getX()==other.getX());
 	}
 	
 	public boolean isNorthFrom(Tile other){
-		return(other.getY()==this.getY()-1);
+		return(other.getY()==this.getY()-1 && this.getX()==other.getY());
 	}
 	
 	@Override

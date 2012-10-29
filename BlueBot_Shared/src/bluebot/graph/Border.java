@@ -9,5 +9,4 @@ package bluebot.graph;
 public enum Border {
 	CLOSED,
 	OPEN,
-	UNKNOWN;
 }

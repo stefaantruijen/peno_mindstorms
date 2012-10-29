@@ -168,13 +168,12 @@ public class MazeExplorer implements Runnable {
 			possibilities.add(new Tile(current.getX(),current.getY()-1));
 		}
 		
-		System.out.println("size = "+possibilities.size());
 		Iterator<Tile> iter = possibilities.iterator();
 		while(iter.hasNext()){
 			Tile t = iter.next();
 			if(maze.hasVertex(t) && currentTile.isNeighborFrom(t)){
 				this.maze.addEdge(currentTile, t);
-				iter.remove();
+				possibilities.remove(t);
 			}
 		}
 		

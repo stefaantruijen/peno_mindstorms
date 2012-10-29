@@ -33,6 +33,28 @@ class Edge{
 	  
 	  return tiles;
   }
+  
+  public Tile getT1(){
+	  return this.t1;
+  }
+  
+  public Tile getT2(){
+	  return this.t2;
+  }
 
-
+  @Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (obj == this) {
+			return true;
+		}
+		if (obj instanceof Edge) {
+			final Edge e = (Edge) obj;
+			return (e.getTiles().contains(this.getTiles().get(1))&&e.getTiles().contains(this.getTiles().get(0)));
+		}
+		return false;
+	}
+	
 }
