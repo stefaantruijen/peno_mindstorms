@@ -39,7 +39,7 @@ public class PhysicalRobot implements Robot {
 	
 	
 	protected DifferentialPilot createPilot() {
-		final DifferentialPilot pilot = new DifferentialPilot(55.37F, 55F,167.78F, Motor.A, Motor.C, false);
+		final DifferentialPilot pilot = new DifferentialPilot(55.37F, 55F,168.50F, Motor.A, Motor.C, false);
 		pilot.setAcceleration(DEFAULT_ACCELERATION);
 		pilot.setRotateSpeed(DEFAULT_SPEED_ROTATE);
 		pilot.setTravelSpeed(DEFAULT_SPEED_TRAVEL);
