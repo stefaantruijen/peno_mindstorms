@@ -25,8 +25,8 @@ public class DefaultDriver extends AbstractDriver {
 	 * Calibrates the WhiteThreshold.
 	 */
 	public void calibrate(){
-		setTravelSpeed(slowSpeed);
-		int max = 100;
+		setSpeedLow();
+		int max = 0;
 		moveForward(300, false);
 		while(isMoving()){
 			int value = readSensorLight();
@@ -49,13 +49,13 @@ public class DefaultDriver extends AbstractDriver {
 		}
 		
 		// forward until white line (fast)
-		setTravelSpeed(fastSpeed);
+		setSpeedHigh();
 		moveForward();
 		waitForWhite(true);
 		stop();
 		
 		// backward until white line (slow)
-		setTravelSpeed(slowSpeed);
+		setSpeedLow();
 		moveBackward();
 		waitForWhite(true);
 		stop();
@@ -69,18 +69,14 @@ public class DefaultDriver extends AbstractDriver {
 		
 		// left until no white line
 		turnLeft();
-		float arc = 0;
-		while(readSensorLight() > WhiteThreshold){
-			arc = getAngleIncrement();
-		}
+		waitForWhite(false);
+		float arc = getAngleIncrement();
 		stop();
 		
 		// left until white line
 		turnLeft();
-		float arc1 = 0;
-		while(readSensorLight() <= WhiteThreshold){
-			arc1 = getAngleIncrement();
-		}
+		waitForWhite(true);
+		float arc1 = getAngleIncrement();
 		stop();
 		
 		float totalArc = Math.abs(arc) + Math.abs(arc1);
