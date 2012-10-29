@@ -26,7 +26,7 @@ public class DefaultDriver extends AbstractDriver {
 	 */
 	public void calibrate(){
 		setTravelSpeed(slowSpeed);
-		int max = 100;
+		int max = 0;
 		moveForward(300, false);
 		while(isMoving()){
 			int value = readSensorLight();
