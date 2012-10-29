@@ -4,6 +4,7 @@ package bluebot;
 import bluebot.io.protocol.Packet;
 import bluebot.io.protocol.PacketHandler;
 import bluebot.io.protocol.impl.CommandPacket;
+import bluebot.io.protocol.impl.ConfigPacket;
 import bluebot.io.protocol.impl.MovePacket;
 import bluebot.util.BlockingQueue;
 
@@ -45,6 +46,9 @@ public class DriverHandler implements PacketHandler, Runnable {
 			case Packet.OP_COMMAND:
 				handlePacketCommand((CommandPacket)packet);
 				break;
+			case Packet.OP_CONFIG:
+				handlePacketConfig((ConfigPacket)packet);
+				break;
 			case Packet.OP_MOVE:
 				handlePacketMove((MovePacket)packet);
 				break;
@@ -62,6 +66,29 @@ public class DriverHandler implements PacketHandler, Runnable {
 			driver.calibrate();
 		} else if (command.equals(CommandPacket.WHITE_LINE_ORIENTATION)) {
 			driver.doWhiteLineOrientation();
+		}
+	}
+	
+	private final void handlePacketConfig(final ConfigPacket packet) {
+		switch (packet.getId()) {
+			case ConfigPacket.ID_SPEED:
+				final int speed = packet.getValue().intValue();
+				if (speed > 0) {
+					switch (speed) {
+						case 1:
+							driver.setSpeedLow();
+							break;
+						case 2:
+							driver.setSpeedMedium();
+							break;
+						default:
+							driver.setSpeedHigh();
+							break;
+					}
+				} else {
+					driver.stop();
+				}
+				break;
 		}
 	}
 	
