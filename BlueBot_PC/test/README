@@ -1,7 +1,7 @@
 README: 
 @Author: Dieter
 
-'test' source folder should contain Junit test classes for the classes in the corresponding package of the 'src' source folder.
+'test' source folder should contain all Junit test classes for the classes in the corresponding package of the 'src' source folder.
 
 Convention proposal: Test*classname*.java
 e.g.

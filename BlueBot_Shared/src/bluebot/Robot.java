@@ -5,6 +5,8 @@ package bluebot;
 /**
  * Represents a robot
  * 
+ * TODO: Allow to send Debug info/messages?
+ * 
  * @author Ruben Feyen
  */
 public interface Robot extends Mobile {
@@ -34,10 +36,15 @@ public interface Robot extends Mobile {
 	/**
 	 * Sets the travel speed
 	 * 
-	 * @param speed - the desired travel speed (in [wheel diameter] units/s)
+	 * @param speed - the desired travel speed (mm/s)
 	 */
 	public void setTravelSpeed(double speed);
+	
+	//TODO: make a setRotateSpeed();
 
 	public float getAngleIncrement();
+	//TODO: getDistanceIncrement()? 
 	
+	//TODO: getPosition()
+	//TODO: getHeading()
 }
