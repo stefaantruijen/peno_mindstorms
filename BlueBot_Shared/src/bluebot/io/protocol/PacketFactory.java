@@ -4,6 +4,7 @@ package bluebot.io.protocol;
 import bluebot.io.protocol.impl.CommandPacket;
 import bluebot.io.protocol.impl.ConfigPacket;
 import bluebot.io.protocol.impl.ErrorPacket;
+import bluebot.io.protocol.impl.MessagePacket;
 import bluebot.io.protocol.impl.MotionPacket;
 import bluebot.io.protocol.impl.MovePacket;
 import bluebot.io.protocol.impl.SensorPacket;
@@ -58,6 +59,10 @@ public class PacketFactory {
 	
 	public Packet createError(final String msg) {
 		return new ErrorPacket(msg);
+	}
+	
+	public Packet createMessage(final String msg, final String title) {
+		return new MessagePacket(msg, title);
 	}
 	
 	public Packet createMotion(final float x, final float y,

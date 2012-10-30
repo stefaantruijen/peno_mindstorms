@@ -12,6 +12,7 @@ import bluebot.io.protocol.Packet;
 import bluebot.io.protocol.PacketHandler;
 import bluebot.io.protocol.impl.ConfigPacket;
 import bluebot.io.protocol.impl.ErrorPacket;
+import bluebot.io.protocol.impl.MessagePacket;
 import bluebot.io.protocol.impl.SensorPacket;
 import bluebot.sensors.SensorListener;
 import bluebot.util.AbstractEventDispatcher;
@@ -152,6 +153,10 @@ public class DefaultController extends AbstractController {
 					break;
 				case OP_ERROR:
 					fireError(((ErrorPacket)packet).getMessage());
+					break;
+				case OP_MESSAGE:
+					final MessagePacket p = (MessagePacket)packet;
+					fireMessage(p.getMessage(), p.getTitle());
 					break;
 				case OP_SENSOR:
 					sensors.handlePacket((SensorPacket)packet);

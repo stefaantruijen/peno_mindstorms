@@ -121,6 +121,25 @@ public abstract class AbstractDriver implements Driver {
 	}
 	
 	/**
+	 * Sends a message (with title "Info")
+	 * 
+	 * @param msg - the message
+	 */
+	protected void sendMessage(final String msg) {
+		sendMessage(msg, "Info");
+	}
+	
+	/**
+	 * Sends a message
+	 * 
+	 * @param msg - the message
+	 * @param title - a title for the message
+	 */
+	protected void sendMessage(final String msg, final String title) {
+		getTranslator().sendMessage(msg, title);
+	}
+	
+	/**
 	 * Sends a motion update
 	 * 
 	 * @param x - the position on the X axis

@@ -21,6 +21,7 @@ public abstract class Packet {
 	public static final int OP_SENSOR  = 0x30;
 	public static final int OP_CONFIG  = 0x40;
 	public static final int OP_ERROR   = 0xE0;
+	public static final int OP_MESSAGE = 0xE1;
 	
 	
 	protected Packet() {}

@@ -35,6 +35,10 @@ public class ServerTranslator extends Translator {
 		sendPacket(getPacketFactory().createError(msg));
 	}
 	
+	public void sendMessage(final String msg, final String title) {
+		sendPacket(getPacketFactory().createMessage(msg, title));
+	}
+	
 	public void sendMotion(final float x, final float y, final float heading) {
 		sendPacket(getPacketFactory().createMotion(x, y, heading));
 	}

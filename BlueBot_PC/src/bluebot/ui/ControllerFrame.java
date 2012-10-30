@@ -135,7 +135,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 	private final Component createModuleControls() {
 		final JoystickComponent joystick = new JoystickComponent(controller);
 		joystick.setEnabled(false);
-
+		
 		final JSlider slider = new JSlider(JSlider.VERTICAL, 0, 3, 0);
 		slider.setBorder(BorderFactory.createEtchedBorder());
 		slider.setFocusable(false);
@@ -144,62 +144,32 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		slider.setPaintTicks(true);
 		slider.setPaintTrack(false);
 		slider.setSnapToTicks(true);
-		slider.addChangeListener(new ChangeListener() {
-			public void stateChanged(final ChangeEvent event) {
-				if (!slider.getValueIsAdjusting()) {
-					final int speed = slider.getValue();
-					if (speed > 0) {
-						joystick.setEnabled(true);
-						joystick.requestFocusInWindow();
-						switch (slider.getValue()) {
-						case 1:
-							controller.setSpeedLow();
-							break;
-						case 2:
-							controller.setSpeedMedium();
-							break;
-						case 3:
-							controller.setSpeedHigh();
-							break;
-						}
-					} else {
-						joystick.setEnabled(false);
-					}
-				}
-			}
-		});
-
+		
 		final GridBagLayout layout = new GridBagLayout();
 		layout.columnWeights = new double[] { 0D, 0D };
 		layout.rowWeights = new double[] { 0D };
-
+		
 		final JPanel panel = new JPanel(layout);
-
+		
 		final GridBagConstraints gbc = SwingUtils.createGBC();
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.insets.set(5, 5, 5, 5);
-
+		
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		panel.add(slider, gbc);
-
+		
 		gbc.gridx++;
 		panel.add(joystick, gbc);
 		
-		controller.addListener(new ConfigListener() {
-			public void onSpeedHigh() {
-				slider.setValue(3);
-			}
-			
-			public void onSpeedLow() {
-				slider.setValue(1);
-			}
-			
-			public void onSpeedMedium() {
-				slider.setValue(2);
-			}
-		});
-
+		final SpeedMonitor monitor = new SpeedMonitor();
+		monitor.controller = controller;
+		monitor.joystick = joystick;
+		monitor.slider = slider;
+		
+		slider.addChangeListener(monitor);
+		slider.addMouseListener(monitor);
+		controller.addListener(monitor);
 		return createModule(panel, "Controls");
 	}
 
@@ -315,6 +285,77 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 	public void onError(final String msg) {
 		JOptionPane.showMessageDialog(this, msg, "Error",
 				JOptionPane.ERROR_MESSAGE);
+	}
+	
+	public void onMessage(final String msg, final String title) {
+		JOptionPane.showMessageDialog(this, msg, title,
+				JOptionPane.INFORMATION_MESSAGE);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	private static final class SpeedMonitor extends MouseAdapter
+			implements ChangeListener, ConfigListener {
+		
+		private Controller controller;
+		private boolean enabled;
+		private JoystickComponent joystick;
+		private JSlider slider;
+		
+		
+		
+		@Override
+		public void mousePressed(final MouseEvent event) {
+			enabled = true;
+		}
+		
+		@Override
+		public void mouseReleased(final MouseEvent event) {
+			enabled = false;
+		}
+		
+		public void onSpeedHigh() {
+			slider.setValue(3);
+		}
+		
+		public void onSpeedLow() {
+			slider.setValue(1);
+		}
+		
+		public void onSpeedMedium() {
+			slider.setValue(2);
+		}
+		
+		public void stateChanged(final ChangeEvent event) {
+			if (enabled && !slider.getValueIsAdjusting()) {
+				final int speed = slider.getValue();
+				if (speed > 0) {
+					joystick.setEnabled(true);
+					joystick.requestFocusInWindow();
+					switch (slider.getValue()) {
+					case 1:
+						controller.setSpeedLow();
+						break;
+					case 2:
+						controller.setSpeedMedium();
+						break;
+					case 3:
+						controller.setSpeedHigh();
+						break;
+					}
+				} else {
+					joystick.setEnabled(false);
+				}
+			}
+		}
+		
 	}
 
 }

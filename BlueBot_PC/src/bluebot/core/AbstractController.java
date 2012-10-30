@@ -28,4 +28,10 @@ public abstract class AbstractController
 		}
 	}
 	
+	protected void fireMessage(final String msg, final String title) {
+		for (final ControllerListener listener : getListeners()) {
+			listener.onMessage(msg, title);
+		}
+	}
+	
 }

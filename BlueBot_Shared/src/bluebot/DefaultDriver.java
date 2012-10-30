@@ -35,6 +35,11 @@ public class DefaultDriver extends AbstractDriver {
 			}
 		}
 		WhiteThreshold = max + 2;
+		
+		//	The next few lines of code will send
+		//	a report of the calibration to any client(s)
+		final String msg = ("Threshold (white) = " + WhiteThreshold);
+		sendMessage(msg, "Calibration");
 	}
 	
 	

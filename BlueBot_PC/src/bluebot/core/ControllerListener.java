@@ -14,4 +14,6 @@ public interface ControllerListener extends EventListener {
 	
 	public void onError(String msg);
 	
+	public void onMessage(String msg, String title);
+	
 }

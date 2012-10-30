@@ -23,8 +23,10 @@ public abstract class AbstractConnection
 	 * @param msg - the (incoming) message
 	 */
 	private final void fireMessageIncoming(final String msg) {
-		for (final ConnectionListener listener : getListeners()) {
-			listener.onMessageIncoming(msg);
+		if (!msg.startsWith("Packet[")) {
+			for (final ConnectionListener listener : getListeners()) {
+				listener.onMessageIncoming(msg);
+			}
 		}
 	}
 	
@@ -34,8 +36,10 @@ public abstract class AbstractConnection
 	 * @param msg - the (outgoing) message
 	 */
 	private final void fireMessageOutgoing(final String msg) {
-		for (final ConnectionListener listener : getListeners()) {
-			listener.onMessageOutgoing(msg);
+		if (!msg.startsWith("Packet[")) {
+			for (final ConnectionListener listener : getListeners()) {
+				listener.onMessageOutgoing(msg);
+			}
 		}
 	}
 	
@@ -56,8 +60,8 @@ public abstract class AbstractConnection
 	protected abstract void write(Packet packet) throws IOException;
 	
 	public void writePacket(final Packet packet) throws IOException {
-		write(packet);
 		fireMessageOutgoing(packet.toString());
+		write(packet);
 	}
 	
 }

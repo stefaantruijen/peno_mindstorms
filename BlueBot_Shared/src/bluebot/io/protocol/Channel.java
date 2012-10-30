@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import bluebot.io.protocol.impl.CommandPacket;
 import bluebot.io.protocol.impl.ConfigPacket;
 import bluebot.io.protocol.impl.ErrorPacket;
+import bluebot.io.protocol.impl.MessagePacket;
 import bluebot.io.protocol.impl.MotionPacket;
 import bluebot.io.protocol.impl.MovePacket;
 import bluebot.io.protocol.impl.SensorPacket;
@@ -57,6 +58,8 @@ public class Channel {
 					return new ConfigPacket(input);
 				case OP_ERROR:
 					return new ErrorPacket(input);
+				case OP_MESSAGE:
+					return new MessagePacket(input);
 				case OP_MOTION:
 					return new MotionPacket(input);
 				case OP_MOVE:

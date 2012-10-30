@@ -39,4 +39,17 @@ public final class Utils {
 		return (float)(Math.PI / 180D * clampAngleDegrees(angle));
 	}
 	
+	/**
+	 * Compares two <code>float</code> values for equality
+	 * 
+	 * @param a - the first value
+	 * @param b - the second value
+	 * 
+	 * @return <code>TRUE</code> if <b>a</b> and <b>b</b> are equal,
+	 * 			<code>FALSE</code> otherwise
+	 */
+	public static final boolean equals(final float a, final float b) {
+		return (Float.floatToIntBits(a) == Float.floatToIntBits(b));
+	}
+	
 }
