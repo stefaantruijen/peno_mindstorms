@@ -295,7 +295,7 @@ public abstract class AbstractDriver implements Driver {
 				time += (interval - System.currentTimeMillis());
 				if (time > 0l) {
 					try {
-						Thread.sleep(time + interval);
+						Thread.sleep(time);
 					} catch (final InterruptedException e) {
 						return;
 					}
@@ -308,7 +308,9 @@ public abstract class AbstractDriver implements Driver {
 				final Orientation o = getOrientation();
 				if ((o.getX() != x) || (o.getY() != y)
 						|| (o.getHeading() != heading)) {
-					sendMotion((x = o.getX()), (y = o.getY()),
+					sendMotion(
+							(x = o.getX()),
+							(y = o.getY()),
 							(heading = o.getHeading()));
 				}
 			}
