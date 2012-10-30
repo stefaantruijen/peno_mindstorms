@@ -304,15 +304,13 @@ public abstract class AbstractDriver implements Driver {
 		}
 		
 		private final void tick() {
-			if (isMoving()) {
-				final Orientation o = getOrientation();
-				if ((o.getX() != x) || (o.getY() != y)
-						|| (o.getHeading() != heading)) {
-					sendMotion(
-							(x = o.getX()),
-							(y = o.getY()),
-							(heading = o.getHeading()));
-				}
+			final Orientation o = getOrientation();
+			if ((o.getX() != x) || (o.getY() != y)
+					|| (o.getHeading() != heading)) {
+				sendMotion(
+						(x = o.getX()),
+						(y = o.getY()),
+						(heading = o.getHeading()));
 			}
 			
 			final int light = readSensorLight();
