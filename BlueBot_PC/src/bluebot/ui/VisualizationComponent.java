@@ -200,8 +200,6 @@ public class VisualizationComponent extends JComponent
 			x = (TILE_RESOLUTION * (tx - Math.min(tx, minX)));
 			y = (TILE_RESOLUTION * (Math.max(maxY, ty) - ty));
 			
-			System.out.println("px = " + x + ", py = " + y);
-			
 			maxX = Math.max(maxX, tx);
 			maxY = Math.max(maxY, ty);
 			minX = Math.min(tx, minX);
@@ -234,9 +232,6 @@ public class VisualizationComponent extends JComponent
 		final BufferedImage resized = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 		
 		final Graphics2D gfx = resized.createGraphics();
-		
-//		gfx.setBackground(Color.BLACK);
-//		gfx.clearRect(0, 0, w, h);
 		
 		gfx.drawImage(image, x, y, image.getWidth(), image.getHeight(), null);
 		
