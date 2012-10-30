@@ -1,7 +1,7 @@
 /**
  * 
  */
-package simulator;
+package bluebot.simulator;
 
 import static org.junit.Assert.*;
 
@@ -10,11 +10,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.junit.Test;
 
-import simulator.*;
+import tempSIm.*;
+
+import bluebot.simulator.Action;
+
 
 /**
  * @author Dieter
- *
+ *	TODO: modify to VirtualRobot.
  */
 public class TestRobot {
 	@Test
