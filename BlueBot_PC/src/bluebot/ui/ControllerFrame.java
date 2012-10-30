@@ -30,7 +30,6 @@ import bluebot.core.ControllerListener;
 import bluebot.graph.Tile;
 import bluebot.maze.Maze;
 import bluebot.maze.MazeGenerator;
-import bluebot.util.Utils;
 
 
 

@@ -87,11 +87,6 @@ public class DummyRobot implements Robot {
 	private synchronized void startMotion(final Motion motion) {
 		stopMotion();
 		this.motion = motion;
-		if (motion.isFinite()) {
-			System.out.println("Moving for " + motion.getDuration() + " ms");
-		} else {
-			System.out.println("Moving ...");
-		}
 	}
 	
 	private synchronized void stopMotion() {

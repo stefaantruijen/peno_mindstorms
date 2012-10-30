@@ -104,8 +104,6 @@ public class VisualizationComponent extends JComponent
 	
 	protected void drawTile(final Graphics2D gfx,
 			final int x, final int y, final Tile tile) {
-		System.out.println("Drawing tile ...");
-		
 		gfx.setColor(Color.YELLOW);
 		gfx.fillRect(x, y, TILE_RESOLUTION, TILE_RESOLUTION);
 		
@@ -175,16 +173,12 @@ public class VisualizationComponent extends JComponent
 	}
 	
 	public void onTileUpdate(final Tile tile) {
-		System.out.println(tile);
-		
 		final int tx = tile.getX();
 		final int ty = tile.getY();
 		
 		final int x, y;
 		if (maze == null) {
-			System.out.println("Creating image ...");
 			maze = createImage();
-			System.out.println(maze.getWidth() + " x " + maze.getHeight());
 			
 			x = y = 0;
 			
@@ -196,7 +190,6 @@ public class VisualizationComponent extends JComponent
 				final int w = (1 + Math.max(maxX, tx) - Math.min(tx, minX));
 				final int h = (1 + Math.max(maxY, ty) - Math.min(ty, minY));
 				
-				System.out.println("Resizing image ...");
 				maze = resizeImage(maze,
 						(TILE_RESOLUTION * (minX - Math.min(tx, minX))),
 						(TILE_RESOLUTION * (Math.max(maxY, ty) - maxY)),
