@@ -1,5 +1,9 @@
 package bluebot.graph;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
 
 
 
@@ -80,6 +84,26 @@ public class Tile {
 		return (((y & 0xFFFF) << 16) | (x & 0xFFFF));
 	}
 	
+	public boolean isNeighborFrom(Tile other){
+		if(this.isEastFrom(other) && other.getBorderEast() == Border.OPEN){
+			return true;
+		}
+		
+		if(this.isWestFrom(other) && other.getBorderWest() == Border.OPEN){
+			return true;
+		}
+		
+		if(this.isNorthFrom(other)&& other.getBorderNorth() == Border.OPEN){
+			return true;
+		}
+		
+		if(this.isSouthFrom(other)&& other.getBorderSouth()== Border.OPEN){
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public boolean matches(final int x, final int y) {
 		return ((this.x == x) && (this.y == y));
 	}
@@ -138,28 +162,21 @@ public class Tile {
 		return(other.getY()==this.getY()-1 && this.getX()==other.getY());
 	}
 	
+	public static Tile read(final DataInput input) throws IOException {
+		final Tile tile = new Tile(input.readByte(), input.readByte());
+		tile.borders = input.readByte();
+		return tile;
+	}
+	
 	@Override
 	public String toString(){
 		return ("("+this.getX()+","+this.getY()+")");
 	}
 	
-	public boolean isNeighborFrom(Tile other){
-		if(this.isEastFrom(other) && other.getBorderEast() == Border.OPEN){
-			return true;
-		}
-		
-		if(this.isWestFrom(other) && other.getBorderWest() == Border.OPEN){
-			return true;
-		}
-		
-		if(this.isNorthFrom(other)&& other.getBorderNorth() == Border.OPEN){
-			return true;
-		}
-		
-		if(this.isSouthFrom(other)&& other.getBorderSouth()== Border.OPEN){
-			return true;
-		}
-		
-		return false;
+	public void write(final DataOutput output) throws IOException {
+		output.writeByte(getX());
+		output.writeByte(getY());
+		output.writeByte(borders);
 	}
+	
 }

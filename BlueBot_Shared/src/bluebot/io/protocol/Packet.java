@@ -20,6 +20,7 @@ public abstract class Packet {
 	public static final int OP_MOTION  = 0x20;
 	public static final int OP_SENSOR  = 0x30;
 	public static final int OP_CONFIG  = 0x40;
+	public static final int OP_TILE    = 0x50;
 	public static final int OP_ERROR   = 0xE0;
 	public static final int OP_MESSAGE = 0xE1;
 	
@@ -37,6 +38,16 @@ public abstract class Packet {
 	 * @return an <code>int</code> value ranging from 0 to 255 (inclusive)
 	 */
 	public abstract int getOpcode();
+	
+	/**
+	 * Determines whether or not this packet should be announced
+	 * 
+	 * @return <code>TRUE</code> if announcement is desired,
+	 * 			<code>FALSE</code> otherwise
+	 */
+	public boolean isVerbose() {
+		return true;
+	}
 	
 	/**
 	 * Reads the payload from the input

@@ -4,6 +4,7 @@ package bluebot.core;
 import static bluebot.io.protocol.Packet.*;
 
 import bluebot.ConfigListener;
+import bluebot.graph.Tile;
 import bluebot.io.ClientTranslator;
 import bluebot.io.Communicator;
 import bluebot.io.Connection;
@@ -13,7 +14,10 @@ import bluebot.io.protocol.PacketHandler;
 import bluebot.io.protocol.impl.ConfigPacket;
 import bluebot.io.protocol.impl.ErrorPacket;
 import bluebot.io.protocol.impl.MessagePacket;
+import bluebot.io.protocol.impl.MotionPacket;
 import bluebot.io.protocol.impl.SensorPacket;
+import bluebot.io.protocol.impl.TilePacket;
+import bluebot.maze.MazeListener;
 import bluebot.sensors.SensorListener;
 import bluebot.util.AbstractEventDispatcher;
 
@@ -27,6 +31,7 @@ public class DefaultController extends AbstractController {
 	
 	private Communicator communicator;
 	private ConfigDispatcher config;
+	private MazeDispatcher maze;
 	private SensorDispatcher sensors;
 	private ClientTranslator translator;
 	
@@ -34,6 +39,7 @@ public class DefaultController extends AbstractController {
 	public DefaultController(final Connection connection) {
 		this.communicator = new Communicator(connection, createPacketHandler());
 		this.config = new ConfigDispatcher();
+		this.maze = new MazeDispatcher();
 		this.sensors = new SensorDispatcher();
 		this.translator = new ClientTranslator(connection);
 		
@@ -48,6 +54,10 @@ public class DefaultController extends AbstractController {
 	
 	public void addListener(final ConnectionListener listener) {
 		getCommunicator().addListener(listener);
+	}
+	
+	public void addListener(final MazeListener listener) {
+		maze.addListener(listener);
 	}
 	
 	public void addListener(final SensorListener listener) {
@@ -96,6 +106,10 @@ public class DefaultController extends AbstractController {
 	
 	public void removeListener(final ConnectionListener listener) {
 		getCommunicator().removeListener(listener);
+	}
+	
+	public void removeListener(final MazeListener listener) {
+		maze.removeListener(listener);
 	}
 	
 	public void removeListener(final SensorListener listener) {
@@ -158,8 +172,14 @@ public class DefaultController extends AbstractController {
 					final MessagePacket p = (MessagePacket)packet;
 					fireMessage(p.getMessage(), p.getTitle());
 					break;
+				case OP_MOTION:
+					maze.handlePacket((MotionPacket)packet);
+					break;
 				case OP_SENSOR:
 					sensors.handlePacket((SensorPacket)packet);
+					break;
+				case OP_TILE:
+					maze.handlePacket((TilePacket)packet);
 					break;
 			}
 		}
@@ -209,6 +229,35 @@ public class DefaultController extends AbstractController {
 					}
 					break;
 			}
+		}
+		
+	}
+	
+	
+	
+	
+	
+	private static final class MazeDispatcher extends AbstractEventDispatcher<MazeListener> {
+		
+		private final void fireMotion(final float x, final float y,
+				final float heading) {
+			for (final MazeListener listener : getListeners()) {
+				listener.onMotion(x, y, heading);
+			}
+		}
+		
+		private final void fireTileUpdated(final Tile tile) {
+			for (final MazeListener listener : getListeners()) {
+				listener.onTileUpdate(tile);
+			}
+		}
+		
+		public void handlePacket(final MotionPacket packet) {
+			fireMotion(packet.getX(), packet.getY(), packet.getHeading());
+		}
+		
+		public void handlePacket(final TilePacket packet) {
+			fireTileUpdated(packet.getTile());
 		}
 		
 	}

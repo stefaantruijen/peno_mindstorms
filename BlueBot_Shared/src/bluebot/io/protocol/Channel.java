@@ -17,6 +17,7 @@ import bluebot.io.protocol.impl.MotionPacket;
 import bluebot.io.protocol.impl.MovePacket;
 import bluebot.io.protocol.impl.SensorPacket;
 import bluebot.io.protocol.impl.StopPacket;
+import bluebot.io.protocol.impl.TilePacket;
 
 
 
@@ -68,6 +69,8 @@ public class Channel {
 					return new SensorPacket(input);
 				case OP_STOP:
 					return StopPacket.SINGLETON;
+				case OP_TILE:
+					return new TilePacket(input);
 				default:
 					throw new ProtocolException("Invalid packet opcode:  " + opcode);
 			}

@@ -41,6 +41,11 @@ public class MessagePacket extends Packet {
 		return title;
 	}
 	
+	@Override
+	public boolean isVerbose() {
+		return false;
+	}
+	
 	protected void readPayload(final DataInput input) throws IOException {
 		setTitle(input.readUTF());
 		setMessage(input.readUTF());

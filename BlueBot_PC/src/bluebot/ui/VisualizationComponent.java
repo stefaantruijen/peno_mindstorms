@@ -2,7 +2,6 @@ package bluebot.ui;
 
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
@@ -12,7 +11,9 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 
-import bluebot.MotionListener;
+import bluebot.graph.Border;
+import bluebot.graph.Tile;
+import bluebot.maze.MazeListener;
 import bluebot.util.Utils;
 
 
@@ -22,10 +23,12 @@ import bluebot.util.Utils;
  * @author Ruben Feyen
  */
 public class VisualizationComponent extends JComponent
-		implements MotionListener {
+		implements MazeListener {
 	private static final long serialVersionUID = 1L;
 	
 	private static final BufferedImage IMAGE_ROBOT;
+	private static final int TILE_RESOLUTION = 128;
+	private static final float TILE_SIZE = 400F;
 	static {
 		BufferedImage image;
 		try {
@@ -36,31 +39,46 @@ public class VisualizationComponent extends JComponent
 		IMAGE_ROBOT = image;
 	}
 	
-	private double heading = 0D;
+	private float heading = 0F;
+	private int maxX, maxY;
+	private BufferedImage maze;
+	private int minX, minY;
+	private float x, y;
 	
 	
+	
+	private static final BufferedImage createImage() {
+		return new BufferedImage(TILE_RESOLUTION, TILE_RESOLUTION, BufferedImage.TYPE_INT_ARGB);
+	}
 	
 	protected void drawMaze(final Graphics2D gfx, final int w, final int h) {
-		// TODO
-		gfx.setColor(Color.BLACK);
+		gfx.setBackground(Color.BLACK);
+		gfx.clearRect(0, 0, w, h);
 		
-		for (int i = 0; i < 6; i++) {
-			gfx.fillRect(0, ((128 * i) - 1), w, 2);
-			gfx.fillRect(((128 * i) - 1), 0, 2, h);
+//		gfx.setColor(Color.WHITE);
+//		for (int i = 0; i < 6; i++) {
+//			gfx.fillRect(0, ((TILE_RESOLUTION * i) - 1), w, 2);
+//			gfx.fillRect(((TILE_RESOLUTION * i) - 1), 0, 2, h);
+//		}
+		
+		if (maze == null) {
+			return;
 		}
 		
-		gfx.setColor(Color.RED);
-		gfx.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 24));
+		int ax = (TILE_RESOLUTION / 2);
+		if (minX < 0) {
+			ax -= (TILE_RESOLUTION * minX);
+		}
 		
-		gfx.drawString("Klik op dit onderdeel en dat van de sensoren", 24, 50);
-		gfx.drawString("voor een demo van de werking ervan.", 24, 75);
+		int ay = (TILE_RESOLUTION / 2);
+		if (maxY > 0) {
+			ay += (TILE_RESOLUTION * maxY);
+		}
 		
-		gfx.drawString("Let op de nieuwe speed-slider:", 24, 150);
+		ax += Math.round(TILE_RESOLUTION * x / TILE_SIZE);
+		ay -= Math.round(TILE_RESOLUTION * y / TILE_SIZE);
 		
-		gfx.drawString("- high speed", 50, 200);
-		gfx.drawString("- medium speed", 50, 225);
-		gfx.drawString("- low speed", 50, 250);
-		gfx.drawString("- disabled", 50, 275);
+		gfx.drawImage(maze, ((w / 2) - ax), ((h / 2) - ay), this);
 	}
 	
 	protected void drawRobot(final Graphics2D gfx, final int w, final int h) {
@@ -71,26 +89,6 @@ public class VisualizationComponent extends JComponent
 		
 		gfx.translate(cx, cy);
 		gfx.rotate(heading);
-		
-		/*
-		gfx.setColor(Color.BLACK);
-		
-		final double r = ((Math.min(w, h) / 2D) - 10D);
-		
-		final int[] px = new int[4];
-		final int[] py = new int[4];
-		
-		px[0] = 0;
-		py[0] = (int)Math.round(-r);
-		
-		px[1] = (int)Math.round((r / 2));
-		py[1] = (int)Math.round((r / 2));
-		
-		px[2] = (int)Math.round(-(r / 2));
-		py[2] = py[1];
-		
-		gfx.fillPolygon(px, py, 3);
-		*/
 		
 		final BufferedImage img = IMAGE_ROBOT;
 		
@@ -104,12 +102,122 @@ public class VisualizationComponent extends JComponent
 		}
 	}
 	
+	protected void drawTile(final Graphics2D gfx,
+			final int x, final int y, final Tile tile) {
+		System.out.println("Drawing tile ...");
+		
+		gfx.setColor(Color.YELLOW);
+		gfx.fillRect(x, y, TILE_RESOLUTION, TILE_RESOLUTION);
+		
+		final int thickness = (TILE_RESOLUTION >> 6);
+		
+		gfx.setColor(getBorderColor(tile.getBorderNorth()));
+		gfx.fillRect(
+				x,
+				y,
+				TILE_RESOLUTION,
+				thickness);
+		
+		gfx.setColor(getBorderColor(tile.getBorderEast()));
+		gfx.fillRect(
+				(x + TILE_RESOLUTION - thickness),
+				y,
+				thickness,
+				TILE_RESOLUTION);
+		
+		gfx.setColor(getBorderColor(tile.getBorderSouth()));
+		gfx.fillRect(
+				x,
+				(y + TILE_RESOLUTION - thickness),
+				TILE_RESOLUTION,
+				thickness);
+		
+		gfx.setColor(getBorderColor(tile.getBorderWest()));
+		gfx.fillRect(
+				x,
+				y,
+				thickness,
+				TILE_RESOLUTION);
+	}
+	
+	private static final Color getBorderColor(final Border border) {
+		switch (border) {
+			case CLOSED:
+				return Color.RED;
+			case OPEN:
+				return Color.WHITE;
+			case UNKNOWN:
+				return Color.ORANGE;
+			default:
+				// Indicates an invalid value
+				return Color.CYAN;
+		}
+	}
+	
 	public void onMotion(final float x, final float y, float heading) {
+		boolean repaint = false;
+		
+		if ((x != this.x) || (y != this.y)) {
+			this.x = x;
+			this.y = y;
+			repaint = true;
+		}
+		
 		heading = Utils.degrees2radians(heading);
 		if (heading != this.heading) {
 			this.heading = heading;
+			repaint = true;
+		}
+		
+		if (repaint) {
 			repaint(0L);
 		}
+	}
+	
+	public void onTileUpdate(final Tile tile) {
+		System.out.println(tile);
+		
+		final int tx = tile.getX();
+		final int ty = tile.getY();
+		
+		final int x, y;
+		if (maze == null) {
+			System.out.println("Creating image ...");
+			maze = createImage();
+			System.out.println(maze.getWidth() + " x " + maze.getHeight());
+			
+			x = y = 0;
+			
+			maxX = minX = tx;
+			maxY = minY = ty;
+		} else {
+			
+			if ((tx < minX) || (tx > maxX) || (ty < minY) || (ty > maxY)) {
+				final int w = (1 + Math.max(maxX, tx) - Math.min(tx, minX));
+				final int h = (1 + Math.max(maxY, ty) - Math.min(ty, minY));
+				
+				System.out.println("Resizing image ...");
+				maze = resizeImage(maze,
+						(TILE_RESOLUTION * (minX - Math.min(tx, minX))),
+						(TILE_RESOLUTION * (Math.max(maxY, ty) - maxY)),
+						(TILE_RESOLUTION * w),
+						(TILE_RESOLUTION * h));
+			}
+			
+			x = (TILE_RESOLUTION * (tx - Math.min(tx, minX)));
+			y = (TILE_RESOLUTION * (Math.max(maxY, ty) - ty));
+			
+			System.out.println("px = " + x + ", py = " + y);
+			
+			maxX = Math.max(maxX, tx);
+			maxY = Math.max(maxY, ty);
+			minX = Math.min(tx, minX);
+			minY = Math.min(ty, minY);
+		}
+		
+		final Graphics2D gfx = maze.createGraphics();
+		drawTile(gfx, x, y, tile);
+		gfx.dispose();
 	}
 	
 	@Override
@@ -124,6 +232,21 @@ public class VisualizationComponent extends JComponent
 		
 		drawMaze(gfx, w, h);
 		drawRobot(gfx, w, h);
+	}
+	
+	private static final BufferedImage resizeImage(final BufferedImage image,
+			final int x, final int y, final int w, final int h) {
+		final BufferedImage resized = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+		
+		final Graphics2D gfx = resized.createGraphics();
+		
+//		gfx.setBackground(Color.BLACK);
+//		gfx.clearRect(0, 0, w, h);
+		
+		gfx.drawImage(image, x, y, image.getWidth(), image.getHeight(), null);
+		
+		gfx.dispose();
+		return resized;
 	}
 	
 }

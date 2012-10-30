@@ -23,10 +23,8 @@ public abstract class AbstractConnection
 	 * @param msg - the (incoming) message
 	 */
 	private final void fireMessageIncoming(final String msg) {
-		if (!msg.startsWith("Packet[")) {
-			for (final ConnectionListener listener : getListeners()) {
-				listener.onMessageIncoming(msg);
-			}
+		for (final ConnectionListener listener : getListeners()) {
+			listener.onMessageIncoming(msg);
 		}
 	}
 	
@@ -36,10 +34,8 @@ public abstract class AbstractConnection
 	 * @param msg - the (outgoing) message
 	 */
 	private final void fireMessageOutgoing(final String msg) {
-		if (!msg.startsWith("Packet[")) {
-			for (final ConnectionListener listener : getListeners()) {
-				listener.onMessageOutgoing(msg);
-			}
+		for (final ConnectionListener listener : getListeners()) {
+			listener.onMessageOutgoing(msg);
 		}
 	}
 	
@@ -50,7 +46,9 @@ public abstract class AbstractConnection
 	
 	public Packet readPacket() throws IOException {
 		final Packet packet = read();
-		fireMessageIncoming(packet.toString());
+		if (packet.isVerbose()) {
+			fireMessageIncoming(packet.toString());
+		}
 		return packet;
 	}
 	
@@ -60,7 +58,9 @@ public abstract class AbstractConnection
 	protected abstract void write(Packet packet) throws IOException;
 	
 	public void writePacket(final Packet packet) throws IOException {
-		fireMessageOutgoing(packet.toString());
+		if (packet.isVerbose()) {
+			fireMessageOutgoing(packet.toString());
+		}
 		write(packet);
 	}
 	

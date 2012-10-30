@@ -27,6 +27,10 @@ import javax.swing.event.ChangeListener;
 import bluebot.ConfigListener;
 import bluebot.core.Controller;
 import bluebot.core.ControllerListener;
+import bluebot.graph.Border;
+import bluebot.graph.Tile;
+import bluebot.maze.Maze;
+import bluebot.maze.MazeGenerator;
 import bluebot.util.Utils;
 
 
@@ -182,17 +186,36 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 			public void mouseClicked(final MouseEvent event) {
 				canvas.removeMouseListener(this);
 				
+				/*
+				final Tile tile = new Tile(0, 0);
+				tile.setBorderNorth(Border.OPEN);
+				tile.setBorderEast(Border.CLOSED);
+				tile.setBorderSouth(Border.CLOSED);
+				tile.setBorderWest(Border.CLOSED);
+				canvas.onTileUpdate(tile);
+				*/
+				
+				final Maze maze = new MazeGenerator().generateMaze();
+				for (final Tile tile : maze.getTiles()) {
+					canvas.onTileUpdate(tile);
+				}
+				
 				final Thread thread = new Thread(new Runnable() {
 					public void run() {
-						float dir = 1F;
-						int turns = (int)(Math.random() * 200);
-						for (float heading = 0F; true; heading += dir) {
-							if (--turns < 0) {
-								dir = -dir;
-								turns = (int)(Math.random() * 200); 
-							}
+						float heading = 0F;
+						float x = 0F;
+						float y = 800F;
+						
+						final float speed = 14F;
+						
+						for (;; heading += 1F) {
 							heading = Utils.clampAngleDegrees(heading);
-							canvas.onMotion(0F, 0F, heading);
+							
+							x += (speed * Math.sin(heading * Math.PI / 180D));
+							y += (speed * Math.cos(heading * Math.PI / 180D));
+							
+							canvas.onMotion(x, y, heading);
+							
 							try {
 								Thread.sleep(25);
 							} catch (final InterruptedException e) {

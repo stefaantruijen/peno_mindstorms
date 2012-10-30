@@ -45,6 +45,11 @@ public class SensorPacket extends Packet {
 		return value;
 	}
 	
+	@Override
+	public boolean isVerbose() {
+		return false;
+	}
+	
 	protected void readPayload(final DataInput input) throws IOException {
 		setSensorType(SensorType.values()[input.readUnsignedByte()]);
 		setSensorValue(input.readInt());

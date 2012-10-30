@@ -1,6 +1,7 @@
 package bluebot.io.protocol;
 
 
+import bluebot.graph.Tile;
 import bluebot.io.protocol.impl.CommandPacket;
 import bluebot.io.protocol.impl.ConfigPacket;
 import bluebot.io.protocol.impl.ErrorPacket;
@@ -9,6 +10,7 @@ import bluebot.io.protocol.impl.MotionPacket;
 import bluebot.io.protocol.impl.MovePacket;
 import bluebot.io.protocol.impl.SensorPacket;
 import bluebot.io.protocol.impl.StopPacket;
+import bluebot.io.protocol.impl.TilePacket;
 import bluebot.sensors.SensorType;
 
 
@@ -33,10 +35,20 @@ public class PacketFactory {
 		return new CommandPacket(command);
 	}
 	
+	/**
+	 * Creates a command packet for the calibration algorithm
+	 * 
+	 * @return a {@link Packet} object
+	 */
 	public Packet createCommandCalibrate() {
 		return createCommand(CommandPacket.CALIBRATE);
 	}
 	
+	/**
+	 * Creates a command packet for the white-line-orientation algorithm
+	 * 
+	 * @return a {@link Packet} object
+	 */
 	public Packet createCommandWhiteLineOrientation() {
 		return createCommand(CommandPacket.WHITE_LINE_ORIENTATION);
 	}
@@ -45,26 +57,65 @@ public class PacketFactory {
 		return new ConfigPacket(ConfigPacket.ID_SPEED, speed);
 	}
 	
+	/**
+	 * Creates a high-speed config packet
+	 * 
+	 * @return a {@link Packet} object
+	 */
 	public Packet createConfigSpeedHigh() {
 		return createConfigSpeed(3);
 	}
 	
+	/**
+	 * Creates a low-speed config packet
+	 * 
+	 * @return a {@link Packet} object
+	 */
 	public Packet createConfigSpeedLow() {
 		return createConfigSpeed(1);
 	}
 	
+	/**
+	 * Creates a medium-speed config packet
+	 * 
+	 * @return a {@link Packet} object
+	 */
 	public Packet createConfigSpeedMedium() {
 		return createConfigSpeed(2);
 	}
 	
+	/**
+	 * Creates an error packet
+	 * 
+	 * @param msg - the (error) message
+	 * 
+	 * @return a {@link Packet} object
+	 */
 	public Packet createError(final String msg) {
 		return new ErrorPacket(msg);
 	}
 	
+	/**
+	 * Creates a message packet
+	 * 
+	 * @param msg - the message
+	 * @param title - a title for the message
+	 * 
+	 * @return a {@link Packet} object
+	 */
 	public Packet createMessage(final String msg, final String title) {
 		return new MessagePacket(msg, title);
 	}
 	
+	/**
+	 * Creates a motion (update) packet
+	 * 
+	 * @param x - the position on the X axis
+	 * @param y - the position on the Y axis
+	 * @param heading - the heading
+	 * 
+	 * @return a {@link Packet} object
+	 */
 	public Packet createMotion(final float x, final float y,
 			final float heading) {
 		return new MotionPacket(x, y, heading);
@@ -156,6 +207,17 @@ public class PacketFactory {
 	 */
 	public Packet createStop() {
 		return StopPacket.SINGLETON;
+	}
+	
+	/**
+	 * Creates a tile (update) packet
+	 * 
+	 * @param tile - the updated {@link Tile}
+	 * 
+	 * @return a {@link Packet} object
+	 */
+	public Packet createTile(final Tile tile) {
+		return new TilePacket(tile);
 	}
 	
 	/**
