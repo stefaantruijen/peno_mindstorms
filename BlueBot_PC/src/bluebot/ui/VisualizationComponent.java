@@ -218,6 +218,8 @@ public class VisualizationComponent extends JComponent
 		final Graphics2D gfx = maze.createGraphics();
 		drawTile(gfx, x, y, tile);
 		gfx.dispose();
+		
+		repaint(0L);
 	}
 	
 	@Override

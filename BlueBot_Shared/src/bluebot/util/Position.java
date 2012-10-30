@@ -26,4 +26,14 @@ public class Position {
 		return y;
 	}
 	
+	@Override
+	public String toString() {
+		return new StringBuilder("(")
+		.append(getX())
+		.append(", ")
+		.append(getY())
+		.append(')')
+		.toString();
+	}
+	
 }

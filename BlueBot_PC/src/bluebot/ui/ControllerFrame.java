@@ -199,6 +199,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 					canvas.onTileUpdate(tile);
 				}
 				
+				/*
 				final Thread thread = new Thread(new Runnable() {
 					public void run() {
 						float heading = 0F;
@@ -232,8 +233,10 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 						thread.interrupt();
 					}
 				});
+				*/
 			}
 		});
+		controller.addListener(canvas);
 		return createModule(canvas, "Visualization");
 	}
 	
@@ -319,15 +322,25 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		}
 		
 		public void onSpeedHigh() {
-			slider.setValue(3);
+			setSpeed(3);
 		}
 		
 		public void onSpeedLow() {
-			slider.setValue(1);
+			setSpeed(1);
 		}
 		
 		public void onSpeedMedium() {
-			slider.setValue(2);
+			setSpeed(2);
+		}
+		
+		private final void setSpeed(final int value) {
+			slider.setValue(value);
+			if (value > 0) {
+				joystick.setEnabled(true);
+//				joystick.requestFocusInWindow();
+			} else {
+				joystick.setEnabled(false);
+			}
 		}
 		
 		public void stateChanged(final ChangeEvent event) {

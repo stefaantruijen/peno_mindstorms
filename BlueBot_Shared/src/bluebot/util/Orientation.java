@@ -26,4 +26,14 @@ public class Orientation extends Position {
 		return heading;
 	}
 	
+	@Override
+	public String toString() {
+		return new StringBuilder("[")
+		.append(super.toString())
+		.append(", ")
+		.append(getHeading())
+		.append(']')
+		.toString();
+	}
+	
 }

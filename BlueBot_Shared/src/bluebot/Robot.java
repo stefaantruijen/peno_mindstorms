@@ -13,6 +13,11 @@ import bluebot.util.Orientation;
  */
 public interface Robot extends Mobile {
 	
+	public final static double DEFAULT_SPEED_ROTATE = 75;
+	public final static double DEFAULT_SPEED_TRAVEL = 200;
+	
+	
+	
 	/**
 	 * Returns the orientation of the robot
 	 * 

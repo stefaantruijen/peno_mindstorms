@@ -3,11 +3,13 @@ package bluebot.ui;
 
 import static bluebot.core.ControllerFactory.getControllerFactory;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -67,13 +69,11 @@ public class MainFrame extends JFrame {
 	
 	private static final JButton createButton(final String text) {
 		final JButton button = new JButton(text);
-		button.setPreferredSize(new Dimension(256, 64));
+		button.setMinimumSize(new Dimension(1, 64));
 		return button;
 	}
 	
 	private final void initComponents() {
-		setLayout(new BorderLayout(0, 0));
-		
 		final JButton btnBrick = createButton("Connect to NXT brick");
 		btnBrick.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {
@@ -88,8 +88,32 @@ public class MainFrame extends JFrame {
 			}
 		});
 		
-		add(btnBrick, BorderLayout.NORTH);
-		add(btnSim, BorderLayout.SOUTH);
+		// TODO: Remove this button after debugging
+		final JButton btnDummy = createButton("Connect to Test Dummy");
+		btnDummy.addActionListener(new ActionListener() {
+			public void actionPerformed(final ActionEvent event) {
+				showController(getControllerFactory().connectToTestDummy());
+			}
+		});
+		
+		final GridBagLayout layout = new GridBagLayout();
+		layout.columnWeights = new double[] { 1D };
+		layout.rowHeights = new int[] { 64, 64, 64 };
+		layout.rowWeights = new double[] { 1D, 1D, 1D };
+		setLayout(layout);
+		
+		final GridBagConstraints gbc = SwingUtils.createGBC();
+		gbc.fill = GridBagConstraints.BOTH;
+		
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		add(btnBrick, gbc);
+		
+		gbc.gridy++;
+		add(btnSim, gbc);
+		
+		gbc.gridy++;
+		add(btnDummy, gbc);
 	}
 	
 	private final void showController(final Controller controller) {

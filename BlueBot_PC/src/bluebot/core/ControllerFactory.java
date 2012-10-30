@@ -11,6 +11,7 @@ import bluebot.io.ClientConnection;
 import bluebot.io.Communicator;
 import bluebot.io.Connection;
 import bluebot.io.VirtualConnection;
+import bluebot.simulator.DummyRobot;
 import bluebot.simulator.VirtualRobot;
 
 
@@ -50,8 +51,34 @@ public class ControllerFactory {
 	 * @return a {@link Controller} object
 	 */
 	public Controller connectToSimulator() {
-		final Robot robot = new VirtualRobot();
-		
+		return createController(new VirtualRobot());
+	}
+	
+	// TODO: Remove this method after debugging
+	public Controller connectToTestDummy() {
+		return createController(new DummyRobot());
+	}
+	
+	/**
+	 * Creates a controller for the given connection
+	 * 
+	 * @param connection - a {@link Connection} object
+	 * 
+	 * @return a {@link Controller} object
+	 */
+	private final Controller createController(final Connection connection) {
+		return new DefaultController(connection);
+	}
+	
+	/**
+	 * Creates a controller for the given robot
+	 * over a (virtual) local connection
+	 * 
+	 * @param robot - a {@link Robot}
+	 * 
+	 * @return a {@link Controller} object
+	 */
+	private final Controller createController(final Robot robot) {
 		final VirtualConnection connection = new VirtualConnection();
 		
 		final Connection server = connection.createServer();
@@ -68,17 +95,6 @@ public class ControllerFactory {
 				createController(connection.createClient());
 		// TODO: Listen for disconnect to terminate threads
 		return controller;
-	}
-	
-	/**
-	 * Creates a controller for the given connection
-	 * 
-	 * @param connection - a {@link Connection} object
-	 * 
-	 * @return a {@link Controller} object
-	 */
-	private final Controller createController(final Connection connection) {
-		return new DefaultController(connection);
 	}
 	
 	/**

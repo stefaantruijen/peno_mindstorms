@@ -20,8 +20,6 @@ import bluebot.util.Orientation;
 public class PhysicalRobot implements Robot {
 	
 	private final static int DEFAULT_ACCELERATION	 = 500;
-	private final static double DEFAULT_SPEED_ROTATE = 75;
-	private final static double DEFAULT_SPEED_TRAVEL = 200;
 	
 	private final DifferentialPilot pilot;
 	private LightSensor sensorLight;
