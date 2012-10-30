@@ -1,5 +1,7 @@
 package bluebot;
 
+import bluebot.util.Orientation;
+
 
 
 /**
@@ -10,6 +12,13 @@ package bluebot;
  * @author Ruben Feyen
  */
 public interface Robot extends Mobile {
+	
+	/**
+	 * Returns the orientation of the robot
+	 * 
+	 * @return an {@link Orientation} object
+	 */
+	public Orientation getOrientation();
 	
 	/**
 	 * Determines whether or not the robot is currently moving

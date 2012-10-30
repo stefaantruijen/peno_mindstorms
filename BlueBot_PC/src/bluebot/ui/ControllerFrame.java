@@ -27,7 +27,6 @@ import javax.swing.event.ChangeListener;
 import bluebot.ConfigListener;
 import bluebot.core.Controller;
 import bluebot.core.ControllerListener;
-import bluebot.graph.Border;
 import bluebot.graph.Tile;
 import bluebot.maze.Maze;
 import bluebot.maze.MazeGenerator;
@@ -237,34 +236,9 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		});
 		return createModule(canvas, "Visualization");
 	}
-
+	
 	private final Component createModuleSensors() {
 		final SensorsComponent sensors = new SensorsComponent();
-		// TODO: Remove after debugging
-		sensors.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(final MouseEvent event) {
-				sensors.removeMouseListener(this);
-
-				final Thread thread = new Thread(new Runnable() {
-					public void run() {
-						for (double x = 0.00; true; x += 0.05) {
-							sensors.onSensorValueLight(50 + (int) Math
-									.round(50 * Math.sin(x)));
-							sensors.onSensorValueUltraSonic(128 + (int) Math
-									.round(127 * Math.cos(x)));
-							try {
-								Thread.sleep(100);
-							} catch (final InterruptedException e) {
-								break;
-							}
-						}
-					}
-				});
-				thread.setDaemon(true);
-				thread.start();
-			}
-		});
 		controller.addListener(sensors);
 		return createModule(sensors, "Sensors");
 	}

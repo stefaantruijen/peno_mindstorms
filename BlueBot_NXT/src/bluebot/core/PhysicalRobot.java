@@ -8,6 +8,7 @@ import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 
 import bluebot.Robot;
+import bluebot.util.Orientation;
 
 
 
@@ -39,11 +40,16 @@ public class PhysicalRobot implements Robot {
 	
 	
 	protected DifferentialPilot createPilot() {
-		final DifferentialPilot pilot = new DifferentialPilot(55.37F, 55F,168.50F, Motor.A, Motor.C, false);
+		final DifferentialPilot pilot = new DifferentialPilot(55.37F, 55F, 168.50F, Motor.A, Motor.C, false);
 		pilot.setAcceleration(DEFAULT_ACCELERATION);
 		pilot.setRotateSpeed(DEFAULT_SPEED_ROTATE);
 		pilot.setTravelSpeed(DEFAULT_SPEED_TRAVEL);
 		return pilot;
+	}
+	
+	public Orientation getOrientation() {
+		// TODO:	Proper implementation instead of dummy value
+		return new Orientation(0F, 0F, 0F);
 	}
 	
 	private final DifferentialPilot getPilot() {

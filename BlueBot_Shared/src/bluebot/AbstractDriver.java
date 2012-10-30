@@ -4,6 +4,7 @@ package bluebot;
 import bluebot.io.Connection;
 import bluebot.io.ServerTranslator;
 import bluebot.sensors.SensorType;
+import bluebot.util.Orientation;
 
 
 
@@ -16,6 +17,7 @@ public abstract class AbstractDriver implements Driver {
 	
 	private Robot robot;
 	private ServerTranslator translator;
+	private Thread updater;
 	
 	
 	public AbstractDriver(final Robot robot, final Connection connection) {
@@ -27,6 +29,15 @@ public abstract class AbstractDriver implements Driver {
 	}
 	
 	
+	
+	/**
+	 * Returns the orientation of the robot
+	 * 
+	 * @return an {@link Orientation} object
+	 */
+	protected Orientation getOrientation() {
+		return getRobot().getOrientation();
+	}
 	
 	/**
 	 * Returns the robot
@@ -219,8 +230,23 @@ public abstract class AbstractDriver implements Driver {
 		getRobot().setTravelSpeed(speed);
 	}
 	
+	protected synchronized void startUpdater() {
+		if (updater == null) {
+			updater = new Thread(new Updater());
+			updater.setDaemon(true);
+			updater.start();
+		}
+	}
+	
 	public void stop() {
 		getRobot().stop();
+	}
+	
+	protected synchronized void stopUpdater() {
+		if (updater != null) {
+			updater.interrupt();
+			updater = null;
+		}
 	}
 	
 	public void turnLeft() {
@@ -241,6 +267,63 @@ public abstract class AbstractDriver implements Driver {
 	
 	public float getAngleIncrement(){
 		return getRobot().getAngleIncrement();
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	private final class Updater implements Runnable {
+		
+		private float heading;
+		private int sensorLight = -1;
+		private int sensorUltraSonic = -1;
+		private float x, y;
+		
+		
+		
+		public void run() {
+			final long interval = (1000L / 10);
+			for (long time;;) {
+				time = System.currentTimeMillis();
+				tick();
+				time += (interval - System.currentTimeMillis());
+				if (time > 0l) {
+					try {
+						Thread.sleep(time + interval);
+					} catch (final InterruptedException e) {
+						return;
+					}
+				}
+			}
+		}
+		
+		private final void tick() {
+			if (isMoving()) {
+				final Orientation o = getOrientation();
+				if ((o.getX() != x) || (o.getY() != y)
+						|| (o.getHeading() != heading)) {
+					sendMotion((x = o.getX()), (y = o.getY()),
+							(heading = o.getHeading()));
+				}
+			}
+			
+			final int light = readSensorLight();
+			if (light != this.sensorLight) {
+				sendSensorLight(this.sensorLight = light);
+			}
+			
+			final int ultraSonic = readSensorUltraSonic();
+			if (ultraSonic != this.sensorUltraSonic) {
+				sendSensorUltraSonic(this.sensorUltraSonic = ultraSonic);
+			}
+		}
+		
 	}
 	
 }

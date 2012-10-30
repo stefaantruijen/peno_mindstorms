@@ -73,7 +73,7 @@ public class GraphComponent extends JComponent {
 		
 		final ArrayList<Integer> data = getData();
 		for (int x = 0; ((x < width) && (x < data.size())); x++) {
-			final int h = (data.get(x) * height / max);
+			final int h = (data.get(x) * height / ((max == 0) ? 1 : max));
 			gfx.fillRect(x, (height - h), 1, h);
 		}
 	}

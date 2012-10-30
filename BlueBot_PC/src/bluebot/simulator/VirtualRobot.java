@@ -2,6 +2,7 @@ package bluebot.simulator;
 
 
 import bluebot.Robot;
+import bluebot.util.Orientation;
 
 
 
@@ -31,7 +32,7 @@ public class VirtualRobot implements Robot {
 	private double rotateSpeed;
 	
 	/**
-	 * Variable representing the absolute heading of this robot in degrees (0° being North). 
+	 * Variable representing the absolute heading of this robot in degrees (0ï¿½ being North). 
 	 */
 	private float absoluteHeading;
 
@@ -261,6 +262,13 @@ public class VirtualRobot implements Robot {
 //	public getY(){
 //		
 //	}
+	
+	public Orientation getOrientation() {
+		// TODO:
+		//	This method will provide position & heading information
+		//	It replaces the getPosition() method below
+		return new Orientation(0F, 0F, 0F);
+	}
 
 	//TODO:@Override
 	public float[] getPosition(){
