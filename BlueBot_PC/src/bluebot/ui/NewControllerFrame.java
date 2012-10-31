@@ -12,22 +12,27 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.filechooser.FileFilter;
 
 import bluebot.ConfigListener;
 import bluebot.core.Controller;
 import bluebot.core.ControllerListener;
+import bluebot.graph.Graph;
 import bluebot.graph.Tile;
-import bluebot.maze.Maze;
 import bluebot.maze.MazeGenerator;
+import bluebot.maze.MazeReader;
 
 
 
@@ -180,61 +185,14 @@ public class NewControllerFrame extends JFrame implements ControllerListener {
 
 	private final Component createModuleRenderer() {
 		final VisualizationComponent canvas = new VisualizationComponent();
-		// TODO: Remove after debugging
 		canvas.addMouseListener(new MouseAdapter() {
+			// TODO: Remove after debugging
 			@Override
 			public void mouseClicked(final MouseEvent event) {
 				canvas.removeMouseListener(this);
-				
-				/*
-				final Tile tile = new Tile(0, 0);
-				tile.setBorderNorth(Border.OPEN);
-				tile.setBorderEast(Border.CLOSED);
-				tile.setBorderSouth(Border.CLOSED);
-				tile.setBorderWest(Border.CLOSED);
-				canvas.onTileUpdate(tile);
-				*/
-				
-				final Maze maze = new MazeGenerator().generateMaze();
-				for (final Tile tile : maze.getTiles()) {
+				for (final Tile tile : loadMaze()) {
 					canvas.onTileUpdate(tile);
 				}
-				
-				/*
-				final Thread thread = new Thread(new Runnable() {
-					public void run() {
-						float heading = 0F;
-						float x = 0F;
-						float y = 800F;
-						
-						final float speed = 14F;
-						
-						for (;; heading += 1F) {
-							heading = Utils.clampAngleDegrees(heading);
-							
-							x += (speed * Math.sin(heading * Math.PI / 180D));
-							y += (speed * Math.cos(heading * Math.PI / 180D));
-							
-							canvas.onMotion(x, y, heading);
-							
-							try {
-								Thread.sleep(25);
-							} catch (final InterruptedException e) {
-								break;
-							}
-						}
-					}
-				});
-				thread.setDaemon(true);
-				thread.start();
-				
-				canvas.addMouseListener(new MouseAdapter() {
-					@Override
-					public void mouseClicked(final MouseEvent event) {
-						thread.interrupt();
-					}
-				});
-				*/
 			}
 		});
 		controller.addListener(canvas);
@@ -283,6 +241,33 @@ public class NewControllerFrame extends JFrame implements ControllerListener {
 		gbc.gridy++;
 		gbc.fill = GridBagConstraints.BOTH;
 		add(createModuleSensors(), gbc);
+	}
+	
+	private final List<Tile> loadMaze() {
+		final JFileChooser fc = new JFileChooser(new File("."));
+		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		for (final FileFilter filter : fc.getChoosableFileFilters()) {
+			fc.removeChoosableFileFilter(filter);
+		}
+		fc.addChoosableFileFilter(new FileFilter() {
+			public boolean accept(final File file) {
+				return (file.isDirectory() || file.getName().endsWith(".txt"));
+			}
+			
+			public String getDescription() {
+				return "Maze files (.txt)";
+			}
+		});
+		
+		if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+			final File file = fc.getSelectedFile();
+			final Graph graph = new MazeReader().parseMaze(file.getAbsolutePath());
+			if (graph != null) {
+				return graph.getVerticies();
+			}
+		}
+		
+		return new MazeGenerator().generateMaze().getTiles();
 	}
 
 	public void onError(final String msg) {
