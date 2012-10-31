@@ -3,14 +3,11 @@ package bluebot.ui;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.swing.JComponent;
 
 import bluebot.graph.Border;
 import bluebot.graph.Tile;
@@ -23,21 +20,15 @@ import bluebot.util.Utils;
  * 
  * @author Ruben Feyen
  */
-public class VisualizationComponent extends JComponent
+public class VisualizationComponent extends RenderingComponent
 		implements MazeListener {
 	private static final long serialVersionUID = 1L;
 	
 	private static final BufferedImage IMAGE_ROBOT;
-	private static final int TILE_RESOLUTION = 100;
+	public static final int TILE_RESOLUTION = 100;
 	private static final float TILE_SIZE = 400F;
 	static {
-		BufferedImage image;
-		try {
-			image = ImageIO.read(VisualizationComponent.class.getResource("rc_car.png"));
-		} catch (final IOException e) {
-			image = null;
-		}
-		IMAGE_ROBOT = image;
+		IMAGE_ROBOT = loadImageRobot(0.5);
 	}
 	
 	private float heading = 0F;
@@ -48,11 +39,21 @@ public class VisualizationComponent extends JComponent
 	
 	
 	public VisualizationComponent() {
-		final int size = (5 * TILE_RESOLUTION);
+		final int size = calculatePreferredSize();
 		setPreferredSize(new Dimension(size, size));
 	}
 	
 	
+	
+	@SuppressWarnings("unused")
+	private static final int calculatePreferredSize() {
+		final int max = 500;
+		final int min = (TILE_RESOLUTION * 3);
+		if (max <= min) {
+			return min;
+		}
+		return Math.min(Math.max(min, (5 * TILE_RESOLUTION)), max);
+	}
 	
 	private static final BufferedImage createImage() {
 		return new BufferedImage(TILE_RESOLUTION, TILE_RESOLUTION, BufferedImage.TYPE_INT_ARGB);
@@ -100,24 +101,14 @@ public class VisualizationComponent extends JComponent
 	}
 	
 	protected void drawRobot(final Graphics2D gfx, final int w, final int h) {
-		final int cx = (w / 2);
-		final int cy = (h / 2);
-		
-		final AffineTransform transform = gfx.getTransform();
-		
-		gfx.translate(cx, cy);
+		gfx.translate((w / 2), (h / 2));
 		gfx.rotate(heading);
 		
 		final BufferedImage img = IMAGE_ROBOT;
 		
-		final int iw = img.getWidth();
-		final int ih = img.getHeight();
-		
-		gfx.drawImage(img, -(iw / 2), -(ih / 2), iw, ih, this);
-		
-		if (transform != null) {
-			gfx.setTransform(transform);
-		}
+		final int dx = img.getWidth();
+		final int dy = img.getHeight();
+		gfx.drawImage(img, -(dx / 2), -(dy / 2), dx, dy, this);
 	}
 	
 	protected void drawTile(final Graphics2D gfx,
@@ -168,6 +159,47 @@ public class VisualizationComponent extends JComponent
 				// Indicates an invalid value
 				return Color.CYAN;
 		}
+	}
+	
+	private static final BufferedImage loadImageRobot(final double ratio) {
+		final BufferedImage image;
+		try {
+			image = ImageIO.read(VisualizationComponent.class.getResource("rc_car.png"));
+		} catch (final IOException e) {
+			return null;
+		}
+		
+		int dx = image.getWidth();
+		int dy = image.getHeight();
+		
+		final int max = (int)Math.round(ratio * TILE_RESOLUTION);
+		
+		boolean resize = false;
+		if (dx < dy) {
+			if (dy != max) {
+				dx = (int)Math.round((double)max * dx / dy);
+				dy = max;
+				resize = true;
+			}
+		} else {
+			if (dx != max) {
+				dy = (int)Math.round((double)max * dy / dx);
+				dx = max;
+				resize = true;
+			}
+		}
+		if (!resize) {
+			return image;
+		}
+		
+		final BufferedImage resized =
+				new BufferedImage(dx, dy, BufferedImage.TYPE_INT_ARGB);
+		
+		final Graphics2D gfx = resized.createGraphics();
+		gfx.drawImage(image, 0, 0, dx, dy, null);
+		gfx.dispose();
+		
+		return resized;
 	}
 	
 	public void onMotion(final float x, final float y, float heading) {
@@ -231,15 +263,9 @@ public class VisualizationComponent extends JComponent
 		repaint(0L);
 	}
 	
-	@Override
-	protected void paintComponent(final Graphics g) {
-		final Graphics2D gfx = (Graphics2D)g;
-		
+	protected void render(final Graphics2D gfx) {
 		final int w = getWidth();
 		final int h = getHeight();
-		
-		gfx.setColor(Color.WHITE);
-		gfx.fillRect(0, 0, w, h);
 		
 		drawMaze(gfx, w, h);
 		drawRobot(gfx, w, h);

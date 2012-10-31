@@ -1,13 +1,11 @@
 package bluebot.ui;
 
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.LinkedList;
-
-import javax.swing.JComponent;
 
 
 
@@ -15,7 +13,7 @@ import javax.swing.JComponent;
  * 
  * @author Ruben Feyen
  */
-public class GraphComponent extends JComponent {
+public class GraphComponent extends RenderingComponent {
 	private static final long serialVersionUID = 1L;
 	
 	private LinkedList<Integer> data;
@@ -23,6 +21,7 @@ public class GraphComponent extends JComponent {
 	
 	
 	public GraphComponent() {
+//		setOpaque(true);
 		addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(final ComponentEvent event) {
@@ -61,7 +60,11 @@ public class GraphComponent extends JComponent {
 	}
 	
 	@Override
-	protected void paintComponent(final Graphics gfx) {
+	public boolean isAntiAliased() {
+		return false;
+	}
+	
+	protected void render(final Graphics2D gfx) {
 		if (data == null) {
 			// Wait for the component to be fully initialized
 			return;
@@ -70,8 +73,8 @@ public class GraphComponent extends JComponent {
 		final int height = getHeight();
 		final int width = getWidth();
 		
-		gfx.setColor(getBackground());
-		gfx.fillRect(0, 0, width, height);
+//		gfx.setColor(getBackground());
+//		gfx.fillRect(0, 0, width, height);
 		
 		gfx.setColor(getForeground());
 		

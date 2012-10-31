@@ -5,16 +5,13 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
@@ -26,7 +23,7 @@ import bluebot.core.Controller;
  * 
  * @author Ruben Feyen
  */
-public class GaugeComponent extends JComponent {
+public class GaugeComponent extends RenderingComponent {
 	private static final long serialVersionUID = 1L;
 	
 	private static final double DIAL_OFFSET = (Math.PI * 0.38);
@@ -134,15 +131,12 @@ public class GaugeComponent extends JComponent {
 		});
 	}
 	
-	@Override
-	protected void paintComponent(final Graphics g) {
-		super.paintComponent(g);
-		
-		final Graphics2D gfx = (Graphics2D)g;
+	public void removeListener(final GaugeListener listener) {
+		listenerList.remove(GaugeListener.class, listener);
+	}
+	
+	protected void render(final Graphics2D gfx) {
 		gfx.drawImage(IMAGE_GAUGE, 0, 0, this);
-		
-		gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
 		
 		gfx.setFont(getFont());
 		final FontMetrics fm = gfx.getFontMetrics();
@@ -192,10 +186,6 @@ public class GaugeComponent extends JComponent {
 		
 		gfx.setColor(Color.GRAY);
 		gfx.fillOval(-10, -10, 20, 20);
-	}
-	
-	public void removeListener(final GaugeListener listener) {
-		listenerList.remove(GaugeListener.class, listener);
 	}
 	
 	public void setValue(int value) {
@@ -262,19 +252,14 @@ public class GaugeComponent extends JComponent {
 		@Override
 		public void mouseClicked(final MouseEvent event) {
 			final int value = calculateValue(event.getX(), event.getY());
-			switch (value / 25) {
-				case 0:
-					setValue(0);
-					break;
-				case 1:
-					controller.setSpeedLow();
-					break;
-				case 2:
-					controller.setSpeedMedium();
-					break;
-				case 3:
-					controller.setSpeedHigh();
-					break;
+			if (value > 70) {
+				controller.setSpeedHigh();
+			} else if (value > 30) {
+				controller.setSpeedMedium();
+			} else if (value > 0) {
+				controller.setSpeedLow();
+			} else {
+				setValue(0);
 			}
 		}
 		
