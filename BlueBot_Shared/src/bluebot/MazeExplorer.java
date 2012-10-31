@@ -17,7 +17,7 @@ import bluebot.graph.Tile;
  */
 public class MazeExplorer implements Runnable {
 	private final Robot robot;
-	private final static int DISTANCE_TO_EDGE = 17; //(cm)
+	private final static int DISTANCE_TO_EDGE = 30; //(cm)
 	private Direction currentDirection = Direction.UP;
 	private Graph maze;
 	private Tile currentTile;
@@ -75,14 +75,16 @@ public class MazeExplorer implements Runnable {
 	 * Move one tile east.
 	 */
 	private void moveEast(){
-		this.turnClockwise();
+		this.robot.turnRight(90, true);
+		this.currentDirection = currentDirection.turnCWise();
 		this.robot.moveForward(400F,true);
 	}
 	/**
 	 * Move one tile west.
 	 */
 	private void moveWest(){
-		this.turnCounterClockwise();
+		this.robot.turnLeft(90, true);
+		this.currentDirection = currentDirection.turnCCWise();
 		this.robot.moveForward(400F,true);
 	}
 	/**
@@ -95,8 +97,10 @@ public class MazeExplorer implements Runnable {
 	 * Move one tile south.
 	 */
 	private void moveSouth(){
-		this.turnClockwise();
-		this.turnClockwise();
+		this.robot.turnRight(90, true);
+		this.currentDirection = currentDirection.turnCWise();
+		this.robot.turnRight(90, true);
+		this.currentDirection = currentDirection.turnCWise();
 		this.robot.moveForward(400F,true);
 	}
 	
@@ -116,31 +120,38 @@ public class MazeExplorer implements Runnable {
 						tile.setBorderSouth(Border.CLOSED);
 					}else
 						tile.setBorderSouth(Border.OPEN);
+					this.turnCounterClockwise();
+					this.turnCounterClockwise();
+					this.turnCounterClockwise();
 					break;
 				case LEFT:
 					if(wall){
 						tile.setBorderEast(Border.CLOSED);
 					}else
 						tile.setBorderEast(Border.OPEN);
+					this.turnClockwise();
 					break;
 				case RIGHT:
 					if(wall){
 						tile.setBorderWest(Border.CLOSED);
 					}else
 						tile.setBorderWest(Border.OPEN);
+					this.turnClockwise();
 					break;
 				case UP:
 					if(wall){
 						tile.setBorderNorth(Border.CLOSED);
 					}else
 						tile.setBorderNorth(Border.OPEN);
+					
+					this.turnClockwise();
 					break;
 				default:
 					break;
 			}
 			
 			System.out.println(currentDirection+"="+wall);
-			this.turnClockwise();
+			
 			
 		}
 	}
@@ -168,21 +179,22 @@ public class MazeExplorer implements Runnable {
 			possibilities.add(new Tile(current.getX(),current.getY()-1));
 		}
 		
-		Iterator<Tile> iter = possibilities.iterator();
-		while(iter.hasNext()){
-			Tile t = iter.next();
-			if(maze.hasVertex(t) && currentTile.isNeighborFrom(t)){
-				this.maze.addEdge(currentTile, t);
-				possibilities.remove(t);
+			Iterator<Tile> iter = possibilities.iterator();
+			while(iter.hasNext()){
+				Tile t = iter.next();
+				if(maze.hasVertex(t) && currentTile.isNeighborFrom(t)){
+					this.maze.addEdge(currentTile, t);
+					iter.remove();
+				}
 			}
-		}
 		
-		Random r = new Random();
-		if(possibilities.size() > 0){
-			int x = r.nextInt(possibilities.size());
-			System.out.println("x = "+x);
-			return possibilities.get(x);
-		}
+			Random r = new Random();
+			if(possibilities.size() > 0){
+				int x = r.nextInt(possibilities.size());
+				System.out.println("x = "+x);
+				return possibilities.get(x);
+			}
+		
 		
 		return null;
 		
@@ -216,14 +228,14 @@ public class MazeExplorer implements Runnable {
 	 * Turn this robot clockwise and update currentDirection.
 	 */
 	private void turnClockwise(){
-		robot.turnRight(90,true);
+		robot.turnHeadCWise(90);
 		this.currentDirection = currentDirection.turnCWise();
 	}
 	/**
 	 * Turn this robot counterclockwise and update currentDirection.
 	 */
 	private void turnCounterClockwise(){
-		robot.turnLeft(90,true);
+		robot.turnHeadCCWise(90);
 		this.currentDirection = currentDirection.turnCCWise();
 	}
 

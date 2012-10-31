@@ -324,4 +324,16 @@ public class VirtualRobot implements Robot {
 		setCurrentActionETA(currentActionETA);	
 	}
 
+	@Override
+	public void turnHeadCWise(int offset) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void turnHeadCCWise(int offset) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -6,7 +6,7 @@ import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
 import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.navigation.DifferentialPilot;
-
+import lejos.robotics.RegulatedMotor;
 import bluebot.Robot;
 import bluebot.util.Orientation;
 
@@ -24,6 +24,7 @@ public class PhysicalRobot implements Robot {
 	private final DifferentialPilot pilot;
 	private LightSensor sensorLight;
 	private UltrasonicSensor sensorUltraSonic;
+	private final RegulatedMotor head = Motor.B;
 	
 	
 	public PhysicalRobot() {
@@ -111,4 +112,14 @@ public class PhysicalRobot implements Robot {
 		return getPilot().getAngleIncrement();
 	}
 	
+	@Override
+	public void turnHeadCWise(int offset) {
+		this.head.rotate(-Math.abs(offset));
+		
+	}
+	@Override
+	public void turnHeadCCWise(int offset) {
+		this.head.rotate(Math.abs(offset));
+		
+	}
 }

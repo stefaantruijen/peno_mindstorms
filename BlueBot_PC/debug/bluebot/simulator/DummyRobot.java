@@ -296,5 +296,21 @@ public class DummyRobot implements Robot {
 		}
 		
 	}
+
+
+
+
+
+	@Override
+	public void turnHeadCWise(int offset) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void turnHeadCCWise(int offset) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

@@ -55,7 +55,9 @@ public interface Robot extends Mobile {
 	public void setTravelSpeed(double speed);
 	
 	//TODO: make a setRotateSpeed();
-
+	public void turnHeadCWise(int offset);
+	
+	public void turnHeadCCWise(int offset);
 	public float getAngleIncrement();
 	//TODO: getDistanceIncrement()? 
 	
