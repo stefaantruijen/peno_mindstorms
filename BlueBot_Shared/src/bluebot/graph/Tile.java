@@ -179,4 +179,53 @@ public class Tile {
 		output.writeByte(borders);
 	}
 	
+	/**
+	 * Set all borders open (flag == true) or closed (flag == false).
+	 * @param flag
+	 */
+	public void setAllBordersOpen(boolean flag){
+		Border b;
+		if(flag){
+			b = Border.OPEN;
+		}else{
+			b = Border.CLOSED;
+		}
+		
+		this.setBorderEast(b);
+		this.setBorderNorth(b);
+		this.setBorderSouth(b);
+		this.setBorderWest(b);
+		
+	}
+	/**
+	 * Set a certain border open (=true) or closed (=false) given a certain ori‘ntation.
+	 * @param o
+	 * @param flag
+	 */
+	public void setBorder(Orientation o, boolean flag){
+		Border b;
+		if(flag){
+			b = Border.OPEN;
+		}else{
+			b = Border.CLOSED;
+		}
+		
+		switch(o){
+			case EAST:
+				this.setBorderEast(b);
+				break;
+			case NORTH:
+				this.setBorderNorth(b);
+				break;
+			case SOUTH:
+				this.setBorderSouth(b);
+				break;
+			case WEST:
+				this.setBorderWest(b);
+				break;
+			default:
+				break;
+		
+		}
+	}	
 }
