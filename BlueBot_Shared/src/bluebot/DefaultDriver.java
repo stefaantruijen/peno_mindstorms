@@ -40,10 +40,6 @@ public class DefaultDriver extends AbstractDriver {
 		//	a report of the calibration to any client(s)
 		final String msg = ("Threshold (white) = " + WhiteThreshold);
 		sendMessage(msg, "Calibration");
-		
-		//	The next line starts the updater thread
-		//	which will send motion and sensor data at regular intervals
-		startUpdater();
 	}
 	
 	

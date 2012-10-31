@@ -1,7 +1,6 @@
 package bluebot.ui;
 
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -20,7 +19,7 @@ public class GraphComponent extends JComponent {
 	private static final long serialVersionUID = 1L;
 	
 	private LinkedList<Integer> data;
-	private int max, min;
+	private int max, min = Integer.MAX_VALUE;
 	
 	
 	public GraphComponent() {
@@ -36,6 +35,11 @@ public class GraphComponent extends JComponent {
 	
 	public synchronized void addData(final int value) {
 		final LinkedList<Integer> data = this.data;
+		if (data == null) {
+			// The graph isn't visible yet,
+			// ignore any undisplayed data
+			return;
+		}
 		
 		data.addLast(Integer.valueOf(value));
 		for (int spill = (data.size() - getWidth()); spill > 0; spill--) {
@@ -66,14 +70,15 @@ public class GraphComponent extends JComponent {
 		final int height = getHeight();
 		final int width = getWidth();
 		
-		gfx.setColor(Color.WHITE);
+		gfx.setColor(getBackground());
 		gfx.fillRect(0, 0, width, height);
 		
-		gfx.setColor(Color.BLACK);
+		gfx.setColor(getForeground());
 		
 		final ArrayList<Integer> data = getData();
+		final int delta = Math.max(1, (max - min));
 		for (int x = 0; ((x < width) && (x < data.size())); x++) {
-			final int h = (data.get(x) * height / ((max == 0) ? 1 : max));
+			final int h = (height * (data.get(x) - min) / delta);
 			gfx.fillRect(x, (height - h), 1, h);
 		}
 	}

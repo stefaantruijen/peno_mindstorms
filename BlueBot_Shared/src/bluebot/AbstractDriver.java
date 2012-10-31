@@ -15,6 +15,8 @@ import bluebot.util.Orientation;
  */
 public abstract class AbstractDriver implements Driver {
 	
+	private static final int UPDATES_PER_SECOND = 25;
+	
 	private Robot robot;
 	private ServerTranslator translator;
 	private Thread updater;
@@ -26,6 +28,8 @@ public abstract class AbstractDriver implements Driver {
 	private AbstractDriver(final Robot robot, final ServerTranslator translator) {
 		setRobot(robot);
 		setTranslator(translator);
+		
+		startUpdater();
 	}
 	
 	
@@ -288,7 +292,7 @@ public abstract class AbstractDriver implements Driver {
 		
 		
 		public void run() {
-			final long interval = (1000L / 10);
+			final long interval = Math.max(1L, (1000L / UPDATES_PER_SECOND));
 			for (long time;;) {
 				time = System.currentTimeMillis();
 				tick();

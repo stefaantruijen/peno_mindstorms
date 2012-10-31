@@ -72,7 +72,8 @@ public class DummyRobot implements Robot {
 	
 	public int readSensorLight() {
 		// TODO
-		return (45 + (int)(Math.random() * 10));
+//		return (45 + (int)(Math.random() * 10));
+		return (50 + (int)Math.round(5 * Math.sin(System.currentTimeMillis() / 1000D)));
 	}
 	
 	public int readSensorUltraSonic() {
@@ -98,6 +99,14 @@ public class DummyRobot implements Robot {
 	
 	public void stop() {
 		stopMotion();
+	}
+	
+	public void turnHeadCWise(final int offset) {
+		// TODO
+	}
+	
+	public void turnHeadCCWise(final int offset) {
+		// TODO
 	}
 	
 	public void turnLeft() {
@@ -294,22 +303,6 @@ public class DummyRobot implements Robot {
 		public Pos update(final Pos pos) {
 			return new Pos(pos.x, pos.y, (pos.z + getAngleRotated()));
 		}
-		
-	}
-
-
-
-
-
-	@Override
-	public void turnHeadCWise(int offset) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void turnHeadCCWise(int offset) {
-		// TODO Auto-generated method stub
 		
 	}
 	

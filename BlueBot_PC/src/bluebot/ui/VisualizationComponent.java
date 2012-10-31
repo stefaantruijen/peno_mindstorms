@@ -2,6 +2,7 @@ package bluebot.ui;
 
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
@@ -27,7 +28,7 @@ public class VisualizationComponent extends JComponent
 	private static final long serialVersionUID = 1L;
 	
 	private static final BufferedImage IMAGE_ROBOT;
-	private static final int TILE_RESOLUTION = 128;
+	private static final int TILE_RESOLUTION = 100;
 	private static final float TILE_SIZE = 400F;
 	static {
 		BufferedImage image;
@@ -46,6 +47,12 @@ public class VisualizationComponent extends JComponent
 	private float x, y;
 	
 	
+	public VisualizationComponent() {
+		final int size = (5 * TILE_RESOLUTION);
+		setPreferredSize(new Dimension(size, size));
+	}
+	
+	
 	
 	private static final BufferedImage createImage() {
 		return new BufferedImage(TILE_RESOLUTION, TILE_RESOLUTION, BufferedImage.TYPE_INT_ARGB);
@@ -55,30 +62,41 @@ public class VisualizationComponent extends JComponent
 		gfx.setBackground(Color.BLACK);
 		gfx.clearRect(0, 0, w, h);
 		
-//		gfx.setColor(Color.WHITE);
-//		for (int i = 0; i < 6; i++) {
-//			gfx.fillRect(0, ((TILE_RESOLUTION * i) - 1), w, 2);
-//			gfx.fillRect(((TILE_RESOLUTION * i) - 1), 0, 2, h);
-//		}
-		
 		if (maze == null) {
-			return;
+			gfx.setColor(Color.WHITE);
+			
+			final int thickness = (TILE_RESOLUTION >> 5);
+			
+			int dx = Math.round(TILE_RESOLUTION * this.x / TILE_SIZE);
+			for (; dx < 0; dx += TILE_RESOLUTION);
+			dx %= TILE_RESOLUTION;
+			
+			int dy = Math.round(TILE_RESOLUTION * this.y / TILE_SIZE);
+			for (; dy < 0; dy += TILE_RESOLUTION);
+			dy %= TILE_RESOLUTION;
+			
+			for (int x = (-(thickness / 2) - dx); x < w; x += TILE_RESOLUTION) {
+				gfx.fillRect(x, 0, thickness, h);
+			}
+			for (int y = (-(thickness / 2) + dy); y < h; y += TILE_RESOLUTION) {
+				gfx.fillRect(0, y, w, thickness);
+			}
+		} else {
+			int ax = (TILE_RESOLUTION / 2);
+			if (minX < 0) {
+				ax -= (TILE_RESOLUTION * minX);
+			}
+			
+			int ay = (TILE_RESOLUTION / 2);
+			if (maxY > 0) {
+				ay += (TILE_RESOLUTION * maxY);
+			}
+			
+			ax += Math.round(TILE_RESOLUTION * x / TILE_SIZE);
+			ay -= Math.round(TILE_RESOLUTION * y / TILE_SIZE);
+			
+			gfx.drawImage(maze, ((w / 2) - ax), ((h / 2) - ay), this);
 		}
-		
-		int ax = (TILE_RESOLUTION / 2);
-		if (minX < 0) {
-			ax -= (TILE_RESOLUTION * minX);
-		}
-		
-		int ay = (TILE_RESOLUTION / 2);
-		if (maxY > 0) {
-			ay += (TILE_RESOLUTION * maxY);
-		}
-		
-		ax += Math.round(TILE_RESOLUTION * x / TILE_SIZE);
-		ay -= Math.round(TILE_RESOLUTION * y / TILE_SIZE);
-		
-		gfx.drawImage(maze, ((w / 2) - ax), ((h / 2) - ay), this);
 	}
 	
 	protected void drawRobot(final Graphics2D gfx, final int w, final int h) {

@@ -192,6 +192,16 @@ public class JoystickComponent extends JPanel {
 		setBehavior(new FreeBehavior(getBehavior().getController()));
 	}
 	
+	@Override
+	public void setEnabled(final boolean enabled) {
+		super.setEnabled(enabled);
+		buttonBackward.setEnabled(enabled);
+		buttonForward.setEnabled(enabled);
+		buttonLeft.setEnabled(enabled);
+		buttonRight.setEnabled(enabled);
+		buttonStop.setEnabled(enabled);
+	}
+	
 	
 	
 	
