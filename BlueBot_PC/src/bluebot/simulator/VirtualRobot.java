@@ -1,6 +1,7 @@
 package bluebot.simulator;
 
 
+import bluebot.AbstractRobot;
 import bluebot.Robot;
 import bluebot.util.Orientation;
 
@@ -12,7 +13,7 @@ import bluebot.util.Orientation;
  * @author Dieter Castel, Ruben Feyen, Michiel Ruelens 
  */
 @SuppressWarnings("unused")
-public class VirtualRobot implements Robot {
+public class VirtualRobot extends AbstractRobot {
 	/**
 	 * Static that holds the standard travel speed in mm/s. This is the speed we measured in the real NXT robot.
 	 */
@@ -199,7 +200,6 @@ public class VirtualRobot implements Robot {
 		return 255;
 	}
 	
-	@Override
 	public void setTravelSpeed(double speed) {
 		this.travelSpeed = speed;
 	}
@@ -207,6 +207,14 @@ public class VirtualRobot implements Robot {
 	//TODO:@Override
 	public void setRotateSpeed(double speed) {
 		this.rotateSpeed = speed;
+	}
+	
+	protected void setSpeedRotate(final float speed) {
+		this.rotateSpeed = speed;
+	}
+	
+	protected void setSpeedTravel(final float speed) {
+		this.travelSpeed = speed;
 	}
 	
 	@Override

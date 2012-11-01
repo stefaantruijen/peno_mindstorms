@@ -52,12 +52,6 @@ public abstract class AbstractDriver implements Driver {
 		return robot;
 	}
 	
-	protected abstract double getSpeedHigh();
-	
-	protected abstract double getSpeedLow();
-	
-	protected abstract double getSpeedMedium();
-	
 	private final ServerTranslator getTranslator() {
 		return translator;
 	}
@@ -202,19 +196,21 @@ public abstract class AbstractDriver implements Driver {
 		this.robot = robot;
 	}
 	
-	public void setSpeedHigh() {
-		setTravelSpeed(getSpeedHigh());
-		getTranslator().notifySpeedHigh();
+	public void setSpeed(final int percentage) {
+		getRobot().setSpeed(percentage);
+		getTranslator().notifySpeed(percentage);
 	}
 	
-	public void setSpeedLow() {
-		setTravelSpeed(getSpeedLow());
-		getTranslator().notifySpeedLow();
+	protected void setSpeedHigh() {
+		setSpeed(90);
 	}
 	
-	public void setSpeedMedium() {
-		setTravelSpeed(getSpeedMedium());
-		getTranslator().notifySpeedMedium();
+	protected void setSpeedLow() {
+		setSpeed(30);
+	}
+	
+	protected void setSpeedMedium() {
+		setSpeed(60);
 	}
 	
 	private final void setTranslator(final ServerTranslator translator) {
@@ -222,16 +218,6 @@ public abstract class AbstractDriver implements Driver {
 			throw new NullPointerException();
 		}
 		this.translator = translator;
-	}
-	
-	/**
-	 * Sets the travel speed of the robot
-	 * 
-	 * @param speed - the desired travel speed (in [wheel diameter] units/s)
-	 */
-	// TODO: Add (speed) unit to JavaDoc
-	protected void setTravelSpeed(final double speed) {
-		getRobot().setTravelSpeed(speed);
 	}
 	
 	protected synchronized void startUpdater() {

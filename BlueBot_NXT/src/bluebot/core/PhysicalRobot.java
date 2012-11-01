@@ -7,6 +7,7 @@ import lejos.nxt.SensorPort;
 import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 import lejos.robotics.RegulatedMotor;
+import bluebot.AbstractRobot;
 import bluebot.Robot;
 import bluebot.util.Orientation;
 
@@ -17,7 +18,7 @@ import bluebot.util.Orientation;
  * 
  * @author Ruben Feyen
  */
-public class PhysicalRobot implements Robot {
+public class PhysicalRobot extends AbstractRobot {
 	
 	private final static int DEFAULT_ACCELERATION	 = 500;
 	
@@ -83,7 +84,11 @@ public class PhysicalRobot implements Robot {
 		return sensorUltraSonic.getDistance();
 	}
 	
-	public void setTravelSpeed(final double speed) {
+	protected void setSpeedRotate(final float speed) {
+		getPilot().setRotateSpeed(speed);
+	}
+	
+	protected void setSpeedTravel(final float speed) {
 		getPilot().setTravelSpeed(speed);
 	}
 	

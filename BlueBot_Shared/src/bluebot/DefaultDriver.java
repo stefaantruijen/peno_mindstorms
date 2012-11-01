@@ -10,8 +10,8 @@ import bluebot.io.Connection;
  */
 public class DefaultDriver extends AbstractDriver {
 	
-	private double fastSpeed = 150;
-	private double slowSpeed = 25;
+//	private double fastSpeed = 150;
+//	private double slowSpeed = 25;
 	private int WhiteThreshold = -1;
 	
 	
@@ -95,18 +95,6 @@ public class DefaultDriver extends AbstractDriver {
 		
 		while(Math.abs(getAngleIncrement()) <= totalArc/2);
 		stop();
-	}
-	
-	protected double getSpeedHigh() {
-		return fastSpeed;
-	}
-	
-	protected double getSpeedLow() {
-		return slowSpeed;
-	}
-	
-	protected double getSpeedMedium() {
-		return ((getSpeedLow() + getSpeedHigh()) / 2D);
 	}
 	
 	private final void waitForWhite(final boolean flag) {

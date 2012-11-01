@@ -116,16 +116,8 @@ public class DefaultController extends AbstractController {
 		sensors.removeListener(listener);
 	}
 	
-	public void setSpeedHigh() {
-		getTranslator().setSpeedHigh();
-	}
-	
-	public void setSpeedLow() {
-		getTranslator().setSpeedLow();
-	}
-	
-	public void setSpeedMedium() {
-		getTranslator().setSpeedMedium();
+	public void setSpeed(final int percentage) {
+		getTranslator().setSpeed(percentage);
 	}
 	
 	public void stop() {
@@ -192,41 +184,16 @@ public class DefaultController extends AbstractController {
 	
 	private static final class ConfigDispatcher extends AbstractEventDispatcher<ConfigListener> {
 		
-		private final void fireSpeedHigh() {
+		private final void fireSpeedChanged(final int percentage) {
 			for (final ConfigListener listener : getListeners()) {
-				listener.onSpeedHigh();
-			}
-		}
-		
-		private final void fireSpeedLow() {
-			for (final ConfigListener listener : getListeners()) {
-				listener.onSpeedLow();
-			}
-		}
-		
-		private final void fireSpeedMedium() {
-			for (final ConfigListener listener : getListeners()) {
-				listener.onSpeedMedium();
+				listener.onSpeedChanged(percentage);
 			}
 		}
 		
 		public void handlePacket(final ConfigPacket packet) {
 			switch (packet.getId()) {
 				case ConfigPacket.ID_SPEED:
-					final int speed = packet.getValue().intValue();
-					if (speed > 0) {
-						switch (packet.getValue().intValue()) {
-							case 1:
-								fireSpeedLow();
-								break;
-							case 2:
-								fireSpeedMedium();
-								break;
-							default:
-								fireSpeedHigh();
-								break;
-						}
-					}
+					fireSpeedChanged(packet.getValue().intValue());
 					break;
 			}
 		}

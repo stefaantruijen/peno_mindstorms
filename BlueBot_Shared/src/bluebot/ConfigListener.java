@@ -13,18 +13,10 @@ import java.util.EventListener;
 public interface ConfigListener extends EventListener {
 	
 	/**
-	 * This method is called when the speed is changed to high
+	 * This method is called whenever the speed changes
+	 * 
+	 * @param percentage - the percentage of the maximum speed
 	 */
-	public void onSpeedHigh();
-	
-	/**
-	 * This method is called when the speed is changed to low
-	 */
-	public void onSpeedLow();
-	
-	/**
-	 * This method is called when the speed is changed to medium
-	 */
-	public void onSpeedMedium();
+	public void onSpeedChanged(int percentage);
 	
 }

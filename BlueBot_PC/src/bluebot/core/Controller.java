@@ -62,11 +62,7 @@ public interface Controller extends EventDispatcher<ControllerListener> {
 	
 	public void removeListener(SensorListener listener);
 	
-	public void setSpeedHigh();
-	
-	public void setSpeedLow();
-	
-	public void setSpeedMedium();
+	public void setSpeed(int percentage);
 	
 	/**
 	 * Stops moving/turning

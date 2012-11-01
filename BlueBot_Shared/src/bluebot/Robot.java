@@ -47,13 +47,6 @@ public interface Robot extends Mobile {
 	 */
 	public int readSensorUltraSonic();
 	
-	/**
-	 * Sets the travel speed
-	 * 
-	 * @param speed - the desired travel speed (mm/s)
-	 */
-	public void setTravelSpeed(double speed);
-	
 	//TODO: make a setRotateSpeed();
 	public void turnHeadCWise(int offset);
 	

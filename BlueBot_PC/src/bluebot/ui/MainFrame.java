@@ -120,7 +120,7 @@ public class MainFrame extends JFrame {
 			public void run() {
 				final JFrame frame =
 //						new ControllerFrame(controller);
-						new NewControllerFrame(controller);
+						new ControllerFrame(controller);
 				frame.setVisible(true);
 			}
 		});

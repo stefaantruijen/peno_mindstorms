@@ -19,19 +19,4 @@ public interface Driver extends Mobile {
 	 */
 	public void doWhiteLineOrientation();
 	
-	/**
-	 * Sets the speed to high
-	 */
-	public void setSpeedHigh();
-	
-	/**
-	 * Sets the speed to low
-	 */
-	public void setSpeedLow();
-	
-	/**
-	 * Sets the speed to medium
-	 */
-	public void setSpeedMedium();
-	
 }

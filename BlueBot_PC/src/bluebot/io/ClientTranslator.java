@@ -40,16 +40,8 @@ public class ClientTranslator extends Translator {
 		sendPacket(getPacketFactory().createMoveForward(distance));
 	}
 	
-	public void setSpeedHigh() {
-		sendPacket(getPacketFactory().createConfigSpeedHigh());
-	}
-	
-	public void setSpeedLow() {
-		sendPacket(getPacketFactory().createConfigSpeedLow());
-	}
-	
-	public void setSpeedMedium() {
-		sendPacket(getPacketFactory().createConfigSpeedMedium());
+	public void setSpeed(final int percentage) {
+		sendPacket(getPacketFactory().createConfigSpeed(percentage));
 	}
 	
 	public void stop() {

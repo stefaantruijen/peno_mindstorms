@@ -53,35 +53,15 @@ public class PacketFactory {
 		return createCommand(CommandPacket.WHITE_LINE_ORIENTATION);
 	}
 	
-	private final Packet createConfigSpeed(final int speed) {
-		return new ConfigPacket(ConfigPacket.ID_SPEED, speed);
-	}
-	
 	/**
-	 * Creates a high-speed config packet
+	 * Creates a speed config packet
+	 * 
+	 * @param percentage - the percentage (of the maximum speed)
 	 * 
 	 * @return a {@link Packet} object
 	 */
-	public Packet createConfigSpeedHigh() {
-		return createConfigSpeed(3);
-	}
-	
-	/**
-	 * Creates a low-speed config packet
-	 * 
-	 * @return a {@link Packet} object
-	 */
-	public Packet createConfigSpeedLow() {
-		return createConfigSpeed(1);
-	}
-	
-	/**
-	 * Creates a medium-speed config packet
-	 * 
-	 * @return a {@link Packet} object
-	 */
-	public Packet createConfigSpeedMedium() {
-		return createConfigSpeed(2);
+	public Packet createConfigSpeed(final int percentage) {
+		return new ConfigPacket(ConfigPacket.ID_SPEED, percentage);
 	}
 	
 	/**

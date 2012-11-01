@@ -72,20 +72,9 @@ public class DriverHandler implements PacketHandler, Runnable {
 	private final void handlePacketConfig(final ConfigPacket packet) {
 		switch (packet.getId()) {
 			case ConfigPacket.ID_SPEED:
-				final int speed = packet.getValue().intValue();
-				if (speed > 0) {
-					switch (speed) {
-						case 1:
-							driver.setSpeedLow();
-							break;
-						case 2:
-							driver.setSpeedMedium();
-							break;
-						default:
-							driver.setSpeedHigh();
-							break;
-					}
-				} else {
+				final int percentage = packet.getValue().intValue();
+				driver.setSpeed(percentage);
+				if (percentage <= 0) {
 					driver.stop();
 				}
 				break;

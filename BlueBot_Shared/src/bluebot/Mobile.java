@@ -36,6 +36,15 @@ public interface Mobile {
 	public void moveForward(float distance, boolean wait);
 	
 	/**
+	 * Sets the speed
+	 * 
+	 * @param percentage - the desired percentage of the maximum speed
+	 * 
+	 * @throws IllegalArgumentException if <b>percentage</b> is outside the interval [0, 100]
+	 */
+	public void setSpeed(int percentage);
+	
+	/**
 	 * Stops moving/turning
 	 */
 	public void stop();

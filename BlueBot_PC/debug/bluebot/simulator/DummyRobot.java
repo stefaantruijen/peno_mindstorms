@@ -1,20 +1,25 @@
 package bluebot.simulator;
 
 
+import bluebot.AbstractRobot;
 import bluebot.Robot;
+import bluebot.util.Constants;
 import bluebot.util.Orientation;
 
 
 
 /**
+ * {@link Robot} implementation for debugging purposes
  * 
  * @author Ruben Feyen
  */
-public class DummyRobot implements Robot {
+public class DummyRobot extends AbstractRobot {
+	
+	private static final float FACTOR_SPEED = 5F;
 	
 	private Motion motion;
 	private Pos pos = new Pos();
-	private double speedRotate = (DEFAULT_SPEED_ROTATE * Math.PI / 180D);
+	private double speedRotate = (DEFAULT_SPEED_ROTATE * Constants.RADIANS_PER_DEGREE);
 	private double speedTravel = (DEFAULT_SPEED_TRAVEL * 4D);
 	
 	
@@ -30,6 +35,16 @@ public class DummyRobot implements Robot {
 			return (float)(turn.getAngleRotated() * 180D / Math.PI);
 		}
 		return 0F;
+	}
+	
+	@Override
+	protected float getMaximumSpeedRotate() {
+		return (FACTOR_SPEED * super.getMaximumSpeedRotate());
+	}
+	
+	@Override
+	protected float getMaximumSpeedTravel() {
+		return (FACTOR_SPEED * super.getMaximumSpeedTravel());
 	}
 	
 	public Orientation getOrientation() {
@@ -82,6 +97,14 @@ public class DummyRobot implements Robot {
 	}
 	
 	public void setTravelSpeed(final double speed) {
+		this.speedTravel = speed;
+	}
+	
+	protected void setSpeedRotate(final float speed) {
+		this.speedRotate = (speed * Constants.RADIANS_PER_DEGREE);
+	}
+	
+	protected void setSpeedTravel(final float speed) {
 		this.speedTravel = speed;
 	}
 	

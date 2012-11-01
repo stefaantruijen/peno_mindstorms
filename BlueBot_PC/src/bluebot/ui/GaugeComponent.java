@@ -12,8 +12,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
 
 import bluebot.core.Controller;
 
@@ -39,9 +37,6 @@ public class GaugeComponent extends RenderingComponent {
 	private int value;
 	
 	
-	public GaugeComponent() {
-		this(null);
-	}
 	public GaugeComponent(final Controller controller) {
 		this.controller = controller;
 		
@@ -50,7 +45,9 @@ public class GaugeComponent extends RenderingComponent {
 		setOpaque(false);
 		setPreferredSize(getPreferredSize());
 		
-		addMouseListener(new MouseMonitor());
+		final MouseMonitor monitor = new MouseMonitor();
+		addMouseListener(monitor);
+		addMouseMotionListener(monitor);
 	}
 	
 	
@@ -97,38 +94,6 @@ public class GaugeComponent extends RenderingComponent {
 			e.printStackTrace();
 			return null;
 		}
-	}
-	
-	public static void main(final String... args) {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				final JFrame frame = new JFrame("Test");
-				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				
-				final GaugeComponent gauge = new GaugeComponent();
-				gauge.setValue(100);
-				
-				frame.add(gauge);
-				frame.pack();
-				frame.setLocationRelativeTo(null);
-				frame.setResizable(false);
-				
-				new Thread(new Runnable() {
-					public void run() {
-						for (double a = Math.PI; true; a += 0.01) {
-							gauge.setValue(50 + (int)Math.round(Math.sin(a) * 50));
-							try {
-								Thread.sleep(10L);
-							} catch (final InterruptedException e) {
-								return;
-							}
-						}
-					}
-				}).start();
-				
-				frame.setVisible(true);
-			}
-		});
 	}
 	
 	public void removeListener(final GaugeListener listener) {
@@ -208,7 +173,7 @@ public class GaugeComponent extends RenderingComponent {
 	
 	private final class MouseMonitor extends MouseAdapter {
 		
-		private final int calculateValue(final int x, final int y) {
+		private final int calculatePercentage(final int x, final int y) {
 			final int cx = (getWidth() / 2);
 			final int cy = (getHeight() / 2);
 			final int dx = (x - cx);
@@ -250,16 +215,19 @@ public class GaugeComponent extends RenderingComponent {
 		}
 		
 		@Override
-		public void mouseClicked(final MouseEvent event) {
-			final int value = calculateValue(event.getX(), event.getY());
-			if (value > 70) {
-				controller.setSpeedHigh();
-			} else if (value > 30) {
-				controller.setSpeedMedium();
-			} else if (value > 0) {
-				controller.setSpeedLow();
-			} else {
-				setValue(0);
+		public void mouseDragged(final MouseEvent event) {
+			onEvent(event);
+		}
+		
+		@Override
+		public void mousePressed(final MouseEvent event) {
+			onEvent(event);
+		}
+		
+		private final void onEvent(final MouseEvent event) {
+			final int percentage = calculatePercentage(event.getX(), event.getY());
+			if (percentage != getValue()) {
+				controller.setSpeed(percentage);
 			}
 		}
 		

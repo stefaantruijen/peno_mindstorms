@@ -36,7 +36,7 @@ public final class Utils {
 	 * @return the angle (in radians)
 	 */
 	public static final float degrees2radians(final float angle) {
-		return (float)(Math.PI / 180D * clampAngleDegrees(angle));
+		return (float)(clampAngleDegrees(angle) * Constants.RADIANS_PER_DEGREE);
 	}
 	
 	/**
