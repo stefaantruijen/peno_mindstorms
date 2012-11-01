@@ -7,8 +7,6 @@ import bluebot.io.protocol.Channel;
 
 import lejos.pc.comm.NXTComm;
 import lejos.pc.comm.NXTCommException;
-import lejos.pc.comm.NXTCommFactory;
-import lejos.pc.comm.NXTInfo;
 
 
 
@@ -49,13 +47,14 @@ public class ClientConnection extends RemoteConnection {
 	 * @throws NXTCommException if the connection to the NXT brick fails for any reason
 	 */
 	public static ClientConnection create(final String name) throws NXTCommException {
-		final NXTComm nxtc = NXTCommFactory.createNXTComm(NXTCommFactory.BLUETOOTH);
-		final NXTInfo[] devices = nxtc.search(name);
-		if (devices.length != 1) {
-			throw new NXTCommException("Unable to identify NXT brick by name:  " + name);
-		}
-		nxtc.open(devices[0]);
-		return new ClientConnection(nxtc);
+//		final NXTComm nxtc = NXTCommFactory.createNXTComm(NXTCommFactory.BLUETOOTH);
+//		final NXTInfo[] devices = nxtc.search(name);
+//		if (devices.length != 1) {
+//			throw new NXTCommException("Unable to identify NXT brick by name:  " + name);
+//		}
+//		nxtc.open(devices[0]);
+//		return new ClientConnection(nxtc);
+		return new ClientConnector().connectTo(name);
 	}
 	
 	private static final Channel createChannel(final NXTComm nxtc) {
