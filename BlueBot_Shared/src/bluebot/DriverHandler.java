@@ -1,12 +1,15 @@
 package bluebot;
 
 
+import bluebot.actions.ActionQueue;
+import bluebot.actions.impl.CalibrationAction;
+import bluebot.actions.impl.MovementAction;
+import bluebot.actions.impl.WhiteLineAction;
 import bluebot.io.protocol.Packet;
 import bluebot.io.protocol.PacketHandler;
 import bluebot.io.protocol.impl.CommandPacket;
 import bluebot.io.protocol.impl.ConfigPacket;
 import bluebot.io.protocol.impl.MovePacket;
-import bluebot.util.BlockingQueue;
 
 
 
@@ -15,33 +18,20 @@ import bluebot.util.BlockingQueue;
  * 
  * @author Ruben Feyen
  */
-public class DriverHandler implements PacketHandler, Runnable {
+public class DriverHandler implements PacketHandler {
 	
 	private Driver driver;
-	private BlockingQueue<Packet> queue;
-	private Thread thread;
+	private ActionQueue queue;
 	
 	
 	public DriverHandler(final Driver driver) {
 		this.driver = driver;
-		this.queue = new BlockingQueue<Packet>();
+		this.queue = new ActionQueue(driver);
 	}
 	
 	
 	
 	public void handlePacket(final Packet packet) {
-		switch (packet.getOpcode()) {
-			case Packet.OP_STOP:
-				handlePacketStop();
-				break;
-			
-			default:
-				queue.push(packet);
-				break;
-		}
-	}
-	
-	private final void handlePacket0(final Packet packet) {
 		switch (packet.getOpcode()) {
 			case Packet.OP_COMMAND:
 				handlePacketCommand((CommandPacket)packet);
@@ -63,9 +53,9 @@ public class DriverHandler implements PacketHandler, Runnable {
 		if ((command == null) || command.isEmpty()) {
 			// ignored
 		} else if (command.equals(CommandPacket.CALIBRATE)) {
-			driver.calibrate();
+			queue.queue(new CalibrationAction());
 		} else if (command.equals(CommandPacket.WHITE_LINE_ORIENTATION)) {
-			driver.doWhiteLineOrientation();
+			queue.queue(new WhiteLineAction());
 		}
 	}
 	
@@ -75,86 +65,52 @@ public class DriverHandler implements PacketHandler, Runnable {
 				final int percentage = packet.getValue().intValue();
 				driver.setSpeed(percentage);
 				if (percentage <= 0) {
-					driver.stop();
+					handlePacketStop();
 				}
 				break;
 		}
 	}
 	
 	private final void handlePacketMove(final MovePacket packet) {
-		switch (packet.getDirection()) {
-			case MovePacket.MOVE_BACKWARD:
-				if (packet.isQuantified()) {
-					driver.moveBackward(packet.getQuantity(), true);
-				} else {
+		if (packet.isQuantified()) {
+			queue.queue(new MovementAction(packet.getDirection(), packet.getQuantity()));
+		} else {
+			switch (packet.getDirection()) {
+				case MovePacket.MOVE_BACKWARD:
 					driver.moveBackward();
-				}
-				break;
-				
-			case MovePacket.MOVE_FORWARD:
-				if (packet.isQuantified()) {
-					driver.moveForward(packet.getQuantity(), true);
-				} else {
+					break;
+					
+				case MovePacket.MOVE_FORWARD:
 					driver.moveForward();
-				}
-				break;
-				
-			case MovePacket.TURN_LEFT:
-				if (packet.isQuantified()) {
-					driver.turnLeft(packet.getQuantity(), true);
-				} else {
+					break;
+					
+				case MovePacket.TURN_LEFT:
 					driver.turnLeft();
-				}
-				break;
-				
-			case MovePacket.TURN_RIGHT:
-				if (packet.isQuantified()) {
-					driver.turnRight(packet.getQuantity(), true);
-				} else {
+					break;
+					
+				case MovePacket.TURN_RIGHT:
 					driver.turnRight();
-				}
-				break;
-				
-			default:
-				// TODO: send error
-				System.err.println("Invalid direction:  " + packet.getDirection());
-				break;
+					break;
+					
+				default:
+					driver.sendError("Invalid direction:  " + packet.getDirection());
+					break;
+			}
 		}
 	}
 	
 	private final void handlePacketStop() {
-		queue.clear();
+		queue.abort();
 		driver.stop();
 	}
 	
-	public void run() {
-		try {
-			for (;;) {
-				handlePacket0(queue.pull());
-			}
-		} catch (final InterruptedException e) {
-			// ignored
-		}
+	public void start() {
+		queue.start();
 	}
 	
-	/**
-	 * Starts handling packets
-	 */
-	public synchronized void start() {
-		if (thread == null) {
-			thread = new Thread(this);
-			thread.start();
-		}
-	}
-	
-	/**
-	 * Stops handling packets
-	 */
-	public synchronized void stop() {
-		if (thread != null) {
-			thread.interrupt();
-			thread = null;
-		}
+	public void stop() {
+		queue.abort();
+		queue.stop();
 	}
 	
 }

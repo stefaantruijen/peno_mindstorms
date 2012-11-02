@@ -3,6 +3,7 @@ package bluebot;
 
 import bluebot.io.Connection;
 import bluebot.io.ServerTranslator;
+import bluebot.sensors.Calibration;
 import bluebot.sensors.SensorType;
 import bluebot.util.Orientation;
 
@@ -17,6 +18,7 @@ public abstract class AbstractDriver implements Driver {
 	
 	private static final int UPDATES_PER_SECOND = 25;
 	
+	private Calibration calibration = new Calibration();
 	private Robot robot;
 	private ServerTranslator translator;
 	private Thread updater;
@@ -33,6 +35,15 @@ public abstract class AbstractDriver implements Driver {
 	}
 	
 	
+	
+	// TODO: Remove and use getHeading() instead
+	public float getAngleIncrement(){
+		return getRobot().getAngleIncrement();
+	}
+	
+	public Calibration getCalibration() {
+		return calibration;
+	}
 	
 	/**
 	 * Returns the orientation of the robot
@@ -64,7 +75,7 @@ public abstract class AbstractDriver implements Driver {
 	 * 
 	 * @see {@link Robot#isMoving()}
 	 */
-	protected boolean isMoving() {
+	public boolean isMoving() {
 		return getRobot().isMoving();
 	}
 	
@@ -102,30 +113,15 @@ public abstract class AbstractDriver implements Driver {
 		}
 	}
 	
-	/**
-	 * Returns the current value of the light sensor
-	 * 
-	 * @return an <code>int</code> from the interval [0, 100]
-	 */
-	protected int readSensorLight() {
+	public int readSensorLight() {
 		return getRobot().readSensorLight();
 	}
 	
-	/**
-	 * Returns the current value of the ultrasonic sensor
-	 * 
-	 * @return an <code>int</code> from the interval [0, 255]
-	 */
-	protected int readSensorUltraSonic() {
+	public int readSensorUltraSonic() {
 		return getRobot().readSensorUltraSonic();
 	}
 	
-	/**
-	 * Sends an error message
-	 * 
-	 * @param msg - the message to be sent
-	 */
-	protected void sendError(final String msg) {
+	public void sendError(final String msg) {
 		getTranslator().sendError(msg);
 	}
 	
@@ -138,13 +134,7 @@ public abstract class AbstractDriver implements Driver {
 		sendMessage(msg, "Info");
 	}
 	
-	/**
-	 * Sends a message
-	 * 
-	 * @param msg - the message
-	 * @param title - a title for the message
-	 */
-	protected void sendMessage(final String msg, final String title) {
+	public void sendMessage(final String msg, final String title) {
 		getTranslator().sendMessage(msg, title);
 	}
 	
@@ -253,10 +243,6 @@ public abstract class AbstractDriver implements Driver {
 	
 	public void turnRight(final float angle, final boolean wait) {
 		getRobot().turnRight(angle, wait);
-	}
-	
-	public float getAngleIncrement(){
-		return getRobot().getAngleIncrement();
 	}
 	
 	

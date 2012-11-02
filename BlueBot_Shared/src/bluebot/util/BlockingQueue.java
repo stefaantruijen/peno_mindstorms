@@ -1,6 +1,7 @@
 package bluebot.util;
 
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 
@@ -10,7 +11,7 @@ import java.util.LinkedList;
  * 
  * @author Ruben Feyen
  */
-public class BlockingQueue<T> {
+public class BlockingQueue<T> implements Iterable<T> {
 	
 	private LinkedList<T> queue = new LinkedList<T>();
 	
@@ -23,6 +24,10 @@ public class BlockingQueue<T> {
 		synchronized (queue) {
 			queue.clear();
 		}
+	}
+	
+	public Iterator<T> iterator() {
+		return queue.iterator();
 	}
 	
 	/**

@@ -10,6 +10,13 @@ package bluebot;
 public interface Mobile {
 	
 	/**
+	 * Determines whether or not a movement is in progress
+	 * 
+	 * @return <code>TRUE</code> if moving, <code>FALSE</code> otherwise
+	 */
+	public boolean isMoving();
+	
+	/**
 	 * Moves backward
 	 */
 	public void moveBackward();
