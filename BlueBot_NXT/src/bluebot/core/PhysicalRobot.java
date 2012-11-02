@@ -21,11 +21,14 @@ import bluebot.util.Orientation;
 public class PhysicalRobot extends AbstractRobot {
 	
 	private final static int DEFAULT_ACCELERATION	 = 500;
+	public static final float WHEEL_DIAMETER_LEFT  = 55.37F;
+	public static final float WHEEL_DIAMETER_RIGHT = 55.00F;
+	public static final float WHEEL_SPAN = 168.50F;
 	
-	private final DifferentialPilot pilot;
+	private RegulatedMotor head = Motor.B;
+	private DifferentialPilot pilot;
 	private LightSensor sensorLight;
 	private UltrasonicSensor sensorUltraSonic;
-	private final RegulatedMotor head = Motor.B;
 	
 	
 	public PhysicalRobot() {
@@ -39,11 +42,17 @@ public class PhysicalRobot extends AbstractRobot {
 	
 	
 	
-	protected DifferentialPilot createPilot() {
-		final DifferentialPilot pilot = new DifferentialPilot(55.37F, 55F, 168.50F, Motor.A, Motor.C, false);
+	public static final DifferentialPilot createPilot() {
+		final DifferentialPilot pilot = new DifferentialPilot(
+				WHEEL_DIAMETER_LEFT,
+				WHEEL_DIAMETER_RIGHT,
+				WHEEL_SPAN,
+				Motor.A,
+				Motor.C,
+				false);
 		pilot.setAcceleration(DEFAULT_ACCELERATION);
-		pilot.setRotateSpeed(DEFAULT_SPEED_ROTATE);
-		pilot.setTravelSpeed(DEFAULT_SPEED_TRAVEL);
+		pilot.setRotateSpeed(Robot.DEFAULT_SPEED_ROTATE);
+		pilot.setTravelSpeed(Robot.DEFAULT_SPEED_TRAVEL);
 		return pilot;
 	}
 	
