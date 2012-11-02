@@ -82,16 +82,18 @@ public class VirtualRobot extends AbstractRobot {
 	private void setAbsoluteHeading(float absoluteHeading) {
 		this.absoluteHeading = absoluteHeading;
 	}
-
-	private float getX() {
+	
+	@Override
+	public float getX() {
 		return x;
 	}
 
 	private void setX(float x) {
 		this.x = x;
 	}
-
-	private float getY() {
+	
+	@Override
+	public float getY() {
 		return y;
 	}
 
@@ -250,8 +252,8 @@ public class VirtualRobot extends AbstractRobot {
 		return  getHeading() - getAbsoluteHeading();
 	}
 	
-	//TODO:@Override
-	private float getHeading(){
+	@Override
+	public float getHeading(){
 		float result = getAbsoluteHeading();
 		if(getCurrentAction() == Action.ROTATE){
 			Long elapsedTime = System.currentTimeMillis() - getTimestamp();
@@ -275,7 +277,7 @@ public class VirtualRobot extends AbstractRobot {
 		// TODO:
 		//	This method will provide position & heading information
 		//	It replaces the getPosition() method below
-		return new Orientation(0F, 0F, 0F);
+		return new Orientation(getX(), getY(), getHeading());
 	}
 
 	//TODO:@Override

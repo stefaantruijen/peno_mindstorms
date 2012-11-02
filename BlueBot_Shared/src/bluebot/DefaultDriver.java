@@ -100,9 +100,9 @@ public class DefaultDriver extends AbstractDriver {
 	private final void waitForWhite(final boolean flag) {
 		final int threshold = WhiteThreshold;
 		if (flag) {
-			while (readSensorLight() <= threshold);
+			while (isMoving() && (readSensorLight() <= threshold));
 		} else {
-			while (readSensorLight() > threshold);
+			while (isMoving() && (readSensorLight() > threshold));
 		}
 	}
 	

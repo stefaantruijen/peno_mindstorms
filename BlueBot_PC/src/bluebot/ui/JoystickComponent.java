@@ -47,7 +47,6 @@ public class JoystickComponent extends JPanel {
 		addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(final FocusEvent event) {
-				System.out.println("MY FOCUS!");
 				requestFocusInWindow();
 			}
 		});

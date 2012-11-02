@@ -19,11 +19,32 @@ public interface Robot extends Mobile {
 	
 	
 	/**
+	 * Returns the heading of the robot
+	 * 
+	 * @return a <code>float</code> value representing the current heading (in degrees)
+	 */
+	public float getHeading();
+	
+	/**
 	 * Returns the orientation of the robot
 	 * 
 	 * @return an {@link Orientation} object
 	 */
 	public Orientation getOrientation();
+	
+	/**
+	 * Returns the X coordinate of the robot
+	 * 
+	 * @return a <code>float</code> value representing the position on the X axis
+	 */
+	public float getX();
+	
+	/**
+	 * Returns the Y coordinate of the robot
+	 * 
+	 * @return a <code>float</code> value representing the position on the Y axis
+	 */
+	public float getY();
 	
 	/**
 	 * Determines whether or not the robot is currently moving
