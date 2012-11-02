@@ -7,6 +7,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -42,6 +44,13 @@ public class JoystickComponent extends JPanel {
 		initComponents();
 		setComponentPopupMenu(createContextMenu());
 		setFocusable(true);
+		addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(final FocusEvent event) {
+				System.out.println("MY FOCUS!");
+				requestFocusInWindow();
+			}
+		});
 		addKeyListener(createKeyListener());
 		addMouseListener(new MouseAdapter() {
 			@Override

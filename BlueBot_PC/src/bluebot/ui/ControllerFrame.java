@@ -52,6 +52,8 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		initComponents();
 		pack();
+		setFocusTraversalKeysEnabled(false);
+		setFocusTraversalPolicyProvider(true);
 		setLocationRelativeTo(null);
 		setResizable(false);
 
@@ -171,6 +173,10 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 				speed.setValue(percentage);
 			}
 		});
+		
+		joystick.requestFocusInWindow();
+		ControllerFrame.this.setFocusTraversalPolicy(
+				new SingleFocusTraversalPolicy(joystick));
 		
 		return createModule(panel, "Controls");
 	}
