@@ -1,5 +1,7 @@
 package bluebot.io;
 
+import bluebot.io.protocol.Packet;
+
 
 
 /**
@@ -18,6 +20,10 @@ public class ClientTranslator extends Translator {
 	
 	public void doCalibrate() {
 		sendPacket(getPacketFactory().createCommandCalibrate());
+	}
+	
+	public void doPolygon(final int corners, final float length) {
+		sendPacket(getPacketFactory().createPolygon(corners, length));
 	}
 	
 	public void doWhiteLineOrientation() {
@@ -40,12 +46,24 @@ public class ClientTranslator extends Translator {
 		sendPacket(getPacketFactory().createMoveForward(distance));
 	}
 	
+	@Override
+	protected void sendPacket(final Packet packet) {
+		sendPacket(packet, true);
+	}
+	
+	protected void sendPacket(final Packet packet, final boolean stop) {
+		if (stop) {
+			stop();
+		}
+		super.sendPacket(packet);
+	}
+	
 	public void setSpeed(final int percentage) {
-		sendPacket(getPacketFactory().createConfigSpeed(percentage));
+		sendPacket(getPacketFactory().createConfigSpeed(percentage), false);
 	}
 	
 	public void stop() {
-		sendPacket(getPacketFactory().createStop());
+		sendPacket(getPacketFactory().createStop(), false);
 	}
 	
 	public void turnLeft() {

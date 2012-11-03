@@ -14,6 +14,14 @@ public abstract class Threaded implements Runnable {
 	
 	
 	
+	public void interrupt() throws IllegalThreadStateException {
+		try {
+			thread.interrupt();
+		} catch (final NullPointerException e) {
+			throw new IllegalThreadStateException("The thread has not been started");
+		}
+	}
+	
 	public void start() {
 		synchronized (lock) {
 			if (thread == null) {
@@ -24,7 +32,7 @@ public abstract class Threaded implements Runnable {
 		}
 	}
 	
-	public synchronized void stop() {
+	public void stop() {
 		synchronized (lock) {
 			if (thread != null) {
 				thread.interrupt();

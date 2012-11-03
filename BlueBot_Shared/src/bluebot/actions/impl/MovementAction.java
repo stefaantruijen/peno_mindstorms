@@ -9,6 +9,7 @@ import bluebot.actions.Action;
 
 
 /**
+ * Represents a movement {@link Action}
  * 
  * @author Ruben Feyen
  */

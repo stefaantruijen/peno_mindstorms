@@ -3,8 +3,6 @@ package bluebot.core;
 
 import static bluebot.io.protocol.Packet.*;
 
-import bluebot.ConfigListener;
-import bluebot.graph.Tile;
 import bluebot.io.ClientTranslator;
 import bluebot.io.Communicator;
 import bluebot.io.Connection;
@@ -17,9 +15,6 @@ import bluebot.io.protocol.impl.MessagePacket;
 import bluebot.io.protocol.impl.MotionPacket;
 import bluebot.io.protocol.impl.SensorPacket;
 import bluebot.io.protocol.impl.TilePacket;
-import bluebot.maze.MazeListener;
-import bluebot.sensors.SensorListener;
-import bluebot.util.AbstractEventDispatcher;
 
 
 
@@ -30,17 +25,11 @@ import bluebot.util.AbstractEventDispatcher;
 public class DefaultController extends AbstractController {
 	
 	private Communicator communicator;
-	private ConfigDispatcher config;
-	private MazeDispatcher maze;
-	private SensorDispatcher sensors;
 	private ClientTranslator translator;
 	
 	
 	public DefaultController(final Connection connection) {
 		this.communicator = new Communicator(connection, createPacketHandler());
-		this.config = new ConfigDispatcher();
-		this.maze = new MazeDispatcher();
-		this.sensors = new SensorDispatcher();
 		this.translator = new ClientTranslator(connection);
 		
 		this.communicator.start();
@@ -48,28 +37,20 @@ public class DefaultController extends AbstractController {
 	
 	
 	
-	public void addListener(final ConfigListener listener) {
-		config.addListener(listener);
-	}
-	
 	public void addListener(final ConnectionListener listener) {
 		getCommunicator().addListener(listener);
 	}
 	
-	public void addListener(final MazeListener listener) {
-		maze.addListener(listener);
-	}
-	
-	public void addListener(final SensorListener listener) {
-		sensors.addListener(listener);
-	}
-	
 	protected PacketHandler createPacketHandler() {
-		return new BrainzHandler();
+		return new ControllerHandler();
 	}
 	
 	public void doCalibrate() {
 		getTranslator().doCalibrate();
+	}
+	
+	public void doPolygon(final int corners, final float length) {
+		getTranslator().doPolygon(corners, length);
 	}
 	
 	public void doWhiteLineOrientation() {
@@ -100,20 +81,8 @@ public class DefaultController extends AbstractController {
 		getTranslator().moveForward(distance);
 	}
 	
-	public void removeListener(final ConfigListener listener) {
-		config.removeListener(listener);
-	}
-	
 	public void removeListener(final ConnectionListener listener) {
 		getCommunicator().removeListener(listener);
-	}
-	
-	public void removeListener(final MazeListener listener) {
-		maze.removeListener(listener);
-	}
-	
-	public void removeListener(final SensorListener listener) {
-		sensors.removeListener(listener);
 	}
 	
 	public void setSpeed(final int percentage) {
@@ -150,12 +119,12 @@ public class DefaultController extends AbstractController {
 	
 	
 	
-	private final class BrainzHandler implements PacketHandler {
+	private final class ControllerHandler implements PacketHandler {
 		
 		public void handlePacket(final Packet packet) {
 			switch (packet.getOpcode()) {
 				case OP_CONFIG:
-					config.handlePacket((ConfigPacket)packet);
+					handlePacketConfig((ConfigPacket)packet);
 					break;
 				case OP_ERROR:
 					fireError(((ErrorPacket)packet).getMessage());
@@ -165,32 +134,18 @@ public class DefaultController extends AbstractController {
 					fireMessage(p.getMessage(), p.getTitle());
 					break;
 				case OP_MOTION:
-					maze.handlePacket((MotionPacket)packet);
+					handlePacketMotion((MotionPacket)packet);
 					break;
 				case OP_SENSOR:
-					sensors.handlePacket((SensorPacket)packet);
+					handlePacketSensor((SensorPacket)packet);
 					break;
 				case OP_TILE:
-					maze.handlePacket((TilePacket)packet);
+					handlePacketTile((TilePacket)packet);
 					break;
 			}
 		}
 		
-	}
-	
-	
-	
-	
-	
-	private static final class ConfigDispatcher extends AbstractEventDispatcher<ConfigListener> {
-		
-		private final void fireSpeedChanged(final int percentage) {
-			for (final ConfigListener listener : getListeners()) {
-				listener.onSpeedChanged(percentage);
-			}
-		}
-		
-		public void handlePacket(final ConfigPacket packet) {
+		private final void handlePacketConfig(final ConfigPacket packet) {
 			switch (packet.getId()) {
 				case ConfigPacket.ID_SPEED:
 					fireSpeedChanged(packet.getValue().intValue());
@@ -198,66 +153,25 @@ public class DefaultController extends AbstractController {
 			}
 		}
 		
-	}
-	
-	
-	
-	
-	
-	private static final class MazeDispatcher extends AbstractEventDispatcher<MazeListener> {
-		
-		private final void fireMotion(final float x, final float y,
-				final float heading) {
-			for (final MazeListener listener : getListeners()) {
-				listener.onMotion(x, y, heading);
-			}
-		}
-		
-		private final void fireTileUpdated(final Tile tile) {
-			for (final MazeListener listener : getListeners()) {
-				listener.onTileUpdate(tile);
-			}
-		}
-		
-		public void handlePacket(final MotionPacket packet) {
+		private final void handlePacketMotion(final MotionPacket packet) {
 			fireMotion(packet.getX(), packet.getY(), packet.getHeading());
 		}
 		
-		public void handlePacket(final TilePacket packet) {
+		private final void handlePacketSensor(final SensorPacket packet) {
+			switch (packet.getSensorType()) {
+				case LIGHT:
+					fireSensorLight(packet.getSensorValue());
+					break;
+				case ULTRA_SONIC:
+					fireSensorUltraSonic(packet.getSensorValue());
+					break;
+			}
+		}
+		
+		private final void handlePacketTile(final TilePacket packet) {
 			fireTileUpdated(packet.getTile());
 		}
 		
 	}
 	
-	
-	
-	
-	
-	private static final class SensorDispatcher extends AbstractEventDispatcher<SensorListener> {
-		
-		private final void fireLight(final int value) {
-			for (final SensorListener listener : getListeners()) {
-				listener.onSensorValueLight(value);
-			}
-		}
-		
-		private final void fireUltraSonic(final int value) {
-			for (final SensorListener listener : getListeners()) {
-				listener.onSensorValueUltraSonic(value);
-			}
-		}
-		
-		public void handlePacket(final SensorPacket packet) {
-			switch (packet.getSensorType()) {
-				case LIGHT:
-					fireLight(packet.getSensorValue());
-					break;
-				case ULTRA_SONIC:
-					fireUltraSonic(packet.getSensorValue());
-					break;
-			}
-		}
-		
-	}
-
 }

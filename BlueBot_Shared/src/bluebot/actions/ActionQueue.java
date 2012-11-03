@@ -62,6 +62,10 @@ public class ActionQueue extends Threaded {
 				}
 			} catch (final InterruptedException e) {
 				// ignored
+			} finally {
+				// Clear the interrupted flag
+				// to avoid interrupting a new action
+				Thread.interrupted();
 			}
 		}
 	}

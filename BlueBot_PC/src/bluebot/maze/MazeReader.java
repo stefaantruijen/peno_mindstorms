@@ -12,6 +12,7 @@ import bluebot.graph.Tile;
 
 public class MazeReader {
 	
+	@SuppressWarnings("unused")
 	private Graph maze;
 	
 	public static void main(String ... arg0){

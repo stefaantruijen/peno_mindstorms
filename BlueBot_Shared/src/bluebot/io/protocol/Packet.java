@@ -17,6 +17,7 @@ public abstract class Packet {
 	public static final int OP_STOP    = 0x01;
 	public static final int OP_MOVE    = 0x02;
 	public static final int OP_COMMAND = 0x10;
+	public static final int OP_POLYGON = 0x11;
 	public static final int OP_MOTION  = 0x20;
 	public static final int OP_SENSOR  = 0x30;
 	public static final int OP_CONFIG  = 0x40;

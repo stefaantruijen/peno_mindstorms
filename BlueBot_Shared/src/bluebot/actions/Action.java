@@ -41,4 +41,35 @@ public abstract class Action {
 		return aborted;
 	}
 	
+	/**
+	 * Waits for the driver to perform a motion
+	 * 
+	 * @param driver - a {@link Driver} object
+	 * 
+	 * @throws InterruptedException if interrupted while waiting
+	 * 
+	 * @see {@link #waitForMoving(Driver, boolean)}
+	 */
+	protected void waitForMotion(final Driver driver) throws InterruptedException {
+		waitForMoving(driver, true);
+		waitForMoving(driver, false);
+	}
+	
+	/**
+	 * Waits for the driver to either start or stop moving
+	 * 
+	 * @param driver - a {@link Driver} object
+	 * @param moving - the condition to wait for ({@link Driver#isMoving()} == <b>moving</b>)
+	 * 
+	 * @throws InterruptedException if interrupted while waiting
+	 * 
+	 * @see {@link #waitForMotion(Driver)}
+	 */
+	protected void waitForMoving(final Driver driver, final boolean moving)
+			throws InterruptedException {
+		while (!isAborted() && (driver.isMoving() != moving)) {
+			Thread.sleep(10);
+		}
+	}
+	
 }

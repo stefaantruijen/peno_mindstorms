@@ -4,12 +4,14 @@ package bluebot;
 import bluebot.actions.ActionQueue;
 import bluebot.actions.impl.CalibrationAction;
 import bluebot.actions.impl.MovementAction;
+import bluebot.actions.impl.PolygonAction;
 import bluebot.actions.impl.WhiteLineAction;
 import bluebot.io.protocol.Packet;
 import bluebot.io.protocol.PacketHandler;
 import bluebot.io.protocol.impl.CommandPacket;
 import bluebot.io.protocol.impl.ConfigPacket;
 import bluebot.io.protocol.impl.MovePacket;
+import bluebot.io.protocol.impl.PolygonPacket;
 
 
 
@@ -41,6 +43,9 @@ public class DriverHandler implements PacketHandler {
 				break;
 			case Packet.OP_MOVE:
 				handlePacketMove((MovePacket)packet);
+				break;
+			case Packet.OP_POLYGON:
+				handlePacketPolygon((PolygonPacket)packet);
 				break;
 			case Packet.OP_STOP:
 				handlePacketStop();
@@ -97,6 +102,10 @@ public class DriverHandler implements PacketHandler {
 					break;
 			}
 		}
+	}
+	
+	private final void handlePacketPolygon(final PolygonPacket packet) {
+		queue.queue(new PolygonAction(packet.getCorners(), packet.getLength()));
 	}
 	
 	private final void handlePacketStop() {
