@@ -14,11 +14,11 @@ public abstract class Threaded implements Runnable {
 	
 	
 	
-	public void interrupt() throws IllegalThreadStateException {
+	public void interrupt() {
 		try {
 			thread.interrupt();
 		} catch (final NullPointerException e) {
-			throw new IllegalThreadStateException("The thread has not been started");
+			throw new RuntimeException("The thread has not been started");
 		}
 	}
 	
