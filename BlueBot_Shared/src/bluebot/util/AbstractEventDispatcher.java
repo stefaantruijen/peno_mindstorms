@@ -30,7 +30,18 @@ public abstract class AbstractEventDispatcher<T extends EventListener>
 	 * @return a {@link List} containing instances of the appropriate {@link EventListener} type
 	 */
 	protected List<T> getListeners() {
+//		final ArrayList<T> list = new ArrayList<T>(listeners.size());
+//		
+//		
+//		final T[] listeners = (T[])new Object[this.listeners.size()];
+//		this.listeners.toArray(listeners);
+//		return Arrays.asList(listeners);
 		return new ArrayList<T>(listeners);
+		
+//		for (final T listener : listeners) {
+//			list.add(listener);
+//		}
+//		return list;
 	}
 	
 	public void removeListener(final T listener) {

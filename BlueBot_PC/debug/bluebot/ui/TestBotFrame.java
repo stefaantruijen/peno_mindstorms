@@ -22,7 +22,6 @@ import javax.swing.SwingUtilities;
 
 import lejos.pc.comm.NXTCommException;
 
-import bluebot.io.ClientConnection;
 import bluebot.io.ClientConnector;
 import bluebot.io.Connection;
 import bluebot.io.protocol.Packet;

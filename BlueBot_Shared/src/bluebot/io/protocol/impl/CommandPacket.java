@@ -16,6 +16,7 @@ import bluebot.io.protocol.Packet;
 public class CommandPacket extends Packet {
 	
 	public static final String CALIBRATE = "Calibrate";
+	public static final String MAZE = "Maze";
 	public static final String WHITE_LINE_ORIENTATION = "WhiteLine";
 	
 	private String command;

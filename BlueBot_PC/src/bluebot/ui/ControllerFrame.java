@@ -76,7 +76,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		final JPanel panel = new JPanel();
 		
 		final GridBagLayout layout = new GridBagLayout();
-		layout.columnWeights = new double[] { 1D, 1D, 1D };
+		layout.columnWeights = new double[] { 1D, 1D, 1D, 1D };
 		layout.rowHeights = new int[] { 64 };
 		layout.rowWeights = new double[] { 1D };
 		panel.setLayout(layout);
@@ -89,6 +89,15 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		buttonCalibrate.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {
 				controller.doCalibrate();
+			}
+		});
+		
+		final JButton buttonMaze = new JButton("Maze");
+		buttonMaze.setFocusable(false);
+		buttonMaze.setFont(font);
+		buttonMaze.addActionListener(new ActionListener() {
+			public void actionPerformed(final ActionEvent event) {
+				controller.doMaze();
 			}
 		});
 		
@@ -121,6 +130,9 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		panel.add(buttonCalibrate, gbc);
+		
+		gbc.gridx++;
+		panel.add(buttonMaze, gbc);
 		
 		gbc.gridx++;
 		panel.add(buttonOrientate, gbc);

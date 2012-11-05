@@ -3,6 +3,7 @@ package bluebot;
 
 import bluebot.actions.ActionQueue;
 import bluebot.actions.impl.CalibrationAction;
+import bluebot.actions.impl.MazeAction;
 import bluebot.actions.impl.MovementAction;
 import bluebot.actions.impl.PolygonAction;
 import bluebot.actions.impl.WhiteLineAction;
@@ -59,6 +60,8 @@ public class DriverHandler implements PacketHandler {
 			// ignored
 		} else if (command.equals(CommandPacket.CALIBRATE)) {
 			queue.queue(new CalibrationAction());
+		} else if (command.equals(CommandPacket.MAZE)) {
+			queue.queue(new MazeAction());
 		} else if (command.equals(CommandPacket.WHITE_LINE_ORIENTATION)) {
 			queue.queue(new WhiteLineAction());
 		}

@@ -23,6 +23,10 @@ public class ServerTranslator extends Translator {
 		sendPacket(getPacketFactory().createConfigSpeed(percentage));
 	}
 	
+	public void sendDebug(final String msg) {
+		sendPacket(getPacketFactory().createDebug(msg));
+	}
+	
 	public void sendError(final String msg) {
 		sendPacket(getPacketFactory().createError(msg));
 	}

@@ -229,6 +229,14 @@ public abstract class AbstractDriver implements Driver {
 		}
 	}
 	
+	public void turnHeadClockWise(final int offset) {
+		getRobot().turnHeadCWise(offset);
+	}
+	
+	public void turnHeadCounterClockWise(final int offset) {
+		getRobot().turnHeadCCWise(offset);
+	}
+	
 	public void turnLeft() {
 		getRobot().turnLeft();
 	}
