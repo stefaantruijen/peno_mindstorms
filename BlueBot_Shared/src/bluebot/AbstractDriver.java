@@ -192,15 +192,15 @@ public abstract class AbstractDriver implements Driver {
 	}
 	
 	protected void setSpeedHigh() {
-		setSpeed(90);
+		setSpeed(100);
 	}
 	
 	protected void setSpeedLow() {
-		setSpeed(30);
+		setSpeed(12);
 	}
 	
 	protected void setSpeedMedium() {
-		setSpeed(60);
+		setSpeed(50);
 	}
 	
 	private final void setTranslator(final ServerTranslator translator) {

@@ -54,7 +54,7 @@ public class DefaultDriver extends AbstractDriver {
 		}
 		
 		// forward until white line (fast)
-		setSpeedHigh();
+		setSpeedMedium();
 		moveForward();
 		waitForWhiteOrWall();
 		stop();
@@ -67,7 +67,9 @@ public class DefaultDriver extends AbstractDriver {
 			stop();
 			
 			// 7 cm (sensor to wheels) forward
+			setSpeedHigh();
 			moveForward(70, true);
+			setSpeedLow();
 			// right until white line
 			turnRight();
 			waitForWhite(true);
@@ -92,6 +94,7 @@ public class DefaultDriver extends AbstractDriver {
 			}
 			
 			// turn right until half of totalArc 
+			setSpeedHigh();
 			turnRight();
 			
 			while(Math.abs(getAngleIncrement()) <= totalArc/2);
