@@ -15,7 +15,8 @@ public class CalibrationAction extends Action {
 		// Set speed to 12%
 		driver.setSpeed(12);
 		int max = 0;
-		driver.moveForward(300F, false);
+		//driver.moveForward(300F, false);
+		driver.turnRight(360, false);
 		while (!isAborted() && driver.isMoving()) {
 			int value = driver.readSensorLight();
 			if(value > max){
