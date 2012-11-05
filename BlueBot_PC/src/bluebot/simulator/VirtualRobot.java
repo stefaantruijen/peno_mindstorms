@@ -3,6 +3,7 @@ package bluebot.simulator;
 
 import bluebot.AbstractRobot;
 import bluebot.Robot;
+import bluebot.graph.Tile;
 import bluebot.util.Orientation;
 
 
@@ -69,12 +70,33 @@ public class VirtualRobot extends AbstractRobot {
 	 */
 	private long currentActionETA;
 	
-	//Getters and setters of fields.
+	private Tile[] tilesList;
+	private VirtualLightSensor lightSensor;
+	private VirtualSonar sonar;
+	private float startX;
+	private float startY;
 	
+	/**
+	 * 
+	 * @param tilesList
+	 */
+	public VirtualRobot(Tile[] tilesList,Tile startTile){
+		this.tilesList= tilesList;
+		this.startX = startTile.getX()*20;
+		this.startY = startTile.getY()*0;
+		this.lightSensor = new VirtualLightSensor(tilesList);
+		this.sonar = new VirtualSonar(tilesList);
+	}
+	
+	//Getters and setters of fields.
 	private double getRotateSpeed() {
 		return rotateSpeed;
 	}
 	
+	/**
+	 * Returns the heading (in degrees) of the Robot at the start of the current move.
+	 * @return
+	 */
 	private float getAbsoluteHeading() {
 		return absoluteHeading;
 	}
@@ -83,18 +105,61 @@ public class VirtualRobot extends AbstractRobot {
 		this.absoluteHeading = absoluteHeading;
 	}
 	
-	@Override
-	public float getX() {
+	/**
+	 * Returns the horizontal coordinate at the start of the current move in the global coordinate system (Origin being the center of the first tile).
+	 * @return
+	 */
+	public float getAbsoluteX(){
 		return x;
 	}
-
+	
+	@Override
+	public float getX() {
+		float currentHeading = getHeading();
+		float absoluteX = getAbsoluteX();
+		float result = absoluteX;
+		
+		if (getCurrentAction() == Action.TRAVEL){
+			Long elapsedTime = System.currentTimeMillis() - getTimestamp();
+			double arg = getCurrentArgument();
+			int sign = (int)(arg/Math.abs(arg));
+			float distance = (float) (elapsedTime*getTravelSpeed());
+			double headingRadians = Math.toRadians(getAbsoluteHeading());
+			result += sign*(((float)(Math.sin(headingRadians)))*distance);
+		}
+		return result;
+	}
+	
 	private void setX(float x) {
 		this.x = x;
 	}
 	
+	/**
+	 *  Returns the vertical coordinate at the start of the current move in the global coordinate system (Origin being the center of the first tile).
+	 * @return
+	 */
+	public float getAbsoluteY(){
+		return y;
+	}
+	
+	/**
+	 * 
+	 */
 	@Override
 	public float getY() {
-		return y;
+		float currentHeading = getHeading();
+		float absoluteY = getAbsoluteY();
+		float result = absoluteY;
+		
+		if (getCurrentAction() == Action.TRAVEL){
+			Long elapsedTime = System.currentTimeMillis() - getTimestamp();
+			double arg = getCurrentArgument();
+			int sign = (int)(arg/Math.abs(arg));
+			float distance = (float) (elapsedTime*getTravelSpeed());
+			double headingRadians = Math.toRadians(getAbsoluteHeading());
+			result += sign*(((float)(Math.cos(headingRadians)))*distance);
+		}
+		return result;
 	}
 
 	private void setY(float y) {
@@ -274,9 +339,6 @@ public class VirtualRobot extends AbstractRobot {
 //	}
 	
 	public Orientation getOrientation() {
-		// TODO:
-		//	This method will provide position & heading information
-		//	It replaces the getPosition() method below
 		return new Orientation(getX(), getY(), getHeading());
 	}
 
