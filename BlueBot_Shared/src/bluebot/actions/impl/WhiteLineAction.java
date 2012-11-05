@@ -69,32 +69,35 @@ public class WhiteLineAction extends Action {
 			// left until no white line
 			driver.turnLeft();
 			waitForWhite(driver, false);
-			float arc = driver.getAngleIncrement();
-			driver.stop();
-			
-			if (isAborted()) {
-				return;
-			}
-			
-			// left until white line
-			driver.turnLeft();
+//			float arc = driver.getAngleIncrement();
+//			driver.stop();
+//			
+//			if (isAborted()) {
+//				return;
+//			}
+//			
+//			// left until white line
+//			driver.turnLeft();
 			waitForWhite(driver, true);
-			float arc1 = driver.getAngleIncrement();
+			float totalArc = Math.abs(driver.getAngleIncrement());
 			driver.stop();
 			
 			if (isAborted()) {
 				return;
 			}
 			
-			float totalArc = Math.abs(arc) + Math.abs(arc1);
+	//		float totalArc = Math.abs(arc) + Math.abs(arc1);
 			if(totalArc<=90){
-				totalArc = totalArc + 90;
+				driver.turnLeft();
+				this.waitForWhite(driver, false);
+				this.waitForWhite(driver, true);
+				totalArc = totalArc + Math.abs(driver.getAngleIncrement());
+				driver.stop();
 			}
 			
 			// turn right until half of totalArc 
-			driver.setSpeed(12);
 			driver.turnRight();
-			while(!isAborted() && (Math.abs(driver.getAngleIncrement()) <= ((totalArc / 2) + 1)));
+			while(!isAborted() && (Math.abs(driver.getAngleIncrement()) <= ((totalArc / 2) + 2)));
 			driver.stop();
 		} else{
 			driver.turnLeft(90, true);
