@@ -28,7 +28,7 @@ public abstract class AbstractRobot implements Robot {
 	 * @return the maximum travel speed (in mm/s)
 	 */
 	protected float getMaximumSpeedTravel() {
-		return 150F;
+		return 300F;
 	}
 	
 	public float getX() {

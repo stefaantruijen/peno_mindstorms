@@ -27,71 +27,79 @@ public class WhiteLineAction extends Action {
 		
 		threshold = driver.getCalibration().getLightThresholdWhite();
 		
-		// forward until white line (fast)
-		driver.setSpeed(SPEED_FAST);
+		// forward until white line (50%)
+		driver.setSpeed(50);
 		driver.moveForward();
-		waitForWhite(driver, true);
+		waitForWhiteOrWall(driver);
 		driver.stop();
 		
 		if (isAborted()) {
 			return;
 		}
 		
-		// backward until white line (slow)
-		driver.setSpeed(SPEED_SLOW);
-		driver.moveBackward();
-		waitForWhite(driver, true);
-		driver.stop();
-		
-		if (isAborted()) {
-			return;
+		if((driver.readSensorUltraSonic() > 14)){
+			// backward until white line (12%)
+			driver.setSpeed(12);
+			driver.moveBackward();
+			waitForWhite(driver, true);
+			driver.stop();
+			
+			if (isAborted()) {
+				return;
+			}
+			
+			// 7 cm (sensor to wheels) forward
+			driver.setSpeed(100);
+			driver.moveForward(70, true);
+			
+			if (isAborted()) {
+				return;
+			}
+			
+			// right until white line
+			driver.setSpeed(12);
+			driver.turnRight();
+			waitForWhite(driver, true);
+			driver.stop();
+			
+			if (isAborted()) {
+				return;
+			}
+			
+			// left until no white line
+			driver.turnLeft();
+			waitForWhite(driver, false);
+			float arc = driver.getAngleIncrement();
+			driver.stop();
+			
+			if (isAborted()) {
+				return;
+			}
+			
+			// left until white line
+			driver.turnLeft();
+			waitForWhite(driver, true);
+			float arc1 = driver.getAngleIncrement();
+			driver.stop();
+			
+			if (isAborted()) {
+				return;
+			}
+			
+			float totalArc = Math.abs(arc) + Math.abs(arc1);
+			if(totalArc<=90){
+				totalArc = totalArc + 90;
+			}
+			
+			// turn right until half of totalArc 
+			driver.setSpeed(50);
+			driver.turnRight();
+			while(!isAborted() && (Math.abs(driver.getAngleIncrement()) <= (totalArc / 2)));
+			driver.stop();
+		} else{
+			driver.turnLeft(90, true);
+			this.execute(driver);
 		}
-		
-		// 7 cm (sensor to wheels) forward
-		driver.moveForward(70, true);
-		
-		if (isAborted()) {
-			return;
-		}
-		
-		// right until white line
-		driver.turnRight();
-		waitForWhite(driver, true);
-		driver.stop();
-		
-		if (isAborted()) {
-			return;
-		}
-		
-		// left until no white line
-		driver.turnLeft();
-		waitForWhite(driver, false);
-		float arc = driver.getAngleIncrement();
-		driver.stop();
-		
-		if (isAborted()) {
-			return;
-		}
-		
-		// left until white line
-		driver.turnLeft();
-		waitForWhite(driver, true);
-		float arc1 = driver.getAngleIncrement();
-		driver.stop();
-		
-		if (isAborted()) {
-			return;
-		}
-		
-		float totalArc = Math.abs(arc) + Math.abs(arc1);
-		if(totalArc<=90){
-			totalArc = totalArc + 90;
-		}
-		
-		// turn right until half of totalArc 
-		driver.turnRight();
-		while(!isAborted() && (Math.abs(driver.getAngleIncrement()) <= (totalArc / 2)));
-		driver.stop();
 	}
 	
 	private final void waitForWhite(final Driver driver, final boolean flag) {
@@ -105,6 +113,14 @@ public class WhiteLineAction extends Action {
 					&& driver.isMoving()
 					&& (driver.readSensorLight() > threshold));
 		}
+	}
+	
+	private final void waitForWhiteOrWall(final Driver driver){
+		final int threshold = this.threshold;
+		while (!isAborted()
+				&& driver.isMoving()
+				&& (driver.readSensorLight() <= threshold)
+				&& (driver.readSensorUltraSonic() > 14));
 	}
 	
 }
