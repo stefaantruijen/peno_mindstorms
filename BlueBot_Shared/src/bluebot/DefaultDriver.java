@@ -35,7 +35,7 @@ public class DefaultDriver extends AbstractDriver {
 			}
 		}
 		WhiteThreshold = max + 2;
-		
+		System.out.println(WhiteThreshold);
 		//	The next few lines of code will send
 		//	a report of the calibration to any client(s)
 		final String msg = ("Threshold (white) = " + WhiteThreshold);
@@ -54,49 +54,63 @@ public class DefaultDriver extends AbstractDriver {
 		}
 		
 		// forward until white line (fast)
-		setSpeedHigh();
+		setSpeedMedium();
 		moveForward();
-		waitForWhite(true);
+		waitForWhiteOrWall();
 		stop();
 		
-		// backward until white line (slow)
-		setSpeedLow();
-		moveBackward();
-		waitForWhite(true);
-		stop();
-		
-		// 7 cm (sensor to wheels) forward
-		moveForward(70, true);
-		// right until white line
-		turnRight();
-		waitForWhite(true);
-		stop();
-		
-		// left until no white line
-		turnLeft();
-		waitForWhite(false);
-		float arc = getAngleIncrement();
-		stop();
-		
-		// left until white line
-		turnLeft();
-		waitForWhite(true);
-		float arc1 = getAngleIncrement();
-		stop();
-		
-		float totalArc = Math.abs(arc) + Math.abs(arc1);
-		
-		if(totalArc<=90){
-			totalArc = totalArc + 90;
+		if(readSensorUltraSonic() > 14){
+			// backward until white line (slow)
+			setSpeedLow();
+			moveBackward();
+			waitForWhite(true);
+			stop();
+			
+			// 7 cm (sensor to wheels) forward
+			setSpeedHigh();
+			moveForward(70, true);
+			setSpeedLow();
+			// right until white line
+			turnRight();
+			waitForWhite(true);
+			stop();
+			
+			// left until no white line
+			turnLeft();
+			waitForWhite(false);
+			float arc = getAngleIncrement();
+			stop();
+			
+			// left until white line
+			turnLeft();
+			waitForWhite(true);
+			float arc1 = getAngleIncrement();
+			stop();
+			
+			float totalArc = Math.abs(arc) + Math.abs(arc1);
+			
+			if(totalArc<=90){
+				totalArc = totalArc + 90;
+			}
+			
+			// turn right until half of totalArc 
+			setSpeedHigh();
+			turnRight();
+			
+			while(Math.abs(getAngleIncrement()) <= totalArc/2);
+			stop();
+		} else{
+			turnLeft();
+			while(Math.abs(getAngleIncrement())<=90);
+			stop();
+			this.doWhiteLineOrientation();
 		}
-		
-		// turn right until half of totalArc 
-		turnRight();
-		
-		while(Math.abs(getAngleIncrement()) <= totalArc/2);
-		stop();
 	}
 	
+	/**
+	 * if true: waits until white line, if false: waits until no white line
+	 * @param flag
+	 */
 	private final void waitForWhite(final boolean flag) {
 		final int threshold = WhiteThreshold;
 		if (flag) {
@@ -104,6 +118,13 @@ public class DefaultDriver extends AbstractDriver {
 		} else {
 			while (isMoving() && (readSensorLight() > threshold));
 		}
+	}
+	/**
+	 * waits until white line or to close to wall ( 14 cm)
+	 */
+	private final void waitForWhiteOrWall(){
+		final int threshold = WhiteThreshold;
+		while (isMoving() && (readSensorLight() <= threshold) && (readSensorUltraSonic() > 14));
 	}
 	
 }
