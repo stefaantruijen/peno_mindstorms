@@ -92,9 +92,9 @@ public class WhiteLineAction extends Action {
 			}
 			
 			// turn right until half of totalArc 
-			driver.setSpeed(50);
+			driver.setSpeed(12);
 			driver.turnRight();
-			while(!isAborted() && (Math.abs(driver.getAngleIncrement()) <= (totalArc / 2)));
+			while(!isAborted() && (Math.abs(driver.getAngleIncrement()) <= ((totalArc / 2) + 1)));
 			driver.stop();
 		} else{
 			driver.turnLeft(90, true);
