@@ -23,7 +23,7 @@ public class PhysicalRobot extends AbstractRobot {
 	private final static int DEFAULT_ACCELERATION	 = 500;
 	public static final float WHEEL_DIAMETER_LEFT  = 55.37F;
 	public static final float WHEEL_DIAMETER_RIGHT = 55.00F;
-	public static final float WHEEL_SPAN = 168.50F;
+	public static final float WHEEL_SPAN = 169.9F;
 	
 	private RegulatedMotor head = Motor.B;
 	private DifferentialPilot pilot;
