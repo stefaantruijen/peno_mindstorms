@@ -39,14 +39,17 @@ public class TestBot implements Runnable {
 	
 	
 	public static void main(final String... args) throws Exception {
+		System.out.println("Waiting ...");
 		final TestBot bot = new TestBot(ServerConnection.create());
 		
+		System.out.println("Running ...");
 		final Thread thread = new Thread(bot);
 		thread.setDaemon(true);
 		thread.start();
 		
 		Button.waitForAnyPress();
 		
+		System.out.println("Stopping ...");
 		thread.interrupt();
 	}
 	

@@ -22,6 +22,8 @@ import javax.swing.SwingUtilities;
 
 import lejos.pc.comm.NXTCommException;
 
+import bluebot.io.ClientConnection;
+import bluebot.io.ClientConnector;
 import bluebot.io.Connection;
 import bluebot.io.protocol.Packet;
 import bluebot.io.protocol.impl.MotionPacket;
@@ -58,23 +60,27 @@ public class TestBotFrame extends JFrame implements Runnable {
 			public void keyPressed(final KeyEvent event) {
 				switch (event.getKeyCode()) {
 					case KeyEvent.VK_DOWN:
-						sendPacket(getPacketFactory().createMoveBackward());
+//						sendPacket(getPacketFactory().createMoveBackward());
+						sendPacket(getPacketFactory().createMoveBackward(100F));
 						break;
 					case KeyEvent.VK_LEFT:
-						sendPacket(getPacketFactory().createTurnLeft());
+//						sendPacket(getPacketFactory().createTurnLeft());
+						sendPacket(getPacketFactory().createTurnLeft(90F));
 						break;
 					case KeyEvent.VK_RIGHT:
-						sendPacket(getPacketFactory().createTurnRight());
+//						sendPacket(getPacketFactory().createTurnRight());
+						sendPacket(getPacketFactory().createTurnRight(90F));
 						break;
 					case KeyEvent.VK_UP:
-						sendPacket(getPacketFactory().createMoveForward());
+//						sendPacket(getPacketFactory().createMoveForward());
+						sendPacket(getPacketFactory().createMoveForward(100F));
 						break;
 				}
 			}
 			
 			@Override
 			public void keyReleased(final KeyEvent event) {
-				sendPacket(getPacketFactory().createStop());
+//				sendPacket(getPacketFactory().createStop());
 			}
 		}));
 	}
@@ -82,9 +88,7 @@ public class TestBotFrame extends JFrame implements Runnable {
 	
 	
 	private static final Connection connect() throws NXTCommException {
-		// TODO
-		return null;
-//		return ClientConnection.create("BlueBot");
+		return new ClientConnector().connectTo("BlueBot");
 	}
 	
 	private static final JLabel createLabel() {
@@ -163,7 +167,7 @@ public class TestBotFrame extends JFrame implements Runnable {
 					setText(0, motion.getX());
 					setText(1, motion.getY());
 					setText(2, motion.getHeading());
-					if ((index += 3) > labels.length) {
+					if ((index += 3) >= labels.length) {
 						index = 0;
 					}
 				}

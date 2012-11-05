@@ -7,7 +7,7 @@ import bluebot.DefaultDriver;
 import bluebot.Driver;
 import bluebot.DriverHandler;
 import bluebot.Robot;
-import bluebot.io.ClientConnection;
+import bluebot.io.ClientConnector;
 import bluebot.io.Communicator;
 import bluebot.io.Connection;
 import bluebot.io.VirtualConnection;
@@ -42,7 +42,7 @@ public class ControllerFactory {
 	 * @throws NXTCommException if the connection with the NXT brick fails
 	 */
 	public Controller connectToBrick(final String name) throws NXTCommException {
-		return createController(ClientConnection.create(name));
+		return createController(new ClientConnector().connectTo("BlueBot"));
 	}
 	
 	/**
