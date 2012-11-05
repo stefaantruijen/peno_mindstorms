@@ -36,6 +36,13 @@ public interface Driver extends Mobile {
 	public int readSensorUltraSonic();
 	
 	/**
+	 * Sends a debug message
+	 * 
+	 * @param msg - the message to be sent
+	 */
+	public void sendDebug(String msg);
+	
+	/**
 	 * Sends an error message
 	 * 
 	 * @param msg - the message to be sent

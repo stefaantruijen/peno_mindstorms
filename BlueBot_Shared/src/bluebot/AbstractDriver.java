@@ -121,6 +121,10 @@ public abstract class AbstractDriver implements Driver {
 		return getRobot().readSensorUltraSonic();
 	}
 	
+	public void sendDebug(final String msg) {
+		getTranslator().sendDebug(msg);
+	}
+	
 	public void sendError(final String msg) {
 		getTranslator().sendError(msg);
 	}
