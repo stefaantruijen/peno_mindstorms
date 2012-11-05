@@ -10,6 +10,7 @@ import bluebot.io.ConnectionListener;
 import bluebot.io.protocol.Packet;
 import bluebot.io.protocol.PacketHandler;
 import bluebot.io.protocol.impl.ConfigPacket;
+import bluebot.io.protocol.impl.DebugPacket;
 import bluebot.io.protocol.impl.ErrorPacket;
 import bluebot.io.protocol.impl.MessagePacket;
 import bluebot.io.protocol.impl.MotionPacket;
@@ -47,6 +48,10 @@ public class DefaultController extends AbstractController {
 	
 	public void doCalibrate() {
 		getTranslator().doCalibrate();
+	}
+	
+	public void doMaze() {
+		getTranslator().doMaze();
 	}
 	
 	public void doPolygon(final int corners, final float length) {
@@ -125,6 +130,10 @@ public class DefaultController extends AbstractController {
 			switch (packet.getOpcode()) {
 				case OP_CONFIG:
 					handlePacketConfig((ConfigPacket)packet);
+					break;
+				case OP_DEBUG:
+					// Print debug messages to console
+					System.out.println("[DEBUG]  " + ((DebugPacket)packet).getMessage());
 					break;
 				case OP_ERROR:
 					fireError(((ErrorPacket)packet).getMessage());

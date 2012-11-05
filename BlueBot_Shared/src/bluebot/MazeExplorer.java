@@ -1,7 +1,6 @@
 package bluebot;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Random;
 
 import bluebot.graph.Border;
@@ -17,7 +16,7 @@ import bluebot.graph.Tile;
  */
 public class MazeExplorer implements Runnable {
 	private final Robot robot;
-	private final static int DISTANCE_TO_EDGE = 30; //(cm)
+	private final static int DISTANCE_TO_EDGE = 35; //(cm)
 	private Direction currentDirection = Direction.UP;
 	private Graph maze;
 	private Tile currentTile;
@@ -33,15 +32,17 @@ public class MazeExplorer implements Runnable {
 		currentTile = initialize();
 		while(true){
 			Tile nextTile = this.getRandomNextTile(currentTile);
-			//System.out.println("Next tile = "+nextTile);
 			if(nextTile == null){
 				//in a deadEnd
 			}else{
-				this.checkTile(nextTile);
-				
-				this.maze.addVertex(nextTile);
-				this.maze.addEdge(currentTile,nextTile);
-				this.moveTo(currentTile, nextTile);
+				if(!this.maze.hasVertex(nextTile)){
+					this.checkTile(nextTile);
+					this.maze.addVertex(nextTile);
+					this.maze.addEdge(currentTile,nextTile);
+				}
+					this.moveTo(currentTile, nextTile);
+					System.out.println(this.currentDirection);
+					
 			}
 		}
 		
@@ -111,7 +112,6 @@ public class MazeExplorer implements Runnable {
 	 */
 	private void checkTile(Tile tile){
 		for(int i = 0;i<=3;i++){
-			System.out.println("Distance = "+robot.readSensorUltraSonic());
 			boolean wall = (robot.readSensorUltraSonic() <= getDistanceToEdge());
 			
 			switch(currentDirection){
@@ -179,19 +179,12 @@ public class MazeExplorer implements Runnable {
 			possibilities.add(new Tile(current.getX(),current.getY()-1));
 		}
 		
-			Iterator<Tile> iter = possibilities.iterator();
-			while(iter.hasNext()){
-				Tile t = iter.next();
-				if(maze.hasVertex(t) && currentTile.isNeighborFrom(t)){
-					this.maze.addEdge(currentTile, t);
-					iter.remove();
-				}
-			}
+			
 		
 			Random r = new Random();
 			if(possibilities.size() > 0){
 				int x = r.nextInt(possibilities.size());
-				System.out.println("x = "+x);
+				
 				return possibilities.get(x);
 			}
 		
@@ -216,7 +209,7 @@ public class MazeExplorer implements Runnable {
 		Tile first = new Tile(0,0);
 		this.checkTile(first);
 		this.maze.setRootTile(first);
-		System.out.println("First tile : "+first);
+		
 		return first;
 	}
 

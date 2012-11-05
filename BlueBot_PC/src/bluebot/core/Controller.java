@@ -26,6 +26,8 @@ public interface Controller extends EventDispatcher<ControllerListener> {
 	
 	public void doCalibrate();
 	
+	public void doMaze();
+	
 	public void doPolygon(int corners, float length);
 	
 	public void doWhiteLineOrientation();

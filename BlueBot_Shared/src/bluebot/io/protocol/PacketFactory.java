@@ -4,6 +4,7 @@ package bluebot.io.protocol;
 import bluebot.graph.Tile;
 import bluebot.io.protocol.impl.CommandPacket;
 import bluebot.io.protocol.impl.ConfigPacket;
+import bluebot.io.protocol.impl.DebugPacket;
 import bluebot.io.protocol.impl.ErrorPacket;
 import bluebot.io.protocol.impl.MessagePacket;
 import bluebot.io.protocol.impl.MotionPacket;
@@ -46,6 +47,15 @@ public class PacketFactory {
 	}
 	
 	/**
+	 * Creates a command packet for the maze algorithm
+	 * 
+	 * @return a {@link Packet} object
+	 */
+	public Packet createCommandMaze() {
+		return createCommand(CommandPacket.MAZE);
+	}
+	
+	/**
 	 * Creates a command packet for the white-line-orientation algorithm
 	 * 
 	 * @return a {@link Packet} object
@@ -63,6 +73,17 @@ public class PacketFactory {
 	 */
 	public Packet createConfigSpeed(final int percentage) {
 		return new ConfigPacket(ConfigPacket.ID_SPEED, percentage);
+	}
+	
+	/**
+	 * Creates a debug (message) packet
+	 * 
+	 * @param msg - the debug message
+	 * 
+	 * @return a {@link Packet} object
+	 */
+	public Packet createDebug(final String msg) {
+		return new DebugPacket(msg);
 	}
 	
 	/**

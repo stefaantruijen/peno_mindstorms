@@ -121,6 +121,10 @@ public abstract class AbstractDriver implements Driver {
 		return getRobot().readSensorUltraSonic();
 	}
 	
+	public void sendDebug(final String msg) {
+		getTranslator().sendDebug(msg);
+	}
+	
 	public void sendError(final String msg) {
 		getTranslator().sendError(msg);
 	}
@@ -227,6 +231,14 @@ public abstract class AbstractDriver implements Driver {
 			updater.interrupt();
 			updater = null;
 		}
+	}
+	
+	public void turnHeadClockWise(final int offset) {
+		getRobot().turnHeadCWise(offset);
+	}
+	
+	public void turnHeadCounterClockWise(final int offset) {
+		getRobot().turnHeadCCWise(offset);
 	}
 	
 	public void turnLeft() {

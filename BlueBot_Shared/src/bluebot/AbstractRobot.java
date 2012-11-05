@@ -53,4 +53,12 @@ public abstract class AbstractRobot implements Robot {
 	
 	protected abstract void setSpeedTravel(float speed);
 	
+	public void turnHeadClockWise(final int offset) {
+		// ignored
+	}
+	
+	public void turnHeadCounterClockWise(final int offset) {
+		// ignored
+	}
+	
 }

@@ -57,6 +57,20 @@ public interface Mobile {
 	public void stop();
 	
 	/**
+	 * Turns the head (= distance sensor) clockwise
+	 * 
+	 * @param offset - ???
+	 */
+	public void turnHeadClockWise(int offset);
+	
+	/**
+	 * Turns the head (= distance sensor) counter-clockwise
+	 * 
+	 * @param offset - ???
+	 */
+	public void turnHeadCounterClockWise(int offset);
+	
+	/**
 	 * Turns left
 	 */
 	public void turnLeft();
