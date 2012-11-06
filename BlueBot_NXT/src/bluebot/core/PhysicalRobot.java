@@ -42,6 +42,8 @@ public class PhysicalRobot extends AbstractRobot {
 		this.sensorLight = new LightSensor(light);
 		this.sensorUltraSonic = new UltrasonicSensor(ultraSonic);
 		this.tracker = new OdometryPoseProvider(pilot);
+		
+		resetOrientation();
 	}
 	
 	
@@ -104,6 +106,10 @@ public class PhysicalRobot extends AbstractRobot {
 	
 	public int readSensorUltraSonic() {
 		return sensorUltraSonic.getDistance();
+	}
+	
+	public void resetOrientation() {
+		getTracker().setPose(new Pose(0F, 0F, 0F));
 	}
 	
 	protected void setSpeedRotate(final float speed) {
