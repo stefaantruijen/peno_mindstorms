@@ -271,6 +271,10 @@ public class VirtualRobot extends AbstractRobot {
 		return 255;
 	}
 	
+	public void resetOrientation() {
+		// TODO: Implement
+	}
+	
 	public void setTravelSpeed(double speed) {
 		this.travelSpeed = speed;
 	}

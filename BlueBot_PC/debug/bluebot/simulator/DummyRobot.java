@@ -96,6 +96,10 @@ public class DummyRobot extends AbstractRobot {
 		return 255;
 	}
 	
+	public void resetOrientation() {
+		this.pos = new Pos();
+	}
+	
 	public void setTravelSpeed(final double speed) {
 		this.speedTravel = speed;
 	}
