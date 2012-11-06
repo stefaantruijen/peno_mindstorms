@@ -15,6 +15,7 @@ public interface Robot extends Mobile {
 	
 	public final static double DEFAULT_SPEED_ROTATE = 75;
 	public final static double DEFAULT_SPEED_TRAVEL = 300;
+	public static final int DEFAULT_ACCELERATION = 500;
 	
 	
 	

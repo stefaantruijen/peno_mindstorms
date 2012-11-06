@@ -12,8 +12,8 @@ import bluebot.actions.Action;
 public class CalibrationAction extends Action {
 	
 	public void execute(final Driver driver) throws InterruptedException {
-		// Set speed to 12%
-		driver.setSpeed(12);
+		// Set speed to 35%
+		driver.setSpeed(35);
 		int max = 0;
 		//driver.moveForward(300F, false);
 		driver.turnRight(360, false);
