@@ -20,7 +20,6 @@ import bluebot.util.Orientation;
  */
 public class PhysicalRobot extends AbstractRobot {
 	
-	private final static int DEFAULT_ACCELERATION	 = 500;
 	public static final float WHEEL_DIAMETER_LEFT  = 55.37F;
 	public static final float WHEEL_DIAMETER_RIGHT = 55.00F;
 	public static final float WHEEL_SPAN = 169.9F;
@@ -50,7 +49,7 @@ public class PhysicalRobot extends AbstractRobot {
 				Motor.A,
 				Motor.C,
 				false);
-		pilot.setAcceleration(DEFAULT_ACCELERATION);
+		pilot.setAcceleration(Robot.DEFAULT_ACCELERATION);
 		pilot.setRotateSpeed(Robot.DEFAULT_SPEED_ROTATE);
 		pilot.setTravelSpeed(Robot.DEFAULT_SPEED_TRAVEL);
 		return pilot;

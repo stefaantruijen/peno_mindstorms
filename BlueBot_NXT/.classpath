@@ -5,7 +5,8 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="/home/h4oxer/Lejos/leJOS_NXJ_0.9.1beta-3"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/opt/leJOS_NXJ/lib/nxt/classes.jar"/>
+	<classpathentry kind="src" path="debug"/>
+	<classpathentry kind="lib" path="/Users/Lies/Desktop/3de bach/P&amp;O/project/leJOS_NXJ_0.9.1beta-3/lib/nxt/classes.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/BlueBot_Shared"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
