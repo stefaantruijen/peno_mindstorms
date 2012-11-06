@@ -1,6 +1,7 @@
 package bluebot.io;
 
 
+import bluebot.graph.Tile;
 import bluebot.sensors.SensorType;
 
 
@@ -41,6 +42,10 @@ public class ServerTranslator extends Translator {
 	
 	public void sendSensorValue(final SensorType type, final int value) {
 		sendPacket(getPacketFactory().createSensorResponse(type, value));
+	}
+	
+	public void sendTile(final Tile tile) {
+		sendPacket(getPacketFactory().createTile(tile));
 	}
 	
 }

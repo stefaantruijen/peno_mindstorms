@@ -1,5 +1,6 @@
 package bluebot;
 
+import bluebot.graph.Tile;
 import bluebot.sensors.Calibration;
 
 
@@ -56,5 +57,12 @@ public interface Driver extends Mobile {
 	 * @param title - a title for the message
 	 */
 	public void sendMessage(String msg, String title);
+	
+	/**
+	 * Sends a tile
+	 * 
+	 * @param tile - the (updated) {@link Tile}
+	 */
+	public void sendTile(Tile tile);
 	
 }

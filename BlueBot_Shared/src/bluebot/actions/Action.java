@@ -2,6 +2,7 @@ package bluebot.actions;
 
 
 import bluebot.Driver;
+import bluebot.actions.impl.WhiteLineAction;
 
 
 
@@ -31,6 +32,17 @@ public abstract class Action {
 	 * @throws InterruptedException if interrupted
 	 */
 	public abstract void execute(Driver driver) throws InterruptedException;
+	
+	/**
+	 * Executes the white-line algorithm
+	 * 
+	 * @param driver - the {@link Driver} to be executed on
+	 * 
+	 * @throws InterruptedException if interrupted
+	 */
+	protected void executeWhiteLine(final Driver driver) throws InterruptedException {
+		new WhiteLineAction().execute(driver);
+	}
 	
 	/**
 	 * Determines whether or not this action has been aborted

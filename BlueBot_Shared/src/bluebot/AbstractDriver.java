@@ -1,6 +1,7 @@
 package bluebot;
 
 
+import bluebot.graph.Tile;
 import bluebot.io.Connection;
 import bluebot.io.ServerTranslator;
 import bluebot.sensors.Calibration;
@@ -181,6 +182,10 @@ public abstract class AbstractDriver implements Driver {
 	 */
 	protected void sendSensorUltraSonic(final int value) {
 		sendSensor(value, SensorType.ULTRA_SONIC);
+	}
+	
+	public void sendTile(final Tile tile) {
+		getTranslator().sendTile(tile);
 	}
 	
 	private final void setRobot(final Robot robot) {
