@@ -1,5 +1,7 @@
 package bluebot;
 
+import bluebot.util.Orientation;
+
 
 
 /**
@@ -8,6 +10,13 @@ package bluebot;
  * @author Ruben Feyen
  */
 public interface Mobile {
+	
+	/**
+	 * Returns the current orientation
+	 * 
+	 * @return an {@link Orientation} object
+	 */
+	public Orientation getOrientation();
 	
 	/**
 	 * Determines whether or not a movement is in progress
@@ -41,6 +50,11 @@ public interface Mobile {
 	 * @param wait - if <code>TRUE</code>, this method blocks until the motion is finished
 	 */
 	public void moveForward(float distance, boolean wait);
+	
+	/**
+	 * Resets the current orientation
+	 */
+	public void resetOrientation();
 	
 	/**
 	 * Sets the speed

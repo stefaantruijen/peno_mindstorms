@@ -1,7 +1,5 @@
 package bluebot;
 
-import bluebot.util.Orientation;
-
 
 
 /**
@@ -25,13 +23,6 @@ public interface Robot extends Mobile {
 	 * @return a <code>float</code> value representing the current heading (in degrees)
 	 */
 	public float getHeading();
-	
-	/**
-	 * Returns the orientation of the robot
-	 * 
-	 * @return an {@link Orientation} object
-	 */
-	public Orientation getOrientation();
 	
 	/**
 	 * Returns the X coordinate of the robot

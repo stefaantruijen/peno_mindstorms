@@ -46,12 +46,7 @@ public abstract class AbstractDriver implements Driver {
 		return calibration;
 	}
 	
-	/**
-	 * Returns the orientation of the robot
-	 * 
-	 * @return an {@link Orientation} object
-	 */
-	protected Orientation getOrientation() {
+	public Orientation getOrientation() {
 		return getRobot().getOrientation();
 	}
 	
@@ -120,6 +115,10 @@ public abstract class AbstractDriver implements Driver {
 	
 	public int readSensorUltraSonic() {
 		return getRobot().readSensorUltraSonic();
+	}
+	
+	public void resetOrientation() {
+		getRobot().resetOrientation();
 	}
 	
 	public void sendDebug(final String msg) {
