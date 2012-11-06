@@ -31,12 +31,12 @@ public class PhysicalRobot extends AbstractRobot {
 	
 	
 	public PhysicalRobot() {
-		this(SensorPort.S1, SensorPort.S2);
+		this(createPilot(), SensorPort.S1, SensorPort.S2);
 	}
-	public PhysicalRobot(final SensorPort light, final SensorPort ultraSonic) {
-		pilot = createPilot();
-		sensorLight = new LightSensor(light);
-		sensorUltraSonic = new UltrasonicSensor(ultraSonic);
+	public PhysicalRobot(final DifferentialPilot pilot, final SensorPort light, final SensorPort ultraSonic) {
+		this.pilot = pilot;
+		this.sensorLight = new LightSensor(light);
+		this.sensorUltraSonic = new UltrasonicSensor(ultraSonic);
 	}
 	
 	

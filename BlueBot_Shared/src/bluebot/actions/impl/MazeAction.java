@@ -2,6 +2,7 @@ package bluebot.actions.impl;
 
 
 import bluebot.Driver;
+import bluebot.MazeExplorer;
 import bluebot.actions.Action;
 
 
@@ -12,7 +13,8 @@ import bluebot.actions.Action;
 public class MazeAction extends Action {
 	
 	public void execute(final Driver driver) throws InterruptedException {
-		// TODO
+		MazeExplorer me = new MazeExplorer(driver);
+		me.run();
 	}
 	
 }

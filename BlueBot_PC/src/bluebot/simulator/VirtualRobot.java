@@ -71,11 +71,15 @@ public class VirtualRobot extends AbstractRobot {
 	private long currentActionETA;
 	
 	private Tile[] tilesList;
-	private VirtualLightSensor lightSensor;
-	private VirtualSonar sonar;
+//	private VirtualLightSensor lightSensor;
+//	private VirtualSonar sonar;
 	private float startX;
 	private float startY;
 	
+	// TODO: Modify or remove this temporary default constructor
+	public VirtualRobot() {
+		this(new Tile[0], null);
+	}
 	/**
 	 * 
 	 * @param tilesList
@@ -84,8 +88,8 @@ public class VirtualRobot extends AbstractRobot {
 		this.tilesList= tilesList;
 		this.startX = startTile.getX()*20;
 		this.startY = startTile.getY()*0;
-		this.lightSensor = new VirtualLightSensor(tilesList);
-		this.sonar = new VirtualSonar(tilesList);
+//		this.lightSensor = new VirtualLightSensor(tilesList);
+//		this.sonar = new VirtualSonar(tilesList);
 	}
 	
 	//Getters and setters of fields.
