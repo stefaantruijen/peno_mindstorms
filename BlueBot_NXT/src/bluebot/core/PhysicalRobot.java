@@ -5,11 +5,14 @@ import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
 import lejos.nxt.UltrasonicSensor;
+import lejos.robotics.localization.OdometryPoseProvider;
 import lejos.robotics.navigation.DifferentialPilot;
+import lejos.robotics.navigation.Pose;
 import lejos.robotics.RegulatedMotor;
 import bluebot.AbstractRobot;
 import bluebot.Robot;
 import bluebot.util.Orientation;
+import bluebot.util.Utils;
 
 
 
@@ -28,6 +31,7 @@ public class PhysicalRobot extends AbstractRobot {
 	private DifferentialPilot pilot;
 	private LightSensor sensorLight;
 	private UltrasonicSensor sensorUltraSonic;
+	private OdometryPoseProvider tracker;
 	
 	
 	public PhysicalRobot() {
@@ -37,6 +41,7 @@ public class PhysicalRobot extends AbstractRobot {
 		this.pilot = pilot;
 		this.sensorLight = new LightSensor(light);
 		this.sensorUltraSonic = new UltrasonicSensor(ultraSonic);
+		this.tracker = new OdometryPoseProvider(pilot);
 	}
 	
 	
@@ -56,12 +61,21 @@ public class PhysicalRobot extends AbstractRobot {
 	}
 	
 	public Orientation getOrientation() {
-		// TODO:	Proper implementation instead of dummy value
-		return new Orientation(0F, 0F, 0F);
+		final Pose pose = getPose();
+		return new Orientation(pose.getX(), pose.getY(),
+				Utils.clampAngleDegrees(pose.getHeading()));
 	}
 	
 	private final DifferentialPilot getPilot() {
 		return pilot;
+	}
+	
+	private final Pose getPose() {
+		return getTracker().getPose();
+	}
+	
+	private final OdometryPoseProvider getTracker() {
+		return tracker;
 	}
 	
 	public boolean isMoving() {
