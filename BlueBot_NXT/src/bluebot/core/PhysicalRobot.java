@@ -7,6 +7,7 @@ import lejos.nxt.SensorPort;
 import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.localization.OdometryPoseProvider;
 import lejos.robotics.navigation.DifferentialPilot;
+import lejos.robotics.navigation.MoveProvider;
 import lejos.robotics.navigation.Pose;
 import lejos.robotics.RegulatedMotor;
 import bluebot.AbstractRobot;
@@ -31,7 +32,7 @@ public class PhysicalRobot extends AbstractRobot {
 	private DifferentialPilot pilot;
 	private LightSensor sensorLight;
 	private UltrasonicSensor sensorUltraSonic;
-	private OdometryPoseProvider tracker;
+	private Tracker tracker;
 	
 	
 	public PhysicalRobot() {
@@ -41,7 +42,7 @@ public class PhysicalRobot extends AbstractRobot {
 		this.pilot = pilot;
 		this.sensorLight = new LightSensor(light);
 		this.sensorUltraSonic = new UltrasonicSensor(ultraSonic);
-		this.tracker = new OdometryPoseProvider(pilot);
+		this.tracker = new Tracker(pilot);
 		
 		resetOrientation();
 	}
@@ -63,20 +64,15 @@ public class PhysicalRobot extends AbstractRobot {
 	}
 	
 	public Orientation getOrientation() {
-		final Pose pose = getPose();
-		return new Orientation(pose.getX(), pose.getY(),
-				Utils.clampAngleDegrees(pose.getHeading()));
+		return getTracker().getOrientation();
 	}
 	
 	private final DifferentialPilot getPilot() {
 		return pilot;
 	}
 	
-	private final Pose getPose() {
-		return getTracker().getPose();
-	}
-	
-	private final OdometryPoseProvider getTracker() {
+	// TODO: Make private after debugging
+	public final Tracker getTracker() {
 		return tracker;
 	}
 	
@@ -101,7 +97,8 @@ public class PhysicalRobot extends AbstractRobot {
 	}
 	
 	public int readSensorLight() {
-		return sensorLight.readValue();
+		return sensorLight.getLightValue();
+//		return sensorLight.getNormalizedLightValue();
 	}
 	
 	public int readSensorUltraSonic() {
@@ -153,6 +150,36 @@ public class PhysicalRobot extends AbstractRobot {
 	@Override
 	public void turnHeadCCWise(int offset) {
 		this.head.rotate(Math.abs(offset));
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public static final class Tracker extends OdometryPoseProvider {
+		
+		public Tracker(final MoveProvider mp) {
+			super(mp);
+		}
+		
+		
+		
+		public Orientation getOrientation() {
+			final Pose pose = getPose();
+			
+//			float z = pose.getHeading();
+//			z = Utils.clampAngleDegrees(z);
+//			z = (360F - z);
+			
+			return new Orientation(-pose.getY(), pose.getX(),
+					(360F - Utils.clampAngleDegrees(pose.getHeading())));
+		}
 		
 	}
+	
 }
