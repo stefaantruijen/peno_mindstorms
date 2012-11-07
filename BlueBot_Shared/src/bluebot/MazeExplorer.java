@@ -17,8 +17,8 @@ import bluebot.graph.Tile;
 public class MazeExplorer implements Runnable {
 	private final Driver robot;
 	private final static int DISTANCE_TO_EDGE = 35; //(cm)
-	private Direction currentMoveDirection = Direction.UP;
-	private Direction currentLookDirection = Direction.UP;
+	private Direction currentMoveDirection;
+	private Direction currentLookDirection;
 	private Graph maze;
 	private Tile currentTile;
 	private List<Tile> tilesToDeadEnd;
@@ -27,24 +27,33 @@ public class MazeExplorer implements Runnable {
 		this.robot = robot;
 		this.maze = new Graph();
 		this.tilesToDeadEnd = new ArrayList<Tile>();
+		this.robot.setSpeed(50);
+		this.currentMoveDirection = Direction.UP;
+		this.currentLookDirection = Direction.UP;
 	}
 	
 	@Override
 	public void run() {
+		boolean done = false;
 		robot.sendDebug("Exploring maze..");
 		currentTile = initialize();
+		this.robot.sendTile(currentTile);
 		while(true){
 			Tile nextTile = this.getNextTile(currentTile);
 			if(nextTile == null){
+				//detected a deadend tile.
 				tilesToDeadEnd.add(currentTile);
 				robot.sendDebug("Dead end");
-			}else{
+			}
+			else{
+				this.moveTo(currentTile, nextTile);
 				if(!this.maze.hasVertex(nextTile)){
 					this.checkTile(nextTile);
 					this.maze.addVertex(nextTile);
 					this.maze.addEdge(currentTile,nextTile);
+					this.robot.sendTile(nextTile);
+					this.robot.sendDebug(nextTile.toString());
 				}
-					this.moveTo(currentTile, nextTile);
 					
 			}
 		}
@@ -131,6 +140,7 @@ public class MazeExplorer implements Runnable {
 					this.turnCounterClockwise();
 					this.turnCounterClockwise();
 					this.turnCounterClockwise();
+					
 					break;
 				case LEFT:
 					if(wall){
@@ -158,7 +168,7 @@ public class MazeExplorer implements Runnable {
 					break;
 			}
 			
-			
+			this.robot.sendDebug(currentLookDirection.toString()+ " = "+wall);
 		}
 	}
 	/**
@@ -170,11 +180,11 @@ public class MazeExplorer implements Runnable {
 	private Tile getNextTile(Tile current){
 		ArrayList<Tile> possibilities = new ArrayList<Tile>();
 		if(current.getBorderEast()==Border.OPEN){
-			return new Tile(current.getX()-1,current.getY());
+			possibilities.add(new Tile(current.getX()+1,current.getY()));
 		}
 		
 		if(current.getBorderWest() == Border.OPEN){
-			possibilities.add(new Tile(current.getX()+1,current.getY()));
+			possibilities.add(new Tile(current.getX()-1,current.getY()));
 		}
 		
 		if(current.getBorderNorth() == Border.OPEN){
@@ -211,9 +221,11 @@ public class MazeExplorer implements Runnable {
 	 * 			The root tile.
 	 */
 	public Tile initialize(){
+		this.robot.sendDebug("Initializing root tile");
 		Tile first = new Tile(0,0);
 		this.checkTile(first);
 		this.maze.setRootTile(first);
+		
 		return first;
 	}
 
