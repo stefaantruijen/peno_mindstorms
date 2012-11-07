@@ -11,13 +11,8 @@ import bluebot.actions.Action;
  */
 public class WhiteLineAction extends Action {
 	
-	private static final int SPEED_FAST = 90;
-	private static final int SPEED_SLOW = 30;
-	
 	private int threshold;
-	
-	
-	
+
 	public void execute(final Driver driver) throws InterruptedException {
 		// exception if not calibrated
 		if (!driver.getCalibration().isCalibrated()) {
@@ -69,15 +64,6 @@ public class WhiteLineAction extends Action {
 			// left until no white line
 			driver.turnLeft();
 			waitForWhite(driver, false);
-//			float arc = driver.getAngleIncrement();
-//			driver.stop();
-//			
-//			if (isAborted()) {
-//				return;
-//			}
-//			
-//			// left until white line
-//			driver.turnLeft();
 			waitForWhite(driver, true);
 			float totalArc = Math.abs(driver.getAngleIncrement());
 			driver.stop();
@@ -87,7 +73,7 @@ public class WhiteLineAction extends Action {
 			}
 			
 	//		float totalArc = Math.abs(arc) + Math.abs(arc1);
-			if(totalArc<=90){
+			if(totalArc<=150){
 				driver.turnLeft();
 				this.waitForWhite(driver, false);
 				this.waitForWhite(driver, true);
