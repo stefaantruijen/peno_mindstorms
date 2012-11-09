@@ -23,12 +23,14 @@ public class MazeAction extends Action {
 	private Driver driver;
 	private static final int DISTANCE_EDGE = 35;
 	private Tile currentTile;
-	
+	private WhiteLineAction wa;
 	public MazeAction(){
 		this.maze = new Graph();
+		wa = new WhiteLineAction();
 	}
 	public void execute(final Driver driver) throws InterruptedException {
 		this.driver = driver;
+		driver.setSpeed(50);
 		this.initializeRootTile();
 		while(true){
 			Tile nextTile = getNextTile();
@@ -41,7 +43,6 @@ public class MazeAction extends Action {
 			
 			if(checkDeadTile(nextTile)){
 				driver.sendDebug("Dead end reached");
-			
 				return;
 			}
 			
@@ -139,10 +140,29 @@ public class MazeAction extends Action {
 	
 	private Boolean checkForWall() throws InterruptedException{
 		Thread.sleep(1000);
-		return (driver.readSensorUltraSonic() <= DISTANCE_EDGE);
+		int dist = driver.readSensorUltraSonic();
+		if(dist < 25){
+			return true;
+		}else if(dist > 30){
+			return false;
+		}else{
+			driver.turnHeadCounterClockWise(5);
+			Thread.sleep(200);
+			int dist1 = driver.readSensorUltraSonic();
+			driver.turnHeadClockWise(10);
+			Thread.sleep(200);
+			int dist2 = driver.readSensorUltraSonic();
+			driver.turnHeadCounterClockWise(5);
+			if(dist1 < 25 || dist2 < 25){
+				return true;
+			}
+			return false;
+		}
+		
+
 	}
 	
-	private void moveTo(Tile nextTile){
+	private void moveTo(Tile nextTile) throws InterruptedException{
 		Direction nextDir = this.moveDirection;
 		if(nextTile.isEastFrom(currentTile)){
 			nextDir = Direction.RIGHT;
@@ -158,7 +178,9 @@ public class MazeAction extends Action {
 		}
 		
 		this.turnTo(nextDir);
-		this.driver.moveForward(400F, true);
+		wa.execute(driver);
+		driver.setSpeed(50);
+		this.driver.moveForward(200F, true);
 		this.currentTile = nextTile;
 		this.headDirection = moveDirection;
 	}
@@ -166,8 +188,8 @@ public class MazeAction extends Action {
 	private void turnTo(Direction other){
 		driver.sendDebug("Current moving : "+moveDirection.toString());
 		driver.sendDebug("Turning : "+other.toString());
+		
 		if(!moveDirection.equals(other)){
-			
 			if(moveDirection.turnCWise().equals(other)){
 				driver.turnRight(90F, true);
 				this.moveDirection=moveDirection.turnCWise();
@@ -188,8 +210,5 @@ public class MazeAction extends Action {
 			}
 		}
 		
-			
 	}
-	
-	
 }
