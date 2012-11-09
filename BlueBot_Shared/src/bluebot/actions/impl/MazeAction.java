@@ -32,6 +32,7 @@ public class MazeAction extends Action {
 		this.initializeRootTile();
 		while(true){
 			Tile nextTile = getNextTile();
+			driver.sendDebug("Moving to "+nextTile.toString());
 			this.moveTo(nextTile);
 			if(!this.maze.hasVertex(nextTile)){
 				this.exploreTile(nextTile);
@@ -138,7 +139,6 @@ public class MazeAction extends Action {
 	
 	private Boolean checkForWall() throws InterruptedException{
 		Thread.sleep(1000);
-		driver.sendDebug(new Integer(driver.readSensorUltraSonic()).toString());
 		return (driver.readSensorUltraSonic() <= DISTANCE_EDGE);
 	}
 	
@@ -147,23 +147,25 @@ public class MazeAction extends Action {
 		if(nextTile.isEastFrom(currentTile)){
 			nextDir = Direction.RIGHT;
 		}
-		if(nextTile.isNorthFrom(currentTile)){
+		else if(nextTile.isNorthFrom(currentTile)){
 			nextDir = Direction.UP;
 		}
-		if(nextTile.isSouthFrom(currentTile)){
+		else if(nextTile.isSouthFrom(currentTile)){
 			nextDir = Direction.DOWN;
 		}
-		if(nextTile.isWestFrom(currentTile)){
+		else if(nextTile.isWestFrom(currentTile)){
 			nextDir = Direction.LEFT;
 		}
 		
-		this.turnMinimal(nextDir);
+		this.turnTo(nextDir);
 		this.driver.moveForward(400F, true);
 		this.currentTile = nextTile;
 		this.headDirection = moveDirection;
 	}
 	
-	private void turnMinimal(Direction other){
+	private void turnTo(Direction other){
+		driver.sendDebug("Current moving : "+moveDirection.toString());
+		driver.sendDebug("Turning : "+other.toString());
 		if(!moveDirection.equals(other)){
 			
 			if(moveDirection.turnCWise().equals(other)){
@@ -182,8 +184,10 @@ public class MazeAction extends Action {
 				driver.turnRight(180F, true);
 				this.moveDirection = moveDirection.turnCWise();
 				this.moveDirection = moveDirection.turnCWise();
+				return;
 			}
 		}
+		
 			
 	}
 	
