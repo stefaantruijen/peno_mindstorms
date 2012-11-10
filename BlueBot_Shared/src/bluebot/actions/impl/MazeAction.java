@@ -6,6 +6,7 @@ import java.util.List;
 
 import bluebot.Driver;
 import bluebot.actions.Action;
+import bluebot.actions.ActionException;
 import bluebot.graph.Border;
 import bluebot.graph.Direction;
 import bluebot.graph.Graph;
@@ -28,7 +29,7 @@ public class MazeAction extends Action {
 		this.maze = new Graph();
 		wa = new WhiteLineAction();
 	}
-	public void execute(final Driver driver) throws InterruptedException {
+	public void execute(final Driver driver) throws ActionException, InterruptedException {
 		this.driver = driver;
 		driver.setSpeed(50);
 		this.initializeRootTile();
@@ -162,7 +163,7 @@ public class MazeAction extends Action {
 
 	}
 	
-	private void moveTo(Tile nextTile) throws InterruptedException{
+	private void moveTo(Tile nextTile) throws ActionException, InterruptedException{
 		Direction nextDir = this.moveDirection;
 		if(nextTile.isEastFrom(currentTile)){
 			nextDir = Direction.RIGHT;
@@ -178,6 +179,8 @@ public class MazeAction extends Action {
 		}
 		
 		this.turnTo(nextDir);
+		// TODO(?): Use available shortcut method
+//		executeWhiteLine(driver);
 		wa.execute(driver);
 		driver.setSpeed(50);
 		this.driver.moveForward(200F, true);

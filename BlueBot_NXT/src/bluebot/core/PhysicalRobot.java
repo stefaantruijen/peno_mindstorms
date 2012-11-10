@@ -24,6 +24,7 @@ import bluebot.util.Utils;
  */
 public class PhysicalRobot extends AbstractRobot {
 	
+	public static final long INTERVAL_ULTRA_SONIC = 50L;
 	public static final float WHEEL_DIAMETER_LEFT  = 55.37F;
 	public static final float WHEEL_DIAMETER_RIGHT = 55.00F;
 	public static final float WHEEL_SPAN = 169.9F;
@@ -82,8 +83,7 @@ public class PhysicalRobot extends AbstractRobot {
 		return pilot;
 	}
 	
-	// TODO: Make private after debugging
-	public final Tracker getTracker() {
+	private final Tracker getTracker() {
 		return tracker;
 	}
 	
@@ -121,7 +121,7 @@ public class PhysicalRobot extends AbstractRobot {
 		synchronized (lockUltraSonic) {
 			if (time >= nextUltraSonic) {
 				lastUltraSonic = sensorUltraSonic.getDistance();
-				nextUltraSonic = (time + 50L);
+				nextUltraSonic = (time + INTERVAL_ULTRA_SONIC);
 			}
 		}
 		return lastUltraSonic;

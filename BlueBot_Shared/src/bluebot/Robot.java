@@ -4,10 +4,6 @@ package bluebot;
 
 /**
  * Represents a robot
- * 
- * TODO: Allow to send Debug info/messages?
- * 
- * @author Ruben Feyen
  */
 public interface Robot extends Mobile {
 	
@@ -67,6 +63,4 @@ public interface Robot extends Mobile {
 	public float getAngleIncrement();
 	//TODO: getDistanceIncrement()? 
 	
-	//TODO: getPosition()
-	//TODO: getHeading()
 }
