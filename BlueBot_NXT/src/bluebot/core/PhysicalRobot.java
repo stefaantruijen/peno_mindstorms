@@ -28,7 +28,11 @@ public class PhysicalRobot extends AbstractRobot {
 	public static final float WHEEL_DIAMETER_RIGHT = 55.00F;
 	public static final float WHEEL_SPAN = 169.9F;
 	
+	private final Object lockUltraSonic = new Object();
+	
 	private RegulatedMotor head = Motor.B;
+	private int lastUltraSonic;
+	private long nextUltraSonic;
 	private DifferentialPilot pilot;
 	private LightSensor sensorLight;
 	private UltrasonicSensor sensorUltraSonic;
@@ -41,7 +45,7 @@ public class PhysicalRobot extends AbstractRobot {
 	public PhysicalRobot(final DifferentialPilot pilot, final SensorPort light, final SensorPort ultraSonic) {
 		this.pilot = pilot;
 		this.sensorLight = new LightSensor(light);
-		this.sensorUltraSonic = new UltrasonicSensor(ultraSonic);
+		this.sensorUltraSonic = createSensorUltraSonic(ultraSonic);
 		this.tracker = new Tracker(pilot);
 		
 		resetOrientation();
@@ -61,6 +65,13 @@ public class PhysicalRobot extends AbstractRobot {
 		pilot.setRotateSpeed(Robot.DEFAULT_SPEED_ROTATE);
 		pilot.setTravelSpeed(Robot.DEFAULT_SPEED_TRAVEL);
 		return pilot;
+	}
+	
+	protected UltrasonicSensor createSensorUltraSonic(final SensorPort port) {
+		final UltrasonicSensor sensor = new UltrasonicSensor(port);
+//		sensor.setMode(UltrasonicSensor.MODE_PING);
+//		sensor.setContinuousInterval(1);
+		return sensor;
 	}
 	
 	public Orientation getOrientation() {
@@ -102,7 +113,18 @@ public class PhysicalRobot extends AbstractRobot {
 	}
 	
 	public int readSensorUltraSonic() {
-		return sensorUltraSonic.getDistance();
+//		return sensorUltraSonic.getDistance();
+		
+		// Forced interval of 50 ms between requests
+		// This should decrease the amount of incorrect values
+		final long time = System.currentTimeMillis();
+		synchronized (lockUltraSonic) {
+			if (time >= nextUltraSonic) {
+				lastUltraSonic = sensorUltraSonic.getDistance();
+				nextUltraSonic = (time + 50L);
+			}
+		}
+		return lastUltraSonic;
 	}
 	
 	public void resetOrientation() {
