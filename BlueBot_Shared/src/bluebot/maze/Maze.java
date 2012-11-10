@@ -12,6 +12,7 @@ import bluebot.graph.Tile;
 
 
 /**
+ * Represents a maze
  * 
  * @author Ruben Feyen
  */
@@ -39,7 +40,7 @@ public class Maze {
 	}
 	
 	public List<Tile> getNeighbors(final Tile tile) {
-		final ArrayList<Tile> neighbors = new ArrayList<Tile>();
+		final ArrayList<Tile> neighbors = new ArrayList<Tile>(4);
 		
 		final int x = tile.getX();
 		final int y = tile.getY();
@@ -94,8 +95,6 @@ public class Maze {
 		}
 		
 		return tiles;
-		
-//		return new ArrayList<Tile>(map.values());
 	}
 	
 	private final void initBorders(final Tile tile) {
@@ -128,6 +127,17 @@ public class Maze {
 			tile.setBorderWest(neighbor.getBorderEast());
 		}
 	}
+	
+	/*
+	public boolean isExplored() {
+		for (final Tile tile : getTiles()) {
+			if (!tile.isExplored()) {
+				return false;
+			}
+		}
+		return true;
+	}
+	*/
 	
 	private static final Integer key(final int x, final int y) {
 		return Integer.valueOf(Tile.hashCode(x, y));
