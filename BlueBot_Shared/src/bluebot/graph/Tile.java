@@ -3,6 +3,8 @@ package bluebot.graph;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 
@@ -15,11 +17,12 @@ public class Tile {
 	
 	private byte borders;
 	private int x, y;
-	
+	private boolean explored;
 	
 	public Tile(final int x, final int y) {
 		this.x = x;
 		this.y = y;
+		this.explored = false;
 	}
 	
 	
@@ -227,5 +230,38 @@ public class Tile {
 				break;
 		
 		}
-	}	
+	}
+	
+	public void setExplored(){
+		this.explored = true;
+	}
+	
+	public boolean isExplored(){
+		return this.explored;
+	}
+	
+	public List<Tile> getNeighbors(){
+		if(isExplored()){
+			List<Tile> neighbors = new ArrayList<Tile>();
+			if(this.getBorderEast()==Border.OPEN){
+				neighbors.add(new Tile(x+1,y));
+			}
+			if(this.getBorderNorth()==Border.OPEN){
+				neighbors.add(new Tile(x,y+1));
+			}
+			
+			if(this.getBorderSouth()==Border.OPEN){
+				neighbors.add(new Tile(x,y-1));
+			}
+			
+			if(this.getBorderWest()==Border.OPEN){
+				neighbors.add(new Tile(x-1,y));
+			}
+			
+			return neighbors;
+		}
+		
+		throw new IllegalStateException("This tile is not yet explored.");
+		
+	}
 }

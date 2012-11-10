@@ -47,7 +47,7 @@ public class Graph {
 	      added = verticies.add(t);
 	      //check for already added tiles if the given tile is a neighbor from all the other tiles already present in the graph.
 	      for(Tile tile : this.verticies){
-	    	  if(t.isNeighborFrom(tile)){
+	    	  if(t.isExplored() && t.isNeighborFrom(tile)){
 	    		  this.addEdge(t, tile);
 	    		  
 	    	  }
@@ -183,6 +183,22 @@ public class Graph {
 	  
 	  public boolean hasVertex(Tile t){
 		  return this.verticies.contains(t);
+	  }
+	  
+	  public Tile getVertex(int x,int y){
+		  for(Tile t : this.verticies){
+			  if(t.getX() == x && t.getY()==y){
+				  return t;
+			  }
+		  }
+		  
+		  return null;
+	  }
+	  
+	  public void addVerticies(List<Tile> verticies){
+		  for(Tile t : verticies){
+			  this.addVertex(t);
+		  }
 	  }
 
 }
