@@ -8,15 +8,22 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileFilter;
 
 import lejos.pc.comm.NXTCommException;
 
 import bluebot.core.Controller;
+import bluebot.graph.Graph;
+import bluebot.graph.Tile;
+import bluebot.maze.MazeReader;
 
 
 
@@ -63,7 +70,19 @@ public class MainFrame extends JFrame {
 	}
 	
 	private final void connectToSimulator() {
-		showController(getControllerFactory().connectToSimulator());
+		final List<Tile> maze = loadMaze();
+		if (maze == null) {
+			return;
+		}
+		if (maze.isEmpty()) {
+			SwingUtils.showWarning("Invalid maze (no tiles)");
+			return;
+		}
+		
+		final Tile[] tiles = new Tile[maze.size()];
+		maze.toArray(tiles);
+		
+		showController(getControllerFactory().connectToSimulator(tiles));
 	}
 	
 	private static final JButton createButton(final String text) {
@@ -87,18 +106,10 @@ public class MainFrame extends JFrame {
 			}
 		});
 		
-		// TODO: Remove this button after debugging
-		final JButton btnDummy = createButton("Connect to Test Dummy");
-		btnDummy.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				showController(getControllerFactory().connectToTestDummy());
-			}
-		});
-		
 		final GridBagLayout layout = new GridBagLayout();
 		layout.columnWeights = new double[] { 1D };
-		layout.rowHeights = new int[] { 64, 64, 64 };
-		layout.rowWeights = new double[] { 1D, 1D, 1D };
+		layout.rowHeights = new int[] { 64, 64 };
+		layout.rowWeights = new double[] { 1D, 1D };
 		setLayout(layout);
 		
 		final GridBagConstraints gbc = SwingUtils.createGBC();
@@ -110,9 +121,45 @@ public class MainFrame extends JFrame {
 		
 		gbc.gridy++;
 		add(btnSim, gbc);
+	}
+	
+	private final List<Tile> loadMaze() {
+		final JFileChooser fc = new JFileChooser(new File("."));
+		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		for (final FileFilter filter : fc.getChoosableFileFilters()) {
+			fc.removeChoosableFileFilter(filter);
+		}
+		fc.addChoosableFileFilter(new FileFilter() {
+			public boolean accept(final File file) {
+				return (file.isDirectory() || file.getName().endsWith(".txt"));
+			}
+			
+			public String getDescription() {
+				return "Maze files (.txt)";
+			}
+		});
 		
-		gbc.gridy++;
-		add(btnDummy, gbc);
+		fc.setApproveButtonText("Load");
+		fc.setDialogTitle("Load a maze file");
+		
+		if (fc.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
+			return null;
+		}
+		
+		final File file = fc.getSelectedFile();
+		
+		final Graph graph;
+		try {
+			graph = new MazeReader().parseMaze(file.getAbsolutePath());
+		} catch (final Throwable e) {
+			return null;
+		}
+		
+		if (graph == null) {
+			return null;
+		}
+		
+		return graph.getVerticies();
 	}
 	
 	private final void showController(final Controller controller) {

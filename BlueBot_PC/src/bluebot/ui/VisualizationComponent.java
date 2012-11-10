@@ -116,8 +116,38 @@ public class VisualizationComponent extends RenderingComponent
 		gfx.setColor(Color.YELLOW);
 		gfx.fillRect(x, y, TILE_RESOLUTION, TILE_RESOLUTION);
 		
-		final int thickness = (TILE_RESOLUTION >> 6);
+		final int thickness = (TILE_RESOLUTION >> 5);
 		
+		final Border[] borders = {
+			tile.getBorderNorth(),
+			tile.getBorderEast(),
+			tile.getBorderSouth(),
+			tile.getBorderWest()
+		};
+		final Border[] order = {
+			Border.OPEN,
+			Border.UNKNOWN,
+			Border.CLOSED
+		};
+		final int[][] params = {
+			{ x, y, TILE_RESOLUTION, thickness },
+			{ (x + TILE_RESOLUTION - thickness), y, thickness, TILE_RESOLUTION },
+			{ x, (y + TILE_RESOLUTION - thickness), TILE_RESOLUTION, thickness },
+			{ x, y, thickness, TILE_RESOLUTION }
+		};
+		
+		int[] bounds;
+		for (final Border border : order) {
+			gfx.setColor(getBorderColor(border));
+			for (int i = 0; i < 4; i++) {
+				if (borders[i] == border) {
+					bounds = params[i];
+					gfx.fillRect(bounds[0], bounds[1], bounds[2], bounds[3]);
+				}
+			}
+		}
+		
+		/*
 		gfx.setColor(getBorderColor(tile.getBorderNorth()));
 		gfx.fillRect(
 				x,
@@ -145,6 +175,7 @@ public class VisualizationComponent extends RenderingComponent
 				y,
 				thickness,
 				TILE_RESOLUTION);
+		*/
 	}
 	
 	private static final Color getBorderColor(final Border border) {
@@ -235,7 +266,6 @@ public class VisualizationComponent extends RenderingComponent
 			maxX = minX = tx;
 			maxY = minY = ty;
 		} else {
-			
 			if ((tx < minX) || (tx > maxX) || (ty < minY) || (ty > maxY)) {
 				final int w = (1 + Math.max(maxX, tx) - Math.min(tx, minX));
 				final int h = (1 + Math.max(maxY, ty) - Math.min(ty, minY));

@@ -8,31 +8,21 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.filechooser.FileFilter;
 
 import bluebot.ConfigListener;
 import bluebot.core.Controller;
 import bluebot.core.ControllerListener;
-import bluebot.graph.Graph;
-import bluebot.graph.Tile;
-import bluebot.maze.MazeGenerator;
-import bluebot.maze.MazeReader;
 
 
 
@@ -193,32 +183,22 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		return createModule(panel, "Controls");
 	}
 
-	private final Component createModuleRenderer() {
-		final VisualizationComponent canvas = new VisualizationComponent();
-		canvas.addMouseListener(new MouseAdapter() {
-			// TODO: Remove after debugging
-			@Override
-			public void mouseClicked(final MouseEvent event) {
-				canvas.removeMouseListener(this);
-				for (final Tile tile : loadMaze()) {
-					canvas.onTileUpdate(tile);
-				}
-			}
-		});
-		controller.addListener(canvas);
-		return createModule(canvas, "Visualization");
-	}
-	
 	private final Component createModuleSensors() {
 		final SensorsComponent sensors = new SensorsComponent();
 		controller.addListener(sensors);
 		return createModule(sensors, "Sensors");
 	}
 	
+	private final Component createModuleVisualization() {
+		final VisualizationComponent canvas = new VisualizationComponent();
+		controller.addListener(canvas);
+		return createModule(canvas, "Visualization");
+	}
+	
 	private final JTabbedPane createTabs() {
 		final JTabbedPane tabs = new JTabbedPane(JTabbedPane.TOP);
 		tabs.addTab("Communication", createModuleCommunication());
-		tabs.addTab("Visualization", createModuleRenderer());
+		tabs.addTab("Visualization", createModuleVisualization());
 		tabs.setSelectedIndex(1);
 		return tabs;
 	}
@@ -253,33 +233,6 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		add(createModuleSensors(), gbc);
 	}
 	
-	private final List<Tile> loadMaze() {
-		final JFileChooser fc = new JFileChooser(new File("."));
-		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		for (final FileFilter filter : fc.getChoosableFileFilters()) {
-			fc.removeChoosableFileFilter(filter);
-		}
-		fc.addChoosableFileFilter(new FileFilter() {
-			public boolean accept(final File file) {
-				return (file.isDirectory() || file.getName().endsWith(".txt"));
-			}
-			
-			public String getDescription() {
-				return "Maze files (.txt)";
-			}
-		});
-		
-		if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-			final File file = fc.getSelectedFile();
-			final Graph graph = new MazeReader().parseMaze(file.getAbsolutePath());
-			if (graph != null) {
-				return graph.getVerticies();
-			}
-		}
-		
-		return new MazeGenerator().generateMaze().getTiles();
-	}
-
 	public void onError(final String msg) {
 		JOptionPane.showMessageDialog(this, msg, "Error",
 				JOptionPane.ERROR_MESSAGE);

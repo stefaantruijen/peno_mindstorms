@@ -7,11 +7,11 @@ import bluebot.DefaultDriver;
 import bluebot.Driver;
 import bluebot.DriverHandler;
 import bluebot.Robot;
+import bluebot.graph.Tile;
 import bluebot.io.ClientConnector;
 import bluebot.io.Communicator;
 import bluebot.io.Connection;
 import bluebot.io.VirtualConnection;
-import bluebot.simulator.DummyRobot;
 import bluebot.simulator.VirtualRobot;
 
 
@@ -48,15 +48,24 @@ public class ControllerFactory {
 	/**
 	 * Creates a controller for a simulator
 	 * 
+	 * @param tiles - an array of {@link Tile} objects representing the virtual maze
+	 * 
 	 * @return a {@link Controller} object
 	 */
-	public Controller connectToSimulator() {
-		return createController(new VirtualRobot());
-	}
-	
-	// TODO: Remove this method after debugging
-	public Controller connectToTestDummy() {
-		return createController(new DummyRobot());
+	public Controller connectToSimulator(final Tile[] tiles) {
+		Tile start = null;
+		for (final Tile tile : tiles) {
+			if ((tile.getX() | tile.getY()) == 0) {
+				start = tile;
+				break;
+			}
+		}
+		
+		if (start == null) {
+			start = tiles[0];
+		}
+		
+		return createController(new VirtualRobot(tiles, start));
 	}
 	
 	/**
