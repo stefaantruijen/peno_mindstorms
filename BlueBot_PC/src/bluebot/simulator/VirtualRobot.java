@@ -14,12 +14,11 @@ import bluebot.util.Utils;
  * 
  * @author Dieter Castel, Ruben Feyen, Michiel Ruelens 
  */
-@SuppressWarnings("unused")
 public class VirtualRobot extends AbstractRobot {
 	/**
-	 * 
+	 * The size of the tiles on which the VirtualRobot will be driving.
 	 */
-	public static int TILE_SIZE = 40; //Probably get this value from other class.//TODO: see what this is irl
+	public static int TILE_SIZE = 40;
 	/**
 	 * Static that holds the standard travel speed in mm/s. This is the speed we measured in the real NXT robot.
 	 */
@@ -28,7 +27,21 @@ public class VirtualRobot extends AbstractRobot {
 	 * Static that holds the standard rotate speed in degrees/s. This is the speed we measured in the real NXT robot.
 	 */
 	public static double STANDARD_ROTATE_SPEED = 30; //Probably get this value from other class.//TODO: see what this is irl
-	//TODO: STANDARD_SONAR_ROTATE_SPEED
+	/**
+	 * Static that holds the standard rotate speed in degrees/s. This is the speed we measured in the real NXT robot.
+	 */
+	public static double STANDARD_SONAR_ROTATE_SPEED = 60; //Probably get this value from other class.//TODO: see what this is irl
+	
+
+	/**
+	 * Distance from the center of the VirtualRobot to the position of the lightSensor
+	 */
+	private static int lightSensorOffset = 7;
+	/**
+	 * Distance from the center of the VirtualRobot to the position of the Sonar.
+	 */
+	private static int sonarOffset = 4;
+	
 	
 	/**
 	 * Variable holding the travel speed of the robot.
@@ -58,7 +71,8 @@ public class VirtualRobot extends AbstractRobot {
 	private float initAbsoluteHeading;
 
 	/**
-	 * Variable representing the absolutehorizontal coordinate at the start of the current move in the global coordinate system (Origin being the center of the first tile).
+	 * Variable representing the absolute horizontal coordinate at the start of the current move in the global coordinate system.
+	 * Origin being the center of the first tile.
 	 */
 	private float initAbsoluteX;
 	
@@ -67,7 +81,6 @@ public class VirtualRobot extends AbstractRobot {
 	 * Origin being the center of the first tile.
 	 */
 	private float initAbsoluteY;
-	
 	/**
 	 * Variable representing the current action of the simulator.
 	 */
@@ -84,32 +97,47 @@ public class VirtualRobot extends AbstractRobot {
 	 * Variable holding the start time of the {@link currentAction} in milliseconds.
 	 */
 	private long timestamp;
-	
 	/**
 	 * Variable holding the time in milliseconds at which the current action will be completed.
 	 */
 	private long currentActionETA;
-	
+	/**
+	 * List of tiles that this VirtualRobot will use.
+	 */
 	private Tile[] tilesList;
-//	private VirtualLightSensor lightSensor;
-//	private VirtualSonar sonar;
+	/**
+	 * Starting x coordinate of the robot in the global plane (or on the 'image').
+	 */
 	private int imgStartX;
+	/**
+	 * Starting y coordinate of the robot in the global plane (or on the 'image').
+	 */
 	private int imgStartY;
+	/**
+	 * VirtualLightSensor object that holds the light sensor of the VirtualRobot.
+	 */
 	private VirtualLightSensor lightSensor;
+	/**
+	 * VirtualSonar object that holds the sonar of the VirtualRobot.
+	 */
 	private VirtualSonar sonar;
+	/**
+	 * Sensors object that holds the sensors of the VirtualRobot.
+	 */
 	private Sensors sensors;
 	
 	// TODO: Modify or remove this temporary default constructor
 	public VirtualRobot() {
 		this(new Tile[0], null);
 	}
+	
 	/**
 	 * Creates a new VirtualRobot object with given tiles and start tile
 	 * 
 	 * @param tilesList
 	 *			List of Tile objects that will be used for generating sensor values. 
 	 * @param startTile
-	 * 			Tile at which the robot will start
+	 * 			Tile at which the robot will start.
 	 */
 	public VirtualRobot(Tile[] tilesList,Tile startTile){
 		this.tilesList= tilesList;
@@ -120,9 +148,15 @@ public class VirtualRobot extends AbstractRobot {
 		this.sensors = new Sensors(this.tilesList);
 		lightSensor = sensors.getLightSensor();
 		sonar = sensors.getSonar();
+		resetOrientation();
+		clearAction();
 	}
 	
 	//Getters and setters of fields.
+	/**
+	 * The rotate speed of this VirtualRobot.
+	 * @return
+	 */
 	private double getRotateSpeed() {
 		return rotateSpeed;
 	}
@@ -134,7 +168,13 @@ public class VirtualRobot extends AbstractRobot {
 	private float getInitAbsoluteHeading() {
 		return initAbsoluteHeading;
 	}
-
+	
+	/**
+	 * Sets the initial Absolute heading.
+	 * 
+	 * To be used when finishing a move.
+	 * @param absoluteHeading
+	 */
 	private void setInitAbsoluteHeading(float absoluteHeading) {
 		this.initAbsoluteHeading = absoluteHeading;
 	}
@@ -149,17 +189,19 @@ public class VirtualRobot extends AbstractRobot {
 	
 	@Override
 	public float getX() {
-		float currentHeading = getHeading();
 		float absoluteX = getInitAbsoluteX();
 		float result = absoluteX;
-		
 		if (getCurrentAction() == Action.TRAVEL){
-			Long elapsedTime = System.currentTimeMillis() - getTimestamp();
-			double arg = getCurrentArgument();
-			int sign = (int)(arg/Math.abs(arg));
-			float distance = (float) (elapsedTime*getTravelSpeed());
-			double headingRadians = Math.toRadians(getInitAbsoluteHeading());
-			result += sign*(((float)(Math.sin(headingRadians)))*distance);
+			if(System.currentTimeMillis()>=getCurrentActionETA()){//If action is finished:
+				result += getCurrentArgument();
+			} else {
+				Long elapsedTime = System.currentTimeMillis() - getTimestamp();
+				double arg = getCurrentArgument();
+				int sign = (int)(arg/Math.abs(arg));
+				float distance = (float) (elapsedTime*getTravelSpeed());
+				double headingRadians = Math.toRadians(getInitAbsoluteHeading());
+				result += sign*(((float)(Math.sin(headingRadians)))*distance);
+			}
 		}
 		return result;
 	}
@@ -195,17 +237,19 @@ public class VirtualRobot extends AbstractRobot {
 	 */
 	@Override
 	public float getY() {
-		float currentHeading = getHeading();
 		float absoluteY = getInitAbsoluteY();
 		float result = absoluteY;
-		
 		if (getCurrentAction() == Action.TRAVEL){
-			Long elapsedTime = System.currentTimeMillis() - getTimestamp();
-			double arg = getCurrentArgument();
-			int sign = (int)(arg/Math.abs(arg));
-			float distance = (float) (elapsedTime*getTravelSpeed());
-			double headingRadians = Math.toRadians(getInitAbsoluteHeading());
-			result += sign*(((float)(Math.cos(headingRadians)))*distance);
+			if(System.currentTimeMillis()>=getCurrentActionETA()){//If action is finished:
+				result += getCurrentArgument();
+			} else {
+				Long elapsedTime = System.currentTimeMillis() - getTimestamp();
+				double arg = getCurrentArgument();
+				int sign = (int)(arg/Math.abs(arg));
+				float distance = (float) (elapsedTime*getTravelSpeed());
+				double headingRadians = Math.toRadians(getInitAbsoluteHeading());
+				result += sign*(((float)(Math.cos(headingRadians)))*distance);
+			}
 		}
 		return result;
 	}
@@ -272,6 +316,7 @@ public class VirtualRobot extends AbstractRobot {
 	}
 	
 	public void moveBackward(final float distance, final boolean wait) {
+		commitPreviousAction();
 		setCurrentAction(Action.TRAVEL);
 		setCurrentArgument(-distance);
 		initializeMove(wait);	
@@ -282,6 +327,7 @@ public class VirtualRobot extends AbstractRobot {
 	}
 	
 	public void moveForward(final float distance, final boolean wait) {
+		commitPreviousAction();
 		setCurrentAction(Action.TRAVEL);
 		setCurrentArgument(distance);
 		initializeMove(wait);	
@@ -305,66 +351,119 @@ public class VirtualRobot extends AbstractRobot {
 		}
 	}
 	
+	/**
+	 * Returns the light sensor value at the current position and heading.
+	 */
 	public int readSensorLight() {
-		return lightSensor.getLightValue(getImgX(), getImgY());
+		int sensorX = (int) Math.round(getImgX() + (lightSensorOffset * Math.sin(getHeading())));
+		int sensorY = (int) Math.round(getImgY() + (lightSensorOffset * Math.cos(getHeading())));
+		return lightSensor.getLightValue(sensorX, sensorY);
 	}
 	
+	/**
+	 * Returns the sonar value at the current position and heading.
+	 */
 	public int readSensorUltraSonic() {
 		float sonarHeading = Utils.clampAngleDegrees(getHeading()+getSonarDirection());
-		return sonar.getSonarValue(getImgX(), getImgY(),sonarHeading);
+		int sensorX = (int) Math.round(getImgX() + (sonarOffset * Math.sin(sonarHeading)));
+		int sensorY = (int) Math.round(getImgY() + (sonarOffset * Math.cos(sonarHeading)));
+		return sonar.getSonarValue(sensorX, sensorY,sonarHeading);
 	}
 	
-	//TODO check absolute vs relative...
+	/**
+	 * Resets the orientation of this robot.
+	 */
 	public void resetOrientation() {
 		setInitAbsoluteX(0);
 		setInitAbsoluteY(0);
 		setInitAbsoluteHeading(0);
+		setInitSonarDirection(0);
 	}
 	
+	/**
+	 * Sets the travelspeed to the given speed.
+	 * @param speed
+	 */
 	public void setTravelSpeed(double speed) {
 		this.travelSpeed = speed;
 	}
 	
+	/**
+	 * Sets the rotate speed to the given speed.
+	 * @param speed
+	 */
 	//TODO:@Override
 	public void setRotateSpeed(double speed) {
 		this.rotateSpeed = speed;
 	}
 	
-	protected void setSpeedRotate(final float speed) {
-		this.rotateSpeed = speed;
-	}
-	
-	protected void setSpeedTravel(final float speed) {
-		this.travelSpeed = speed;
-	}
-	
 	@Override
 	public void stop() {
-		// TODO
-		throw new UnsupportedOperationException();
+		commitPreviousAction();
+		clearAction();
+	}
+
+	public void commitPreviousAction() {
+		if(getCurrentAction() != null){
+			switch(getCurrentAction()){
+				case TRAVEL:
+					setInitAbsoluteX(getX());
+					setInitAbsoluteY(getY());
+					break;
+				case ROTATE:
+					setInitAbsoluteHeading(getHeading());
+					break;
+				case SONAR:
+					setInitSonarDirection(getSonarDirection());
+					break;
+				default:
+					try {
+						throw new Exception("This should not happen");
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+			}
+		}
 	}
 	
+	/**
+	 * Turns the VirtualRobot left until stopped.
+	 */
 	@Override
 	public void turnLeft() {
 		turnLeft(Float.MAX_VALUE,false);
 	}
 	
+	/**
+	 * Turns the VirtualRobot left by the given angle.
+	 */
 	public void turnLeft(final float angle, final boolean wait) {
+		commitPreviousAction();
 		setCurrentAction(Action.ROTATE);
 		setCurrentArgument(angle);
 		initializeMove(wait);		
 	}
 	
+	/**
+	 * Turns the VirtualRobot right until stopped.
+	 */
 	public void turnRight() {
 		turnLeft(Float.MAX_VALUE,false);
 	}
 	
+	/**
+	 * Turns the VirtualRobot right by the given angle.
+	 */
 	public void turnRight(final float angle, final boolean wait) {
+		commitPreviousAction();
 		setCurrentAction(Action.ROTATE);
 		setCurrentArgument(-angle);
 		initializeMove(wait);
 	}
 
+	/**
+	 * Returns the difference between the heading at the start of the current move and the current heading.
+	 */
 	@Override
 	public float getAngleIncrement() {
 		//TODO: dependant on how real NXT side works Math.abs(...).
@@ -372,6 +471,8 @@ public class VirtualRobot extends AbstractRobot {
 	}
 	
 	/**
+	 * Returns the current heading of the VirtualRobot.
+	 * 
 	 *TODO: check this with teammates
 	 * Is does 0° means North???? 
 	 */
@@ -379,63 +480,34 @@ public class VirtualRobot extends AbstractRobot {
 	public float getHeading(){
 		float result = getInitAbsoluteHeading();
 		if(getCurrentAction() == Action.ROTATE){
-			Long elapsedTime = System.currentTimeMillis() - getTimestamp();
-			double arg = getCurrentArgument();
-			result += (arg/Math.abs(arg)) * elapsedTime*getRotateSpeed();
+			if(System.currentTimeMillis()>=getCurrentActionETA()){//If action is finished:
+				result += getCurrentArgument();
+			} else {
+				Long elapsedTime = System.currentTimeMillis() - getTimestamp();
+				double arg = getCurrentArgument();
+				result += (arg/Math.abs(arg)) * elapsedTime*getRotateSpeed();
+			}
 		}
 		return Utils.clampAngleDegrees(result);
 	}
 	
-//	//TODO:@Override
-//	public getX(){
-//		
-//	}
-//	
-//	//TODO:@Override
-//	public getY(){
-//		
-//	}
-	
+	/**
+	 * Returns the current orientation of VirtualRobot.
+	 */
+	@Override
 	public Orientation getOrientation() {
 		return new Orientation(getX(), getY(), getHeading());
 	}
-
-	//TODO:@Override
-	public float[] getPosition(){
-		throw new UnsupportedOperationException();
-	}
 	
-//TODO:
-/*
- * Idee: 
- * Voor Licht sensor:
- * 
-	 * Gebruik afbeelding. (Standaard een wit kruis en de borders) 
-	 * Voor barcode genereer op de afbeelding die barcode.
-	 * Voor elke x en y coordinaat (voor het gegeven doolhof) return de value van die afbeelding.
-	 * 
-	 * OF
-	 * 
-	 * Bereken elke waarde aangezien de plaatsing van het witte kruis (en de randen) altijd bekend is.
-	 * 
- * 
- * Voor Sonar:
- * 
- 	* Bereken de afstand tot de eerste volgende muur in de huidige heading.
- * 
- * 
- * 
- * 
- * 
- * 
- */
 	/**
-	 * Calculates the ETA of the current action. If action is infinitely long (e.g. "moveForward()") the ETA is set to Long.MAX_VALUE.
+	 * Calculates the ETA of the current action. 
+	 * 
+	 * If action is infinitely long (e.g. "moveForward()") the ETA is set to Long.MAX_VALUE.
 	 */
 	private void calculateCurrentActionETA(){
 		long currentActionETA;
 		double arg = Math.abs(getCurrentArgument());
-		if(arg == Float.MAX_VALUE){
+		if(arg == Float.MAX_VALUE || arg == -Float.MAX_VALUE){
 			currentActionETA = Long.MAX_VALUE;
 		} else {
 	 		currentActionETA = getTimestamp();
@@ -472,38 +544,40 @@ public class VirtualRobot extends AbstractRobot {
 		 sonarRotateSpeed = speed;
 	}
 	
-	//TODO decide true or false for waiting?
 	/**
 	 * Turns the head of the robot (the sonar) clock wise (right).
 	 * Same convention Right (CWise) results in a subtraction.
 	 */
+	//TODO decide true or false for waiting?
 	@Override
 	public void turnHeadCWise(int offset) {
+		commitPreviousAction();
 		setCurrentAction(Action.SONAR);
 		setCurrentArgument(-offset);
 		initializeMove(false);	
 	}
 
-	//TODO decide true or false for waiting?
 	/**
 	 * Turns the head of the robot (the sonar) counter clock wise (left).
 	 * Same convention Left (CCWise) results in a addition.
 	*/
+	//TODO decide true or false for waiting?
 	@Override
 	public void turnHeadCCWise(int offset) {
+		commitPreviousAction();
 		setCurrentAction(Action.SONAR);
 		setCurrentArgument(offset);
 		initializeMove(false);	
 	}
 	
 	/**
-	 * This is the direction of the sonar head with respect to the heading of the robot.
+	 * This is the direction of the sonar head relative to the heading of the VirtualRobot.
 	 * 
 	 * Can either be negative or positive.
 	 * @return
 	 */
 	public float getSonarDirection(){
-		float result = getInitialSonarDirection();
+		float result = getInitSonarDirection();
 		if(getCurrentAction() == Action.SONAR){
 			Long elapsedTime = System.currentTimeMillis() - getTimestamp();
 			double arg = getCurrentArgument();
@@ -511,8 +585,31 @@ public class VirtualRobot extends AbstractRobot {
 		}
 		return result;		
 	}
-	private float getInitialSonarDirection() {
+	
+	private float getInitSonarDirection() {
 		return (float) sonarDirection;
 	}
+
+	private void setInitSonarDirection(float dir) {
+		sonarDirection = dir;
+	}
 	
+	//TODO: we need a convention ... 
+	@Override
+	protected void setSpeedRotate(float speed) {
+		setRotateSpeed(speed);
+
+	}
+
+	@Override
+	protected void setSpeedTravel(float speed) {
+		setTravelSpeed(speed);
+	}
+	
+	
+	private void clearAction(){
+		setCurrentAction(null);
+		setCurrentArgument(0);
+		setCurrentActionETA(Long.MIN_VALUE);
+	}
 }
