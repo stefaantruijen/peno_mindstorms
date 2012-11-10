@@ -5,5 +5,5 @@ package bluebot.simulator;
  *
  */
 public enum Action {
-	TRAVEL,ROTATE;
+	TRAVEL,ROTATE,SONAR;
 }
