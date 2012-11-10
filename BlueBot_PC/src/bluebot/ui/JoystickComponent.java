@@ -100,52 +100,68 @@ public class JoystickComponent extends JPanel {
 		return new ThrottledKeyAdapter(new KeyMonitor());
 	}
 	
-	private final void fireBackward(final boolean pressed) {
-//		Debug.print("Move backward:  %s", pressed);
-		buttonBackward.setPressed(pressed);
-		if (pressed) {
-			getBehavior().onBackwardPressed();
-		} else {
-			getBehavior().onBackwardReleased();
+	private final void fireBackward(final KeyEvent event) {
+		switch (event.getID()) {
+			case KeyEvent.KEY_PRESSED:
+				buttonBackward.setPressed(true);
+				getBehavior().onBackwardPressed(event.isControlDown());
+				break;
+			case KeyEvent.KEY_RELEASED:
+				buttonBackward.setPressed(false);
+				getBehavior().onBackwardReleased();
+				break;
 		}
 	}
 	
-	private final void fireForward(final boolean pressed) {
-//		Debug.print("Move forward:  %s", pressed);
-		buttonForward.setPressed(pressed);
-		if (pressed) {
-			getBehavior().onForwardPressed();
-		} else {
-			getBehavior().onForwardReleased();
+	private final void fireForward(final KeyEvent event) {
+		switch (event.getID()) {
+			case KeyEvent.KEY_PRESSED:
+				buttonForward.setPressed(true);
+				getBehavior().onForwardPressed(event.isControlDown());
+				break;
+			case KeyEvent.KEY_RELEASED:
+				buttonForward.setPressed(false);
+				getBehavior().onForwardReleased();
+				break;
 		}
 	}
 	
-	private final void fireLeft(final boolean pressed) {
-//		Debug.print("Turn left:  %s", pressed);
-		buttonLeft.setPressed(pressed);
-		if (pressed) {
-			getBehavior().onLeftPressed();
-		} else {
-			getBehavior().onLeftReleased();
+	private final void fireLeft(final KeyEvent event) {
+		switch (event.getID()) {
+			case KeyEvent.KEY_PRESSED:
+				buttonLeft.setPressed(true);
+				getBehavior().onLeftPressed(event.isControlDown());
+				break;
+			case KeyEvent.KEY_RELEASED:
+				buttonLeft.setPressed(false);
+				getBehavior().onLeftReleased();
+				break;
 		}
 	}
 	
-	private final void fireRight(final boolean pressed) {
-//		Debug.print("Turn right:  %s", pressed);
-		buttonRight.setPressed(pressed);
-		if (pressed) {
-			getBehavior().onRightPressed();
-		} else {
-			getBehavior().onRightReleased();
+	private final void fireRight(final KeyEvent event) {
+		switch (event.getID()) {
+			case KeyEvent.KEY_PRESSED:
+				buttonRight.setPressed(true);
+				getBehavior().onRightPressed(event.isControlDown());
+				break;
+			case KeyEvent.KEY_RELEASED:
+				buttonRight.setPressed(false);
+				getBehavior().onRightReleased();
+				break;
 		}
 	}
 	
-	private final void fireStop(final boolean pressed) {
-		buttonStop.setPressed(pressed);
-		if (pressed) {
-			getBehavior().onStopPressed();
-		} else {
-			getBehavior().onStopReleased();
+	private final void fireStop(final KeyEvent event) {
+		switch (event.getID()) {
+			case KeyEvent.KEY_PRESSED:
+				buttonStop.setPressed(true);
+				getBehavior().onStopPressed();
+				break;
+			case KeyEvent.KEY_RELEASED:
+				buttonStop.setPressed(false);
+				getBehavior().onStopReleased();
+				break;
 		}
 	}
 	
@@ -234,19 +250,19 @@ public class JoystickComponent extends JPanel {
 			return controller;
 		}
 		
-		public abstract void onBackwardPressed();
+		public abstract void onBackwardPressed(boolean mod);
 		
 		public abstract void onBackwardReleased();
 		
-		public abstract void onForwardPressed();
+		public abstract void onForwardPressed(boolean mod);
 		
 		public abstract void onForwardReleased();
 		
-		public abstract void onLeftPressed();
+		public abstract void onLeftPressed(boolean mod);
 		
 		public abstract void onLeftReleased();
 		
-		public abstract void onRightPressed();
+		public abstract void onRightPressed(boolean mod);
 		
 		public abstract void onRightReleased();
 		
@@ -300,8 +316,9 @@ public class JoystickComponent extends JPanel {
 	
 	private static final class FixedBehavior extends Behavior {
 		
-		private static final float ANGLE    =  90F;
-		private static final float DISTANCE = 400F;
+		private static final float ANGLE =  90F;
+		private static final float DISTANCE_LONG = 400F;
+		private static final float DISTANCE_SHORT = 200F;
 		
 		
 		private FixedBehavior(final Controller controller) {
@@ -310,23 +327,23 @@ public class JoystickComponent extends JPanel {
 		
 		
 		
-		public void onBackwardPressed() {
-			getController().moveBackward(DISTANCE);
+		public void onBackwardPressed(final boolean mod) {
+			getController().moveBackward(mod ? DISTANCE_SHORT : DISTANCE_LONG);
 		}
 		
 		public void onBackwardReleased() {
 			// ignored
 		}
 		
-		public void onForwardPressed() {
-			getController().moveForward(DISTANCE);
+		public void onForwardPressed(final boolean mod) {
+			getController().moveForward(mod ? DISTANCE_SHORT : DISTANCE_LONG);
 		}
 		
 		public void onForwardReleased() {
 			// ignored
 		}
 		
-		public void onLeftPressed() {
+		public void onLeftPressed(final boolean mod) {
 			getController().turnLeft(ANGLE);
 		}
 		
@@ -334,7 +351,7 @@ public class JoystickComponent extends JPanel {
 			// ignored
 		}
 		
-		public void onRightPressed() {
+		public void onRightPressed(final boolean mod) {
 			getController().turnRight(ANGLE);
 		}
 		
@@ -356,7 +373,7 @@ public class JoystickComponent extends JPanel {
 		
 		
 		
-		public void onBackwardPressed() {
+		public void onBackwardPressed(final boolean mod) {
 			getController().moveBackward();
 		}
 		
@@ -364,7 +381,7 @@ public class JoystickComponent extends JPanel {
 			getController().stop();
 		}
 		
-		public void onForwardPressed() {
+		public void onForwardPressed(final boolean mod) {
 			getController().moveForward();
 		}
 		
@@ -372,7 +389,7 @@ public class JoystickComponent extends JPanel {
 			getController().stop();
 		}
 		
-		public void onLeftPressed() {
+		public void onLeftPressed(final boolean mod) {
 			getController().turnLeft();
 		}
 		
@@ -380,7 +397,7 @@ public class JoystickComponent extends JPanel {
 			getController().stop();
 		}
 		
-		public void onRightPressed() {
+		public void onRightPressed(final boolean mod) {
 			getController().turnRight();
 		}
 		
@@ -400,32 +417,32 @@ public class JoystickComponent extends JPanel {
 				case KeyEvent.VK_Z:
 				case KeyEvent.VK_UP:
 				case KeyEvent.VK_NUMPAD8:
-					fireForward(true);
+					fireForward(event);
 					break;
 					
 				case KeyEvent.VK_S:
 				case KeyEvent.VK_DOWN:
 				case KeyEvent.VK_NUMPAD2:
-					fireBackward(true);
+					fireBackward(event);
 					break;
 					
 				case KeyEvent.VK_A:
 				case KeyEvent.VK_Q:
 				case KeyEvent.VK_LEFT:
 				case KeyEvent.VK_NUMPAD4:
-					fireLeft(true);
+					fireLeft(event);
 					break;
 					
 				case KeyEvent.VK_D:
 				case KeyEvent.VK_RIGHT:
 				case KeyEvent.VK_NUMPAD6:
-					fireRight(true);
+					fireRight(event);
 					break;
 					
 				case KeyEvent.VK_H:
 				case KeyEvent.VK_SPACE:
 				case KeyEvent.VK_NUMPAD5:
-					fireStop(true);
+					fireStop(event);
 					break;
 			}
 		}
@@ -437,32 +454,32 @@ public class JoystickComponent extends JPanel {
 				case KeyEvent.VK_Z:
 				case KeyEvent.VK_UP:
 				case KeyEvent.VK_NUMPAD8:
-					fireForward(false);
+					fireForward(event);
 					break;
 					
 				case KeyEvent.VK_S:
 				case KeyEvent.VK_DOWN:
 				case KeyEvent.VK_NUMPAD2:
-					fireBackward(false);
+					fireBackward(event);
 					break;
 					
 				case KeyEvent.VK_A:
 				case KeyEvent.VK_Q:
 				case KeyEvent.VK_LEFT:
 				case KeyEvent.VK_NUMPAD4:
-					fireLeft(false);
+					fireLeft(event);
 					break;
 					
 				case KeyEvent.VK_D:
 				case KeyEvent.VK_RIGHT:
 				case KeyEvent.VK_NUMPAD6:
-					fireRight(false);
+					fireRight(event);
 					break;
 					
 				case KeyEvent.VK_H:
 				case KeyEvent.VK_SPACE:
 				case KeyEvent.VK_NUMPAD5:
-					fireStop(false);
+					fireStop(event);
 					break;
 			}
 		}

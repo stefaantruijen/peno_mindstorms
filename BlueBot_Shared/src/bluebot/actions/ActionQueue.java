@@ -60,6 +60,8 @@ public class ActionQueue extends Threaded {
 				if (!action.isAborted()) {
 					action.execute(driver);
 				}
+			} catch (final ActionException e) {
+				driver.sendError(e.getMessage());
 			} catch (final InterruptedException e) {
 				// ignored
 			} finally {

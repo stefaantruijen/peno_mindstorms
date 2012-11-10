@@ -29,18 +29,22 @@ public abstract class Action {
 	 * 
 	 * @param driver - the {@link Driver} to be executed on
 	 * 
+	 * @throws ActionException if an error occurs during execution
 	 * @throws InterruptedException if interrupted
 	 */
-	public abstract void execute(Driver driver) throws InterruptedException;
+	public abstract void execute(Driver driver)
+			throws ActionException, InterruptedException;
 	
 	/**
 	 * Executes the white-line algorithm
 	 * 
 	 * @param driver - the {@link Driver} to be executed on
 	 * 
+	 * @throws ActionException if an error occurs during execution
 	 * @throws InterruptedException if interrupted
 	 */
-	protected void executeWhiteLine(final Driver driver) throws InterruptedException {
+	protected void executeWhiteLine(final Driver driver)
+			throws ActionException, InterruptedException {
 		new WhiteLineAction().execute(driver);
 	}
 	

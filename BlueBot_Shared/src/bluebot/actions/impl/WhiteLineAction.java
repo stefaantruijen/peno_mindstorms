@@ -3,6 +3,7 @@ package bluebot.actions.impl;
 
 import bluebot.Driver;
 import bluebot.actions.Action;
+import bluebot.actions.ActionException;
 
 
 
@@ -13,11 +14,11 @@ public class WhiteLineAction extends Action {
 	
 	private int threshold;
 
-	public void execute(final Driver driver) throws InterruptedException {
+	public void execute(final Driver driver)
+			throws ActionException, InterruptedException {
 		// exception if not calibrated
 		if (!driver.getCalibration().isCalibrated()) {
-			driver.sendError("Calibration of the light sensor is required");
-			return;
+			throw new ActionException("Calibration of the light sensor is required");
 		}
 		
 		threshold = driver.getCalibration().getLightThresholdWhite();
