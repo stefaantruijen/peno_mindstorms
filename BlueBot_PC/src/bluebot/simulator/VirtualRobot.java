@@ -22,7 +22,7 @@ import bluebot.util.Utils;
  */
 public class VirtualRobot extends AbstractRobot {
 	private static final float MaxRotateSpeed = 90;
-	private static final float MaxTravelSpeed = 10;
+	private static final float MaxTravelSpeed = 20;
 	/**
 	 * The size of the tiles on which the VirtualRobot will be driving.
 	 */
@@ -150,8 +150,8 @@ public class VirtualRobot extends AbstractRobot {
 			setRandomInStartTile(startTile);
 			this.tileImgStartX = startTile.getX()*TILE_SIZE + TILE_SIZE/2;
 			this.tileImgStartY = startTile.getY()*TILE_SIZE + TILE_SIZE/2;
-			setImgStartX(Math.round(tileImgStartX+ getInitAbsoluteX()));
-			setImgStartY(Math.round(tileImgStartY+ getInitAbsoluteY()));
+			setImgStartX(tileImgStartX);
+			setImgStartY(tileImgStartY);
 			this.sensors = new Sensors(this.tilesList);
 			lightSensor = sensors.getLightSensor();
 			sonar = sensors.getSonar();
@@ -180,10 +180,14 @@ public class VirtualRobot extends AbstractRobot {
 	}
 
 	public int getImgX(){
-		return Math.round(getImgStartX() + getX()) ;
+		System.out.println("getX = " + getY() + "(rounded = " + (int)(Math.round(getX())) +")");
+		System.out.println("getImgStartX" + getImgStartX());
+		return getImgStartX() + Math.round(getX()) ;
 	}
 	public int getImgY(){
-		return Math.round(getImgStartY() + getY()) ;
+		System.out.println("getY = " + getY() + "(rounded = " + (int)(Math.round(getY())) +")");
+		System.out.println("getImgStartY" + getImgStartY());
+		return getImgStartY() + Math.round(getY()) ;
 	}
 	//GETTERS AND SETTERS
 	private void setInitAbsoluteX(float x) {
@@ -364,8 +368,7 @@ public class VirtualRobot extends AbstractRobot {
 	//IMPLEMENTATION OF ABSTRACT METHODS (all @Override methods)
 	@Override
 	public float getX() {
-		float absoluteX = getInitAbsoluteX();
-		float result = absoluteX;
+		float result = getInitAbsoluteX();
 		if (getCurrentAction() == Action.TRAVEL){
 			if(System.currentTimeMillis()>=getCurrentActionETA()){//If action is finished:
 //				System.out.println("X:Action finished?");
@@ -389,8 +392,7 @@ public class VirtualRobot extends AbstractRobot {
 	 */
 	@Override
 	public float getY() {
-		float absoluteY = getInitAbsoluteY();
-		float result = absoluteY;
+		float result = getInitAbsoluteY();
 		if (getCurrentAction() == Action.TRAVEL){
 			if(System.currentTimeMillis()>=getCurrentActionETA()){//If action is finished:
 //				System.out.println("Y:Action finished?");
@@ -444,8 +446,13 @@ public class VirtualRobot extends AbstractRobot {
 	 */
 	@Override
 	public int readSensorLight() {
-		int sensorX = (int) Math.round(getImgX() + (lightSensorOffset * Math.sin(getHeading())));
-		int sensorY = (int) Math.round(getImgY() + (lightSensorOffset * Math.cos(getHeading())));
+		int xOffset = (int) (lightSensorOffset * Math.sin(getHeading()));
+		System.out.println("xOffset = " + xOffset);
+		int sensorX = getImgX() + xOffset;
+		int yOffset = (int) (lightSensorOffset * Math.cos(getHeading()));
+		System.out.println("yOffset = " + yOffset);
+		int sensorY = getImgY() + yOffset;
+		System.out.println("reading Light Sensor at: (" + sensorX +","+sensorY+")");
 		return lightSensor.getLightValue(sensorX, sensorY);
 	}
 	
@@ -468,14 +475,15 @@ public class VirtualRobot extends AbstractRobot {
 	@Override
 	public void resetOrientation() {
 		//Clear any possible action so no problems occur.
+		System.out.println("Resetting orientation");
 		clearAction();
 		//Set every inital value correctly.
 		setInitAbsoluteX(0);
 		setInitAbsoluteY(0);
 //		setInitAbsoluteHeading(0);
 		setInitSonarDirection(0);
-		setImgStartX(Math.round(imgStartX + getInitAbsoluteX()));
-		setImgStartY(Math.round(imgStartY + getInitAbsoluteY()));
+		setImgStartX(imgStartX);
+		setImgStartY(imgStartY);
 	}
 	
 	@Override
@@ -712,8 +720,8 @@ public class VirtualRobot extends AbstractRobot {
 	
 	
 	private void setRandomInStartTile(Tile st) {
-		setRandomXIn(st);
-		setRandomYIn(st);
+//		setRandomXIn(st);
+//		setRandomYIn(st);
 		//TODO: see for a solution for the heading.
 		setInitAbsoluteHeading(0);
 		//Sonar will always be at 0
@@ -730,7 +738,7 @@ public class VirtualRobot extends AbstractRobot {
 		Random rand = new Random();
 		int randomFrom10To30 = rand.nextInt(TILE_SIZE/2) +randomMaxOffset;
 		int randomPosOrNeg = randomFrom10To30 - TILE_SIZE/2;
-		setInitAbsoluteX((float)randomPosOrNeg);		
+		setInitAbsoluteX((float)(randomPosOrNeg));		
 	}
 
 	/**
@@ -743,7 +751,7 @@ public class VirtualRobot extends AbstractRobot {
 		Random rand = new Random();
 		int randomFrom10To30 = rand.nextInt(TILE_SIZE/2) +randomMaxOffset;
 		int randomPosOrNeg = randomFrom10To30 - TILE_SIZE/2;
-		setInitAbsoluteY((float)randomPosOrNeg);		
+		setInitAbsoluteY((float)(randomPosOrNeg));		
 	}
 
 }

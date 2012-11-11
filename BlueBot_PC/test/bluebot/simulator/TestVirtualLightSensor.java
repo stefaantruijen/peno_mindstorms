@@ -80,4 +80,14 @@ public class TestVirtualLightSensor {
 		assertEquals(emptySpaceLightValue,s.getLightValue(5, 5));
 		assertEquals(emptySpaceLightValue,s.getLightValue(20, 20));
 	}
+	
+	
+	@Test
+	public void getLightValue_percent() {
+		for(int x=0; x <= s.getMaxX(); x++){
+			for(int y=0; y <= s.getMaxX(); y++){
+				assertTrue(s.getLightValue(x,y) <=100 && s.getLightValue(x,y) >=0);
+			}
+		}
+	}
 }

@@ -70,7 +70,7 @@ public class VirtualLightSensor {
 	 */
 	public VirtualLightSensor(Sensors sensors) {
 		this.sensors = sensors;
-		img = new BufferedImage(sensors.getMaxX(),sensors.getMaxY(),BufferedImage.TYPE_INT_RGB);
+		img = new BufferedImage(sensors.getMaxX()+1,sensors.getMaxY()+1,BufferedImage.TYPE_INT_RGB);
 		setWhiteLineColor(STANDARD_WHITE_LINE_COLOR);
 		setEmptySpaceColor(STANDARD_EMPTY_SPACE_COLOR);
 		generateMap();
@@ -99,7 +99,7 @@ public class VirtualLightSensor {
 	 * 		An integer repersenting the light value.
 	 */
 	public int getLightValue(int x, int y){
-		if(isValid(x,y)){
+		if(sensors.isValid(x,y)){
 		  int clr=  img.getRGB(x,y); 
 		  int lightValue = calculateLightValue(clr);
 //		  System.out.println("Lightsensor white-value: "+lightValue);
@@ -107,17 +107,6 @@ public class VirtualLightSensor {
 		} else {
 			throw new IllegalArgumentException("X or Y out of bounds");
 		}
-	}
-
-	private boolean isValid(int x, int y) {
-		boolean result = true;
-		if(x<0 || x > sensors.getMaxX()){
-			result = false;
-		}
-		if(y<0 || y > sensors.getMaxY()){
-			result = false;
-		}
-		return result;
 	}
 
 	/**

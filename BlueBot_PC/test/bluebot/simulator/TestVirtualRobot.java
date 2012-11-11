@@ -327,10 +327,11 @@ public class TestVirtualRobot {
 	
 	@Test
 	//Under construction
-	void testGetLightValue(){
+	public void testGetLightValue(){
 		Tile20.setAllBordersOpen(false);
 		VirtualRobot vr = new VirtualRobot(tileList,Tile20);
 		int r1 = vr.readSensorLight();
+		
 	}
 
 }
