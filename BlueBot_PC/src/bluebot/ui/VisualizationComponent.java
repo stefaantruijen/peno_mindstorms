@@ -116,7 +116,7 @@ public class VisualizationComponent extends RenderingComponent
 		gfx.setColor(Color.YELLOW);
 		gfx.fillRect(x, y, TILE_RESOLUTION, TILE_RESOLUTION);
 		
-		final int thickness = (TILE_RESOLUTION >> 5);
+		final int thickness = (TILE_RESOLUTION >> 4);
 		
 		final Border[] borders = {
 			tile.getBorderNorth(),

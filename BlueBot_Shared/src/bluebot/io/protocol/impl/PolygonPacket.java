@@ -53,6 +53,13 @@ public class PolygonPacket extends Packet {
 		this.length = length;
 	}
 	
+	@Override
+	public String toString() {
+		return new StringBuilder("Polygon (")
+		.append(getCorners()).append(" x ").append(getLength()).append(')')
+		.toString();
+	}
+	
 	protected void writePayload(final DataOutput output) throws IOException {
 		output.writeInt(getCorners());
 		output.writeFloat(getLength());

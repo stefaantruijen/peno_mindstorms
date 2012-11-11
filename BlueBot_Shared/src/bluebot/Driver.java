@@ -1,5 +1,6 @@
 package bluebot;
 
+
 import bluebot.graph.Tile;
 import bluebot.sensors.Calibration;
 
@@ -13,6 +14,7 @@ import bluebot.sensors.Calibration;
 public interface Driver extends Mobile {
 	
 	// TODO: Remove and use getHeading() instead
+	@Deprecated
 	public float getAngleIncrement();
 	
 	/**

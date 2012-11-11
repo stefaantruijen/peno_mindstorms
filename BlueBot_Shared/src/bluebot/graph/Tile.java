@@ -15,6 +15,9 @@ import java.util.List;
  */
 public class Tile {
 	
+	/**    The size of a tile (in mm)    */
+	public static final float SIZE = 400F;
+	
 	private byte borders;
 	private int x, y;
 	private boolean explored;
@@ -201,7 +204,7 @@ public class Tile {
 		
 	}
 	/**
-	 * Set a certain border open (=true) or closed (=false) given a certain oriÔntation.
+	 * Set a certain border open (=true) or closed (=false) given a certain oriï¿½ntation.
 	 * @param o
 	 * @param flag
 	 */

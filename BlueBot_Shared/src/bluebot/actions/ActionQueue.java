@@ -64,6 +64,9 @@ public class ActionQueue extends Threaded {
 				driver.sendError(e.getMessage());
 			} catch (final InterruptedException e) {
 				// ignored
+			} catch (final Exception e) {
+				// Prevent actions from crashing the queue
+				e.printStackTrace();
 			} finally {
 				// Clear the interrupted flag
 				// to avoid interrupting a new action

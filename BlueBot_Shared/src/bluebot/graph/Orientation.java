@@ -1,6 +1,6 @@
 package bluebot.graph;
 /**
- *Enumerations of ori‘ntations possible in the maze.
+ *Enumerations of oriï¿½ntations possible in the maze.
  * 
  * @author Incalza Dario
  *
@@ -13,8 +13,32 @@ public enum Orientation {
 	private Orientation(String v){
 		this.source = v;
 	}
+	
 	/**
-	 * Get the source String representing this ori‘ntation.
+	 * Calculates the matching orientation for a given heading
+	 * 
+	 * @param heading - the heading (in degrees)
+	 * 
+	 * @return an {@link Orientation} object
+	 */
+	public static Orientation forHeading(final float heading) {
+		if (heading >= 315F) {
+			return Orientation.NORTH;
+		}
+		if (heading >= 225F) {
+			return Orientation.WEST;
+		}
+		if (heading >= 135F) {
+			return Orientation.SOUTH;
+		}
+		if (heading >= 45F) {
+			return Orientation.EAST;
+		}
+		return Orientation.NORTH;
+	}
+	
+	/**
+	 * Get the source String representing this oriï¿½ntation.
 	 */
 	public String getSource(){
 		return this.source;
@@ -34,7 +58,7 @@ public enum Orientation {
 		throw new IllegalArgumentException("The given source is not a valid orientation identifier.");
 	}
 	/**
-	 * Get the opposite ori‘ntation for this ori‘ntation.
+	 * Get the opposite oriï¿½ntation for this oriï¿½ntation.
 	 * 
 	 */
 	public Orientation getOpposite(){
@@ -55,7 +79,7 @@ public enum Orientation {
 		}
 	}
 	/**
-	 * Get a ori‘ntation when rotating this ori‘ntation clockwise.
+	 * Get a oriï¿½ntation when rotating this oriï¿½ntation clockwise.
 	 * @return
 	 */
 	public Orientation rotateCW(){
@@ -74,7 +98,7 @@ public enum Orientation {
 		}
 	}
 	/**
-	 * Get a ori‘ntation when rotating this ori‘ntation counter clockwise.
+	 * Get a oriï¿½ntation when rotating this oriï¿½ntation counter clockwise.
 	 * @return
 	 */
 	public Orientation rotateCCW(){
