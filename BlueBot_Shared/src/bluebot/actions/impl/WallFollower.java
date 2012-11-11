@@ -34,9 +34,9 @@ public class WallFollower extends Action{
 		@Override
 		public void execute(Driver driver) throws InterruptedException, ActionException {
 			this.driver = driver;
+			this.driver.sendMessage("Maze finding algorithm will start. Please don't touch the controls. Fasten your seatbelts and enjoy the ride.", "Starting");
 			this.driver.setSpeed(80);
 			this.initializeRootTile();
-			
 			do{
 				Tile next = this.determineNextTile();
 				this.moveTo(next);
@@ -52,6 +52,7 @@ public class WallFollower extends Action{
 				}
 			}while(this.hasUnvisitedNeighbors(this.maze.getRootTile())||this.hasUnvisitedNeighbors(current)||this.graphHasUnvisitedNeighbors());
 			
+			this.driver.sendMessage("Maze is explored. Thank you for your patience =) ", "Done");
 			
 		}
 		/**
@@ -78,7 +79,7 @@ public class WallFollower extends Action{
 				driver.sendDebug("TRAVELLING SOUTH");
 				this.travelSouth();
 			}else{
-				driver.sendDebug("Something went wrong.");
+				driver.sendError("Something strange happend.");
 			}
 			
 		}
@@ -95,11 +96,8 @@ public class WallFollower extends Action{
 				tilesTravelledBetweenCalib++;
 			}else{
 				WhiteLineAction wa = new WhiteLineAction();
-				
-
 					driver.sendDebug("ORIENTATING");
-					wa.execute(this.driver);
-				
+					wa.execute(this.driver);		
 				this.driver.setSpeed(80);
 				this.driver.moveForward(200F, true);
 				driver.sendDebug("MOVE FORWARD");
