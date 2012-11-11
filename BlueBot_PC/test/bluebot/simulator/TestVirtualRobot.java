@@ -62,14 +62,14 @@ public class TestVirtualRobot {
 		assertEquals(centerImgStartY, vr.getImgStartY(),VirtualRobot.randomMaxOffset);
 	}
 	
-//	@Test
+	@Test
 	public void moveForward(){
 		VirtualRobot vr = new VirtualRobot(tileList,Tile20);
 		double speed = vr.getTravelSpeed();
 		long startTime = System.currentTimeMillis();
 		vr.moveForward();
 		assertEquals(Action.TRAVEL, vr.getCurrentAction());
-		assertEquals((double)Float.MAX_VALUE, vr.getCurrentArgument(),deltaZERO);
+		assertEquals((double)Float.MAX_VALUE, (double)vr.getCurrentArgument(),deltaZERO);
 		assertEquals(Long.MAX_VALUE, vr.getCurrentActionETA());
 		try {
 			Thread.sleep(1000);
@@ -89,7 +89,7 @@ public class TestVirtualRobot {
 		assertEquals(vr.getImgStartY()+vr.getInitAbsoluteY()+elapsedSeconds2*speed, vr.getImgY(),deltaNONZERO_SMALL);
 	}
 	
-//	@Test
+	@Test
 	public void moveForward2(){
 		VirtualRobot vr = new VirtualRobot(tileList,Tile20);
 //		System.out.println("start y: " + vr.getY());
@@ -130,14 +130,14 @@ public class TestVirtualRobot {
 		assertEquals(vr.getImgStartY() +vr.getInitAbsoluteY()+distanceToTravel, vr.getImgY(),deltaZERO);
 	}
 	
-//	@Test
+	@Test
 	public void moveBackward(){
 		VirtualRobot vr = new VirtualRobot(tileList,Tile20);
 		double speed = vr.getTravelSpeed();
 		long startTime = System.currentTimeMillis();
 		vr.moveBackward();
 		assertEquals(Action.TRAVEL, vr.getCurrentAction());
-		assertEquals((double)-Float.MAX_VALUE, vr.getCurrentArgument(),deltaZERO);
+		assertEquals((double)-Float.MAX_VALUE, (double)vr.getCurrentArgument(),deltaZERO);
 		assertEquals(Long.MAX_VALUE, vr.getCurrentActionETA());
 		try {
 			Thread.sleep(1000);
@@ -157,7 +157,7 @@ public class TestVirtualRobot {
 		assertEquals(vr.getImgStartY()+vr.getInitAbsoluteY()-(elapsedSeconds2*speed), vr.getImgY(),deltaNONZERO_SMALL);
 	}
 	
-//	@Test
+	@Test
 	public void moveBackward2(){
 		VirtualRobot vr = new VirtualRobot(tileList,Tile20);
 //		System.out.println("start y: " + vr.getY());
@@ -206,7 +206,7 @@ public class TestVirtualRobot {
 		long startTime = System.currentTimeMillis();
 		vr.turnLeft();
 		assertEquals(Action.ROTATE, vr.getCurrentAction());
-		assertEquals((double)-Float.MAX_VALUE, vr.getCurrentArgument(),deltaZERO);
+		assertEquals((double)-Float.MAX_VALUE, (double)vr.getCurrentArgument(),deltaZERO);
 		assertEquals(Long.MAX_VALUE, vr.getCurrentActionETA());
 		try {
 			Thread.sleep(1000);
@@ -230,11 +230,11 @@ public class TestVirtualRobot {
 
 //Under construction
 	@Test
-	public void turnLeft1(){
+	public void turnLeft2(){
 		VirtualRobot vr = new VirtualRobot(tileList,Tile20);
 		assertEquals(0, vr.getHeading(),deltaZERO);
 		double speed = vr.getRotateSpeed();
-		float distanceToTravel = 200;
+		float distanceToTravel = 120;
 		long durationSec = (long) (distanceToTravel/speed);
 		long halfDurationSec = durationSec/2;
 		long startTime = System.currentTimeMillis();
@@ -248,15 +248,16 @@ public class TestVirtualRobot {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+//		System.out.println("distanceToTravel/2: " + distanceToTravel/2);
 		assertEquals(Utils.clampAngleDegrees(vr.getInitAbsoluteHeading()-distanceToTravel/2), vr.getHeading(),deltaNONZERO_SMALL);
 		try {
 			Thread.sleep(halfDurationSec*1000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		long elapsedMS2 = System.currentTimeMillis() - startTime;
-		float rotatedAngle2 = (float) (elapsedMS2*speed/(double)(1000));
-		float totalAngle2 = vr.getInitAbsoluteHeading()-rotatedAngle2; //Minus because going left.
+//		long elapsedMS2 = System.currentTimeMillis() - startTime;
+//		float rotatedAngle2 = (float) (elapsedMS2*speed/(double)(1000));
+//		float totalAngle2 = vr.getInitAbsoluteHeading()-rotatedAngle2; //Minus because going left.
 		assertEquals(Utils.clampAngleDegrees(vr.getInitAbsoluteHeading()-distanceToTravel), vr.getHeading(),deltaNONZERO_SMALL);
 	}
 
@@ -269,54 +270,67 @@ public class TestVirtualRobot {
 		long startTime = System.currentTimeMillis();
 		vr.turnRight();
 		assertEquals(Action.ROTATE, vr.getCurrentAction());
-		assertEquals((double)Float.MAX_VALUE, vr.getCurrentArgument(),deltaZERO);
+		assertEquals((double)Float.MAX_VALUE, (double)vr.getCurrentArgument(),deltaZERO);
 		assertEquals(Long.MAX_VALUE, vr.getCurrentActionETA());
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		long elapsedSeconds = (System.currentTimeMillis() - startTime)/1000;
-		float rotatedAngle = (float) (elapsedSeconds*speed);
-		float totalAngle = vr.getInitAbsoluteHeading()+rotatedAngle; //Addition because going right.
+		long elapsedMS = System.currentTimeMillis() - startTime;
+		float rotatedAngle = (float) (elapsedMS*speed/(double)(1000));
+		float totalAngle = vr.getInitAbsoluteHeading()+rotatedAngle; //Addition because going Right.
 		assertEquals(Utils.clampAngleDegrees(totalAngle), vr.getHeading(),deltaNONZERO_SMALL);
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		long elapsedSeconds2 = (System.currentTimeMillis() - startTime)/1000;
-		float rotatedAngle2 = (float) (elapsedSeconds*speed);
-		float totalAngle2 = vr.getInitAbsoluteHeading()+rotatedAngle; //Addition because going right.
-		assertEquals(Utils.clampAngleDegrees(totalAngle), vr.getHeading(),deltaNONZERO_SMALL);
+		long elapsedMS2 = System.currentTimeMillis() - startTime;
+		float rotatedAngle2 = (float) (elapsedMS2*speed/(double)(1000));
+		float totalAngle2 = vr.getInitAbsoluteHeading()+rotatedAngle2; //Addition because going Right.
+		assertEquals(Utils.clampAngleDegrees(totalAngle2), vr.getHeading(),deltaNONZERO_SMALL);
 	}
 
 //Under construction
 	@Test
-	public void turnRight1(){
+	public void turnRight2(){
 		VirtualRobot vr = new VirtualRobot(tileList,Tile20);
 		assertEquals(0, vr.getHeading(),deltaZERO);
-		double speed = vr.getRotateSpeed();	
-		float angleToTravel = 90;
-		long durationSec = (long) (angleToTravel/speed);
+		double speed = vr.getRotateSpeed();
+		float distanceToTravel = 120;
+		long durationSec = (long) (distanceToTravel/speed);
 		long halfDurationSec = durationSec/2;
-		vr.turnRight(angleToTravel, false);
+		long startTime = System.currentTimeMillis();
+		vr.turnRight(distanceToTravel,false);
+		assertEquals(Action.ROTATE, vr.getCurrentAction());
+		assertEquals((double)distanceToTravel, vr.getCurrentArgument(),deltaZERO);
+//TODO: fix this assert
+//		assertEquals(distanceToTravel, vr.getCurrentActionETA());
 		try {
 			Thread.sleep(halfDurationSec*1000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		assertEquals(angleToTravel/2, vr.getHeading(),deltaNONZERO_SMALL);
-
+//		System.out.println("distanceToTravel/2: " + distanceToTravel/2);
+		assertEquals(Utils.clampAngleDegrees(vr.getInitAbsoluteHeading()+distanceToTravel/2), vr.getHeading(),deltaNONZERO_SMALL);
 		try {
 			Thread.sleep(halfDurationSec*1000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		assertEquals(angleToTravel, vr.getHeading(),deltaZERO);
+//		long elapsedMS2 = System.currentTimeMillis() - startTime;
+//		float rotatedAngle2 = (float) (elapsedMS2*speed/(double)(1000));
+//		float totalAngle2 = vr.getInitAbsoluteHeading()-rotatedAngle2; //Minus because going left.
+		assertEquals(Utils.clampAngleDegrees(vr.getInitAbsoluteHeading()+distanceToTravel), vr.getHeading(),deltaNONZERO_SMALL);
+	}
+	
+	@Test
+	//Under construction
+	void testGetLightValue(){
+		Tile20.setAllBordersOpen(false);
+		VirtualRobot vr = new VirtualRobot(tileList,Tile20);
+		int r1 = vr.readSensorLight();
 	}
 
 }
