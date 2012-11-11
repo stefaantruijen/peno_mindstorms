@@ -10,6 +10,8 @@ public interface Robot extends Mobile {
 	public final static double DEFAULT_SPEED_ROTATE = 75;
 	public final static double DEFAULT_SPEED_TRAVEL = 300;
 	public static final int DEFAULT_ACCELERATION = 500;
+	public static final float OFFSET_SENSOR_LIGHT = 70F;
+	public static final float OFFSET_SENSOR_ULTRASONIC = 30F;
 	
 	
 	
@@ -57,9 +59,6 @@ public interface Robot extends Mobile {
 	public int readSensorUltraSonic();
 	
 	//TODO: make a setRotateSpeed();
-	public void turnHeadCWise(int offset);
-	
-	public void turnHeadCCWise(int offset);
 	public float getAngleIncrement();
 	//TODO: getDistanceIncrement()? 
 	

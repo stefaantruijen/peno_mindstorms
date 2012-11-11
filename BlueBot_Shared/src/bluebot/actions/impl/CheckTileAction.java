@@ -27,7 +27,7 @@ public class CheckTileAction extends Action {
 	 * This is a rather ugly way to implement the feature,
 	 * but it avoids polluting the protocol with temporary packets.
 	 */
-	public static final boolean USE_MANUAL_CHECK_TILE = false;
+	public static final boolean USE_MANUAL_CHECK_TILE = true;
 	
 	
 	
@@ -41,7 +41,8 @@ public class CheckTileAction extends Action {
 	 */
 	protected boolean detectWall(final Driver driver) {
 		// TODO
-		return (Math.random() < 0.5);
+//		return (Math.random() < 0.5);
+		return (driver.readSensorUltraSonic() < 25);
 	}
 	
 	public void execute(final Driver driver)

@@ -78,7 +78,7 @@ public class VirtualRobot extends AbstractRobot {
 	 */
 	private int imgStartY;
 	/**
-	 * Variable representing the absolute heading of this robot in degrees (0° being North) at the start of the movement. 
+	 * Variable representing the absolute heading of this robot in degrees (0ï¿½ being North) at the start of the movement. 
 	 * 	initAbsoluteHeading is initialized to 0 at construct. (So it always starts pointing 'north').
 	 */
 	private float initAbsoluteHeading;
@@ -533,7 +533,7 @@ public class VirtualRobot extends AbstractRobot {
 	 */
 	//TODO decide true or false for waiting?
 	@Override
-	public void turnHeadCWise(int offset) {
+	public void turnHeadClockWise(int offset) {
 		commitPreviousAction();
 		setCurrentAction(Action.SONAR);
 		setCurrentArgument(offset);
@@ -546,7 +546,7 @@ public class VirtualRobot extends AbstractRobot {
 	*/
 	//TODO decide true or false for waiting?
 	@Override
-	public void turnHeadCCWise(int offset) {
+	public void turnHeadCounterClockWise(int offset) {
 		commitPreviousAction();
 		setCurrentAction(Action.SONAR);
 		setCurrentArgument(-offset);

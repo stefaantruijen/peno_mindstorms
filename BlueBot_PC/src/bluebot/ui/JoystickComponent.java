@@ -39,7 +39,8 @@ public class JoystickComponent extends JPanel {
 	
 	
 	public JoystickComponent(final Controller controller) {
-		setBehavior(new FreeBehavior(controller));
+		setBehavior(new FixedBehavior(controller));
+//		setBehavior(new FreeBehavior(controller));
 		
 		initComponents();
 		setComponentPopupMenu(createContextMenu());
@@ -91,7 +92,8 @@ public class JoystickComponent extends JPanel {
 		groupMode.add(itemFixed);
 		groupMode.add(itemFree);
 		
-		itemFree.setSelected(true);
+		itemFixed.setSelected(true);
+//		itemFree.setSelected(true);
 		
 		return menu;
 	}

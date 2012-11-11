@@ -30,6 +30,10 @@ public class Tile {
 	
 	
 	
+	public void copyBorders(final Tile other) {
+		this.borders = other.borders;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {

@@ -165,12 +165,12 @@ public class PhysicalRobot extends AbstractRobot {
 	}
 	
 	@Override
-	public void turnHeadCWise(int offset) {
+	public void turnHeadClockWise(int offset) {
 		this.head.rotate(-Math.abs(offset));
 		
 	}
 	@Override
-	public void turnHeadCCWise(int offset) {
+	public void turnHeadCounterClockWise(int offset) {
 		this.head.rotate(Math.abs(offset));
 	}
 	

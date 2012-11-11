@@ -1,8 +1,13 @@
 package bluebot.simulator;
 
 
+import java.lang.reflect.Method;
+
 import bluebot.AbstractRobot;
 import bluebot.Robot;
+import bluebot.graph.Border;
+import bluebot.graph.Tile;
+import bluebot.maze.Maze;
 import bluebot.util.Constants;
 import bluebot.util.Orientation;
 
@@ -17,10 +22,16 @@ public class DummyRobot extends AbstractRobot {
 	
 	private static final float FACTOR_SPEED = 5F;
 	
+	private Maze maze;
 	private Motion motion;
 	private Pos pos = new Pos();
 	private double speedRotate = (DEFAULT_SPEED_ROTATE * Constants.RADIANS_PER_DEGREE);
 	private double speedTravel = (DEFAULT_SPEED_TRAVEL * 4D);
+	
+	
+	public DummyRobot(final Maze maze) {
+		this.maze = maze;
+	}
 	
 	
 	
@@ -47,6 +58,10 @@ public class DummyRobot extends AbstractRobot {
 		return (FACTOR_SPEED * super.getMaximumSpeedTravel());
 	}
 	
+	private final Maze getMaze() {
+		return maze;
+	}
+	
 	public Orientation getOrientation() {
 		final Motion motion = this.motion;
 		
@@ -57,6 +72,18 @@ public class DummyRobot extends AbstractRobot {
 		
 		return new Orientation((float)pos.x, (float)pos.y,
 				(float)(pos.z * 180D / Math.PI));
+	}
+	
+	private final Tile getTile(float x, float y) {
+		final float half = (Tile.SIZE / 2F);
+		
+		x += half;
+		y += half;
+		
+		final int tx = (int)Math.floor(x / Tile.SIZE);
+		final int ty = (int)Math.floor(y / Tile.SIZE);
+		
+		return getMaze().getTile(tx, ty);
 	}
 	
 	public synchronized boolean isMoving() {
@@ -85,15 +112,94 @@ public class DummyRobot extends AbstractRobot {
 		}
 	}
 	
-	public int readSensorLight() {
-		// TODO
-//		return (45 + (int)(Math.random() * 10));
-		return (50 + (int)Math.round(5 * Math.sin(System.currentTimeMillis() / 1000D)));
+	@Override
+	protected int readSensorLight(float x, float y) {
+		final Tile tile = getTile(x, y);
+		if (tile == null) {
+			// We're not even on a tile!?
+			throw new RuntimeException("Oh dear ...");
+		}
+		
+		x -= (tile.getX() * Tile.SIZE);
+		y -= (tile.getY() * Tile.SIZE);
+		
+		final float threshold = 199F;
+		if ((Math.abs(x) >= threshold) || (Math.abs(y) >= threshold)) {
+			// We're on a white line on the edge of the tile
+			return 65;
+		}
+		
+		// We're somewhere random on the tile
+		return 50;
 	}
 	
-	public int readSensorUltraSonic() {
-		// TODO
-		return 255;
+	@Override
+	protected int readSensorUltraSonic(float x, float y,
+			final float heading) {
+		Tile tile = getTile(x, y);
+		if (tile == null) {
+			// We're not on a tile!?
+			throw new RuntimeException("Oh dear ...");
+		}
+		
+		final bluebot.graph.Orientation dir =
+				bluebot.graph.Orientation.forHeading(heading);
+		
+		float distance = ((Tile.SIZE / 2F) - OFFSET_SENSOR_ULTRASONIC);
+		
+		final int dx, dy;
+		final Method method;
+		try {
+			switch (dir) {
+				case NORTH:
+					dx = 0;
+					dy = 1;
+					method = Tile.class.getDeclaredMethod("getBorderNorth");
+					break;
+				case EAST:
+					dx = 1;
+					dy = 0;
+					method = Tile.class.getDeclaredMethod("getBorderEast");
+					break;
+				case SOUTH:
+					dx = 0;
+					dy = -1;
+					method = Tile.class.getDeclaredMethod("getBorderSouth");
+					break;
+				case WEST:
+					dx = -1;
+					dy = 0;
+					method = Tile.class.getDeclaredMethod("getBorderWest");
+					break;
+				default:
+					// Error
+					return 255;
+			}
+		} catch (final Exception e) {
+			throw new RuntimeException(e);
+		}
+		
+		Border border;
+		while (tile != null) {
+			try {
+				border = (Border)method.invoke(tile);
+			} catch (final Exception e) {
+				throw new RuntimeException(e);
+			}
+			
+			if (border != Border.OPEN) {
+				break;
+			}
+			
+			distance += Tile.SIZE;
+			if (distance >= 2550F) {
+				return 255;
+			}
+			
+			tile = getMaze().getTile((tile.getX() + dx), (tile.getY() + dy));
+		}
+		
+		return Math.round(distance / 10F);
 	}
 	
 	public void resetOrientation() {
@@ -126,14 +232,6 @@ public class DummyRobot extends AbstractRobot {
 	
 	public void stop() {
 		stopMotion();
-	}
-	
-	public void turnHeadCWise(final int offset) {
-		// TODO
-	}
-	
-	public void turnHeadCCWise(final int offset) {
-		// TODO
 	}
 	
 	public void turnLeft() {
