@@ -30,6 +30,10 @@ public class ClientTranslator extends Translator {
 		sendPacket(getPacketFactory().createPolygon(corners, length));
 	}
 	
+	public void doTile() {
+		sendPacket(getPacketFactory().createCommandTile());
+	}
+	
 	public void doWhiteLineOrientation() {
 		sendPacket(getPacketFactory().createCommandWhiteLineOrientation());
 	}

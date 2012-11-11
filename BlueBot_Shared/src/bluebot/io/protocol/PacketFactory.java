@@ -56,6 +56,15 @@ public class PacketFactory {
 	}
 	
 	/**
+	 * Creates a command packet for the "Check tile" algorithm
+	 * 
+	 * @return a {@link Packet} object
+	 */
+	public Packet createCommandTile() {
+		return createCommand(CommandPacket.TILE);
+	}
+	
+	/**
 	 * Creates a command packet for the white-line-orientation algorithm
 	 * 
 	 * @return a {@link Packet} object

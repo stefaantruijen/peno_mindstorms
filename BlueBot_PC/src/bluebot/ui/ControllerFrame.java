@@ -63,14 +63,6 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 	}
 
 	private final Component createModuleCommands() {
-		final JPanel panel = new JPanel();
-		
-		final GridBagLayout layout = new GridBagLayout();
-		layout.columnWeights = new double[] { 1D, 1D, 1D, 1D };
-		layout.rowHeights = new int[] { 64 };
-		layout.rowWeights = new double[] { 1D };
-		panel.setLayout(layout);
-		
 		final Font font = new Font(Font.SANS_SERIF, Font.BOLD, 12);
 		
 		final JButton buttonCalibrate = new JButton("Calibrate");
@@ -113,6 +105,23 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 			}
 		});
 		
+		final JButton buttonTile = new JButton("Tile");
+		buttonTile.setFocusable(false);
+		buttonTile.setFont(font);
+		buttonTile.addActionListener(new ActionListener() {
+			public void actionPerformed(final ActionEvent event) {
+				controller.doTile();
+			}
+		});
+		
+		final JPanel panel = new JPanel();
+		
+		final GridBagLayout layout = new GridBagLayout();
+		layout.columnWeights = new double[] { 1D, 1D, 1D, 1D, 1D };
+		layout.rowHeights = new int[] { 64 };
+		layout.rowWeights = new double[] { 1D };
+		panel.setLayout(layout);
+		
 		final GridBagConstraints gbc = SwingUtils.createGBC();
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.insets.set(2, 2, 2, 2);
@@ -129,6 +138,9 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		
 		gbc.gridx++;
 		panel.add(buttonPolygon, gbc);
+		
+		gbc.gridx++;
+		panel.add(buttonTile, gbc);
 		
 		return createModule(panel, "Commands");
 	}

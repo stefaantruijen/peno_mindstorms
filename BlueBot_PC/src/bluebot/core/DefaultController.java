@@ -58,6 +58,10 @@ public class DefaultController extends AbstractController {
 		getTranslator().doPolygon(corners, length);
 	}
 	
+	public void doTile() {
+		getTranslator().doTile();
+	}
+	
 	public void doWhiteLineOrientation() {
 		getTranslator().doWhiteLineOrientation();
 	}

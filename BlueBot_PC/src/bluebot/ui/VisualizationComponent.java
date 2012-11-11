@@ -26,7 +26,6 @@ public class VisualizationComponent extends RenderingComponent
 	
 	private static final BufferedImage IMAGE_ROBOT;
 	public static final int TILE_RESOLUTION = 50;
-	private static final float TILE_SIZE = 400F;
 	static {
 		IMAGE_ROBOT = loadImageRobot(0.5);
 	}
@@ -64,11 +63,11 @@ public class VisualizationComponent extends RenderingComponent
 			
 			final int thickness = (TILE_RESOLUTION >> 5);
 			
-			int dx = Math.round(TILE_RESOLUTION * this.x / TILE_SIZE);
+			int dx = Math.round(TILE_RESOLUTION * this.x / Tile.SIZE);
 			for (; dx < 0; dx += TILE_RESOLUTION);
 			dx %= TILE_RESOLUTION;
 			
-			int dy = Math.round(TILE_RESOLUTION * this.y / TILE_SIZE);
+			int dy = Math.round(TILE_RESOLUTION * this.y / Tile.SIZE);
 			for (; dy < 0; dy += TILE_RESOLUTION);
 			dy %= TILE_RESOLUTION;
 			
@@ -89,8 +88,8 @@ public class VisualizationComponent extends RenderingComponent
 				ay += (TILE_RESOLUTION * maxY);
 			}
 			
-			ax += Math.round(TILE_RESOLUTION * x / TILE_SIZE);
-			ay -= Math.round(TILE_RESOLUTION * y / TILE_SIZE);
+			ax += Math.round(TILE_RESOLUTION * x / Tile.SIZE);
+			ay -= Math.round(TILE_RESOLUTION * y / Tile.SIZE);
 			
 			gfx.drawImage(maze, ((w / 2) - ax), ((h / 2) - ay), this);
 		}

@@ -30,6 +30,8 @@ public interface Controller extends EventDispatcher<ControllerListener> {
 	
 	public void doPolygon(int corners, float length);
 	
+	public void doTile();
+	
 	public void doWhiteLineOrientation();
 	
 	/**

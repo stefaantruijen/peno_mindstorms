@@ -1,7 +1,6 @@
 package bluebot;
 
 
-import bluebot.actions.Action;
 import bluebot.actions.ActionQueue;
 import bluebot.actions.impl.CalibrationAction;
 import bluebot.actions.impl.CheckTileAction;
@@ -63,14 +62,9 @@ public class DriverHandler implements PacketHandler {
 		} else if (command.equals(CommandPacket.CALIBRATE)) {
 			queue.queue(new CalibrationAction());
 		} else if (command.equals(CommandPacket.MAZE)) {
-			// TODO: Restore after debugging
-			final Action action;
-			if (CheckTileAction.USE_MANUAL_CHECK_TILE) {
-				action = new CheckTileAction();
-			} else {
-				action = new MazeAction();
-			}
-			queue.queue(action);
+			queue.queue(new MazeAction());
+		} else if (command.equals(CommandPacket.TILE)) {
+			queue.queue(new CheckTileAction());
 		} else if (command.equals(CommandPacket.WHITE_LINE_ORIENTATION)) {
 			queue.queue(new WhiteLineAction());
 		}
