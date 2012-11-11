@@ -17,6 +17,9 @@ public class MazeAction extends Action {
 	@Override
 	public void execute(Driver driver) throws ActionException,
 			InterruptedException {
+		if (!driver.getCalibration().isCalibrated()) {
+			throw new ActionException("Calibration of the light sensor is required to run the maze algorithm.");
+		}
 		
 		WallFollower wf = new WallFollower();
 		wf.execute(driver);
