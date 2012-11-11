@@ -25,7 +25,7 @@ public class VisualizationComponent extends RenderingComponent
 	private static final long serialVersionUID = 1L;
 	
 	private static final BufferedImage IMAGE_ROBOT;
-	public static final int TILE_RESOLUTION = 100;
+	public static final int TILE_RESOLUTION = 50;
 	private static final float TILE_SIZE = 400F;
 	static {
 		IMAGE_ROBOT = loadImageRobot(0.5);
@@ -45,14 +45,10 @@ public class VisualizationComponent extends RenderingComponent
 	
 	
 	
-	@SuppressWarnings("unused")
 	private static final int calculatePreferredSize() {
-		final int max = 500;
-		final int min = (TILE_RESOLUTION * 3);
-		if (max <= min) {
-			return min;
-		}
-		return Math.min(Math.max(min, (5 * TILE_RESOLUTION)), max);
+		int size = (3 * TILE_RESOLUTION);
+		for (final int step = (TILE_RESOLUTION << 1); size < 500; size += step);
+		return size;
 	}
 	
 	private static final BufferedImage createImage() {

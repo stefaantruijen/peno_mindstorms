@@ -102,10 +102,10 @@ public class SensorsComponent extends JPanel
 		graphUltraSonic.addData(value);
 		
 		final float hue;
-		if (value >= 20) {
+		if (value >= 40) {
 			hue = 0.33F;
-		} else if (value > 0) {
-			hue = (0.33F * value / 20F);
+		} else if (value > 10) {
+			hue = (0.33F * (value - 10) / 30F);
 		} else {
 			hue = 0F;
 		}
