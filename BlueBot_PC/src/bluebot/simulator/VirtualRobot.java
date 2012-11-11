@@ -1,5 +1,6 @@
 package bluebot.simulator;
 
+import java.util.Random;
 
 import bluebot.AbstractRobot;
 import bluebot.Robot;
@@ -7,7 +8,13 @@ import bluebot.graph.Tile;
 import bluebot.util.Orientation;
 import bluebot.util.Utils;
 
-
+/*
+ * Idee: getX() getY() is telkens t.o.v. het midden van de eerste Tile die noemen we (0,0)
+ * 
+ * Initieel zetten we de robot random binnen die eerste tile. 
+ * 
+ * Robot.Orientate() zorgt er dan voor dat de robot terug in het midden van de eerste Tile komt staan   
+ */
 
 /**
  * The {@link Robot} implementation for the simulator
@@ -123,6 +130,9 @@ public class VirtualRobot extends AbstractRobot {
 	 * VirtualSonar object that holds the sonar of the VirtualRobot.
 	 */
 	private VirtualSonar sonar;
+	private int tileImgStartX;
+	private int tileImgStartY;
+	protected static int randomMaxOffset = 10;
 	
 	
 	//CONSTRUCTORS: 
@@ -137,28 +147,35 @@ public class VirtualRobot extends AbstractRobot {
 	public VirtualRobot(Tile[] tilesList,Tile startTile){
 		if(isValid(tilesList,startTile)){
 			this.tilesList= tilesList;
-			int startOffset = TILE_SIZE/2;
-			//Assuming start in middle of the startTile.
-			this.imgStartX = Math.round(startTile.getX()*TILE_SIZE + startOffset);
-			this.imgStartY = Math.round(startTile.getY()*TILE_SIZE + startOffset);
+			//Sets the robot random in the startTile
+			setRandomInStartTile(startTile);
+			this.tileImgStartX = startTile.getX()*TILE_SIZE + TILE_SIZE/2;
+			this.tileImgStartY = startTile.getY()*TILE_SIZE + TILE_SIZE/2;
+			setImgStartX(Math.round(tileImgStartX+ getInitAbsoluteX()));
+			setImgStartY(Math.round(tileImgStartY+ getInitAbsoluteY()));
 			this.sensors = new Sensors(this.tilesList);
 			lightSensor = sensors.getLightSensor();
 			sonar = sensors.getSonar();
 			setTravelSpeed(STANDARD_TRAVEL_SPEED);
 			setRotateSpeed(STANDARD_ROTATE_SPEED);
 			setSonarRotateSpeed(STANDARD_SONAR_ROTATE_SPEED);
-			resetOrientation();
 			clearAction();
 		} else {
 			throw new IllegalArgumentException();
 		}
 	}
 	
+	private void setImgStartX(int x){
+		imgStartX = x;
+	}
 	
 	public int getImgStartX(){
 		return imgStartX;
 	}
 	
+	private void setImgStartY(int y){
+		imgStartY = y;
+	}
 	public int getImgStartY(){
 		return imgStartY;
 	}
@@ -350,13 +367,16 @@ public class VirtualRobot extends AbstractRobot {
 		float result = absoluteX;
 		if (getCurrentAction() == Action.TRAVEL){
 			if(System.currentTimeMillis()>=getCurrentActionETA()){//If action is finished:
+//				System.out.println("X:Action finished?");
 				result += getCurrentArgument();
 			} else {
+//				System.out.println("X:Action running?");
 				Long elapsedTimeMS = System.currentTimeMillis() - getTimestamp();
 				double arg = getCurrentArgument();
 				int sign = (int)(arg/Math.abs(arg));
 				float distance = (float) (elapsedTimeMS*getTravelSpeed()/(double)(1000));
 				double headingRadians = Math.toRadians(getInitAbsoluteHeading());
+//				System.out.println("already drove X: " + sign*(((float)(Math.sin(headingRadians)))*distance));
 				result += sign*(((float)(Math.sin(headingRadians)))*distance);
 			}
 		}
@@ -372,13 +392,16 @@ public class VirtualRobot extends AbstractRobot {
 		float result = absoluteY;
 		if (getCurrentAction() == Action.TRAVEL){
 			if(System.currentTimeMillis()>=getCurrentActionETA()){//If action is finished:
+//				System.out.println("Y:Action finished?");
 				result += getCurrentArgument();
 			} else {
+//				System.out.println("Y:Action running?");
 				Long elapsedTimeMS = System.currentTimeMillis() - getTimestamp();
 				double arg = getCurrentArgument();
 				int sign = (int)(arg/Math.abs(arg));
 				float distance = (float) (elapsedTimeMS*getTravelSpeed()/(double)(1000));
 				double headingRadians = getInitAbsoluteHeading();
+//				System.out.println("already drove Y: " + sign*(((float)(Math.cos(headingRadians)))*distance));
 				result += sign*(((float)(Math.cos(headingRadians)))*distance);
 			}
 		}
@@ -438,13 +461,20 @@ public class VirtualRobot extends AbstractRobot {
 	
 	/**
 	 * Resets the orientation of this robot.
+	 * This assumes that the robot drove to the center of the start tile with his heading north. 
+	 * That is (0,0)
 	 */
 	@Override
 	public void resetOrientation() {
+		//Clear any possible action so no problems occur.
+		clearAction();
+		//Set every inital value correctly.
 		setInitAbsoluteX(0);
 		setInitAbsoluteY(0);
 		setInitAbsoluteHeading(0);
 		setInitSonarDirection(0);
+		setImgStartX(Math.round(imgStartX + getInitAbsoluteX()));
+		setImgStartY(Math.round(imgStartY + getInitAbsoluteY()));
 	}
 	
 	@Override
@@ -642,13 +672,13 @@ public class VirtualRobot extends AbstractRobot {
 	 		currentActionETA = getTimestamp();
 			switch (getCurrentAction()) {
 			case TRAVEL:
-				currentActionETA +=  (long) (arg/getTravelSpeed());
+				currentActionETA +=  (long) 1000*(arg/getTravelSpeed());
 				break;
 			case ROTATE:
-				currentActionETA +=  (long) (arg/getRotateSpeed());
+				currentActionETA +=  (long) 1000*(arg/getRotateSpeed());
 				break;
 			case SONAR:
-				currentActionETA +=  (long) (arg/getSonarRotateSpeed());
+				currentActionETA +=  (long) 1000*(arg/getSonarRotateSpeed());
 				break;
 			default:
 				throw new UnsupportedOperationException("This movement does not exist!");
@@ -676,4 +706,41 @@ public class VirtualRobot extends AbstractRobot {
 		}
 		return false;
 	}
+	
+	
+	private void setRandomInStartTile(Tile st) {
+		setRandomXIn(st);
+		setRandomYIn(st);
+		//TODO: see for a solution for the heading.
+		setInitAbsoluteHeading(0);
+		//Sonar will always be at 0
+		setInitSonarDirection(0);
+	}
+
+	/**
+	 * Sets the x coordinate of the robot random in the first tile (where (0,0) is the middle of the tile).
+	 * 
+	 * Under assumption that there will be an Orientate() call setting it again to (0,0)
+	 * @param st
+	 */
+	private void setRandomXIn(Tile st) {
+		Random rand = new Random();
+		int randomFrom10To30 = rand.nextInt(TILE_SIZE/2) +randomMaxOffset;
+		int randomPosOrNeg = randomFrom10To30 - TILE_SIZE/2;
+		setInitAbsoluteX((float)randomPosOrNeg);		
+	}
+
+	/**
+	 * Sets the y coordinate of the robot random in the first tile (where (0,0) is the middle of the tile).
+	 * 
+	 * Under assumption that there will be an Orientate() call setting it again to (0,0)
+	 * @param st
+	 */
+	private void setRandomYIn(Tile st) {
+		Random rand = new Random();
+		int randomFrom10To30 = rand.nextInt(TILE_SIZE/2) +randomMaxOffset;
+		int randomPosOrNeg = randomFrom10To30 - TILE_SIZE/2;
+		setInitAbsoluteY((float)randomPosOrNeg);		
+	}
+
 }
