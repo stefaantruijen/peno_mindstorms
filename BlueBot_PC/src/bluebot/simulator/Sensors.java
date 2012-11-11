@@ -392,4 +392,17 @@ public class Sensors {
 		return getEastBorderCoor(x,y);
 	}
 	
+	
+
+
+	public boolean isValid(int x, int y) {
+		boolean result = true;
+		if(x<0 || x > getMaxX()){
+			result = false;
+		}
+		if(y<0 || y > getMaxY()){
+			result = false;
+		}
+		return result;
+	}
 }

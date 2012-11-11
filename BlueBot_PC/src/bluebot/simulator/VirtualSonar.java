@@ -12,10 +12,10 @@ import bluebot.util.Utils;
  *TODO refactor some code into smaller methods?
  */
 public class VirtualSonar {
-	private static Sensors mySensors;
+	private static Sensors sensors;
  
 	public VirtualSonar(Sensors sensors) {
-		this.mySensors = sensors;
+		this.sensors = sensors;
 	}
 
 	/**
@@ -24,9 +24,9 @@ public class VirtualSonar {
 	 * 
 	 * Coordinates are given with respect to (0,0) 
 	 *  which is the 'pixel' in the left lower corner.
-	 * @param imgX
+	 * @param x
 	 * 			An x coordinate of the plane in which all the tiles are placed.
-	 * @param imgY
+	 * @param y
 	 * 			An y coordinate of the plane in which all the tiles are placed.
 	 * @param heading
 	 * 			An angle representing the orientation of the sonar in the plane. [0,360)
@@ -35,84 +35,88 @@ public class VirtualSonar {
 	 * @return (int)Integer.MAX_VALUE
 	 * 			If no wall is found.
 	 */
-	public int getSonarValue(int imgX, int imgY, float heading) {
-		ArrayList<int[]> intersections = this.calculateIntersections(imgX,imgY,heading);
-		ArrayList<int[]> sortedIntersections = sortByDistanceTo(intersections, imgX, imgY);
-		boolean wallFound = false;
-		int[]currentIntercept = null;
-		double distance = 0;
-		while(!wallFound && !sortedIntersections.isEmpty()){
-			currentIntercept = sortedIntersections.get(0);
-			Tile currentT = mySensors.getTileAt(currentIntercept[0], currentIntercept[1]);
-			Tile nb = null;
-			if(heading == 0){ //Straight North
-				nb = mySensors.getNorthNeigborOf(currentT);
-				if(currentT.getBorderNorth() == Border.CLOSED 
-					|| nb != null && nb.getBorderSouth()== Border.CLOSED
-				   ){
-					wallFound = true;
-				}
-			} else if(heading == 90){ //Straight East
-				nb = mySensors.getEastNeigborOf(currentT);
-				if(currentT.getBorderEast() == Border.CLOSED 
-					|| nb != null && nb.getBorderWest()== Border.CLOSED
-				   ){
-					wallFound = true;
-				}
-			}else if(heading == 180){ //Straight South
-				nb = mySensors.getSouthNeigborOf(currentT);
-				if(currentT.getBorderSouth() == Border.CLOSED 
-					|| nb != null && nb.getBorderNorth()== Border.CLOSED
-				   ){
-					wallFound = true;
-				}
-			}else if(heading == 270){ //Straight West
-				nb = mySensors.getWestNeigborOf(currentT);
-				if(currentT.getBorderWest() == Border.CLOSED 
-					|| nb != null && nb.getBorderEast()== Border.CLOSED
-				   ){
-					wallFound = true;
-				}
-			} else { //More general case
-				if(currentIntercept[1] == mySensors.getNorthBorderCoor(currentT)){ //A northern intersection
-					nb = mySensors.getNorthNeigborOf(currentT);
+	public int getSonarValue(int x, int y, float heading) {
+		if(sensors.isValid(x,y)){
+			ArrayList<int[]> intersections = this.calculateIntersections(x,y,heading);
+			ArrayList<int[]> sortedIntersections = sortByDistanceTo(intersections, x, y);
+			boolean wallFound = false;
+			int[]currentIntercept = null;
+			double distance = 0;
+			while(!wallFound && !sortedIntersections.isEmpty()){
+				currentIntercept = sortedIntersections.get(0);
+				Tile currentT = sensors.getTileAt(currentIntercept[0], currentIntercept[1]);
+				Tile nb = null;
+				if(heading == 0){ //Straight North
+					nb = sensors.getNorthNeigborOf(currentT);
 					if(currentT.getBorderNorth() == Border.CLOSED 
 						|| nb != null && nb.getBorderSouth()== Border.CLOSED
 					   ){
 						wallFound = true;
 					}
-				}else if(currentIntercept[0] == mySensors.getEastBorderCoor(currentT)){ //An eastern intersection
-					nb = mySensors.getEastNeigborOf(currentT);
+				} else if(heading == 90){ //Straight East
+					nb = sensors.getEastNeigborOf(currentT);
 					if(currentT.getBorderEast() == Border.CLOSED 
 						|| nb != null && nb.getBorderWest()== Border.CLOSED
 					   ){
 						wallFound = true;
 					}
-				} else if (currentIntercept[1] == mySensors.getSouthBorderCoor(currentT)){//A southern intersection
-					nb = mySensors.getSouthNeigborOf(currentT);
+				}else if(heading == 180){ //Straight South
+					nb = sensors.getSouthNeigborOf(currentT);
 					if(currentT.getBorderSouth() == Border.CLOSED 
 						|| nb != null && nb.getBorderNorth()== Border.CLOSED
 					   ){
 						wallFound = true;
 					}
-				} else if(currentIntercept[0] == mySensors.getWestBorderCoor(currentT)){//A western intersection
-					nb = mySensors.getWestNeigborOf(currentT);
-					if(currentT.getBorderEast() == Border.CLOSED 
+				}else if(heading == 270){ //Straight West
+					nb = sensors.getWestNeigborOf(currentT);
+					if(currentT.getBorderWest() == Border.CLOSED 
 						|| nb != null && nb.getBorderEast()== Border.CLOSED
 					   ){
 						wallFound = true;
 					}
+				} else { //More general case
+					if(currentIntercept[1] == sensors.getNorthBorderCoor(currentT)){ //A northern intersection
+						nb = sensors.getNorthNeigborOf(currentT);
+						if(currentT.getBorderNorth() == Border.CLOSED 
+							|| nb != null && nb.getBorderSouth()== Border.CLOSED
+						   ){
+							wallFound = true;
+						}
+					}else if(currentIntercept[0] == sensors.getEastBorderCoor(currentT)){ //An eastern intersection
+						nb = sensors.getEastNeigborOf(currentT);
+						if(currentT.getBorderEast() == Border.CLOSED 
+							|| nb != null && nb.getBorderWest()== Border.CLOSED
+						   ){
+							wallFound = true;
+						}
+					} else if (currentIntercept[1] == sensors.getSouthBorderCoor(currentT)){//A southern intersection
+						nb = sensors.getSouthNeigborOf(currentT);
+						if(currentT.getBorderSouth() == Border.CLOSED 
+							|| nb != null && nb.getBorderNorth()== Border.CLOSED
+						   ){
+							wallFound = true;
+						}
+					} else if(currentIntercept[0] == sensors.getWestBorderCoor(currentT)){//A western intersection
+						nb = sensors.getWestNeigborOf(currentT);
+						if(currentT.getBorderEast() == Border.CLOSED 
+							|| nb != null && nb.getBorderEast()== Border.CLOSED
+						   ){
+							wallFound = true;
+						}
+					}
 				}
+				//Remove 'used' intercept.
+				sortedIntersections.remove(currentIntercept);
 			}
-			//Remove 'used' intercept.
-			sortedIntersections.remove(currentIntercept);
-		}
-		if(!wallFound){//No wall is found at all.
-			distance = (double)Integer.MAX_VALUE;
+			if(!wallFound){//No wall is found at all.
+				distance = (double)Integer.MAX_VALUE;
+			} else {
+				distance = getDistanceFromTo(y, y, currentIntercept[0], currentIntercept[1]);
+			}
+			return (int)Math.round(distance);
 		} else {
-			distance = getDistanceFromTo(imgY, imgY, currentIntercept[0], currentIntercept[1]);
+			throw new IllegalArgumentException("X or Y out of bounds");
 		}
-		return (int)Math.round(distance);
 	}
 	
 	/**
@@ -133,26 +137,26 @@ public class VirtualSonar {
 	protected ArrayList<int[]> calculateIntersections(int imgX, int imgY, float heading) {
 		ArrayList<int[]> resultList = new ArrayList<int[]>();
 		if(heading ==0){
-			int startY = mySensors.getNorthBorderCoor(imgX, imgY);
-			for(int Y = startY; Y<= mySensors.getMaxX(); Y += mySensors.getTileSize()){
+			int startY = sensors.getNorthBorderCoor(imgX, imgY);
+			for(int Y = startY; Y<= sensors.getMaxX(); Y += sensors.getTileSize()){
 				int[] co = new int[]{imgX,Y};
 				resultList.add(co);
 			}
 		} else if(heading == 180){
-			int startY = mySensors.getSouthBorderCoor(imgX, imgY);
-			for(int Y = startY; Y>= 0; Y -= mySensors.getTileSize()){
+			int startY = sensors.getSouthBorderCoor(imgX, imgY);
+			for(int Y = startY; Y>= 0; Y -= sensors.getTileSize()){
 				int[] co = new int[]{imgX,Y};
 				resultList.add(co);
 			}
 		} else 	if(heading ==90){
-			int startX = mySensors.getEastBorderCoor(imgX, imgY);
-			for(int X = startX; X<= mySensors.getMaxX(); X += mySensors.getTileSize()){
+			int startX = sensors.getEastBorderCoor(imgX, imgY);
+			for(int X = startX; X<= sensors.getMaxX(); X += sensors.getTileSize()){
 				int[] co = new int[]{X,imgY};
 				resultList.add(co);
 			}
 		} else if(heading == 270){
-			int startX = mySensors.getWestBorderCoor(imgX, imgY);
-			for(int X = startX; X>= 0; X -= mySensors.getTileSize()){
+			int startX = sensors.getWestBorderCoor(imgX, imgY);
+			for(int X = startX; X>= 0; X -= sensors.getTileSize()){
 				int[] co = new int[]{X,imgY};
 				resultList.add(co);
 			}
@@ -166,47 +170,47 @@ public class VirtualSonar {
 			int checkHighX = 0;
 			int checkHighY = 0;
 			if(heading >0 && heading< 90){
-				startX = mySensors.getNorthBorderCoor(imgX, imgY);
-				stopX = mySensors.getMaxX();
+				startX = sensors.getNorthBorderCoor(imgX, imgY);
+				stopX = sensors.getMaxX();
 				checkLowX = imgX;
-				checkHighX = mySensors.getMaxX();
-				startY = mySensors.getEastBorderCoor(imgX, imgY);
-				stopY = mySensors.getMaxY();
+				checkHighX = sensors.getMaxX();
+				startY = sensors.getEastBorderCoor(imgX, imgY);
+				stopY = sensors.getMaxY();
 				checkLowY = imgY;
-				checkHighY = mySensors.getMaxY();
+				checkHighY = sensors.getMaxY();
 			} else if(heading >90 && heading< 180){
-				startX = mySensors.getEastBorderCoor(imgX, imgY);
-				stopX = mySensors.getMaxX();
+				startX = sensors.getEastBorderCoor(imgX, imgY);
+				stopX = sensors.getMaxX();
 				checkLowX = imgX;
-				checkHighX = mySensors.getMaxX();
+				checkHighX = sensors.getMaxX();
 				startY = 0;
-				stopY = mySensors.getSouthBorderCoor(imgX, imgY);
+				stopY = sensors.getSouthBorderCoor(imgX, imgY);
 				checkLowY = 0;
 				checkHighY = imgY;
 			}else if(heading >180 && heading< 270){
 				startX = 0;
-				stopX = mySensors.getWestBorderCoor(imgX, imgY);
+				stopX = sensors.getWestBorderCoor(imgX, imgY);
 				checkLowX = 0;
 				checkHighX = imgX;
 				startY = 0;
-				stopY = mySensors.getSouthBorderCoor(imgX, imgY);
+				stopY = sensors.getSouthBorderCoor(imgX, imgY);
 				checkLowY = 0;
 				checkHighY = imgY;
 			}else if(heading >270 && heading< 360){
 				startX = 0;
-				stopX = mySensors.getWestBorderCoor(imgX, imgY);
+				stopX = sensors.getWestBorderCoor(imgX, imgY);
 				checkLowX = 0;
 				checkHighX = imgX;
-				startY = mySensors.getNorthBorderCoor(imgX, imgY);
-				stopY = mySensors.getMaxY();
+				startY = sensors.getNorthBorderCoor(imgX, imgY);
+				stopY = sensors.getMaxY();
 				checkLowY = imgY;
-				checkHighY = mySensors.getMaxY();
+				checkHighY = sensors.getMaxY();
 			}
 			//double rico = Math.round(Math.tan(Utils.degrees2radians(-heading+90)));
 			double rico =Math.tan(Math.toRadians(-heading+90));
 			double yIntercept = imgY - rico*imgX;
 			int foundY;
-			for(int X = startX; X<= stopX; X = X+mySensors.getTileSize()){
+			for(int X = startX; X<= stopX; X = X+sensors.getTileSize()){
 				foundY = (int) Math.round(X*rico + yIntercept);
 				if(foundY >=checkLowY && foundY <=checkHighY ){
 					int[] co = new int[]{X,foundY};
@@ -214,7 +218,7 @@ public class VirtualSonar {
 				}
 			}
 			int foundX;
-			for(int Y = startY; Y<= stopY; Y = Y+mySensors.getTileSize()){
+			for(int Y = startY; Y<= stopY; Y = Y+sensors.getTileSize()){
 					foundX = (int) Math.round((Y-yIntercept)/rico);
 					if(foundX >=checkLowX && foundX <=checkHighX){
 						int[] co = new int[]{foundX,Y};
