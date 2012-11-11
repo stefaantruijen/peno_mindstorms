@@ -165,7 +165,7 @@ public class Tile {
 	}
 	
 	public boolean isNorthFrom(Tile other){
-		return(other.getY()==this.getY()-1 && this.getX()==other.getY());
+		return(other.getY()==this.getY()-1 && this.getX()==other.getX());
 	}
 	
 	public static Tile read(final DataInput input) throws IOException {

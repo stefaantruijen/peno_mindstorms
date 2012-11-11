@@ -40,6 +40,9 @@ public class WallFollower extends Action{
 		}
 		
 		private void moveTo(Tile next) {
+			if(next.equals(current)){
+				driver.sendDebug("Tiles are the same");
+			}
 			if(next.isEastFrom(this.current)){
 				driver.sendDebug("TRAVELLING EAST");
 				this.travelEast();
@@ -52,7 +55,10 @@ public class WallFollower extends Action{
 			}else if(next.isSouthFrom(this.current)){
 				driver.sendDebug("TRAVELLING SOUTH");
 				this.travelSouth();
+			}else{
+				driver.sendDebug("Something went wrong.");
 			}
+			
 		}
 		
 		private void moveForward() {
@@ -233,7 +239,8 @@ public class WallFollower extends Action{
 			return null;
 			
 		}
-		private Boolean checkForWall(){
+		private Boolean checkForWall() throws InterruptedException{
+			Thread.sleep(200L);
 			int dist = driver.readSensorUltraSonic();
 			if(dist < 25){
 				return true;
@@ -241,8 +248,10 @@ public class WallFollower extends Action{
 				return false;
 			}else{
 				driver.turnHeadCounterClockWise(5);
+				Thread.sleep(200L);
 				int dist1 = driver.readSensorUltraSonic();
 				driver.turnHeadClockWise(10);
+				Thread.sleep(200L);
 				int dist2 = driver.readSensorUltraSonic();
 				driver.turnHeadCounterClockWise(5);
 				if(dist1 < 25 || dist2 < 25){
@@ -289,10 +298,8 @@ public class WallFollower extends Action{
 						break;
 				
 				}
-				driver.sendDebug(headDirection.toString()+" = "+checkForWall().toString());
 				driver.turnHeadClockWise(90);
 				this.headDirection = headDirection.turnCWise();
-				
 				this.driver.sendTile(t);
 			}
 			for(int i = 0;i<=3;i++){

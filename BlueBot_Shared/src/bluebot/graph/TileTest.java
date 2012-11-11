@@ -22,15 +22,15 @@ public class TileTest {
 	
 	@Test
 	public void testNorthFrom(){
-		Tile source = new Tile(0,1);
-		Tile other = new Tile(0,0);
+		Tile source = new Tile(0,2);
+		Tile other = new Tile(0,1);
 		assertTrue(source.isNorthFrom(other));
 	}
 	
 	@Test
 	public void testSouthFrom(){
-		Tile source = new Tile(0,0);
-		Tile destination = new Tile(0,1);
+		Tile source = new Tile(0,1);
+		Tile destination = new Tile(0,2);
 		assertTrue(source.isSouthFrom(destination));
 	}
 //	@Test
