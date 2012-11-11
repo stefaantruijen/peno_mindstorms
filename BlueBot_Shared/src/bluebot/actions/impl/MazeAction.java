@@ -17,9 +17,9 @@ public class MazeAction extends Action {
 	@Override
 	public void execute(Driver driver) throws ActionException,
 			InterruptedException {
+		
 		WallFollower wf = new WallFollower();
 		wf.execute(driver);
-		
 	}
 	
 }

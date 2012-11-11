@@ -1,7 +1,12 @@
 package bluebot.actions.impl;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import bluebot.Driver;
 import bluebot.actions.Action;
+import bluebot.actions.ActionException;
 import bluebot.graph.Border;
 import bluebot.graph.Direction;
 import bluebot.graph.Graph;
@@ -12,16 +17,23 @@ public class WallFollower extends Action{
 		private final Graph maze;
 		private Direction headDirection,moveDirection;
 		private Tile current;
+		private int tilesTravelledBetweenCalib = 0;
+		private List<Tile> blackSpots;
 		
 		public WallFollower(){
 			this.maze = new Graph();
 			this.headDirection=Direction.UP;
 			this.moveDirection=Direction.UP;
+			this.blackSpots = null;
 		}
-		
+		/**
+		 * Execute the wall following algorithm. Always keep the wall to your right. Till we're back on the start position and all
+		 * Start neighbors are explored. This means 'black spots' still remain in the maze. The algorithm detects black spots and will visit the black spots to explore the remaining tiles.
+		 */
 		@Override
 		public void execute(Driver driver) throws InterruptedException {
 			this.driver = driver;
+			this.driver.setSpeed(80);
 			this.initializeRootTile();
 			
 			do{
@@ -34,12 +46,20 @@ public class WallFollower extends Action{
 				this.maze.addVerticies(next.getNeighbors());
 				this.current = next;
 				driver.sendDebug("CURRENT TILE : "+current.toString());
-			}while(current != maze.getRootTile());
+				if(current == this.maze.getRootTile() && !hasUnvisitedNeighbors(this.maze.getRootTile())){
+					this.findBlackSpots();
+				}
+			}while(this.hasUnvisitedNeighbors(this.maze.getRootTile())||this.hasUnvisitedNeighbors(current)||this.graphHasUnvisitedNeighbors());
 			
 			
 		}
-		
-		private void moveTo(Tile next) {
+		/**
+		 * Move to a given next tile.
+		 * 
+		 * @param next
+		 * @throws InterruptedException
+		 */
+		private void moveTo(Tile next) throws InterruptedException {
 			if(next.equals(current)){
 				driver.sendDebug("Tiles are the same");
 			}
@@ -60,13 +80,37 @@ public class WallFollower extends Action{
 			}
 			
 		}
-		
-		private void moveForward() {
-			this.driver.moveForward(400F, true);
-			driver.sendDebug("MOVE FORWARD");
+		/**
+		 * Move forward , every 4 tiles orientate the robot.
+		 * 
+		 * @throws InterruptedException
+		 */
+		private void moveForward() throws InterruptedException {
+			if(tilesTravelledBetweenCalib<3){
+				this.driver.moveForward(400F, true);
+				driver.sendDebug("MOVE FORWARD");
+				tilesTravelledBetweenCalib++;
+			}else{
+				WhiteLineAction wa = new WhiteLineAction();
+				try {
+					driver.sendDebug("ORIENTATING");
+					wa.execute(this.driver);
+				} catch (ActionException e) {
+					driver.sendDebug("CALIBRATION NEEDED");
+					this.abort();
+				}
+				this.driver.setSpeed(80);
+				this.driver.moveForward(200F, true);
+				driver.sendDebug("MOVE FORWARD");
+				this.tilesTravelledBetweenCalib = 0;
+			}
 		}
-		
-		private void travelSouth() {
+		/**
+		 * Let the robot travel south.
+		 * 
+		 * @throws InterruptedException
+		 */
+		private void travelSouth() throws InterruptedException {
 			switch(moveDirection){
 				case DOWN:
 					break;
@@ -88,8 +132,12 @@ public class WallFollower extends Action{
 			this.headDirection = moveDirection;
 			
 		}
-		
-		private void travelWest() {
+		/**
+		 * Let the robot travel west.
+		 * 
+		 * @throws InterruptedException
+		 */
+		private void travelWest() throws InterruptedException {
 			switch(moveDirection){
 				case DOWN:
 					this.driver.turnRight(90F, true);
@@ -115,7 +163,12 @@ public class WallFollower extends Action{
 			this.headDirection = this.moveDirection;
 			
 		}
-		private void travelNorth() {
+		/**
+		 * Let the robot travel north.
+		 * 
+		 * @throws InterruptedException
+		 */
+		private void travelNorth() throws InterruptedException {
 			switch(moveDirection){
 				case DOWN:
 					this.driver.turnRight(180F, true);
@@ -140,8 +193,12 @@ public class WallFollower extends Action{
 			this.moveDirection = Direction.UP;
 			this.headDirection = this.moveDirection;
 		}
-		
-		private void travelEast() {
+		/**
+		 * Let the robot travel east.
+		 * 
+		 * @throws InterruptedException
+		 */
+		private void travelEast() throws InterruptedException {
 			switch(moveDirection){
 				case DOWN:
 					this.driver.turnLeft(90F, true);
@@ -165,12 +222,21 @@ public class WallFollower extends Action{
 			
 		}
 		/**
-		 * Always give right or ahead or left or back.
+		 * Always give right or ahead or left or back. If black spots are detected, give these priority as next tile if they are reachable.
 		 * 
 		 * @return
 		 */
 		private Tile determineNextTile() {
-			
+			if(this.blackSpots != null){
+				Iterator<Tile> iter = this.blackSpots.iterator();
+				while(iter.hasNext()){
+					Tile t = iter.next();
+					if(t.isNeighborFrom(current)){
+						iter.remove();
+						return t;
+					}
+				}
+			}
 			switch(moveDirection){
 				case DOWN:
 					if(current.getBorderWest() == Border.OPEN){
@@ -239,6 +305,12 @@ public class WallFollower extends Action{
 			return null;
 			
 		}
+		/**
+		 * Check if a wall is present in front of the robot.
+		 * 
+		 * @return
+		 * @throws InterruptedException
+		 */
 		private Boolean checkForWall() throws InterruptedException{
 			Thread.sleep(200L);
 			int dist = driver.readSensorUltraSonic();
@@ -259,9 +331,11 @@ public class WallFollower extends Action{
 				}
 				return false;
 			}
-			
 		}
-		
+		/**
+		 * Initialize the robot and the root tile it is standing on.
+		 * @throws InterruptedException
+		 */
 		private void initializeRootTile() throws InterruptedException{
 			
 			Tile root = this.exploreTile(new Tile(0,0));
@@ -270,7 +344,13 @@ public class WallFollower extends Action{
 			driver.sendTile(root);
 			this.current = root;
 		}
-		
+		/**
+		 * Explore and update a given tile.
+		 * 
+		 * @param t
+		 * @return
+		 * @throws InterruptedException
+		 */
 		private Tile exploreTile(Tile t) throws InterruptedException{
 			for(int i = 0;i<=3;i++){
 				switch(headDirection){
@@ -308,5 +388,48 @@ public class WallFollower extends Action{
 			}
 			t.setExplored();
 			return t;
+		}
+		/**
+		 * Check if a given tile has unvisited neighbors.
+		 * @param t
+		 * @return
+		 */
+		private boolean hasUnvisitedNeighbors(Tile t){
+			for(Tile n : t.getNeighbors()){
+				if(!maze.getVertex(n.getX(), n.getY()).isExplored()){
+					return true;
+				}
+			}
+			
+			return false;
+			
+		}
+		/**
+		 * Check if the graph still has unvisited neighbors left.
+		 * @return
+		 */
+		private boolean graphHasUnvisitedNeighbors(){
+			for(Tile t : this.maze.getVerticies()){
+				if(t.isExplored()){
+					if(hasUnvisitedNeighbors(t)){
+						return true;
+					}
+				}
+			}
+			
+			return false;
+		}
+		/**
+		 * Find black spots in the currently used maze.
+		 * 
+		 */
+		private void findBlackSpots(){
+			this.blackSpots = new ArrayList<Tile>();
+			for(Tile t : this.maze.getVerticies()){
+				if(!t.isExplored()){
+					blackSpots.add(t);
+				}
+			}
+			
 		}
 	}

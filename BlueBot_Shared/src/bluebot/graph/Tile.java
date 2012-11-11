@@ -246,7 +246,12 @@ public class Tile {
 	public boolean isExplored(){
 		return this.explored;
 	}
-	
+	/**
+	 * Get the neighbors of this tile. The tile needs to be explored in order to determine the neighbors.
+	 * 
+	 * IllegalStateException is thrown : if(!isExplored)
+	 * @return
+	 */
 	public List<Tile> getNeighbors(){
 		if(isExplored()){
 			List<Tile> neighbors = new ArrayList<Tile>();
