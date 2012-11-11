@@ -123,7 +123,7 @@ public class DummyRobot extends AbstractRobot {
 		x -= (tile.getX() * Tile.SIZE);
 		y -= (tile.getY() * Tile.SIZE);
 		
-		final float threshold = 199F;
+		final float threshold = 190F;
 		if ((Math.abs(x) >= threshold) || (Math.abs(y) >= threshold)) {
 			// We're on a white line on the edge of the tile
 			return 65;
