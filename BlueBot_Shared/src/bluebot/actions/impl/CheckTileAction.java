@@ -4,6 +4,7 @@ package bluebot.actions.impl;
 import bluebot.Driver;
 import bluebot.actions.Action;
 import bluebot.actions.ActionException;
+import bluebot.graph.Border;
 import bluebot.graph.Orientation;
 import bluebot.graph.Tile;
 
@@ -39,10 +40,26 @@ public class CheckTileAction extends Action {
 	 * @return <code>TRUE</code> if facing a wall,
 	 * 			<code>FALSE</code> otherwise
 	 */
-	protected boolean detectWall(final Driver driver) {
-		// TODO
-//		return (Math.random() < 0.5);
-		return (driver.readSensorUltraSonic() < 25);
+	protected boolean checkForWall(final Driver driver) throws InterruptedException {
+		Thread.sleep(200L);
+		int dist = driver.readSensorUltraSonic();
+		if(dist < 25){
+			return true;
+		}else if(dist > 30){
+			return false;
+		}else{
+			driver.turnHeadCounterClockWise(5);
+			Thread.sleep(200L);
+			int dist1 = driver.readSensorUltraSonic();
+			driver.turnHeadClockWise(10);
+			Thread.sleep(200L);
+			int dist2 = driver.readSensorUltraSonic();
+			driver.turnHeadCounterClockWise(5);
+			if(dist1 < 25 || dist2 < 25){
+				return true;
+			}
+			return false;
+		}
 	}
 	
 	public void execute(final Driver driver)
@@ -57,34 +74,45 @@ public class CheckTileAction extends Action {
 		
 		// Generate a Tile object for the current tile
 		final Tile tile = new Tile(x, y);
-		
-		// Determine the initial orientation of the US sensor
-		// It always resets to match the orientation of the robot
-		Orientation head = Orientation.forHeading(pos.getHeading());
-		
-		// Scan in front of the robot
-		tile.setBorder(head, !detectWall(driver));
-		
-		// Turn the sensor clockwise, twice
-		// The first turn scans the right side of the robot
-		// The second turn scans behind the robot
-		for (int i = 0; i < 2; i++) {
+		bluebot.graph.Orientation headDirection = Orientation.forHeading(pos.getHeading());
+		for(int i = 0;i<=3;i++){
+			switch(headDirection){
+				case SOUTH:
+					if(checkForWall(driver)){
+						tile.setBorderSouth(Border.CLOSED);
+					}
+					break;
+				case WEST:
+					if(checkForWall(driver)){
+						tile.setBorderWest(Border.CLOSED);
+					}
+					break;
+				case EAST:
+					if(checkForWall(driver)){
+						tile.setBorderEast(Border.CLOSED);
+					}
+					break;
+				case NORTH:
+					if(checkForWall(driver)){
+						tile.setBorderNorth(Border.CLOSED);
+					}
+					break;
+				default:
+					break;
+			
+			}
 			driver.turnHeadClockWise(90);
-			head = head.rotateCW();
-			tile.setBorder(head, !detectWall(driver));
+			headDirection = headDirection.rotateCW();
+			driver.sendTile(tile);
 		}
-		
-		// Turn the sensor around
-		// to scan the left side of the robot
-		driver.turnHeadCounterClockWise(270);
-		head = head.rotateCW();
-		tile.setBorder(head, !detectWall(driver));
-		
-		// Turn the sensor back to match the orientation of the robot
-		driver.turnHeadClockWise(90);
-		
-		// Send the tile information to the client
+		for(int i = 0;i<=3;i++){
+			driver.turnHeadCounterClockWise(90);
+			headDirection = headDirection.rotateCCW();
+		}
+		tile.setExplored();
 		driver.sendTile(tile);
+		
+		
 	}
 	
 }
