@@ -10,6 +10,11 @@ import org.junit.Test;
 import bluebot.graph.Border;
 import bluebot.graph.Tile;
 
+/**
+ * 
+ * @author Dieter
+ *
+ */
 public class TestVirtualSonar {
 	private static double delta = 0;
 	//4x4 Tile list.

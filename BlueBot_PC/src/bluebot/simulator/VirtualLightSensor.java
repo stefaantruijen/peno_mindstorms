@@ -43,7 +43,7 @@ public class VirtualLightSensor {
 	/**
 	 * Image that holds the generated image for this VirtualLightSensor.
 	 */
-	private static BufferedImage img; 
+	private BufferedImage img; 
 	/**
 	 * The Sensors object of this VirtualLightSensor. Holds all informations regarding tiles.
 	 */
@@ -85,12 +85,26 @@ public class VirtualLightSensor {
 	 * @return int
 	 * 		An integer repersenting the light value.
 	 */
-	public static int getLightValue(int x, int y){
+	public int getLightValue(int x, int y){
+		if(isValid(x,y)){
 		  int clr=  img.getRGB(x,y); 
 		  int lightValue = calculateLightValue(clr);
 //		  System.out.println("Lightsensor white-value: "+lightValue);
-		  
 		  return lightValue;
+		} else {
+			throw new IllegalArgumentException("X or Y out of bounds");
+		}
+	}
+
+	private boolean isValid(int x, int y) {
+		boolean result = true;
+		if(x<0 || x > sensors.getMaxX()){
+			result = false;
+		}
+		if(y<0 || y > sensors.getMaxY()){
+			result = false;
+		}
+		return result;
 	}
 
 	/**

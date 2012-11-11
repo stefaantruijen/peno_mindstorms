@@ -6,6 +6,11 @@ import org.junit.Test;
 
 import bluebot.graph.Tile;
 
+/**
+ * 
+ * @author Dieter
+ *
+ */
 public class TestSensors {
 	private static double delta = 0;
 	//4x4 Tile list.
