@@ -29,9 +29,10 @@ public class WallFollower extends Action{
 		/**
 		 * Execute the wall following algorithm. Always keep the wall to your right. Till we're back on the start position and all
 		 * Start neighbors are explored. This means 'black spots' still remain in the maze. The algorithm detects black spots and will visit the black spots to explore the remaining tiles.
+		 * @throws ActionException 
 		 */
 		@Override
-		public void execute(Driver driver) throws InterruptedException {
+		public void execute(Driver driver) throws InterruptedException, ActionException {
 			this.driver = driver;
 			this.driver.setSpeed(80);
 			this.initializeRootTile();
@@ -58,8 +59,9 @@ public class WallFollower extends Action{
 		 * 
 		 * @param next
 		 * @throws InterruptedException
+		 * @throws ActionException 
 		 */
-		private void moveTo(Tile next) throws InterruptedException {
+		private void moveTo(Tile next) throws InterruptedException, ActionException {
 			if(next.equals(current)){
 				driver.sendDebug("Tiles are the same");
 			}
@@ -84,21 +86,20 @@ public class WallFollower extends Action{
 		 * Move forward , every 4 tiles orientate the robot.
 		 * 
 		 * @throws InterruptedException
+		 * @throws ActionException 
 		 */
-		private void moveForward() throws InterruptedException {
+		private void moveForward() throws InterruptedException, ActionException {
 			if(tilesTravelledBetweenCalib<3){
 				this.driver.moveForward(400F, true);
 				driver.sendDebug("MOVE FORWARD");
 				tilesTravelledBetweenCalib++;
 			}else{
 				WhiteLineAction wa = new WhiteLineAction();
-				try {
+				
+
 					driver.sendDebug("ORIENTATING");
 					wa.execute(this.driver);
-				} catch (ActionException e) {
-					driver.sendDebug("CALIBRATION NEEDED");
-					this.abort();
-				}
+				
 				this.driver.setSpeed(80);
 				this.driver.moveForward(200F, true);
 				driver.sendDebug("MOVE FORWARD");
@@ -109,8 +110,9 @@ public class WallFollower extends Action{
 		 * Let the robot travel south.
 		 * 
 		 * @throws InterruptedException
+		 * @throws ActionException 
 		 */
-		private void travelSouth() throws InterruptedException {
+		private void travelSouth() throws InterruptedException, ActionException {
 			switch(moveDirection){
 				case DOWN:
 					break;
@@ -136,8 +138,9 @@ public class WallFollower extends Action{
 		 * Let the robot travel west.
 		 * 
 		 * @throws InterruptedException
+		 * @throws ActionException 
 		 */
-		private void travelWest() throws InterruptedException {
+		private void travelWest() throws InterruptedException, ActionException {
 			switch(moveDirection){
 				case DOWN:
 					this.driver.turnRight(90F, true);
@@ -167,8 +170,9 @@ public class WallFollower extends Action{
 		 * Let the robot travel north.
 		 * 
 		 * @throws InterruptedException
+		 * @throws ActionException 
 		 */
-		private void travelNorth() throws InterruptedException {
+		private void travelNorth() throws InterruptedException, ActionException {
 			switch(moveDirection){
 				case DOWN:
 					this.driver.turnRight(180F, true);
@@ -197,8 +201,9 @@ public class WallFollower extends Action{
 		 * Let the robot travel east.
 		 * 
 		 * @throws InterruptedException
+		 * @throws ActionException 
 		 */
-		private void travelEast() throws InterruptedException {
+		private void travelEast() throws InterruptedException, ActionException {
 			switch(moveDirection){
 				case DOWN:
 					this.driver.turnLeft(90F, true);
