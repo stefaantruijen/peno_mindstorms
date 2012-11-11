@@ -21,16 +21,22 @@ import bluebot.util.Utils;
  * @author Dieter Castel, Ruben Feyen, Michiel Ruelens 
  */
 public class VirtualRobot extends AbstractRobot {
+	/**
+ 	 *Static that holds the maximum travel speed in degrees/s.
+	 */
 	private static final float MaxRotateSpeed = 90;
-	private static final float MaxTravelSpeed = 20;
+	/**
+ 	 *Static that holds the maximum travel speed in mm/s.
+	 */
+	private static final float MaxTravelSpeed = 400;
 	/**
 	 * The size of the tiles on which the VirtualRobot will be driving.
 	 */
 	public static int TILE_SIZE = 40;
 	/**
-	 * Static that holds the standard travel speed in cm/s. This is the speed we measured in the real NXT robot.
+	 * Static that holds the standard travel speed in mm/s. This is the speed we measured in the real NXT robot.
 	 */
-	public static double STANDARD_TRAVEL_SPEED = 1; //Probably get this value from other class.//TODO: see what this is irl
+	public static double STANDARD_TRAVEL_SPEED = 200; //Probably get this value from other class.//TODO: see what this is irl
 	/**
 	 * Static that holds the standard rotate speed in degrees/s. This is the speed we measured in the real NXT robot.
 	 */
@@ -180,14 +186,16 @@ public class VirtualRobot extends AbstractRobot {
 	}
 
 	public int getImgX(){
-		System.out.println("getX = " + getY() + "(rounded = " + (int)(Math.round(getX())) +")");
-		System.out.println("getImgStartX" + getImgStartX());
-		return getImgStartX() + Math.round(getX()) ;
+//		System.out.println("getX = " + getX() + "(rounded = " + (int)(Math.round(getX())) +")");
+//		System.out.println("getImgStartX" + getImgStartX());
+		int XinCM = Math.round(getX()/10);
+		return getImgStartX() + XinCM ;
 	}
 	public int getImgY(){
-		System.out.println("getY = " + getY() + "(rounded = " + (int)(Math.round(getY())) +")");
-		System.out.println("getImgStartY" + getImgStartY());
-		return getImgStartY() + Math.round(getY()) ;
+//		System.out.println("getY = " + getY() + "(rounded = " + (int)(Math.round(getY())) +")");
+//		System.out.println("getImgStartY" + getImgStartY());
+		int YinCM = Math.round(getY()/10);
+		return getImgStartY() + YinCM;
 	}
 	//GETTERS AND SETTERS
 	private void setInitAbsoluteX(float x) {
@@ -366,46 +374,49 @@ public class VirtualRobot extends AbstractRobot {
 
 	
 	//IMPLEMENTATION OF ABSTRACT METHODS (all @Override methods)
+	/**
+	 * Returns the x-coordinate which is the amount of mm in the x-direction the robot is removed from (0,0)
+	 */
 	@Override
 	public float getX() {
 		float result = getInitAbsoluteX();
 		if (getCurrentAction() == Action.TRAVEL){
 			if(System.currentTimeMillis()>=getCurrentActionETA()){//If action is finished:
 //				System.out.println("X:Action finished?");
-				result += getCurrentArgument();
+				float arg = getCurrentArgument();
+				int sign = (int)(arg/Math.abs(arg));
+				float distance = Math.abs(arg);
+				result += sign*additionToX(distance);
 			} else {
 //				System.out.println("X:Action running?");
 				Long elapsedTimeMS = System.currentTimeMillis() - getTimestamp();
 				float arg = getCurrentArgument();
 				int sign = (int)(arg/Math.abs(arg));
 				float distance = (float) (elapsedTimeMS*getTravelSpeed()/(double)(1000));
-				double headingRadians = Math.toRadians(getInitAbsoluteHeading());
-//				System.out.println("already drove X: " + sign*(((float)(Math.sin(headingRadians)))*distance));
-				result += sign*(((float)(Math.sin(headingRadians)))*distance);
+				result += sign*additionToX(distance);
 			}
 		}
 		return result;
 	}
 
 	/**
-	 * 
+	 * Returns the y-coordinate which is the amount of mm in the x-direction the robot is removed from (0,0)
 	 */
 	@Override
-	public float getY() {
+	public float getY(){
 		float result = getInitAbsoluteY();
 		if (getCurrentAction() == Action.TRAVEL){
 			if(System.currentTimeMillis()>=getCurrentActionETA()){//If action is finished:
-//				System.out.println("Y:Action finished?");
-				result += getCurrentArgument();
+				float arg = getCurrentArgument();
+				int sign = (int)(arg/Math.abs(arg));
+				float distance = Math.abs(arg);
+				result += sign*additionToY(distance);
 			} else {
-//				System.out.println("Y:Action running?");
 				Long elapsedTimeMS = System.currentTimeMillis() - getTimestamp();
 				float arg = getCurrentArgument();
 				int sign = (int)(arg/Math.abs(arg));
 				float distance = (float) (elapsedTimeMS*getTravelSpeed()/(double)(1000));
-				double headingRadians = getInitAbsoluteHeading();
-//				System.out.println("already drove Y: " + sign*(((float)(Math.cos(headingRadians)))*distance));
-				result += sign*(((float)(Math.cos(headingRadians)))*distance);
+				result += sign*additionToY(distance);
 			}
 		}
 		return result;
@@ -447,12 +458,9 @@ public class VirtualRobot extends AbstractRobot {
 	@Override
 	public int readSensorLight() {
 		int xOffset = (int) (lightSensorOffset * Math.sin(getHeading()));
-		System.out.println("xOffset = " + xOffset);
 		int sensorX = getImgX() + xOffset;
 		int yOffset = (int) (lightSensorOffset * Math.cos(getHeading()));
-		System.out.println("yOffset = " + yOffset);
 		int sensorY = getImgY() + yOffset;
-		System.out.println("reading Light Sensor at: (" + sensorX +","+sensorY+")");
 		return lightSensor.getLightValue(sensorX, sensorY);
 	}
 	
@@ -462,8 +470,10 @@ public class VirtualRobot extends AbstractRobot {
 	@Override
 	public int readSensorUltraSonic() {
 		float sonarHeading = Utils.clampAngleDegrees(getHeading()+getSonarDirection());
-		int sensorX = (int) Math.round(getImgX() + (sonarOffset * Math.sin(sonarHeading)));
-		int sensorY = (int) Math.round(getImgY() + (sonarOffset * Math.cos(sonarHeading)));
+		int xOffset = (int) Math.round(sonarOffset*Math.sin(sonarHeading));
+		int sensorX = getImgX() + xOffset;
+		int yOffset = (int) Math.round(sonarOffset * Math.cos(sonarHeading));
+		int sensorY = (int) getImgY() + yOffset;
 		return sonar.getSonarValue(sensorX, sensorY,sonarHeading);
 	}
 	
@@ -754,4 +764,23 @@ public class VirtualRobot extends AbstractRobot {
 		setInitAbsoluteY((float)(randomPosOrNeg));		
 	}
 
+	/**
+	 * Returns the value to add to the x-coordinate for traveling a given distance with the current heading.
+	 * @param distance
+	 * @return
+	 */
+	private double additionToX(float distance){
+		double headingRadians = Math.toRadians(getHeading());
+		return Math.sin(headingRadians)*distance;
+	}
+	
+	/**
+	 * Returns the value to add to the y-coordinate for traveling a given distance with the current heading.
+	 * @param distance
+	 * @return
+	 */
+	private double additionToY(float distance){
+		double headingRadians = Math.toRadians(getHeading());
+		return Math.cos(headingRadians)*distance;
+	}
 }
