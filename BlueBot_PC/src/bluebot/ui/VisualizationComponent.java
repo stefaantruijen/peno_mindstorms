@@ -141,36 +141,6 @@ public class VisualizationComponent extends RenderingComponent
 				}
 			}
 		}
-		
-		/*
-		gfx.setColor(getBorderColor(tile.getBorderNorth()));
-		gfx.fillRect(
-				x,
-				y,
-				TILE_RESOLUTION,
-				thickness);
-		
-		gfx.setColor(getBorderColor(tile.getBorderEast()));
-		gfx.fillRect(
-				(x + TILE_RESOLUTION - thickness),
-				y,
-				thickness,
-				TILE_RESOLUTION);
-		
-		gfx.setColor(getBorderColor(tile.getBorderSouth()));
-		gfx.fillRect(
-				x,
-				(y + TILE_RESOLUTION - thickness),
-				TILE_RESOLUTION,
-				thickness);
-		
-		gfx.setColor(getBorderColor(tile.getBorderWest()));
-		gfx.fillRect(
-				x,
-				y,
-				thickness,
-				TILE_RESOLUTION);
-		*/
 	}
 	
 	private static final Color getBorderColor(final Border border) {

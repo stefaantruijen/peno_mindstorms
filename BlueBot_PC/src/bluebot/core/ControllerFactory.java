@@ -12,6 +12,8 @@ import bluebot.io.ClientConnector;
 import bluebot.io.Communicator;
 import bluebot.io.Connection;
 import bluebot.io.VirtualConnection;
+import bluebot.maze.Maze;
+import bluebot.simulator.DummyRobot;
 import bluebot.simulator.VirtualRobot;
 
 
@@ -66,6 +68,17 @@ public class ControllerFactory {
 		}
 		
 		return createController(new VirtualRobot(tiles, start));
+	}
+	
+	/**
+	 * Creates a controller for a test dummy
+	 * 
+	 * @param maze - a {@link Maze} object representing the virtual maze
+	 * 
+	 * @return a {@link Controller} object
+	 */
+	public Controller connectToTestDummy(final Maze maze) {
+		return createController(new DummyRobot(maze));
 	}
 	
 	/**

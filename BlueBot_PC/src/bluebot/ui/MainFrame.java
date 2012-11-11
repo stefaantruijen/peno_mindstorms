@@ -23,6 +23,7 @@ import lejos.pc.comm.NXTCommException;
 import bluebot.core.Controller;
 import bluebot.graph.Graph;
 import bluebot.graph.Tile;
+import bluebot.maze.Maze;
 import bluebot.maze.MazeReader;
 
 
@@ -85,6 +86,24 @@ public class MainFrame extends JFrame {
 		showController(getControllerFactory().connectToSimulator(tiles));
 	}
 	
+	private final void connectToTestDummy() {
+		final List<Tile> tiles = loadMaze();
+		if (tiles == null) {
+			return;
+		}
+		if (tiles.isEmpty()) {
+			SwingUtils.showWarning("Invalid maze (no tiles)");
+			return;
+		}
+		
+		final Maze maze = new Maze();
+		for (final Tile tile : tiles) {
+			maze.addTile(tile.getX(), tile.getY()).copyBorders(tile);
+		}
+		
+		showController(getControllerFactory().connectToTestDummy(maze));
+	}
+	
 	private static final JButton createButton(final String text) {
 		final JButton button = new JButton(text);
 		button.setMinimumSize(new Dimension(1, 64));
@@ -106,10 +125,17 @@ public class MainFrame extends JFrame {
 			}
 		});
 		
+		final JButton btnTestDummy = createButton("Connect to Test Dummy");
+		btnTestDummy.addActionListener(new ActionListener() {
+			public void actionPerformed(final ActionEvent event) {
+				connectToTestDummy();
+			}
+		});
+		
 		final GridBagLayout layout = new GridBagLayout();
 		layout.columnWeights = new double[] { 1D };
-		layout.rowHeights = new int[] { 64, 64 };
-		layout.rowWeights = new double[] { 1D, 1D };
+		layout.rowHeights = new int[] { 64, 64, 64 };
+		layout.rowWeights = new double[] { 1D, 1D, 1D };
 		setLayout(layout);
 		
 		final GridBagConstraints gbc = SwingUtils.createGBC();
@@ -121,6 +147,9 @@ public class MainFrame extends JFrame {
 		
 		gbc.gridy++;
 		add(btnSim, gbc);
+		
+		gbc.gridy++;
+		add(btnTestDummy, gbc);
 	}
 	
 	private final List<Tile> loadMaze() {
