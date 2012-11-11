@@ -26,11 +26,24 @@ public class VirtualLightSensor {
 	/**
 	 * Standard white line color that will be used at construct.
 	 */
-	private static final Color STANDARD_WHITE_LINE_COLOR = WHITE;
+	public static final Color STANDARD_WHITE_LINE_COLOR = WHITE;
+	
+	/**
+	 * Standard white line light value.
+	 */
+	public static final int STANDARD_WHITE_LINE_LIGHTVALUE = calculateLightValue(STANDARD_WHITE_LINE_COLOR.getRGB());
+	
+
+	
 	/**
 	 * Standard empty space color that will be used at construct.
 	 */
-	private static final Color STANDARD_EMPTY_SPACE_COLOR = LIGHT_BROWN_2;
+	public static final Color STANDARD_EMPTY_SPACE_COLOR = LIGHT_BROWN_2;
+	
+	/**
+	 * Standard empty space light value.
+	 */
+	public static final int STANDARD_EMPTY_SPACE_LIGHTVALUE = calculateLightValue(LIGHT_BROWN_2.getRGB());
 	
 	/**
 	 * The white line color currently used.

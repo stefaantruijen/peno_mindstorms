@@ -1,5 +1,4 @@
 package bluebot.simulator;
-
 import java.util.Random;
 
 import bluebot.AbstractRobot;
@@ -101,7 +100,7 @@ public class VirtualRobot extends AbstractRobot {
 	/**
 	 * Variable holding the argument corresponding to the <code>currentAction</code>.
 	 */
-	private double currentArgument;
+	private float currentArgument;
 	/**
 	 * Variable holding the time in milliseconds at which the current action will be completed.
 	 */
@@ -249,11 +248,11 @@ public class VirtualRobot extends AbstractRobot {
 		return currentAction;
 	}
 
-	private void setCurrentArgument(double currentArgument) {
+	private void setCurrentArgument(float currentArgument) {
 		this.currentArgument = currentArgument;
 	}
 
-	public double getCurrentArgument() {
+	public float getCurrentArgument() {
 		return currentArgument;
 	}
 
@@ -352,8 +351,10 @@ public class VirtualRobot extends AbstractRobot {
 				result += getCurrentArgument();
 			} else  {
 				Long elapsedTimeMS = System.currentTimeMillis() - getTimestamp();
-				double arg = getCurrentArgument();
-				result += (arg/Math.abs(arg)) * elapsedTimeMS* getSonarRotateSpeed()/(double)(1000);
+				float arg = getCurrentArgument();
+				double sign = (arg/Math.abs(arg));
+				float distance = (float)(elapsedTimeMS* getSonarRotateSpeed()/(double)(1000));
+				result += sign * distance;
 			}
 		}
 		return result;		
@@ -372,7 +373,7 @@ public class VirtualRobot extends AbstractRobot {
 			} else {
 //				System.out.println("X:Action running?");
 				Long elapsedTimeMS = System.currentTimeMillis() - getTimestamp();
-				double arg = getCurrentArgument();
+				float arg = getCurrentArgument();
 				int sign = (int)(arg/Math.abs(arg));
 				float distance = (float) (elapsedTimeMS*getTravelSpeed()/(double)(1000));
 				double headingRadians = Math.toRadians(getInitAbsoluteHeading());
@@ -397,7 +398,7 @@ public class VirtualRobot extends AbstractRobot {
 			} else {
 //				System.out.println("Y:Action running?");
 				Long elapsedTimeMS = System.currentTimeMillis() - getTimestamp();
-				double arg = getCurrentArgument();
+				float arg = getCurrentArgument();
 				int sign = (int)(arg/Math.abs(arg));
 				float distance = (float) (elapsedTimeMS*getTravelSpeed()/(double)(1000));
 				double headingRadians = getInitAbsoluteHeading();
@@ -471,7 +472,7 @@ public class VirtualRobot extends AbstractRobot {
 		//Set every inital value correctly.
 		setInitAbsoluteX(0);
 		setInitAbsoluteY(0);
-		setInitAbsoluteHeading(0);
+//		setInitAbsoluteHeading(0);
 		setInitSonarDirection(0);
 		setImgStartX(Math.round(imgStartX + getInitAbsoluteX()));
 		setImgStartY(Math.round(imgStartY + getInitAbsoluteY()));
@@ -507,7 +508,7 @@ public class VirtualRobot extends AbstractRobot {
 	 */
 	@Override
 	public void turnRight() {
-		turnLeft(Float.MAX_VALUE,false);
+		turnRight(Float.MAX_VALUE,false);
 	}
 	
 	/**
@@ -543,7 +544,9 @@ public class VirtualRobot extends AbstractRobot {
 			} else {
 				Long elapsedTimeMS = System.currentTimeMillis() - getTimestamp();
 				double arg = getCurrentArgument();
-				result += (arg/Math.abs(arg)) * elapsedTimeMS*getRotateSpeed()/(double)(1000);
+				int sign = (int)(arg/Math.abs(arg));
+				float distance = (float) (elapsedTimeMS*getRotateSpeed()/(double)(1000));
+				result += sign * distance;
 			}
 		}
 		return Utils.clampAngleDegrees(result);
@@ -566,7 +569,7 @@ public class VirtualRobot extends AbstractRobot {
 	public void turnHeadClockWise(int offset) {
 		commitPreviousAction();
 		setCurrentAction(Action.SONAR);
-		setCurrentArgument(offset);
+		setCurrentArgument((float)offset);
 		initializeMove(false);	
 	}
 
@@ -579,7 +582,7 @@ public class VirtualRobot extends AbstractRobot {
 	public void turnHeadCounterClockWise(int offset) {
 		commitPreviousAction();
 		setCurrentAction(Action.SONAR);
-		setCurrentArgument(-offset);
+		setCurrentArgument(-(float)offset);
 		initializeMove(false);	
 	}
 	
