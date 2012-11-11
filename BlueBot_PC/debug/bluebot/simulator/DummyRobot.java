@@ -20,7 +20,7 @@ import bluebot.util.Orientation;
  */
 public class DummyRobot extends AbstractRobot {
 	
-	private static final float FACTOR_SPEED = 5F;
+	private static final float FACTOR_SPEED = 1F;
 	
 	private Maze maze;
 	private Motion motion;
@@ -123,7 +123,7 @@ public class DummyRobot extends AbstractRobot {
 		x -= (tile.getX() * Tile.SIZE);
 		y -= (tile.getY() * Tile.SIZE);
 		
-		final float threshold = 190F;
+		final float threshold = 199F;
 		if ((Math.abs(x) >= threshold) || (Math.abs(y) >= threshold)) {
 			// We're on a white line on the edge of the tile
 			return 65;
