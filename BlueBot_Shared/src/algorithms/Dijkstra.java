@@ -39,7 +39,11 @@ public class Dijkstra {
 	    this.edges = new ArrayList<Edge>(graph.getEdges());
 	    this.graph = graph;
 	  }
-
+	  /**
+	   * Execute the Dijkstra Algorithm for a given source tile.
+	   * 
+	   * @param source
+	   */
 	  public void execute(Tile source) {
 		  System.out.println("Calculating paths");
 	    settledNodes = new HashSet<Tile>();
@@ -56,7 +60,11 @@ public class Dijkstra {
 	    }
 	    System.out.println("Paths found");
 	  }
-
+	  /**
+	   * Find the minimal distance for a given node.
+	   * 
+	   * @param node
+	   */
 	  private void findMinimalDistances(Tile node) {
 	    List<Tile> adjacentNodes = getNeighbors(node);
 	    for (Tile target : adjacentNodes) {
@@ -70,7 +78,13 @@ public class Dijkstra {
 	    }
 
 	  }
-
+	  /**
+	   * Get the distance between 2 given tiles.
+	   * 
+	   * @param t1
+	   * @param t2
+	   * @return
+	   */
 	  private int getDistance(Tile t1, Tile t2) {
 		  System.out.println(edges.size());
 	    for (Edge edge : edges) {
@@ -80,7 +94,12 @@ public class Dijkstra {
 	    }
 	    throw new RuntimeException("Should not happen");
 	  }
-
+	  /**
+	   * Get all neighbors for a given tile.
+	   * 
+	   * @param node
+	   * @return
+	   */
 	  private List<Tile> getNeighbors(Tile node) {
 	    List<Tile> neighbors = new ArrayList<Tile>();
 	    for(Tile t : node.getNeighbors()){
@@ -91,7 +110,7 @@ public class Dijkstra {
 	    }
 	    return neighbors;
 	  }
-
+	  
 	  private Tile getMinimum(Set<Tile> vertexes) {
 	    Tile minimum = null;
 	    for (Tile vertex : vertexes) {
