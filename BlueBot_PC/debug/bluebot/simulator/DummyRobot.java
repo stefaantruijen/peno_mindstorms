@@ -21,7 +21,7 @@ import bluebot.util.Utils;
  */
 public class DummyRobot extends AbstractRobot {
 	
-	private static final float FACTOR_SPEED = 1F;
+	private static final float FACTOR_SPEED = 5F;
 	
 	private Maze maze;
 	private Motion motion;
