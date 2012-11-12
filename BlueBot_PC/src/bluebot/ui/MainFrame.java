@@ -86,6 +86,7 @@ public class MainFrame extends JFrame {
 		showController(getControllerFactory().connectToSimulator(tiles));
 	}
 	
+	@SuppressWarnings("unused")
 	private final void connectToTestDummy() {
 		final List<Tile> tiles = loadMaze();
 		if (tiles == null) {
@@ -125,16 +126,18 @@ public class MainFrame extends JFrame {
 			}
 		});
 		
+		/*
 		final JButton btnTestDummy = createButton("Connect to Test Dummy");
 		btnTestDummy.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {
 				connectToTestDummy();
 			}
 		});
+		*/
 		
 		final GridBagLayout layout = new GridBagLayout();
 		layout.columnWeights = new double[] { 1D };
-		layout.rowHeights = new int[] { 64, 64, 64 };
+		layout.rowHeights = new int[] { 64, 64, /* 64 */ };
 		layout.rowWeights = new double[] { 1D, 1D, 1D };
 		setLayout(layout);
 		
@@ -148,8 +151,8 @@ public class MainFrame extends JFrame {
 		gbc.gridy++;
 		add(btnSim, gbc);
 		
-		gbc.gridy++;
-		add(btnTestDummy, gbc);
+//		gbc.gridy++;
+//		add(btnTestDummy, gbc);
 	}
 	
 	private final List<Tile> loadMaze() {

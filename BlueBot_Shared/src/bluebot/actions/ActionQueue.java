@@ -34,11 +34,10 @@ public class ActionQueue extends Threaded {
 	public void abort() {
 		synchronized (lock) {
 			queue.clear();
-		}
-		
-		final Action action = this.action;
-		if (action != null) {
-			action.abort();
+			if (action != null) {
+				action.abort();
+				action = null;
+			}
 		}
 	}
 	
@@ -56,10 +55,15 @@ public class ActionQueue extends Threaded {
 	public void run() {
 		for (;;) {
 			try {
-				action = queue.pull();
-				if (!action.isAborted()) {
-					action.execute(driver);
+				final Action action = queue.pull();
+				synchronized (lock) {
+					if (action.isAborted()) {
+						continue;
+					} else {
+						this.action = action;
+					}
 				}
+				action.execute(driver);
 			} catch (final ActionException e) {
 				driver.sendError(e.getMessage());
 			} catch (final InterruptedException e) {

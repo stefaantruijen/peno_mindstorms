@@ -277,8 +277,6 @@ public abstract class AbstractDriver implements Driver {
 	private final class Updater implements Runnable {
 		
 		private float heading;
-		private int sensorLight = -1;
-		private int sensorUltraSonic = -1;
 		private float x, y;
 		
 		
@@ -309,15 +307,8 @@ public abstract class AbstractDriver implements Driver {
 						(heading = o.getHeading()));
 			}
 			
-			final int light = readSensorLight();
-//			if (light != this.sensorLight) {
-				sendSensorLight(this.sensorLight = light);
-//			}
-			
-			final int ultraSonic = readSensorUltraSonic();
-//			if (ultraSonic != this.sensorUltraSonic) {
-				sendSensorUltraSonic(this.sensorUltraSonic = ultraSonic);
-//			}
+			sendSensorLight(readSensorLight());
+			sendSensorUltraSonic(readSensorUltraSonic());
 		}
 		
 	}
