@@ -8,7 +8,7 @@ import java.util.List;
  * 
  * @author Incalza Dario
  */
-class Edge{
+public class Edge{
   private Tile t1,t2;
 
   /**
@@ -24,7 +24,9 @@ class Edge{
     this.t2 = t2;
   }
 
- 
+  public int getWeight(){
+	  return 1;
+  }
 
   public List<Tile> getTiles(){
 	  List<Tile> tiles = new ArrayList<Tile>();

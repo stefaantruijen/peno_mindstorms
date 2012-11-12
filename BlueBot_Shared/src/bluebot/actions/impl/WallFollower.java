@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import algorithms.Dijkstra;
 import bluebot.Driver;
 import bluebot.actions.Action;
 import bluebot.actions.ActionException;
@@ -54,7 +55,14 @@ public class WallFollower extends Action{
 				}
 			}while(this.hasUnvisitedNeighbors(this.maze.getRootTile())||this.hasUnvisitedNeighbors(current)||this.graphHasUnvisitedNeighbors());
 			
-			this.driver.sendDebug("Edges = "+maze.getEdges().size());
+			Dijkstra dijkstra = new Dijkstra(maze);
+			dijkstra.execute(current);
+			List<Tile> path = dijkstra.getPath(maze.getVertex(3, 5));
+			path.remove(0);
+			for(Tile t : path){
+				this.moveTo(t);
+				this.current = t;
+			}
 			
 		}
 		
@@ -93,10 +101,10 @@ public class WallFollower extends Action{
 		 * @throws ActionException 
 		 */
 		private void moveForward() throws InterruptedException, ActionException {
-			if(tilesTravelledBetweenCalib<3){
+			//if(tilesTravelledBetweenCalib<3){
 				this.driver.moveForward(400F, true);
 				driver.sendDebug("MOVE FORWARD");
-				tilesTravelledBetweenCalib++;
+			/**	tilesTravelledBetweenCalib++;
 			}else{
 				this.driver.moveForward(40F, true);
 				WhiteLineAction wa = new WhiteLineAction();
@@ -108,7 +116,7 @@ public class WallFollower extends Action{
 				this.tilesTravelledBetweenCalib = 0;
 			}
 			
-			driver.modifyOrientation();
+			driver.modifyOrientation();**/
 		}
 		/**
 		 * Let the robot travel south.

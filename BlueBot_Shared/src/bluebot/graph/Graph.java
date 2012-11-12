@@ -142,6 +142,7 @@ public class Graph {
 	   * @return the graph edges
 	   */
 	  public List<Edge> getEdges() {
+		  this.validateAllEdges();
 	    return this.edges;
 	  }
 
@@ -198,6 +199,19 @@ public class Graph {
 	  public void addVerticies(List<Tile> verticies){
 		  for(Tile t : verticies){
 			  this.addVertex(t);
+		  }
+	  }
+	  
+	  public void validateAllEdges(){
+		  for(Tile t:this.getVerticies()){
+			  if(t.isExplored()){
+				  for(Tile n : t.getNeighbors()){
+					  if(t.isNeighborFrom(n)){
+						  this.addEdge(t, n);
+					  }
+					  
+				  }
+			  }
 		  }
 	  }
 
