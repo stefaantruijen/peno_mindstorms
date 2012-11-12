@@ -265,7 +265,7 @@ public class TestVirtualSonar {
 		s.getTileOnGridAt(0, 2).setBorderNorth(Border.OPEN);
 		s.getTileOnGridAt(0, 3).setBorderSouth(Border.OPEN);
 		s.getTileOnGridAt(0, 3).setBorderNorth(Border.OPEN);
-		assertEquals(Integer.MAX_VALUE,sonar.getSonarValue(2, 3, 0));
+		assertEquals(VirtualSonar.NOT_IN_RANGE,sonar.getSonarValue(2, 3, 0));
 		
 		//Test looking directly east (90°)
 		s.getTileOnGridAt(0, 3).setBorderEast(Border.OPEN);
@@ -275,18 +275,18 @@ public class TestVirtualSonar {
 		s.getTileOnGridAt(2, 3).setBorderEast(Border.OPEN);
 		s.getTileOnGridAt(3, 3).setBorderWest(Border.OPEN);
 		s.getTileOnGridAt(3, 3).setBorderEast(Border.OPEN);
-		assertEquals(Integer.MAX_VALUE,sonar.getSonarValue(2, 150, 90));
+		assertEquals(VirtualSonar.NOT_IN_RANGE,sonar.getSonarValue(2, 150, 90));
 		
 		//Test with random values between the borders and random angles
 		for(Tile t : s.TileMap.values()){
 			t.setAllBordersOpen(true);
 		}
-		assertEquals(Integer.MAX_VALUE,sonar.getSonarValue(2, 150, 25));
-		assertEquals(Integer.MAX_VALUE,sonar.getSonarValue(2, 150, 30));
-		assertEquals(Integer.MAX_VALUE,sonar.getSonarValue(12, 75, 99));
-		assertEquals(Integer.MAX_VALUE,sonar.getSonarValue(159, 0, 359));
-		assertEquals(Integer.MAX_VALUE,sonar.getSonarValue(100, 11, 280));
-		assertEquals(Integer.MAX_VALUE,sonar.getSonarValue(159, 0, 315));
+		assertEquals(VirtualSonar.NOT_IN_RANGE,sonar.getSonarValue(2, 150, 25));
+		assertEquals(VirtualSonar.NOT_IN_RANGE,sonar.getSonarValue(2, 150, 30));
+		assertEquals(VirtualSonar.NOT_IN_RANGE,sonar.getSonarValue(12, 75, 99));
+		assertEquals(VirtualSonar.NOT_IN_RANGE,sonar.getSonarValue(159, 0, 359));
+		assertEquals(VirtualSonar.NOT_IN_RANGE,sonar.getSonarValue(100, 11, 280));
+		assertEquals(VirtualSonar.NOT_IN_RANGE,sonar.getSonarValue(159, 0, 315));
 		
 		Random rand = new Random();
 		int amountOfRandomTests = 100;
@@ -294,7 +294,7 @@ public class TestVirtualSonar {
 			int randX = rand.nextInt(s.getMaxX()+1);
 			int randY = rand.nextInt(s.getMaxY()+1);
 			float randAngle =(float)rand.nextInt(360);
-			assertEquals(Integer.MAX_VALUE,sonar.getSonarValue(randX, randY, randAngle));
+			assertEquals(VirtualSonar.NOT_IN_RANGE,sonar.getSonarValue(randX, randY, randAngle));
 		}		
 	}
 }

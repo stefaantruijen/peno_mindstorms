@@ -45,6 +45,9 @@ public class TestVirtualLightSensor {
 	
 	/**
 	 * Draws the image to a file for easy debugging.
+	 * 
+	 * You can edit destinationPath or fileType to your liking
+	 * With this you can very easily experiment with different colors for the image.
 	 */
 	@Test
 	public void drawAndPrintImage(){
@@ -59,6 +62,9 @@ public class TestVirtualLightSensor {
 		}
 	}
 	
+	/**
+	 * Tests getting the light values at different positions of a standard image.
+	 */
 	@Test
 	public void getLightValue() {
 		int white = VirtualLightSensor.WHITE.getRGB();
@@ -81,7 +87,10 @@ public class TestVirtualLightSensor {
 		assertEquals(emptySpaceLightValue,s.getLightValue(20, 20));
 	}
 	
-	
+	/**
+	 * Tests if all values of a standard image respect 
+	 * 	the constraint of being a value between 0 and 100.
+	 */
 	@Test
 	public void getLightValue_percent() {
 		for(int x=0; x <= s.getMaxX(); x++){

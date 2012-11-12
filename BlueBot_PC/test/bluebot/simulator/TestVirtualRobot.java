@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import bluebot.graph.Border;
 import bluebot.graph.Tile;
 import bluebot.util.Utils;
 
@@ -202,7 +203,7 @@ public class TestVirtualRobot {
 		assertEquals(vr.getImgStartY() +vr.getInitAbsoluteY()-distanceToTravel, vr.getImgY(),deltaZERO);
 	}
 
-//	@Test 
+	@Test 
 	public void turnLeft(){
 		VirtualRobot vr = new VirtualRobot(tileList,Tile20);
 		assertEquals(0, vr.getHeading(),deltaZERO);
@@ -233,7 +234,7 @@ public class TestVirtualRobot {
 	}
 
 //Under construction
-//	@Test
+	@Test
 	public void turnLeft2(){
 		VirtualRobot vr = new VirtualRobot(tileList,Tile20);
 		assertEquals(0, vr.getHeading(),deltaZERO);
@@ -266,7 +267,7 @@ public class TestVirtualRobot {
 	}
 
 //Under construction
-//	@Test
+	@Test
 	public void turnRight(){
 		VirtualRobot vr = new VirtualRobot(tileList,Tile20);
 		assertEquals(0, vr.getHeading(),deltaZERO);
@@ -297,7 +298,7 @@ public class TestVirtualRobot {
 	}
 
 //Under construction
-//	@Test
+	@Test
 	public void turnRight2(){
 		VirtualRobot vr = new VirtualRobot(tileList,Tile20);
 		assertEquals(0, vr.getHeading(),deltaZERO);
@@ -338,7 +339,9 @@ public class TestVirtualRobot {
 		
 	}
 	
-	//Under construction
+	/**
+	 * Tests the sonar in a single tile.
+	 */
 	@Test
 	public void testGetSonarValue(){
 		Tile t00 = new Tile(0,0);
@@ -375,5 +378,90 @@ public class TestVirtualRobot {
 		vr.setSpeedRotate(vr.getMaximumSpeedRotate());
 		vr.turnRight(90, true);
 		assertEquals(maxDistanceNotMoved,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+	}
+	
+	
+	
+	/**
+	 * Tests the sonar in a formation of tiles.
+	 * 
+	 * This map represents the borders of the tiles.
+	 * 
+	 * 		 _ _ _
+	 * 	1	|    _|
+	 * 	0	|  _|_|
+	 *       0 1 2 
+	 *           
+	 * Line is wall
+	 * no line is no border.
+	 * 
+	 * The robot moves around in it (and it's head too) in several directions and checks every time.
+	 * 
+	 * 
+	 */
+	@Test
+	public void testGetSonarValue_2(){
+		Tile t00 = new Tile(0,0);
+		t00.setAllBordersOpen(true);
+		t00.setBorderWest(Border.CLOSED);
+		Tile t01 = new Tile(0,1);
+		t01.setAllBordersOpen(true);
+		t01.setBorderWest(Border.CLOSED);
+		t01.setBorderNorth(Border.CLOSED);
+		Tile t10 = new Tile(1,0);
+		t10.setAllBordersOpen(true);
+		t10.setBorderEast(Border.CLOSED);
+		t10.setBorderSouth(Border.CLOSED);
+		Tile t11 = new Tile(1,1);
+		t11.setAllBordersOpen(true);
+		t11.setBorderNorth(Border.CLOSED);
+		Tile t20 = new Tile(2,0);
+		t20.setAllBordersOpen(false);
+		Tile t21 = new Tile(2,1);
+		t21.setAllBordersOpen(false);
+		t21.setBorderWest(Border.OPEN);
+		
+		Tile[] tl = new Tile[]{t00,t01,t10,t11,t20,t21};
+		
+		VirtualRobot vr = new VirtualRobot(tl,t00);
+		//MAKE HIM FAAAASTTT!!
+		vr.setSpeedRotate(vr.getMaximumSpeedRotate());
+		vr.setSpeedTravel(vr.getMaximumSpeedTravel());
+		
+		//Minus one cause intersection is ???
+		int maxDistanceNotMoved = (int) (VirtualRobot.TILE_SIZE/2 - VirtualRobot.SONAR_OFFSET_CM)-1;
+		int halfTile = VirtualRobot.TILE_SIZE/2;
+		int oneTileMM =VirtualRobot.TILE_SIZE*10;
+		int offsettCM = (int) (VirtualRobot.OFFSET_SENSOR_ULTRASONIC/10);
+		
+		assertEquals(VirtualRobot.TILE_SIZE + halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		vr.turnHeadClockWise(180);
+		assertEquals(VirtualSonar.NOT_IN_RANGE,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		vr.turnHeadCounterClockWise(90);
+		assertEquals(VirtualRobot.TILE_SIZE + halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		vr.moveForward(oneTileMM, true);
+		assertEquals(VirtualRobot.TILE_SIZE*2 + halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		vr.turnHeadCounterClockWise(90);
+		assertEquals(halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		vr.turnLeft(90,true);
+		assertEquals(halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		vr.moveBackward(oneTileMM, true);
+		assertEquals(VirtualRobot.TILE_SIZE + halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		vr.moveBackward(oneTileMM, true);
+		assertEquals(VirtualRobot.TILE_SIZE*2 + halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		vr.turnHeadCounterClockWise(90);
+		assertEquals(halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		vr.turnHeadCounterClockWise(90);
+		assertEquals(halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		vr.turnHeadCounterClockWise(90);
+		assertEquals(halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		vr.turnHeadCounterClockWise(90);
+		assertEquals(VirtualRobot.TILE_SIZE*2 + halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		vr.moveForward(oneTileMM, true);
+		assertEquals(VirtualRobot.TILE_SIZE + halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		vr.turnHeadCounterClockWise(90);
+		assertEquals(VirtualRobot.TILE_SIZE + halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		vr.moveForward(oneTileMM, true);
+		assertEquals(VirtualSonar.NOT_IN_RANGE,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
 	}
 }

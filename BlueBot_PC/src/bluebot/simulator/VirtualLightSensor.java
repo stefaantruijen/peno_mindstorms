@@ -27,24 +27,18 @@ public class VirtualLightSensor {
 	 * Standard white line color that will be used at construct.
 	 */
 	public static final Color STANDARD_WHITE_LINE_COLOR = WHITE;
-	
 	/**
 	 * Standard white line light value.
 	 */
 	public static final int STANDARD_WHITE_LINE_LIGHTVALUE = calculateLightValue(STANDARD_WHITE_LINE_COLOR.getRGB());
-	
-
-	
 	/**
 	 * Standard empty space color that will be used at construct.
 	 */
 	public static final Color STANDARD_EMPTY_SPACE_COLOR = LIGHT_BROWN_2;
-	
 	/**
 	 * Standard empty space light value.
 	 */
 	public static final int STANDARD_EMPTY_SPACE_LIGHTVALUE = calculateLightValue(LIGHT_BROWN_2.getRGB());
-	
 	/**
 	 * The white line color currently used.
 	 */
@@ -97,6 +91,9 @@ public class VirtualLightSensor {
 	 * @param y
 	 * @return int
 	 * 		An integer repersenting the light value.
+	 * @throws IllegalArgumentException
+	 * 		When the x or y coordinates are not valid |
+	 * 		!sensors.isValid(x,y)
 	 */
 	public int getLightValue(int x, int y){
 		if(sensors.isValid(x,y)){
@@ -110,13 +107,13 @@ public class VirtualLightSensor {
 	}
 
 	/**
-	 * Returns a certain lightValue calculated of the given 
+	 * Returns the lightValue calculated of the given 
 	 * integer representing an RGB color.
 	 * 
 	 * TODO: is this conform the real nxt?
 	 * 
 	 * @param clr
-	 * @return
+	 * @return An Integer ranging from 0 to 100 representing the light intesity
 	 */
 	public static int calculateLightValue(int clr) {
 		int  red   = (clr & 0x00ff0000) >> 16;
@@ -140,18 +137,34 @@ public class VirtualLightSensor {
 		return img;
 	}
 	
+	/**
+	 * Returns the color being used for drawing white lines.
+	 * @return
+	 */
 	public Color getWhiteLineColor() {
 		return whiteLineColor;
 	}
 
+	/**
+	 * Sets the color to be used for drawing white lines.
+	 * @param whiteLineColor
+	 */
 	public void setWhiteLineColor(Color whiteLineColor) {
 		this.whiteLineColor = whiteLineColor;
 	}
 
+	/**
+	 * Returns the color used for drawing empty spaces.
+	 * @return
+	 */
 	public Color getEmptySpaceColor() {
 		return emptySpaceColor;
 	}
 
+	/**
+	 * Sets the color to be used for drawing empty spaces.
+	 * @param emptySpaceColor
+	 */
 	public void setEmptySpaceColor(Color emptySpaceColor) {
 		this.emptySpaceColor = emptySpaceColor;
 	}

@@ -12,7 +12,8 @@ import bluebot.util.Utils;
  *TODO refactor some code into smaller methods?
  */
 public class VirtualSonar {
-	private static Sensors sensors;
+	public static final int NOT_IN_RANGE = 255;
+	private Sensors sensors;
  
 	public VirtualSonar(Sensors sensors) {
 		this.sensors = sensors;
@@ -32,7 +33,7 @@ public class VirtualSonar {
 	 * 			An angle representing the orientation of the sonar in the plane. [0,360)
 	 * @return int
 	 * 			The distance to the first encountered wall.
-	 * @return (int)Integer.MAX_VALUE
+	 * @return (int)VirtualSonar.NOT_IN_RANGE
 	 * 			If no wall is found.
 	 */
 	public int getSonarValue(int x, int y, float heading) {
@@ -109,7 +110,7 @@ public class VirtualSonar {
 				sortedIntersections.remove(currentIntercept);
 			}
 			if(!wallFound){//No wall is found at all.
-				distance = (double)Integer.MAX_VALUE;
+				distance = NOT_IN_RANGE;
 			} else {
 				distance = getDistanceFromTo(x, y, currentIntercept[0], currentIntercept[1]);
 			}

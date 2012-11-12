@@ -392,9 +392,13 @@ public class Sensors {
 		return getEastBorderCoor(x,y);
 	}
 	
-	
-
-
+	/**
+	 * Checks if the given x and y are valid coordinates to be used with the sensors.
+	 * 
+	 * @param x
+	 * @param y
+	 * @return 
+	 */
 	public boolean isValid(int x, int y) {
 		boolean result = true;
 		if(x<0 || x > getMaxX()){

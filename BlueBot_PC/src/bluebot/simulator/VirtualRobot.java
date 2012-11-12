@@ -24,11 +24,11 @@ public class VirtualRobot extends AbstractRobot {
 	/**
  	 *Static that holds the maximum travel speed in degrees/s.
 	 */
-	private static final float MaxRotateSpeed = 90;
+	private static final float MaxRotateSpeed = 90; //TODO: see what this is IRL?
 	/**
  	 *Static that holds the maximum travel speed in mm/s.
 	 */
-	private static final float MaxTravelSpeed = 400;
+	private static final float MaxTravelSpeed = 400; //TODO: see what this is IRL?
 	/**
 	 * The size of the tiles on which the VirtualRobot will be driving.
 	 */
@@ -135,8 +135,9 @@ public class VirtualRobot extends AbstractRobot {
 	 * VirtualSonar object that holds the sonar of the VirtualRobot.
 	 */
 	private VirtualSonar sonar;
-	private int tileImgStartX;
-	private int tileImgStartY;
+	/**
+	 * Minimal offset of the borders of a tile for placing the VirtualRobot randomly in one.
+	 */
 	protected static int randomMaxOffset = 10;
 	
 	
@@ -154,8 +155,8 @@ public class VirtualRobot extends AbstractRobot {
 			this.tilesList= tilesList;
 			//Sets the robot random in the startTile
 			setRandomInStartTile(startTile);
-			this.tileImgStartX = startTile.getX()*TILE_SIZE + TILE_SIZE/2;
-			this.tileImgStartY = startTile.getY()*TILE_SIZE + TILE_SIZE/2;
+			int tileImgStartX = startTile.getX()*TILE_SIZE + TILE_SIZE/2;
+			int tileImgStartY = startTile.getY()*TILE_SIZE + TILE_SIZE/2;
 			setImgStartX(tileImgStartX);
 			setImgStartY(tileImgStartY);
 			this.sensors = new Sensors(this.tilesList);
@@ -170,34 +171,60 @@ public class VirtualRobot extends AbstractRobot {
 		}
 	}
 	
+	//GETTERS AND SETTERS
+	/**
+	 * Sets the x-value of the point of the 'image', formed by the sensors, 
+	 * 	corresponding to x=0 for the VirtualRobot.
+	 * @param x
+	 */
 	private void setImgStartX(int x){
 		imgStartX = x;
 	}
 	
+	/**
+	 * Gets the x-value of the point of the 'image', formed by the sensors, 
+	 * 	corresponding to x=0 for the VirtualRobot.
+	 */
 	public int getImgStartX(){
 		return imgStartX;
 	}
 	
+	/**
+	 * Sets the y-value of the point of the 'image', formed by the sensors, 
+	 * 	corresponding to y=0 for the VirtualRobot.
+	 * @param y
+	 */
 	private void setImgStartY(int y){
 		imgStartY = y;
 	}
+	
+	/**
+	 * Gets the y-value of the point of the 'image', formed by the sensors, 
+	 * 	corresponding to y=0 for the VirtualRobot.
+	 */
 	public int getImgStartY(){
 		return imgStartY;
 	}
 
+	/**
+	 * Gets the x-coordinate on the 'image' corresponding to the current getX() of VirtualRobot
+	 * @return
+	 */
 	public int getImgX(){
-//		System.out.println("getX = " + getX() + "(rounded = " + (int)(Math.round(getX())) +")");
-//		System.out.println("getImgStartX" + getImgStartX());
 		int XinCM = Math.round(getX()/10);
 		return getImgStartX() + XinCM ;
 	}
+	
+	/**
+	 * Gets the y-coordinate on the 'image' corresponding to the current getY() of VirtualRobot
+	 * @return
+	 */
 	public int getImgY(){
-//		System.out.println("getY = " + getY() + "(rounded = " + (int)(Math.round(getY())) +")");
-//		System.out.println("getImgStartY" + getImgStartY());
 		int YinCM = Math.round(getY()/10);
 		return getImgStartY() + YinCM;
 	}
-	//GETTERS AND SETTERS
+	
+	
 	private void setInitAbsoluteX(float x) {
 		this.initAbsoluteX = x;
 	}
@@ -382,13 +409,11 @@ public class VirtualRobot extends AbstractRobot {
 		float result = getInitAbsoluteX();
 		if (getCurrentAction() == Action.TRAVEL){
 			if(System.currentTimeMillis()>=getCurrentActionETA()){//If action is finished:
-//				System.out.println("X:Action finished?");
 				float arg = getCurrentArgument();
 				int sign = (int)(arg/Math.abs(arg));
 				float distance = Math.abs(arg);
 				result += sign*additionToX(distance);
 			} else {
-//				System.out.println("X:Action running?");
 				Long elapsedTimeMS = System.currentTimeMillis() - getTimestamp();
 				float arg = getCurrentArgument();
 				int sign = (int)(arg/Math.abs(arg));
@@ -473,12 +498,9 @@ public class VirtualRobot extends AbstractRobot {
 		float sonarHeading = Utils.clampAngleDegrees(getHeading()+getSonarDirection());
 		double radialSonarHeading = Math.toRadians(sonarHeading);
 		double xOffset = SONAR_OFFSET_CM*Math.sin(radialSonarHeading);
-		System.out.println("xOffset: " + xOffset);
 		int sensorX = (int)(getImgX() + xOffset);
 		double yOffset = (int)(SONAR_OFFSET_CM * Math.cos(radialSonarHeading));
-		System.out.println("yOffset: "+yOffset);
 		int sensorY = (int)(getImgY() + yOffset);
-		System.out.println("gona read: (" + sensorX +"," +sensorY+")" );
 		return sonar.getSonarValue(sensorX, sensorY,sonarHeading);
 	}
 	
@@ -490,7 +512,6 @@ public class VirtualRobot extends AbstractRobot {
 	@Override
 	public void resetOrientation() {
 		//Clear any possible action so no problems occur.
-		System.out.println("Resetting orientation");
 		clearAction();
 		//Set every inital value correctly.
 		setInitAbsoluteX(0);
@@ -638,6 +659,11 @@ public class VirtualRobot extends AbstractRobot {
 	
 	
 	//PRIVATE HELP METHODS:
+	/**
+	 * Resets the initial X,Y or headings after a move is completed.
+	 * 
+	 * If an action is completed then the inital X,Y or heading should be updated.
+	 */
 	private void commitPreviousAction() {
 		if(getCurrentAction() != null){
 			switch(getCurrentAction()){
@@ -717,6 +743,13 @@ public class VirtualRobot extends AbstractRobot {
 		setCurrentActionETA(currentActionETA);	
 	}
 	
+	/**
+	 * Checks if the given start tile is a valid start tile.
+	 * 
+	 * @param tl
+	 * @param startT
+	 * @return
+	 */
 	private boolean isValid(Tile[] tl, Tile startT){
 		boolean result = true;
 			if(startT == null){
@@ -728,6 +761,13 @@ public class VirtualRobot extends AbstractRobot {
 		return result && contains(tl, startT);
 	}
 	
+	/**
+	 * Checks if the given startT is an element of the given array of Tile objects.
+	 * 
+	 * @param tl
+	 * @param startT
+	 * @return
+	 */
 	private boolean contains(Tile[] tl, Tile startT){
 		for(int i=0; i<tl.length; i++){
 			if(startT.equals(tl[i])){
@@ -737,7 +777,14 @@ public class VirtualRobot extends AbstractRobot {
 		return false;
 	}
 	
-	
+	/**
+	 * Places the VirtualRobot randomly in the given tile.
+	 * 
+	 *TODO: currently there is no randomness implemented. 
+	 *		If the Orientate (and resetOrientation method) is working properly then this can be used again.
+	 *
+	 * @param st
+	 */
 	private void setRandomInStartTile(Tile st) {
 //		setRandomXIn(st);
 //		setRandomYIn(st);
