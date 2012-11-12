@@ -19,6 +19,7 @@ public class WallFollower extends Action{
 		private Tile current;
 		private int tilesTravelledBetweenCalib = 0;
 		private List<Tile> blackSpots;
+		private boolean abort = false;
 		
 		public WallFollower(){
 			this.maze = new Graph();
@@ -38,6 +39,9 @@ public class WallFollower extends Action{
 			this.driver.setSpeed(80);
 			this.initializeRootTile();
 			do{
+				if(abort){
+					return;
+				}
 				Tile next = this.determineNextTile();
 				this.moveTo(next);
 				if(!next.isExplored()){
@@ -54,6 +58,11 @@ public class WallFollower extends Action{
 			
 			this.driver.sendDebug("Edges = "+maze.getEdges().size());
 			
+		}
+		@Override
+		public void abort(){
+			this.abort = true;
+			this.driver.sendError("ABORT");
 		}
 		/**
 		 * Move to a given next tile.
