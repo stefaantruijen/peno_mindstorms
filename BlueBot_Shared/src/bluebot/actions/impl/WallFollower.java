@@ -35,7 +35,6 @@ public class WallFollower extends Action{
 		@Override
 		public void execute(Driver driver) throws InterruptedException, ActionException {
 			this.driver = driver;
-			this.driver.sendMessage("Maze finding algorithm will start. Please don't touch the controls. Fasten your seatbelts and enjoy the ride.", "Starting");
 			this.driver.setSpeed(80);
 			this.initializeRootTile();
 			do{
@@ -114,7 +113,7 @@ public class WallFollower extends Action{
 				this.tilesTravelledBetweenCalib = 0;
 			}
 			
-			driver.modifyOrientation();
+			//driver.modifyOrientation();
 		}
 		/**
 		 * Let the robot travel south.
