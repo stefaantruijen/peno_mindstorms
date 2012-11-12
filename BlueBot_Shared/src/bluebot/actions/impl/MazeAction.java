@@ -6,9 +6,6 @@ import bluebot.actions.ActionException;
 
 
 
-
-
-
 /**
  * {@link Action} implementation for the maze exploration algorithm
  */
