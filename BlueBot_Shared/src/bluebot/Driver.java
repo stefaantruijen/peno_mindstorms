@@ -25,6 +25,11 @@ public interface Driver extends Mobile {
 	public Calibration getCalibration();
 	
 	/**
+	 * Corrects the internal orientation (if necessary)
+	 */
+	public void modifyOrientation();
+	
+	/**
 	 * Returns the current value of the light sensor
 	 * 
 	 * @return an <code>int</code> from the interval [0, 100]

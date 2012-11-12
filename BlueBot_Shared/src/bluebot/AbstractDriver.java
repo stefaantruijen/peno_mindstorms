@@ -75,6 +75,10 @@ public abstract class AbstractDriver implements Driver {
 		return getRobot().isMoving();
 	}
 	
+	public void modifyOrientation() {
+		getRobot().modifyOrientation();
+	}
+	
 	public void moveBackward() {
 		getRobot().moveBackward();
 	}
@@ -306,14 +310,14 @@ public abstract class AbstractDriver implements Driver {
 			}
 			
 			final int light = readSensorLight();
-			if (light != this.sensorLight) {
+//			if (light != this.sensorLight) {
 				sendSensorLight(this.sensorLight = light);
-			}
+//			}
 			
 			final int ultraSonic = readSensorUltraSonic();
-			if (ultraSonic != this.sensorUltraSonic) {
+//			if (ultraSonic != this.sensorUltraSonic) {
 				sendSensorUltraSonic(this.sensorUltraSonic = ultraSonic);
-			}
+//			}
 		}
 		
 	}

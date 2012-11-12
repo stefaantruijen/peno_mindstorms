@@ -64,6 +64,9 @@ public class CheckTileAction extends Action {
 	
 	public void execute(final Driver driver)
 			throws ActionException, InterruptedException {
+		// Correct the orientation of the robot (if necessary)
+		driver.modifyOrientation();
+		
 		// The fully qualified classname is used here
 		// to avoid issues with bluebot.graph.Orientation
 		final bluebot.util.Orientation pos = driver.getOrientation();

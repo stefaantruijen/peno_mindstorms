@@ -10,6 +10,7 @@ import bluebot.graph.Tile;
 import bluebot.maze.Maze;
 import bluebot.util.Constants;
 import bluebot.util.Orientation;
+import bluebot.util.Utils;
 
 
 
@@ -70,8 +71,8 @@ public class DummyRobot extends AbstractRobot {
 			pos = motion.update(pos);
 		}
 		
-		return new Orientation((float)pos.x, (float)pos.y,
-				(float)(pos.z * 180D / Math.PI));
+		final float z = Utils.clampAngleDegrees((float)Math.toDegrees(pos.z));
+		return new Orientation((float)pos.x, (float)pos.y, z);
 	}
 	
 	private final Tile getTile(float x, float y) {

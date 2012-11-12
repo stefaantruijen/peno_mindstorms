@@ -1,5 +1,6 @@
 package bluebot;
 
+
 import bluebot.util.Orientation;
 import bluebot.util.Utils;
 
@@ -44,6 +45,10 @@ public abstract class AbstractRobot implements Robot {
 	
 	public float getY() {
 		return getOrientation().getY();
+	}
+	
+	public void modifyOrientation() {
+		// ignored
 	}
 	
 	public int readSensorLight() {

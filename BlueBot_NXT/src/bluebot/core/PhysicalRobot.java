@@ -12,6 +12,7 @@ import lejos.robotics.navigation.Pose;
 import lejos.robotics.RegulatedMotor;
 import bluebot.AbstractRobot;
 import bluebot.Robot;
+import bluebot.graph.Tile;
 import bluebot.util.Orientation;
 import bluebot.util.Utils;
 
@@ -89,6 +90,11 @@ public class PhysicalRobot extends AbstractRobot {
 	
 	public boolean isMoving() {
 		return getPilot().isMoving();
+	}
+	
+	@Override
+	public void modifyOrientation() {
+		getTracker().modify();
 	}
 	
 	public void moveBackward() {
@@ -200,6 +206,19 @@ public class PhysicalRobot extends AbstractRobot {
 			
 			return new Orientation(-pose.getY(), pose.getX(),
 					(360F - Utils.clampAngleDegrees(pose.getHeading())));
+		}
+		
+		public void modify() {
+			final Pose pose = getPose();
+			
+			final float x = (Tile.SIZE * Math.round(pose.getX() / Tile.SIZE));
+			final float y = (Tile.SIZE * Math.round(pose.getY() / Tile.SIZE));
+			pose.setLocation(x, y);
+			
+			final float z = (90F * Math.round(pose.getHeading() / 90F));
+			pose.setHeading(z);
+			
+			setPose(pose);
 		}
 		
 	}
