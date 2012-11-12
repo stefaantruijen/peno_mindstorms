@@ -78,7 +78,7 @@ public class VirtualLightSensor {
 	protected void generateMap() {
 		for(Tile t : sensors.getTilesList()){
 			//TODO make drawing dependent on type of Tile.
-			drawStandardTile(t.getX(), t.getY());
+			drawStandardTile(t.getX(), sensors.getMaxYOfGrid() - t.getY());
 		}
 	}
 	

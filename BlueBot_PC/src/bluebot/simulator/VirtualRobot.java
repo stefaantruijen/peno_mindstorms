@@ -24,11 +24,11 @@ public class VirtualRobot extends AbstractRobot {
 	/**
  	 *Static that holds the maximum travel speed in degrees/s.
 	 */
-	private static final float MaxRotateSpeed = 90; //TODO: see what this is IRL?
+	private static final float MaxRotateSpeed = 200; //TODO: see what this is IRL?
 	/**
  	 *Static that holds the maximum travel speed in mm/s.
 	 */
-	private static final float MaxTravelSpeed = 400; //TODO: see what this is IRL?
+	private static final float MaxTravelSpeed = 500; //TODO: see what this is IRL?
 	/**
 	 * The size of the tiles on which the VirtualRobot will be driving.
 	 */
@@ -44,7 +44,7 @@ public class VirtualRobot extends AbstractRobot {
 	/**
 	 * Static that holds the standard rotate speed in degrees/s. This is the speed we measured in the real NXT robot.
 	 */
-	public static double STANDARD_SONAR_ROTATE_SPEED = 60; //Probably get this value from other class.//TODO: see what this is irl
+	public static double STANDARD_SONAR_ROTATE_SPEED = 250; //Probably get this value from other class.//TODO: see what this is irl
 	
 
 	/**
@@ -98,7 +98,7 @@ public class VirtualRobot extends AbstractRobot {
 	/**
 	 * Variable hodling the rotate speed of the sonar.
 	 */
-	private double sonarDirection;
+	private double initSonarDirection;
 	/**
 	 * Variable representing the current action of the simulator.
 	 */
@@ -254,11 +254,11 @@ public class VirtualRobot extends AbstractRobot {
 	}
 	
 	private void setInitSonarDirection(float dir) {
-		sonarDirection = dir;
+		initSonarDirection = dir;
 	}
 
 	public float getInitSonarDirection() {
-		return (float) sonarDirection;
+		return (float) initSonarDirection;
 	}
 
 	/**
@@ -387,7 +387,10 @@ public class VirtualRobot extends AbstractRobot {
 		float result = getInitSonarDirection();
 		if(getCurrentAction() == Action.SONAR){
 			if(System.currentTimeMillis() >= getCurrentActionETA()){
+				System.out.println("result = "+ result);
+				System.out.println("plus current argument");
 				result += getCurrentArgument();
+				System.out.println("result = "+ result);
 			} else  {
 				Long elapsedTimeMS = System.currentTimeMillis() - getTimestamp();
 				float arg = getCurrentArgument();
@@ -484,7 +487,7 @@ public class VirtualRobot extends AbstractRobot {
 	public int readSensorLight() {
 		double radialHeading = Math.toRadians(getHeading());
 		double xOffset = LIGHT_SENSOR_OFFSET_CM * Math.sin(radialHeading);
-		int sensorX = (int) (getImgX() + xOffset);
+		int sensorX = (int) (getImgX() + xOffset); 	
 		double yOffset = LIGHT_SENSOR_OFFSET_CM * Math.cos(radialHeading);
 		int sensorY = (int) (getImgY() + yOffset);
 		return lightSensor.getLightValue(sensorX, sensorY);
@@ -593,6 +596,7 @@ public class VirtualRobot extends AbstractRobot {
 				result += sign * distance;
 			}
 		}
+		System.out.println(Utils.clampAngleDegrees(result));
 		return Utils.clampAngleDegrees(result);
 	}
 	
@@ -685,12 +689,14 @@ public class VirtualRobot extends AbstractRobot {
 					}
 			}
 		}
+		clearAction();
 	}
 
 	/**
 	 * Clears the current action, argument and ETA.
 	 */
 	private void clearAction(){
+		System.out.println("Clearing action: " + getCurrentAction());
 		setCurrentAction(null);
 		setCurrentArgument(0);
 		setCurrentActionETA(Long.MIN_VALUE);
