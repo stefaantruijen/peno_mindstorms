@@ -52,7 +52,7 @@ public class WallFollower extends Action{
 				}
 			}while(this.hasUnvisitedNeighbors(this.maze.getRootTile())||this.hasUnvisitedNeighbors(current)||this.graphHasUnvisitedNeighbors());
 			
-			this.driver.sendMessage("Maze is explored. Thank you for your patience =) ", "Done");
+			this.driver.sendDebug("Edges = "+maze.getEdges().size());
 			
 		}
 		/**
@@ -95,6 +95,7 @@ public class WallFollower extends Action{
 				driver.sendDebug("MOVE FORWARD");
 				tilesTravelledBetweenCalib++;
 			}else{
+				this.driver.moveForward(40F, true);
 				WhiteLineAction wa = new WhiteLineAction();
 					driver.sendDebug("ORIENTATING");
 					wa.execute(this.driver);		
@@ -103,6 +104,8 @@ public class WallFollower extends Action{
 				driver.sendDebug("MOVE FORWARD");
 				this.tilesTravelledBetweenCalib = 0;
 			}
+			
+			driver.modifyOrientation();
 		}
 		/**
 		 * Let the robot travel south.
