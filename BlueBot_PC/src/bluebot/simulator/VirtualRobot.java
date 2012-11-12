@@ -48,13 +48,13 @@ public class VirtualRobot extends AbstractRobot {
 	
 
 	/**
-	 * Distance from the center of the VirtualRobot to the position of the lightSensor
+	 * Distance from the center of the VirtualRobot to the position of the lightSensor in centimeters.
 	 */
-	private static int lightSensorOffset = 7;
+	public static int LIGHT_SENSOR_OFFSET_CM = (int)(Robot.OFFSET_SENSOR_LIGHT)/10;
 	/**
-	 * Distance from the center of the VirtualRobot to the position of the Sonar.
+	 * Distance from the center of the VirtualRobot to the position of the Sonar in centimeters.
 	 */
-	private static int sonarOffset = 4;
+	public static int SONAR_OFFSET_CM = (int)(Robot.OFFSET_SENSOR_ULTRASONIC)/10;
 	
 	/**
 	 * Variable holding the travel speed of the robot.
@@ -457,10 +457,11 @@ public class VirtualRobot extends AbstractRobot {
 	 */
 	@Override
 	public int readSensorLight() {
-		int xOffset = (int) (lightSensorOffset * Math.sin(getHeading()));
-		int sensorX = getImgX() + xOffset;
-		int yOffset = (int) (lightSensorOffset * Math.cos(getHeading()));
-		int sensorY = getImgY() + yOffset;
+		double radialHeading = Math.toRadians(getHeading());
+		double xOffset = LIGHT_SENSOR_OFFSET_CM * Math.sin(radialHeading);
+		int sensorX = (int) (getImgX() + xOffset);
+		double yOffset = LIGHT_SENSOR_OFFSET_CM * Math.cos(radialHeading);
+		int sensorY = (int) (getImgY() + yOffset);
 		return lightSensor.getLightValue(sensorX, sensorY);
 	}
 	
@@ -470,10 +471,14 @@ public class VirtualRobot extends AbstractRobot {
 	@Override
 	public int readSensorUltraSonic() {
 		float sonarHeading = Utils.clampAngleDegrees(getHeading()+getSonarDirection());
-		int xOffset = (int) Math.round(sonarOffset*Math.sin(sonarHeading));
-		int sensorX = getImgX() + xOffset;
-		int yOffset = (int) Math.round(sonarOffset * Math.cos(sonarHeading));
-		int sensorY = (int) getImgY() + yOffset;
+		double radialSonarHeading = Math.toRadians(sonarHeading);
+		double xOffset = SONAR_OFFSET_CM*Math.sin(radialSonarHeading);
+		System.out.println("xOffset: " + xOffset);
+		int sensorX = (int)(getImgX() + xOffset);
+		double yOffset = (int)(SONAR_OFFSET_CM * Math.cos(radialSonarHeading));
+		System.out.println("yOffset: "+yOffset);
+		int sensorY = (int)(getImgY() + yOffset);
+		System.out.println("gona read: (" + sensorX +"," +sensorY+")" );
 		return sonar.getSonarValue(sensorX, sensorY,sonarHeading);
 	}
 	
@@ -492,8 +497,8 @@ public class VirtualRobot extends AbstractRobot {
 		setInitAbsoluteY(0);
 //		setInitAbsoluteHeading(0);
 		setInitSonarDirection(0);
-		setImgStartX(imgStartX);
-		setImgStartY(imgStartY);
+		setImgStartX(getImgX());
+		setImgStartY(getImgY());
 	}
 	
 	@Override
@@ -581,6 +586,8 @@ public class VirtualRobot extends AbstractRobot {
 	/**
 	 * Turns the head of the robot (the sonar) clock wise (right).
 	 * Same convention Right (CWise) results in a addition.
+	 *  
+	 * WARNING: This is a blocking action right now!
 	 */
 	//TODO decide true or false for waiting?
 	@Override
@@ -588,20 +595,22 @@ public class VirtualRobot extends AbstractRobot {
 		commitPreviousAction();
 		setCurrentAction(Action.SONAR);
 		setCurrentArgument((float)offset);
-		initializeMove(false);	
+		initializeMove(true);	
 	}
 
 	/**
 	 * Turns the head of the robot (the sonar) counter clock wise (left).
 	 * Same convention Left (CCWise) results in a subtraction.
-	*/
+	 * 
+	 * WARNING: This is a blocking action right now!
+	 */
 	//TODO decide true or false for waiting?
 	@Override
 	public void turnHeadCounterClockWise(int offset) {
 		commitPreviousAction();
 		setCurrentAction(Action.SONAR);
-		setCurrentArgument(-(float)offset);
-		initializeMove(false);	
+		setCurrentArgument((float)-offset);
+		initializeMove(true);
 	}
 	
 	//Refactor with setRotateSpeed?
@@ -617,12 +626,12 @@ public class VirtualRobot extends AbstractRobot {
 		setTravelSpeed(speed);
 	}
 	
-	@Override
-	protected float getMaximumSpeedRotate() {
+	@Override//TODO: make pulic in superclass and STATIC?
+	public float getMaximumSpeedRotate() {
 		return MaxRotateSpeed;
 	}
 	@Override
-	protected float getMaximumSpeedTravel() {
+	public float getMaximumSpeedTravel() {
 		return MaxTravelSpeed;
 	}
 	

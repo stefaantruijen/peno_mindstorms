@@ -111,7 +111,7 @@ public class VirtualSonar {
 			if(!wallFound){//No wall is found at all.
 				distance = (double)Integer.MAX_VALUE;
 			} else {
-				distance = getDistanceFromTo(y, y, currentIntercept[0], currentIntercept[1]);
+				distance = getDistanceFromTo(x, y, currentIntercept[0], currentIntercept[1]);
 			}
 			return (int)Math.round(distance);
 		} else {

@@ -53,7 +53,7 @@ public class TestVirtualRobot {
 		Tile33};
 
 	
-//	@Test
+	@Test
 	public void VirtualRobot2() {
 		VirtualRobot vr = new VirtualRobot(tileList,Tile20);
 		int centerImgStartX = 2*VirtualRobot.TILE_SIZE + VirtualRobot.TILE_SIZE/2;
@@ -62,7 +62,8 @@ public class TestVirtualRobot {
 		assertEquals(centerImgStartY, vr.getImgStartY(),VirtualRobot.randomMaxOffset);
 	}
 	
-	@Test
+//	@Test
+	//TODO: modify
 	public void moveForward(){
 		VirtualRobot vr = new VirtualRobot(tileList,Tile20);
 		double speed = vr.getTravelSpeed();
@@ -89,7 +90,8 @@ public class TestVirtualRobot {
 		assertEquals(vr.getImgStartY()+vr.getInitAbsoluteY()+elapsedSeconds2*speed, vr.getImgY(),deltaNONZERO_SMALL);
 	}
 	
-	@Test
+//	@Test
+	//TODO: modify
 	public void moveForward2(){
 		VirtualRobot vr = new VirtualRobot(tileList,Tile20);
 //		System.out.println("start y: " + vr.getY());
@@ -130,7 +132,8 @@ public class TestVirtualRobot {
 		assertEquals(vr.getImgStartY() +vr.getInitAbsoluteY()+distanceToTravel, vr.getImgY(),deltaZERO);
 	}
 	
-	@Test
+//	@Test
+	//TODO: modify
 	public void moveBackward(){
 		VirtualRobot vr = new VirtualRobot(tileList,Tile20);
 		double speed = vr.getTravelSpeed();
@@ -157,7 +160,8 @@ public class TestVirtualRobot {
 		assertEquals(vr.getImgStartY()+vr.getInitAbsoluteY()-(elapsedSeconds2*speed), vr.getImgY(),deltaNONZERO_SMALL);
 	}
 	
-	@Test
+//	@Test
+	//TODO: modify
 	public void moveBackward2(){
 		VirtualRobot vr = new VirtualRobot(tileList,Tile20);
 //		System.out.println("start y: " + vr.getY());
@@ -198,7 +202,7 @@ public class TestVirtualRobot {
 		assertEquals(vr.getImgStartY() +vr.getInitAbsoluteY()-distanceToTravel, vr.getImgY(),deltaZERO);
 	}
 
-	@Test 
+//	@Test 
 	public void turnLeft(){
 		VirtualRobot vr = new VirtualRobot(tileList,Tile20);
 		assertEquals(0, vr.getHeading(),deltaZERO);
@@ -229,7 +233,7 @@ public class TestVirtualRobot {
 	}
 
 //Under construction
-	@Test
+//	@Test
 	public void turnLeft2(){
 		VirtualRobot vr = new VirtualRobot(tileList,Tile20);
 		assertEquals(0, vr.getHeading(),deltaZERO);
@@ -262,7 +266,7 @@ public class TestVirtualRobot {
 	}
 
 //Under construction
-	@Test
+//	@Test
 	public void turnRight(){
 		VirtualRobot vr = new VirtualRobot(tileList,Tile20);
 		assertEquals(0, vr.getHeading(),deltaZERO);
@@ -293,7 +297,7 @@ public class TestVirtualRobot {
 	}
 
 //Under construction
-	@Test
+//	@Test
 	public void turnRight2(){
 		VirtualRobot vr = new VirtualRobot(tileList,Tile20);
 		assertEquals(0, vr.getHeading(),deltaZERO);
@@ -325,7 +329,7 @@ public class TestVirtualRobot {
 		assertEquals(Utils.clampAngleDegrees(vr.getInitAbsoluteHeading()+distanceToTravel), vr.getHeading(),deltaNONZERO_SMALL);
 	}
 	
-	@Test
+//	@Test
 	//Under construction
 	public void testGetLightValue(){
 		Tile20.setAllBordersOpen(false);
@@ -333,5 +337,43 @@ public class TestVirtualRobot {
 		int r1 = vr.readSensorLight();
 		
 	}
+	
+	//Under construction
+	@Test
+	public void testGetSonarValue(){
+		Tile t00 = new Tile(0,0);
+		t00.setAllBordersOpen(false);
+		
+		VirtualRobot vr = new VirtualRobot(new Tile[]{t00},t00);
+		//Minus one cause intersection is
+		int maxDistanceNotMoved = (int) (VirtualRobot.TILE_SIZE/2 - VirtualRobot.SONAR_OFFSET_CM)-1;
+		assertEquals(maxDistanceNotMoved,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		vr.turnHeadClockWise(90);
+		assertEquals(maxDistanceNotMoved,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		vr.turnHeadClockWise(90);
+		assertEquals(maxDistanceNotMoved,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		vr.turnHeadClockWise(90);
+		assertEquals(maxDistanceNotMoved,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		vr.turnHeadCounterClockWise(270);
+		assertEquals(maxDistanceNotMoved,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		assertEquals(0, vr.getSonarDirection(),deltaNONZERO_SMALL);
+		
+		vr.setSpeedRotate(vr.getMaximumSpeedRotate());
+		vr.turnRight(90, true);
+		assertEquals(0, vr.getSonarDirection(),deltaZERO);
+		assertEquals(90, vr.getHeading(),deltaZERO);
+		assertEquals(maxDistanceNotMoved,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
 
+		vr.setSpeedRotate(vr.getMaximumSpeedRotate());
+		vr.turnRight(90, true);
+		assertEquals(maxDistanceNotMoved,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		
+		vr.setSpeedRotate(vr.getMaximumSpeedRotate());
+		vr.turnRight(90, true);
+		assertEquals(maxDistanceNotMoved,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		
+		vr.setSpeedRotate(vr.getMaximumSpeedRotate());
+		vr.turnRight(90, true);
+		assertEquals(maxDistanceNotMoved,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+	}
 }
