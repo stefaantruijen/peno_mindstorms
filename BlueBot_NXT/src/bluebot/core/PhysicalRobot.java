@@ -48,7 +48,7 @@ public class PhysicalRobot extends AbstractRobot {
 		this.pilot = pilot;
 		this.sensorLight = new LightSensor(light);
 		this.sensorUltraSonic = createSensorUltraSonic(ultraSonic);
-		this.tracker = new Tracker(pilot);
+		this.tracker = new Tracker(pilot, head);
 		
 		resetOrientation();
 	}
@@ -191,8 +191,12 @@ public class PhysicalRobot extends AbstractRobot {
 	
 	public static final class Tracker extends OdometryPoseProvider {
 		
-		public Tracker(final MoveProvider mp) {
+		private RegulatedMotor head;
+		
+		
+		public Tracker(final MoveProvider mp, final RegulatedMotor head) {
 			super(mp);
+			this.head = head;
 		}
 		
 		
@@ -202,20 +206,21 @@ public class PhysicalRobot extends AbstractRobot {
 			// TODO: Provide data about the heading of the US sensor
 			return new Orientation(-pose.getY(), pose.getX(),
 					(360F - Utils.clampAngleDegrees(pose.getHeading())),
-					0F);
+					Utils.clampAngleDegrees(head.getTachoCount()));
 		}
 		
 		public void modify() {
 			final Pose pose = getPose();
-			
-			final float x = (Tile.SIZE * Math.round(pose.getX() / Tile.SIZE));
-			final float y = (Tile.SIZE * Math.round(pose.getY() / Tile.SIZE));
-			pose.setLocation(x, y);
-			
-			final float z = (90F * Math.round(pose.getHeading() / 90F));
-			pose.setHeading(z);
-			
+			pose.setLocation(
+					round(pose.getX(), Tile.SIZE),
+					round(pose.getY(), Tile.SIZE));
+			pose.setHeading(round(pose.getHeading(), 90F));
 			setPose(pose);
+		}
+		
+		private static final float round(final float value,
+				final float accuracy) {
+			return (accuracy * Math.round(value / accuracy));
 		}
 		
 	}
