@@ -27,4 +27,9 @@ public interface EventDispatcher<T extends EventListener> {
 	 */
 	public void removeListener(T listener);
 	
+	/**
+	 * Removes all listeners
+	 */
+	public void removeListeners();
+	
 }

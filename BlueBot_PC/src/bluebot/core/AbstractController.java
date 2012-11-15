@@ -43,6 +43,10 @@ public abstract class AbstractController
 		sensors.addListener(listener);
 	}
 	
+	public void dispose() {
+		removeListeners();
+	}
+	
 	protected void fireError(final String msg) {
 		for (final ControllerListener listener : getListeners()) {
 			listener.onError(msg);
@@ -86,6 +90,14 @@ public abstract class AbstractController
 	
 	public void removeListener(final SensorListener listener) {
 		sensors.removeListener(listener);
+	}
+	
+	@Override
+	public void removeListeners() {
+		super.removeListeners();
+		config.removeListeners();
+		maze.removeListeners();
+		sensors.removeListeners();
 	}
 	
 	

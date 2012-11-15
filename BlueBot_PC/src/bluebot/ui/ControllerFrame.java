@@ -46,12 +46,12 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		setFocusTraversalPolicyProvider(true);
 		setLocationRelativeTo(null);
 		setResizable(false);
-
+		
 		controller.addListener(this);
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(final WindowEvent event) {
-				controller.removeListener(ControllerFrame.this);
+				controller.dispose();
 			}
 		});
 	}

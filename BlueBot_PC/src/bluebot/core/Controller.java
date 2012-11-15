@@ -24,6 +24,8 @@ public interface Controller extends EventDispatcher<ControllerListener> {
 	
 	public void addListener(SensorListener listener);
 	
+	public void dispose();
+	
 	public void doCalibrate();
 	
 	public void doMaze();

@@ -48,4 +48,8 @@ public abstract class AbstractEventDispatcher<T extends EventListener>
 		listeners.remove(listener);
 	}
 	
+	public void removeListeners() {
+		listeners.clear();
+	}
+	
 }

@@ -5,6 +5,7 @@ import bluebot.graph.Tile;
 import bluebot.io.protocol.impl.CommandPacket;
 import bluebot.io.protocol.impl.ConfigPacket;
 import bluebot.io.protocol.impl.DebugPacket;
+import bluebot.io.protocol.impl.DisconnectPacket;
 import bluebot.io.protocol.impl.ErrorPacket;
 import bluebot.io.protocol.impl.MessagePacket;
 import bluebot.io.protocol.impl.MotionPacket;
@@ -93,6 +94,15 @@ public class PacketFactory {
 	 */
 	public Packet createDebug(final String msg) {
 		return new DebugPacket(msg);
+	}
+	
+	/**
+	 * Creates a disconnect packet
+	 * 
+	 * @return a {@link Packet} object
+	 */
+	public Packet createDisconnect() {
+		return DisconnectPacket.SINGLETON;
 	}
 	
 	/**

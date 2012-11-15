@@ -41,6 +41,10 @@ public class Communicator implements Runnable {
 		getConnection().removeListener(listener);
 	}
 	
+	public void removeListeners() {
+		getConnection().removeListeners();
+	}
+	
 	/**
 	 * Executes the dispatching loop
 	 * 
@@ -54,9 +58,11 @@ public class Communicator implements Runnable {
 			} catch (final EOFException e) {
 				// The connection has been closed
 				stop();
+				return;
 			} catch (final IOException e) {
 				e.printStackTrace();
-				// TODO: Handle the error
+				stop();
+				return;
 			}
 		}
 	}

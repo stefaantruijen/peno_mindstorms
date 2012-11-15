@@ -18,6 +18,10 @@ public class ClientTranslator extends Translator {
 	
 	
 	
+	public void disconnect() {
+		sendPacket(getPacketFactory().createDisconnect());
+	}
+	
 	public void doCalibrate() {
 		sendPacket(getPacketFactory().createCommandCalibrate());
 	}

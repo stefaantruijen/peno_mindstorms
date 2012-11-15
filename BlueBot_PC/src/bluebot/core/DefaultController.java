@@ -46,6 +46,12 @@ public class DefaultController extends AbstractController {
 		return new ControllerHandler();
 	}
 	
+	@Override
+	public void dispose() {
+		super.dispose();
+		getTranslator().disconnect();
+	}
+	
 	public void doCalibrate() {
 		getTranslator().doCalibrate();
 	}
@@ -92,6 +98,12 @@ public class DefaultController extends AbstractController {
 	
 	public void removeListener(final ConnectionListener listener) {
 		getCommunicator().removeListener(listener);
+	}
+	
+	@Override
+	public void removeListeners() {
+		super.removeListeners();
+		getCommunicator().removeListeners();
 	}
 	
 	public void setSpeed(final int percentage) {

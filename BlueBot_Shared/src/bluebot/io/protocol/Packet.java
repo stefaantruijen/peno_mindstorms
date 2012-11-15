@@ -14,17 +14,18 @@ import java.io.IOException;
  */
 public abstract class Packet {
 	
-	public static final int OP_STOP    = 0x01;
-	public static final int OP_MOVE    = 0x02;
-	public static final int OP_COMMAND = 0x10;
-	public static final int OP_POLYGON = 0x11;
-	public static final int OP_MOTION  = 0x20;
-	public static final int OP_SENSOR  = 0x30;
-	public static final int OP_CONFIG  = 0x40;
-	public static final int OP_TILE    = 0x50;
-	public static final int OP_ERROR   = 0xE0;
-	public static final int OP_MESSAGE = 0xE1;
-	public static final int OP_DEBUG   = 0xE2;
+	public static final int OP_DISCONNECT = 0x00;
+	public static final int OP_STOP       = 0x01;
+	public static final int OP_MOVE       = 0x02;
+	public static final int OP_COMMAND    = 0x10;
+	public static final int OP_POLYGON    = 0x11;
+	public static final int OP_MOTION     = 0x20;
+	public static final int OP_SENSOR     = 0x30;
+	public static final int OP_CONFIG     = 0x40;
+	public static final int OP_TILE       = 0x50;
+	public static final int OP_ERROR      = 0xE0;
+	public static final int OP_MESSAGE    = 0xE1;
+	public static final int OP_DEBUG      = 0xE2;
 	
 	
 	protected Packet() {}

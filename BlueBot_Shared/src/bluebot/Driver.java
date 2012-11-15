@@ -13,6 +13,11 @@ import bluebot.sensors.Calibration;
  */
 public interface Driver extends Mobile {
 	
+	/**
+	 * Terminates the driver and releases any allocated system resources
+	 */
+	public void dispose();
+	
 	// TODO: Remove and use getHeading() instead
 	@Deprecated
 	public float getAngleIncrement();

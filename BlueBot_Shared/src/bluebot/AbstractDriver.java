@@ -37,6 +37,10 @@ public abstract class AbstractDriver implements Driver {
 	
 	
 	
+	public void dispose() {
+		stopUpdater();
+	}
+	
 	// TODO: Remove and use getHeading() instead
 	public float getAngleIncrement(){
 		return getRobot().getAngleIncrement();
@@ -307,8 +311,12 @@ public abstract class AbstractDriver implements Driver {
 						(heading = o.getHeading()));
 			}
 			
-			sendSensorLight(readSensorLight());
-			sendSensorUltraSonic(readSensorUltraSonic());
+			try {
+				sendSensorLight(readSensorLight());
+				sendSensorUltraSonic(readSensorUltraSonic());
+			} catch (final RuntimeException e) {
+				// The robot is not in a happy place right now
+			}
 		}
 		
 	}

@@ -43,6 +43,9 @@ public class DriverHandler implements PacketHandler {
 			case Packet.OP_CONFIG:
 				handlePacketConfig((ConfigPacket)packet);
 				break;
+			case Packet.OP_DISCONNECT:
+				handlePacketDisconnect();
+				break;
 			case Packet.OP_MOVE:
 				handlePacketMove((MovePacket)packet);
 				break;
@@ -80,6 +83,11 @@ public class DriverHandler implements PacketHandler {
 				}
 				break;
 		}
+	}
+	
+	private final void handlePacketDisconnect() {
+		stop();
+		driver.dispose();
 	}
 	
 	private final void handlePacketMove(final MovePacket packet) {
