@@ -133,13 +133,14 @@ public class PacketFactory {
 	 * 
 	 * @param x - the position on the X axis
 	 * @param y - the position on the Y axis
-	 * @param heading - the heading
+	 * @param body - the heading of the body
+	 * @param head - the heading of the head
 	 * 
 	 * @return a {@link Packet} object
 	 */
 	public Packet createMotion(final float x, final float y,
-			final float heading) {
-		return new MotionPacket(x, y, heading);
+			final float body, final float head) {
+		return new MotionPacket(x, y, body, head);
 	}
 	
 	private final Packet createMove(final int direction) {

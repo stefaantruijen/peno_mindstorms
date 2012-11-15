@@ -72,7 +72,8 @@ public class DummyRobot extends AbstractRobot {
 		}
 		
 		final float z = Utils.clampAngleDegrees((float)Math.toDegrees(pos.z));
-		return new Orientation((float)pos.x, (float)pos.y, z);
+		return new Orientation((float)pos.x, (float)pos.y,
+				z, getHeadingHead());
 	}
 	
 	private final Tile getTile(float x, float y) {

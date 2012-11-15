@@ -16,22 +16,28 @@ import bluebot.util.Utils;
  */
 public class MotionPacket extends Packet {
 	
-	private float heading, x, y;
+	private float body, head, x, y;
 	
 	
 	public MotionPacket(final DataInput input) throws IOException {
 		super(input);
 	}
-	public MotionPacket(final float x, final float y, final float heading) {
+	public MotionPacket(final float x, final float y,
+			final float body, final float head) {
 		setX(x);
 		setY(y);
-		setHeading(heading);
+		setHeadingBody(body);
+		setHeadingHead(head);
 	}
 	
 	
 	
-	public float getHeading() {
-		return heading;
+	public float getHeadingBody() {
+		return body;
+	}
+	
+	public float getHeadingHead() {
+		return head;
 	}
 	
 	public int getOpcode() {
@@ -54,11 +60,16 @@ public class MotionPacket extends Packet {
 	protected void readPayload(final DataInput input) throws IOException {
 		setX(input.readFloat());
 		setY(input.readFloat());
-		setHeading(input.readFloat());
+		setHeadingBody(input.readFloat());
+		setHeadingHead(input.readFloat());
 	}
 	
-	private final void setHeading(final float heading) {
-		this.heading = Utils.clampAngleDegrees(heading);
+	private final void setHeadingBody(final float heading) {
+		this.body = Utils.clampAngleDegrees(heading);
+	}
+	
+	private final void setHeadingHead(final float heading) {
+		this.head = Utils.clampAngleDegrees(heading);
 	}
 	
 	private final void setX(final float x) {
@@ -72,7 +83,8 @@ public class MotionPacket extends Packet {
 	protected void writePayload(final DataOutput output) throws IOException {
 		output.writeFloat(getX());
 		output.writeFloat(getY());
-		output.writeFloat(getHeading());
+		output.writeFloat(getHeadingBody());
+		output.writeFloat(getHeadingHead());
 	}
 	
 }

@@ -199,13 +199,10 @@ public class PhysicalRobot extends AbstractRobot {
 		
 		public Orientation getOrientation() {
 			final Pose pose = getPose();
-			
-//			float z = pose.getHeading();
-//			z = Utils.clampAngleDegrees(z);
-//			z = (360F - z);
-			
+			// TODO: Provide data about the heading of the US sensor
 			return new Orientation(-pose.getY(), pose.getX(),
-					(360F - Utils.clampAngleDegrees(pose.getHeading())));
+					(360F - Utils.clampAngleDegrees(pose.getHeading())),
+					0F);
 		}
 		
 		public void modify() {

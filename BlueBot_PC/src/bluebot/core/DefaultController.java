@@ -179,7 +179,7 @@ public class DefaultController extends AbstractController {
 		}
 		
 		private final void handlePacketMotion(final MotionPacket packet) {
-			fireMotion(packet.getX(), packet.getY(), packet.getHeading());
+			fireMotion(packet.getX(), packet.getY(), packet.getHeadingBody());
 		}
 		
 		private final void handlePacketSensor(final SensorPacket packet) {

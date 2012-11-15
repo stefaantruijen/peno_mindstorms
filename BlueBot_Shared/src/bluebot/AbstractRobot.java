@@ -18,7 +18,11 @@ public abstract class AbstractRobot implements Robot {
 	
 	
 	public float getHeading() {
-		return getOrientation().getHeading();
+		return getOrientation().getHeadingBody();
+	}
+	
+	public float getHeadingHead() {
+		return head;
 	}
 	
 	/**
@@ -56,7 +60,7 @@ public abstract class AbstractRobot implements Robot {
 		
 		float x = pos.getX();
 		float y = pos.getY();
-		double z = Math.toRadians(pos.getHeading());
+		double z = Math.toRadians(pos.getHeadingBody());
 		
 		x += (OFFSET_SENSOR_LIGHT * Math.sin(z));
 		y += (OFFSET_SENSOR_LIGHT * Math.cos(z));
@@ -73,7 +77,7 @@ public abstract class AbstractRobot implements Robot {
 		
 		float x = pos.getX();
 		float y = pos.getY();
-		float z = Utils.clampAngleDegrees(pos.getHeading() + head);
+		float z = Utils.clampAngleDegrees(pos.getHeadingBody() + head);
 		
 		final double a = Math.toRadians(z);
 		x += (OFFSET_SENSOR_ULTRASONIC * Math.sin(a));

@@ -155,11 +155,12 @@ public abstract class AbstractDriver implements Driver {
 	 * 
 	 * @param x - the position on the X axis
 	 * @param y - the position on the Y axis
-	 * @param heading - the heading (in degrees), zero equals north
+	 * @param body - the heading of the body (in degrees), zero equals north
+	 * @param head - the heading of the head (in degrees), relative to the body
 	 */
 	protected void sendMotion(final float x, final float y,
-			final float heading) {
-		getTranslator().sendMotion(x, y, heading);
+			final float body, final float head) {
+		getTranslator().sendMotion(x, y, body, head);
 	}
 	
 	private final void sendSensor(final int value, final SensorType type) {
@@ -280,8 +281,7 @@ public abstract class AbstractDriver implements Driver {
 	
 	private final class Updater implements Runnable {
 		
-		private float heading;
-		private float x, y;
+		private float body, head, x, y;
 		
 		
 		
@@ -304,11 +304,13 @@ public abstract class AbstractDriver implements Driver {
 		private final void tick() {
 			final Orientation o = getOrientation();
 			if ((o.getX() != x) || (o.getY() != y)
-					|| (o.getHeading() != heading)) {
+					|| (o.getHeadingBody() != body)
+					|| (o.getHeadingHead() != head)) {
 				sendMotion(
 						(x = o.getX()),
 						(y = o.getY()),
-						(heading = o.getHeading()));
+						(body = o.getHeadingBody()),
+						(head = o.getHeadingHead()));
 			}
 			
 			try {

@@ -605,7 +605,22 @@ public class VirtualRobot extends AbstractRobot {
 	 */
 	@Override
 	public Orientation getOrientation() {
-		return new Orientation(getX(), getY(), getHeading());
+		/*
+		 * TODO:	Provide information about the rotation of the US sensor
+		 * 
+		 * The 4th value of the Orientation constructor
+		 * represents the heading of the US sensor.
+		 * 
+		 * This value is expressed in degrees,
+		 * and determines the rotation of the US sensor
+		 * relative to the NXT brick.
+		 * A value of zero means the US sensor is facing
+		 * in the exact same direction as the NXT brick.
+		 * 
+		 * The heading of the US sensor increases with clockwise rotation,
+		 * and should be within the interval [0.0, 360.0[
+		 */
+		return new Orientation(getX(), getY(), getHeading(), 0F);
 	}
 	
 	/**

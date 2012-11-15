@@ -112,7 +112,7 @@ public class TestBot implements Runnable {
 	
 	private final void sendMotion(final float x, final float y,
 			final float heading) throws IOException {
-		connection.writePacket(getPacketFactory().createMotion(x, y, heading));
+		connection.writePacket(getPacketFactory().createMotion(x, y, heading, 0F));
 	}
 	
 }

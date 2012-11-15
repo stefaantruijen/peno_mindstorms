@@ -4,10 +4,13 @@ package bluebot.ui;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Paint;
+import java.awt.TexturePaint;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -31,17 +34,23 @@ public class VisualizationComponent extends RenderingComponent
 		implements ActionListener, MazeListener, MouseWheelListener {
 	private static final long serialVersionUID = 1L;
 	
-	private static final BufferedImage IMAGE_ROBOT;
-	private static final double IMAGE_ROBOT_SCALE = 0.5D;
+	private static final BufferedImage IMAGE_BRICK;
+	private static final double IMAGE_BRICK_SCALE = 0.5D;
+	private static final BufferedImage IMAGE_SENSOR;
+	private static final double IMAGE_SENSOR_SCALE = 0.2D;
+	private static final Paint TEXTURE_TILE;
 	public static final int TILE_RESOLUTION = 50;
 	private static final double ZOOM_STEP = 0.25D;
 	static {
-		IMAGE_ROBOT = loadImageRobot();
+		IMAGE_BRICK  = loadImage("nxt_brick.png");
+		IMAGE_SENSOR = loadImage("nxt_sensor.png");
+		
+		TEXTURE_TILE = loadTexture("hardboard.jpg");
 	}
 	
 	private final Object lock = new Object();
 	
-	private float heading = 0F;
+	private float head, heading = 0F;
 	private int maxX, maxY;
 	private BufferedImage maze;
 	private int minX, minY;
@@ -62,7 +71,7 @@ public class VisualizationComponent extends RenderingComponent
 	public void actionPerformed(final ActionEvent event) {
 		final String command = event.getActionCommand();
 		if ((command == null) || command.isEmpty()) {
-			// ignored
+			return;
 		} else if (command.equals("RESET")) {
 			synchronized (lock) {
 				maze = null;
@@ -71,14 +80,42 @@ public class VisualizationComponent extends RenderingComponent
 			final int zoom = Integer.parseInt(command.substring(5));
 			this.zoom = ((zoom - 100) / 25);
 			System.out.println(this.zoom);
-			repaint(0L);
 		}
+		repaint(0L);
 	}
 	
 	private static final int calculatePreferredSize() {
 		int size = (3 * TILE_RESOLUTION);
 		for (final int step = (TILE_RESOLUTION << 1); size < 500; size += step);
 		return size;
+	}
+	
+	private final int[] calculateScaledSize(final BufferedImage img,
+			final double scale) {
+		int dx = img.getWidth();
+		int dy = img.getHeight();
+		
+		final int max = (int)Math.round(scale * TILE_RESOLUTION);
+		
+		if (dx < dy) {
+			if (dy != max) {
+				dx = (int)Math.round((double)max * dx / dy);
+				dy = max;
+			}
+		} else {
+			if (dx != max) {
+				dy = (int)Math.round((double)max * dy / dx);
+				dx = max;
+			}
+		}
+		
+		if (zoom != 0) {
+			final double factor = getZoomFactor();
+			dx = (int)Math.round(factor * dx);
+			dy = (int)Math.round(factor * dy);
+		}
+		
+		return new int[] { dx, dy };
 	}
 	
 	private final JPopupMenu createContextMenu() {
@@ -129,18 +166,12 @@ public class VisualizationComponent extends RenderingComponent
 	}
 	
 	protected void drawMaze(final Graphics2D gfx, final int w, final int h) {
-		gfx.setBackground(Color.BLACK);
+		gfx.setBackground(Color.DARK_GRAY);
 		gfx.clearRect(0, 0, w, h);
 		
-		int resolution = TILE_RESOLUTION;
-		if (zoom != 0) {
-			resolution = (int)Math.round(getZoomFactor() * resolution);
-		}
-		
+		final int resolution = getTileResolution();
 		if (maze == null) {
 			gfx.setColor(Color.WHITE);
-			
-			
 			
 			final int thickness = Math.max(1, (resolution >> 6));
 			
@@ -198,40 +229,35 @@ public class VisualizationComponent extends RenderingComponent
 	
 	protected void drawRobot(final Graphics2D gfx, final int w, final int h) {
 		gfx.translate((w / 2), (h / 2));
+		
+		int dx, dy;
+		BufferedImage img;
+		int[] size;
+		
+		//	BODY
 		gfx.rotate(heading);
 		
-		final BufferedImage img = IMAGE_ROBOT;
-		
-		int dx = img.getWidth();
-		int dy = img.getHeight();
-		
-		final int max = (int)Math.round(IMAGE_ROBOT_SCALE * TILE_RESOLUTION);
-		
-		if (dx < dy) {
-			if (dy != max) {
-				dx = (int)Math.round((double)max * dx / dy);
-				dy = max;
-			}
-		} else {
-			if (dx != max) {
-				dy = (int)Math.round((double)max * dy / dx);
-				dx = max;
-			}
-		}
-		
-		final int zoom = this.zoom;
-		if (zoom != 0) {
-			final double factor = getZoomFactor();
-			dx = (int)Math.round(factor * dx);
-			dy = (int)Math.round(factor * dy);
-		}
-		
+		img = IMAGE_BRICK;
+		size = calculateScaledSize(img, IMAGE_BRICK_SCALE);
+		dx = size[0];
+		dy = size[1];
 		gfx.drawImage(img, -(dx / 2), -(dy / 2), dx, dy, this);
+		
+		//	HEAD
+		gfx.rotate(head);
+		
+		img = IMAGE_SENSOR;
+		size = calculateScaledSize(img, IMAGE_SENSOR_SCALE);
+		dx = size[0];
+		dy = size[1];
+//		gfx.drawImage(img, -(dx / 2), -(dy * 3 / 4), dx, dy, this);
+		gfx.drawImage(img, -(dx / 2), -(getTileResolution() / 2), dx, dy, this);
 	}
 	
 	protected void drawTile(final Graphics2D gfx,
 			final int x, final int y, final Tile tile) {
-		gfx.setColor(Color.YELLOW);
+//		gfx.setColor(Color.YELLOW);
+		gfx.setPaint(TEXTURE_TILE);
 		gfx.fillRect(x, y, TILE_RESOLUTION, TILE_RESOLUTION);
 		
 		final int thickness = (TILE_RESOLUTION >> 4);
@@ -269,21 +295,37 @@ public class VisualizationComponent extends RenderingComponent
 	private static final Color getBorderColor(final Border border) {
 		switch (border) {
 			case CLOSED:
-				return Color.RED;
+				return Color.BLACK;
 			case OPEN:
 				return Color.WHITE;
 			case UNKNOWN:
-				return Color.ORANGE;
+				return Color.GRAY;
 			default:
 				// Indicates an invalid value
-				return Color.CYAN;
+				return Color.RED;
 		}
+	}
+	
+	private final int getTileResolution() {
+		if (zoom == 0) {
+			return TILE_RESOLUTION;
+		}
+		return (int)Math.round(getZoomFactor() * TILE_RESOLUTION);
 	}
 	
 	private final double getZoomFactor() {
 		return (1D + (zoom * ZOOM_STEP));
 	}
 	
+	private static final BufferedImage loadImage(final String name) {
+		try {
+			return ImageIO.read(VisualizationComponent.class.getResource(name));
+		} catch (final IOException e) {
+			return null;
+		}
+	}
+	
+	@SuppressWarnings("unused")
 	private static final BufferedImage loadImageRobot() {
 		final BufferedImage image;
 		try {
@@ -326,6 +368,15 @@ public class VisualizationComponent extends RenderingComponent
 		
 		return resized;
 		*/
+	}
+	
+	private static final Paint loadTexture(final String name) {
+		final BufferedImage img = loadImage("rendering/" + name);
+		if (img == null) {
+			return Color.YELLOW;
+		}
+		return new TexturePaint(img,
+				new Rectangle2D.Double(0, 0, img.getWidth(), img.getHeight()));
 	}
 	
 	public void mouseWheelMoved(final MouseWheelEvent event) {
