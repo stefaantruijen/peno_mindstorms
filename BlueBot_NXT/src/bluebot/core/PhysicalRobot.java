@@ -139,7 +139,7 @@ public class PhysicalRobot extends AbstractRobot {
 	}
 	
 	public void resetOrientation() {
-		getTracker().setPose(new Pose(0F, 0F, 0F));
+		getTracker().reset();
 	}
 	
 	protected void setSpeedRotate(final float speed) {
@@ -221,6 +221,11 @@ public class PhysicalRobot extends AbstractRobot {
 					round(pose.getY(), Tile.SIZE));
 			pose.setHeading(round(pose.getHeading(), 90F));
 			setPose(pose);
+		}
+		
+		public void reset() {
+			setPose(new Pose(0F, 0F, 0F));
+			head.resetTachoCount();
 		}
 		
 		private static final float round(final float value,
