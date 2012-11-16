@@ -121,6 +121,10 @@ public abstract class AbstractDriver implements Driver {
 		return getRobot().readSensorLight();
 	}
 	
+	public int readSensorLightValue() {
+		return getRobot().readSensorLightValue();
+	}
+	
 	public int readSensorUltraSonic() {
 		return getRobot().readSensorUltraSonic();
 	}

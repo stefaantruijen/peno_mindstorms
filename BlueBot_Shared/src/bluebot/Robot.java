@@ -57,6 +57,13 @@ public interface Robot extends Mobile {
 	public int readSensorLight();
 	
 	/**
+	 * Returns the current value of the light sensor
+	 * 
+	 * @return an <code>int</code> from the interval [0, 1036]
+	 */
+	public int readSensorLightValue();
+	
+	/**
 	 * Returns the current value of the ultrasonic sensor
 	 * 
 	 * @return an <code>int</code> from the interval [0, 255]

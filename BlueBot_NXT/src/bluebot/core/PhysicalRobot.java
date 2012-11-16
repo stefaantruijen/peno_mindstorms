@@ -118,6 +118,11 @@ public class PhysicalRobot extends AbstractRobot {
 //		return sensorLight.getNormalizedLightValue();
 	}
 	
+	@Override
+	public int readSensorLightValue() {
+		return sensorLight.getNormalizedLightValue();
+	}
+	
 	public int readSensorUltraSonic() {
 //		return sensorUltraSonic.getDistance();
 		
@@ -224,5 +229,7 @@ public class PhysicalRobot extends AbstractRobot {
 		}
 		
 	}
+
+	
 	
 }
