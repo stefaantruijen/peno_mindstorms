@@ -91,12 +91,13 @@ public class DefaultAxle extends AbstractAxle {
 		synchronized (lock) {
 			final float[] diff = diff();
 			if (diff == null) {
-				return new Orientation(x, y, heading);
+				return new Orientation(x, y, heading, 0F);
 			} else {
 				return new Orientation(
 						(x + diff[0]),
 						(y + diff[1]),
-						(heading + diff[2]));
+						(heading + diff[2]),
+						0F);
 			}
 		}
 	}

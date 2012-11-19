@@ -23,7 +23,7 @@ public abstract class AbstractAxle implements Axle {
 	}
 	
 	public float getHeading() {
-		return getOrientation().getHeading();
+		return getOrientation().getHeadingBody();
 	}
 	
 	public float getSpan() {

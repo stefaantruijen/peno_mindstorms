@@ -50,7 +50,7 @@ public class VisualizationComponent extends RenderingComponent
 	
 	private final Object lock = new Object();
 	
-	private float head, heading = 0F;
+	private float body, head;
 	private int maxX, maxY;
 	private BufferedImage maze;
 	private int minX, minY;
@@ -79,7 +79,6 @@ public class VisualizationComponent extends RenderingComponent
 		} else if (command.startsWith("ZOOM_")) {
 			final int zoom = Integer.parseInt(command.substring(5));
 			this.zoom = ((zoom - 100) / 25);
-			System.out.println(this.zoom);
 		}
 		repaint(0L);
 	}
@@ -235,23 +234,29 @@ public class VisualizationComponent extends RenderingComponent
 		int[] size;
 		
 		//	BODY
-		gfx.rotate(heading);
+		gfx.rotate(body);
 		
 		img = IMAGE_BRICK;
 		size = calculateScaledSize(img, IMAGE_BRICK_SCALE);
 		dx = size[0];
 		dy = size[1];
+		
 		gfx.drawImage(img, -(dx / 2), -(dy / 2), dx, dy, this);
 		
 		//	HEAD
 		gfx.rotate(head);
 		
+		final double cos = Math.cos(head);
+		final double sin = Math.sin(head);
+		final int offset = (int)Math.round((sin * sin * dx / 2D)
+				+ (cos * cos * dy / 2D));
+		
 		img = IMAGE_SENSOR;
 		size = calculateScaledSize(img, IMAGE_SENSOR_SCALE);
 		dx = size[0];
 		dy = size[1];
-//		gfx.drawImage(img, -(dx / 2), -(dy * 3 / 4), dx, dy, this);
-		gfx.drawImage(img, -(dx / 2), -(getTileResolution() / 2), dx, dy, this);
+		
+		gfx.drawImage(img, -(dx / 2), -(offset + dy), dx, dy, this);
 	}
 	
 	protected void drawTile(final Graphics2D gfx,
@@ -410,7 +415,8 @@ public class VisualizationComponent extends RenderingComponent
 		repaint(0L);
 	}
 	
-	public void onMotion(final float x, final float y, float heading) {
+	public void onMotion(final float x, final float y,
+			float body, float head) {
 		boolean repaint = false;
 		
 		if ((x != this.x) || (y != this.y)) {
@@ -419,9 +425,15 @@ public class VisualizationComponent extends RenderingComponent
 			repaint = true;
 		}
 		
-		heading = Utils.degrees2radians(heading);
-		if (heading != this.heading) {
-			this.heading = heading;
+		body = Utils.degrees2radians(body);
+		if (body != this.body) {
+			this.body = body;
+			repaint = true;
+		}
+		
+		head = Utils.degrees2radians(head);
+		if (head != this.head) {
+			this.head = head;
 			repaint = true;
 		}
 		
