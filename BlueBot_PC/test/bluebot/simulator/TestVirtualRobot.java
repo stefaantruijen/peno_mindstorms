@@ -57,8 +57,8 @@ public class TestVirtualRobot {
 	@Test
 	public void VirtualRobot2() {
 		VirtualRobot vr = new VirtualRobot(tileList,Tile20);
-		int centerImgStartX = 2*VirtualRobot.TILE_SIZE + VirtualRobot.TILE_SIZE/2;
-		int centerImgStartY = 0*VirtualRobot.TILE_SIZE + VirtualRobot.TILE_SIZE/2;
+		int centerImgStartX = 2*VirtualRobot.TILE_SIZE_CM + VirtualRobot.TILE_SIZE_CM/2;
+		int centerImgStartY = 0*VirtualRobot.TILE_SIZE_CM + VirtualRobot.TILE_SIZE_CM/2;
 		assertEquals(centerImgStartX, vr.getImgStartX(),VirtualRobot.randomMaxOffset);
 		assertEquals(centerImgStartY, vr.getImgStartY(),VirtualRobot.randomMaxOffset);
 	}
@@ -349,7 +349,7 @@ public class TestVirtualRobot {
 		
 		VirtualRobot vr = new VirtualRobot(new Tile[]{t00},t00);
 		//Minus one cause intersection is
-		int maxDistanceNotMoved = (int) (VirtualRobot.TILE_SIZE/2 - VirtualRobot.SONAR_OFFSET_CM)-1;
+		int maxDistanceNotMoved = (int) (VirtualRobot.TILE_SIZE_CM/2 - VirtualRobot.SONAR_OFFSET_CM)-1;
 		assertEquals(maxDistanceNotMoved,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
 		vr.turnHeadClockWise(90);
 		assertEquals(maxDistanceNotMoved,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
@@ -359,11 +359,11 @@ public class TestVirtualRobot {
 		assertEquals(maxDistanceNotMoved,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
 		vr.turnHeadCounterClockWise(270);
 		assertEquals(maxDistanceNotMoved,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
-		assertEquals(0, vr.getSonarDirection(),deltaNONZERO_SMALL);
+		assertEquals(0, vr.getRelativeSonarDirection(),deltaNONZERO_SMALL);
 		
 		vr.setSpeedRotate(vr.getMaximumSpeedRotate());
 		vr.turnRight(90, true);
-		assertEquals(0, vr.getSonarDirection(),deltaZERO);
+		assertEquals(0, vr.getRelativeSonarDirection(),deltaZERO);
 		assertEquals(90, vr.getHeading(),deltaZERO);
 		assertEquals(maxDistanceNotMoved,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
 
@@ -429,26 +429,26 @@ public class TestVirtualRobot {
 		vr.setSpeedTravel(vr.getMaximumSpeedTravel());
 		
 		//Minus one cause intersection is ???
-		int maxDistanceNotMoved = (int) (VirtualRobot.TILE_SIZE/2 - VirtualRobot.SONAR_OFFSET_CM)-1;
-		int halfTile = VirtualRobot.TILE_SIZE/2;
-		int oneTileMM =VirtualRobot.TILE_SIZE*10;
+		int maxDistanceNotMoved = (int) (VirtualRobot.TILE_SIZE_CM/2 - VirtualRobot.SONAR_OFFSET_CM)-1;
+		int halfTile = VirtualRobot.TILE_SIZE_CM/2;
+		int oneTileMM =VirtualRobot.TILE_SIZE_CM*10;
 		int offsettCM = (int) (VirtualRobot.OFFSET_SENSOR_ULTRASONIC/10);
 		
-		assertEquals(VirtualRobot.TILE_SIZE + halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		assertEquals(VirtualRobot.TILE_SIZE_CM + halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
 		vr.turnHeadClockWise(180);
 		assertEquals(VirtualSonar.NOT_IN_RANGE,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
 		vr.turnHeadCounterClockWise(90);
-		assertEquals(VirtualRobot.TILE_SIZE + halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		assertEquals(VirtualRobot.TILE_SIZE_CM + halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
 		vr.moveForward(oneTileMM, true);
-		assertEquals(VirtualRobot.TILE_SIZE*2 + halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		assertEquals(VirtualRobot.TILE_SIZE_CM*2 + halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
 		vr.turnHeadCounterClockWise(90);
 		assertEquals(halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
 		vr.turnLeft(90,true);
 		assertEquals(halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
 		vr.moveBackward(oneTileMM, true);
-		assertEquals(VirtualRobot.TILE_SIZE + halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		assertEquals(VirtualRobot.TILE_SIZE_CM + halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
 		vr.moveBackward(oneTileMM, true);
-		assertEquals(VirtualRobot.TILE_SIZE*2 + halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		assertEquals(VirtualRobot.TILE_SIZE_CM*2 + halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
 		vr.turnHeadCounterClockWise(90);
 		assertEquals(halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
 		vr.turnHeadCounterClockWise(90);
@@ -456,11 +456,11 @@ public class TestVirtualRobot {
 		vr.turnHeadCounterClockWise(90);
 		assertEquals(halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
 		vr.turnHeadCounterClockWise(90);
-		assertEquals(VirtualRobot.TILE_SIZE*2 + halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		assertEquals(VirtualRobot.TILE_SIZE_CM*2 + halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
 		vr.moveForward(oneTileMM, true);
-		assertEquals(VirtualRobot.TILE_SIZE + halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		assertEquals(VirtualRobot.TILE_SIZE_CM + halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
 		vr.turnHeadCounterClockWise(90);
-		assertEquals(VirtualRobot.TILE_SIZE + halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
+		assertEquals(VirtualRobot.TILE_SIZE_CM + halfTile - offsettCM,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
 		vr.moveForward(oneTileMM, true);
 		assertEquals(VirtualSonar.NOT_IN_RANGE,vr.readSensorUltraSonic(),deltaNONZERO_SMALL);
 	}
@@ -469,24 +469,24 @@ public class TestVirtualRobot {
 	public void getSonarDirection(){
 		VirtualRobot vr = new VirtualRobot(tileList,Tile20);
 		assertEquals(0,vr.getHeading(),deltaZERO);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		vr.turnHeadClockWise(90);
-		assertEquals(90,vr.getSonarDirection(),deltaZERO);
+		assertEquals(90,vr.getRelativeSonarDirection(),deltaZERO);
 		vr.turnHeadCounterClockWise(90);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		vr.turnHeadCounterClockWise(90);
-		assertEquals(-90,vr.getSonarDirection(),deltaZERO);
+		assertEquals(-90,vr.getRelativeSonarDirection(),deltaZERO);
 		assertEquals(0,vr.getHeading(),deltaZERO);
-		assertEquals(270,Utils.clampAngleDegrees((float)(vr.getHeading()+vr.getSonarDirection())),deltaZERO);
+		assertEquals(270,Utils.clampAngleDegrees((float)(vr.getHeading()+vr.getRelativeSonarDirection())),deltaZERO);
 		vr.turnHeadClockWise(90);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
-		assertEquals(270,vr.getSonarDirection(),deltaZERO);
+		assertEquals(270,vr.getRelativeSonarDirection(),deltaZERO);
 		vr.turnHeadCounterClockWise(270);
-		System.out.println("sonardirection before turning right: " + vr.getSonarDirection() );
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		System.out.println("sonardirection before turning right: " + vr.getRelativeSonarDirection() );
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		
 		
 		
@@ -494,198 +494,198 @@ public class TestVirtualRobot {
 		//RIGHT 360 -- 4 times
 		
 		vr.turnRight(90,true);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		assertEquals(90,vr.getHeading(),deltaZERO);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
-		assertEquals(360,vr.getSonarDirection(),deltaZERO);
+		assertEquals(360,vr.getRelativeSonarDirection(),deltaZERO);
 		vr.turnHeadCounterClockWise(360);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		
 		vr.turnRight(90,true);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		assertEquals(180,vr.getHeading(),deltaZERO);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
-		assertEquals(360,vr.getSonarDirection(),deltaZERO);
+		assertEquals(360,vr.getRelativeSonarDirection(),deltaZERO);
 		vr.turnHeadCounterClockWise(360);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		
 		vr.turnRight(90,true);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		assertEquals(270,vr.getHeading(),deltaZERO);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
-		assertEquals(360,vr.getSonarDirection(),deltaZERO);
+		assertEquals(360,vr.getRelativeSonarDirection(),deltaZERO);
 		vr.turnHeadCounterClockWise(360);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		
 		vr.turnRight(90,true);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		assertEquals(0,vr.getHeading(),deltaZERO);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
-		assertEquals(360,vr.getSonarDirection(),deltaZERO);
+		assertEquals(360,vr.getRelativeSonarDirection(),deltaZERO);
 		vr.turnHeadCounterClockWise(360);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		
 		//LEFT 360 -- 4 times
 		
 		vr.turnLeft(90,true);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		assertEquals(270,vr.getHeading(),deltaZERO);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
-		assertEquals(360,vr.getSonarDirection(),deltaZERO);
+		assertEquals(360,vr.getRelativeSonarDirection(),deltaZERO);
 		vr.turnHeadCounterClockWise(360);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		
 		vr.turnLeft(90,true);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		assertEquals(180,vr.getHeading(),deltaZERO);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
-		assertEquals(360,vr.getSonarDirection(),deltaZERO);
+		assertEquals(360,vr.getRelativeSonarDirection(),deltaZERO);
 		vr.turnHeadCounterClockWise(360);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		
 		vr.turnLeft(90,true);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		assertEquals(90,vr.getHeading(),deltaZERO);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
-		assertEquals(360,vr.getSonarDirection(),deltaZERO);
+		assertEquals(360,vr.getRelativeSonarDirection(),deltaZERO);
 		vr.turnHeadCounterClockWise(360);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		
 		
 		vr.turnLeft(90,true);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		assertEquals(0,vr.getHeading(),deltaZERO);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
-		assertEquals(360,vr.getSonarDirection(),deltaZERO);
+		assertEquals(360,vr.getRelativeSonarDirection(),deltaZERO);
 		vr.turnHeadCounterClockWise(360);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		
 		
 		//RIGHT 360 --3 times
 		
 		vr.turnRight(90,true);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		assertEquals(90,vr.getHeading(),deltaZERO);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
-		assertEquals(270,vr.getSonarDirection(),deltaZERO);
+		assertEquals(270,vr.getRelativeSonarDirection(),deltaZERO);
 		vr.turnHeadCounterClockWise(270);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		
 		vr.turnRight(90,true);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		assertEquals(180,vr.getHeading(),deltaZERO);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
-		assertEquals(270,vr.getSonarDirection(),deltaZERO);
+		assertEquals(270,vr.getRelativeSonarDirection(),deltaZERO);
 		vr.turnHeadCounterClockWise(270);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		
 		vr.turnRight(90,true);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		assertEquals(270,vr.getHeading(),deltaZERO);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
-		assertEquals(270,vr.getSonarDirection(),deltaZERO);
+		assertEquals(270,vr.getRelativeSonarDirection(),deltaZERO);
 		vr.turnHeadCounterClockWise(270);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		
 		vr.turnRight(90,true);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		assertEquals(0,vr.getHeading(),deltaZERO);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
-		assertEquals(270,vr.getSonarDirection(),deltaZERO);
+		assertEquals(270,vr.getRelativeSonarDirection(),deltaZERO);
 		vr.turnHeadCounterClockWise(270);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		
 		//LEFT 360 --3 times
 		
 		vr.turnLeft(90,true);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		assertEquals(270,vr.getHeading(),deltaZERO);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
-		assertEquals(270,vr.getSonarDirection(),deltaZERO);
+		assertEquals(270,vr.getRelativeSonarDirection(),deltaZERO);
 		vr.turnHeadCounterClockWise(270);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		
 		vr.turnLeft(90,true);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		assertEquals(180,vr.getHeading(),deltaZERO);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
-		assertEquals(270,vr.getSonarDirection(),deltaZERO);
+		assertEquals(270,vr.getRelativeSonarDirection(),deltaZERO);
 		vr.turnHeadCounterClockWise(270);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		
 		vr.turnLeft(90,true);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		assertEquals(90,vr.getHeading(),deltaZERO);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
-		assertEquals(270,vr.getSonarDirection(),deltaZERO);
+		assertEquals(270,vr.getRelativeSonarDirection(),deltaZERO);
 		vr.turnHeadCounterClockWise(270);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		
 		
 		vr.turnLeft(90,true);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		assertEquals(0,vr.getHeading(),deltaZERO);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
 		vr.turnHeadClockWise(90);
-		assertEquals(270,vr.getSonarDirection(),deltaZERO);
+		assertEquals(270,vr.getRelativeSonarDirection(),deltaZERO);
 		vr.turnHeadCounterClockWise(270);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		
 		
 		
 		//check negative getSonarDirection()
 		vr.turnHeadCounterClockWise(90);
-		assertEquals(-90,vr.getSonarDirection(),deltaZERO);
+		assertEquals(-90,vr.getRelativeSonarDirection(),deltaZERO);
 		vr.turnHeadCounterClockWise(90);
-		assertEquals(-180,vr.getSonarDirection(),deltaZERO);
+		assertEquals(-180,vr.getRelativeSonarDirection(),deltaZERO);
 		vr.turnHeadCounterClockWise(90);
-		assertEquals(-270,vr.getSonarDirection(),deltaZERO);
+		assertEquals(-270,vr.getRelativeSonarDirection(),deltaZERO);
 		vr.turnHeadCounterClockWise(90);
-		assertEquals(-360,vr.getSonarDirection(),deltaZERO);
+		assertEquals(-360,vr.getRelativeSonarDirection(),deltaZERO);
 		vr.turnHeadCounterClockWise(90);
-		assertEquals(-450,vr.getSonarDirection(),deltaZERO);
+		assertEquals(-450,vr.getRelativeSonarDirection(),deltaZERO);
 		
 		vr.turnHeadClockWise(450);
-		assertEquals(0,vr.getSonarDirection(),deltaZERO);
+		assertEquals(0,vr.getRelativeSonarDirection(),deltaZERO);
 		
 		
 	}

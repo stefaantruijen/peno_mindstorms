@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
+import bluebot.graph.Border;
 import bluebot.graph.Tile;
 
 /**
@@ -30,7 +31,7 @@ public class VirtualLightSensor {
 	/**
 	 * Standard white line light value.
 	 */
-	public static final int STANDARD_WHITE_LINE_LIGHTVALUE = calculateLightValue(STANDARD_WHITE_LINE_COLOR.getRGB());
+	public static final int STANDARD_WHITE_LINE_LIGHTVALUE = calculateLightValuePercentage(STANDARD_WHITE_LINE_COLOR.getRGB());
 	/**
 	 * Standard empty space color that will be used at construct.
 	 */
@@ -38,7 +39,7 @@ public class VirtualLightSensor {
 	/**
 	 * Standard empty space light value.
 	 */
-	public static final int STANDARD_EMPTY_SPACE_LIGHTVALUE = calculateLightValue(LIGHT_BROWN_2.getRGB());
+	public static final int STANDARD_EMPTY_SPACE_LIGHTVALUE = calculateLightValuePercentage(LIGHT_BROWN_2.getRGB());
 	/**
 	 * The white line color currently used.
 	 */
@@ -55,7 +56,19 @@ public class VirtualLightSensor {
 	 * The Sensors object of this VirtualLightSensor. Holds all informations regarding tiles.
 	 */
 	private Sensors sensors;
-   
+	/**
+	 * 
+	 */
+	private static final int barcodeLength = 16; //Pixels, lengte is in de richting dat de robot er over rijdt
+	/**
+	 * 
+	 */
+	private static final int barcodeWidth = Sensors.TILE_SIZE-4; // Pixels
+	
+	private static final int bitWidthResolution =  Sensors.TILE_SIZE/20;
+	
+	
+	
 	/**
 	 * Basic constructor where only a Sensors object is needed.
 	 * 
@@ -77,20 +90,52 @@ public class VirtualLightSensor {
 	 */
 	protected void generateMap() {
 		for(Tile t : sensors.getTilesList()){
-			//TODO make drawing dependent on type of Tile.
+			int barcode = t.getBarCode();
+//			System.out.println(barcode);
 			drawStandardTile(t.getX(), sensors.getMaxYOfGrid() - t.getY());
+			if(barcode != -1){
+//				System.out.println("not -1");
+				Border northBorder = t.getBorderNorth();
+				if(northBorder == Border.CLOSED){
+//					System.out.println("North Border Closed");
+					drawHorizontalBarcode(t.getX(), sensors.getMaxYOfGrid() - t.getY(), barcode);
+				} else {
+					drawVerticalBarcode(t.getX(), sensors.getMaxYOfGrid() - t.getY(), barcode);
+				}
+			}
 		}
 	}
 	
 	/**
 	 * Returns the light value at the given coordinate. 
 	 * 
-	 * TODO: is this conform the real nxt?
-	 * 
 	 * @param x
 	 * @param y
 	 * @return int
 	 * 		An integer repersenting the light value.
+	 * @throws IllegalArgumentException
+	 * 		When the x or y coordinates are not valid |
+	 * 		!sensors.isValid(x,y)
+	 */
+	public int getLightValuePercentage(int x, int y){
+		if(sensors.isValid(x,y)){
+		  int clr=  img.getRGB(x,y); 
+		  int lightValue = calculateLightValuePercentage(clr);
+//		  System.out.println("Lightsensor white-value: "+lightValue);
+		  return lightValue;
+		} else {
+			throw new IllegalArgumentException("X or Y out of bounds");
+		}
+	}
+	
+	
+	/**
+	 * Returns the light value at the given coordinate. 
+	 * 
+	 * @param x
+	 * @param y
+	 * @return int
+	 * 		An integer between 0 and 1023 representing the light value.
 	 * @throws IllegalArgumentException
 	 * 		When the x or y coordinates are not valid |
 	 * 		!sensors.isValid(x,y)
@@ -110,22 +155,46 @@ public class VirtualLightSensor {
 	 * Returns the lightValue calculated of the given 
 	 * integer representing an RGB color.
 	 * 
-	 * TODO: is this conform the real nxt?
+	 * @param clr
+	 * @return An Integer ranging from 0 to 100 representing the light intensity (percentage).
+	 */
+	public static int calculateLightValuePercentage(int clr) {
+		double divide = calculateRGBValue(clr);
+		double percent = divide*100;
+		int lightValue = (int) Math.round(percent);
+//		System.out.println("Colors at ("+x+","+y+"): "+red+","+green+","+blue);
+		return lightValue;
+	}
+	
+	/**
+	 * Returns the lightValue calculated of the given 
+	 * integer representing an RGB color.
 	 * 
 	 * @param clr
-	 * @return An Integer ranging from 0 to 100 representing the light intesity
+	 * @return An Integer ranging from 0 to 1023 representing the light intensity.
 	 */
 	public static int calculateLightValue(int clr) {
+		double divide = calculateRGBValue(clr);
+		double value = divide*1023;
+		int lightValue = (int) Math.round(value);
+//		System.out.println("Colors at ("+x+","+y+"): "+red+","+green+","+blue);
+		return lightValue;
+	}
+
+	/**
+	 * The common calculations for making the light sensor values. 
+	 * 
+	 * @param clr
+	 * @return
+	 */
+	private static double calculateRGBValue(int clr) {
 		int  red   = (clr & 0x00ff0000) >> 16;
 		int  green = (clr & 0x0000ff00) >> 8;
 		int  blue  =  clr & 0x000000ff;
 		double sum = (double) (red+green+blue);
 		double denominator = 255*3;
 		double divide = sum/denominator;
-		double percent = divide*100;
-		int lightValue = (int) Math.round(percent);
-//		System.out.println("Colors at ("+x+","+y+"): "+red+","+green+","+blue);
-		return lightValue;
+		return divide;
 	}
 	
 	/**
@@ -395,6 +464,185 @@ public class VirtualLightSensor {
 		drawHorizontallyCrossedTile(x, y+1);
 	}
 	
+	/* BARCODES */
+	/**
+	 * Basic drawer
+	 */
+	public void drawHorizontalBarAbsolute(int x, int y, Color color){
+		Graphics2D graphics = img.createGraphics();
+		graphics.setColor(color);
+		graphics.fillRect(x, y, bitWidthResolution, barcodeWidth);
+	}
+	
+	/**
+	 * Basic drawer
+	 */
+	public void drawVerticalBarAbsolute(int x, int y, Color color){
+		Graphics2D graphics = img.createGraphics();
+		graphics.setColor(color);
+		graphics.fillRect(x, y, barcodeWidth, bitWidthResolution);
+	}
+	
+	/**
+	 * Obvious
+	 */
+	public void drawHorizontalWhiteBarAbsolute(int x, int y){
+		drawHorizontalBarAbsolute(x,y,WHITE);
+	}
+	
+	/**
+	 * Obvious
+	 */
+	public void drawVerticalWhiteBarAbsolute(int x, int y){
+		drawVerticalBarAbsolute(x,y,WHITE);
+	}
+	
+	/**
+	 * Obvious
+	 */
+	public void drawHorizontalBlackBarAbsolute(int x, int y){
+		drawHorizontalBarAbsolute(x,y,Color.black);
+	}
+	
+	/**
+	 * Obvious
+	 */
+	public void drawVerticalBlackBarAbsolute(int x, int y){
+		drawVerticalBarAbsolute(x,y,Color.black);
+	}
+	
+	/**
+	 * x and y are the relative coordinates of the Tile that is drawn on.
+	 * Orientation = 1 => Horizontal tile
+	 * 			   = 0 => Vertical tile 
+	 * This is the orientation of the tile that the barcode is located on. A horizontal tile means the robot can drive through it horizontally.
+	 * 
+	 * A barcode is built as follows: white-black-X-X-X-X-X-X-black-white, where XXXXXX is the functional code. This method draws those outer bars.
+	 */
+	public void drawEdgesOfBarcodeOnTile(int x, int y, int orientation){
+		if(orientation==1){//HORIZONTAL
+			int xOffset = (Sensors.TILE_SIZE-barcodeLength)/2;
+			int yOffset = (Sensors.TILE_SIZE-barcodeWidth)/2;
+			drawHorizontalBlackBarAbsolute(x*Sensors.TILE_SIZE+xOffset, y*Sensors.TILE_SIZE+yOffset);
+			//Leave space for 6 functional bars
+			drawHorizontalBlackBarAbsolute(x*Sensors.TILE_SIZE+xOffset+7, y*Sensors.TILE_SIZE+yOffset);
+			}
+		else{//VERTICAL
+			int xOffset = (Sensors.TILE_SIZE-barcodeWidth)/2;
+			int yOffset = (Sensors.TILE_SIZE-barcodeLength)/2;
+			drawVerticalBlackBarAbsolute(x*Sensors.TILE_SIZE+xOffset, y*Sensors.TILE_SIZE+yOffset);
+			//Leave space for 6 functional bars
+			drawVerticalBlackBarAbsolute(x*Sensors.TILE_SIZE+xOffset, y*Sensors.TILE_SIZE+yOffset+7);
+		}
+	}
+	
+	/**
+	 * 
+	 * @param x, y			The relative coordinates of the tile.
+	 * @param orientation	1 for horizontal and 0 for vertical tiles.
+	 * @param bit			1 for a white bar and 0 for a black bar
+	 * @param position		a number [0..5] indicating the place of the bit in the code. (Barcode-positions: /edge/-0-1-2-3-4-5-/edge/ )
+	 */
+	public void drawSingleBitOnTile(int x, int y, int orientation, char bit, int position){
+		if(orientation==1){//HORIZONTAL
+			int xOffset = (Sensors.TILE_SIZE-barcodeLength)/2;
+			int yOffset = (Sensors.TILE_SIZE-barcodeWidth)/2;
+			if(bit=='0'){
+				drawHorizontalBlackBarAbsolute(x*Sensors.TILE_SIZE+xOffset+2+position, y*Sensors.TILE_SIZE+yOffset);
+			}
+			else{//bit=='1'
+				drawHorizontalWhiteBarAbsolute(x*Sensors.TILE_SIZE+xOffset+2+position, y*Sensors.TILE_SIZE+yOffset);
+			}
+		}
+		else{//VERTICAL
+			int xOffset = (Sensors.TILE_SIZE-barcodeWidth)/2;
+			int yOffset = (Sensors.TILE_SIZE-barcodeLength)/2;
+			if(bit=='0'){
+				drawVerticalBlackBarAbsolute(x*Sensors.TILE_SIZE+xOffset, y*Sensors.TILE_SIZE+yOffset+2+position);
+			}
+			else{//bit=='1'
+				drawVerticalWhiteBarAbsolute(x*Sensors.TILE_SIZE+xOffset, y*Sensors.TILE_SIZE+yOffset+2+position);
+			}
+			
+		}
+	}
+	
+	/**
+	 * Obvious
+	 */
+	public int convertBinaryToInt(String binaryString){
+		return Integer.parseInt(binaryString, 2);
+	}
+	
+	/**
+	 * Example: convertIntToBinary(19) returns "10011".
+	 * Notice that all our barcodes consist of 6 bits and thus we need to add leading zeros after this conversion, where needed!
+	 * This happens in the {@link drawBarcode()} method.
+	 */
+	public String convertIntToBinary(int number){
+		return Integer.toBinaryString(number);
+	}
+	
+	/**
+	 * Draws the given binaryCode (for example: "1011") on the tile with relative coordinates x and y
+	 * and orientation 1 (Horizontal) or 0(Vertical).
+	 * Also adds leading zeros to the binary code, if needed, to make it 6 bits long.
+	 */
+	public void drawBarcode(int x, int y, String binaryCode, int orientation){
+//		System.out.println("pre: "+binaryCode);
+		int length = binaryCode.length();
+		if(length<6){
+			int nbLeadingZeros = 6-length;
+			while(nbLeadingZeros>0){
+				binaryCode = "0"+binaryCode;
+				nbLeadingZeros--;
+			}
+		}
+		length = binaryCode.length();
+//		System.out.println("post: "+binaryCode);
+		int index = length-1;
+		while(index>=0){//index should always start at 5 and descend down to, including, 0 because we only have 6-bit codes.
+			drawSingleBitOnTile(x, y, orientation, binaryCode.charAt(index), index);
+			index--;
+		}
+	}
+	
+	/**
+	 * Utility method to use an integer as code instead of a binary string.
+	 */
+	public void drawBarcode(int x, int y, int numberOfBarcode, int orientation){
+		String binaryString = convertIntToBinary(numberOfBarcode);
+		drawBarcode(x, y, binaryString, orientation);
+	}
+	
+	/**
+	 * Utility method to not worry about orientations being 0 or 1.
+	 */
+	public void drawHorizontalBarcode(int x, int y, String binaryCode){
+		drawBarcode(x, y, binaryCode , 1);
+	}
+	
+	/**
+	 * Utility method to not worry about orientations being 0 or 1.
+	 */
+	public void drawVerticalBarcode(int x, int y, String binaryCode){
+		drawBarcode(x, y, binaryCode , 0);
+	}
+	
+	/**
+	 * Utility method to not worry about orientations being 0 or 1.
+	 */
+	public void drawHorizontalBarcode(int x, int y, int numberOfBarcode){
+		drawBarcode(x, y, numberOfBarcode , 1);
+	}
+	
+	/**
+	 * Utility method to not worry about orientations being 0 or 1.
+	 */
+	public void drawVerticalBarcode(int x, int y, int numberOfBarcode){
+		drawBarcode(x, y, numberOfBarcode , 0);
+	}
+
 	
 	
 	

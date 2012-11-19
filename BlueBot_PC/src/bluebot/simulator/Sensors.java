@@ -48,7 +48,7 @@ public class Sensors {
 	/**
 	 * The tile size.
 	 */
-	private static final int TILE_SIZE = VirtualRobot.TILE_SIZE;
+	public static final int TILE_SIZE = VirtualRobot.TILE_SIZE_CM;
 
 	/**
 	 * Default constructor uses the Tile objects in tilesList for making the virtual sensor data.
@@ -64,10 +64,20 @@ public class Sensors {
 	}
 	
 	/**
-	 * Returns the light value at the given coordinate.
+	 * Returns the light value (a percentage) at the given coordinate.
 	 * @param X
 	 * @param Y
 	 * @return
+	 */
+	public int getLightValuePercentage(int X, int Y){
+		return light.getLightValuePercentage(X, Y);
+	}
+	
+	/**
+	 * Returns the light value at the given coordinate.
+	 * @param X
+	 * @param Y
+	 * @return An integer between 0 and 1023
 	 */
 	public int getLightValue(int X, int Y){
 		return light.getLightValue(X, Y);
@@ -365,7 +375,7 @@ public class Sensors {
 	public int getSouthBorderCoor(Tile t){
 		int x = t.getX();
 		int y = t.getY();
-		return getNorthBorderCoor(x,y);
+		return getSouthBorderCoor(x,y);
 	}
 	
 	/**
@@ -389,7 +399,7 @@ public class Sensors {
 	public int getWestBorderCoor(Tile t){
 		int x = t.getX();
 		int y = t.getY();
-		return getEastBorderCoor(x,y);
+		return getWestBorderCoor(x,y);
 	}
 	
 	/**

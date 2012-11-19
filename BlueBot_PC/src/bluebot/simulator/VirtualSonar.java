@@ -37,21 +37,21 @@ public class VirtualSonar {
 	 * 			If no wall is found.
 	 */
 	public int getSonarValue(int x, int y, float heading) {
-		System.out.println("Sonarheading (getHeading() + getSonarDirection())= " + heading);
+//		System.out.println("Sonarheading (getHeading() + getSonarDirection())= " + heading);
 		if(sensors.isValid(x,y)){
 			ArrayList<int[]> intersections = this.calculateIntersections(x,y,heading);
 			ArrayList<int[]> sortedIntersections = sortByDistanceTo(intersections, x, y);
 			boolean wallFound = false;
 			int[]currentIntercept = null;
 			double distance = 0;
-			System.out.println("size" + sortedIntersections.size());
+//			System.out.println("size " + sortedIntersections.size());
 			while(!wallFound && !sortedIntersections.isEmpty()){
 				currentIntercept = sortedIntersections.get(0);
 				Tile currentT = sensors.getTileAt(currentIntercept[0], currentIntercept[1]);
 				Tile nb = null;
 				if(heading == 0){ //Straight North
-					System.out.println("checking North");
-					System.out.println("sortedIntersections: " + currentIntercept[0] +", " +currentIntercept[1]);
+//					System.out.println("checking North");
+//					System.out.println("sortedIntersections: " + currentIntercept[0] +", " +currentIntercept[1]);
 					nb = sensors.getNorthNeigborOf(currentT);
 					if(currentT.getBorderNorth() == Border.CLOSED 
 						|| nb != null && nb.getBorderSouth()== Border.CLOSED
@@ -59,11 +59,11 @@ public class VirtualSonar {
 						wallFound = true;
 					} else{
 						if(nb==null){
-							System.out.println("nb=null");
+//							System.out.println("nb=null");
 						}
 					}
 				} else if(heading == 90){ //Straight East
-					System.out.println("checking East");
+//					System.out.println("checking East");
 					nb = sensors.getEastNeigborOf(currentT);
 					if(currentT.getBorderEast() == Border.CLOSED 
 						|| nb != null && nb.getBorderWest()== Border.CLOSED
@@ -71,11 +71,11 @@ public class VirtualSonar {
 						wallFound = true;
 					} else{
 						if(nb==null){
-							System.out.println("nb=null");
+//							System.out.println("nb=null");
 						}
 					}
 				}else if(heading == 180){ //Straight South
-					System.out.println("checking South");
+//					System.out.println("checking South");
 					nb = sensors.getSouthNeigborOf(currentT);
 					if(currentT.getBorderSouth() == Border.CLOSED 
 						|| nb != null && nb.getBorderNorth()== Border.CLOSED
@@ -83,11 +83,11 @@ public class VirtualSonar {
 						wallFound = true;
 					} else{
 						if(nb==null){
-							System.out.println("nb=null");
+//							System.out.println("nb=null");
 						}
 					}
 				}else if(heading == 270){ //Straight West
-					System.out.println("checking West");
+//					System.out.println("checking West");
 					nb = sensors.getWestNeigborOf(currentT);
 					if(currentT.getBorderWest() == Border.CLOSED 
 						|| nb != null && nb.getBorderEast()== Border.CLOSED
@@ -95,11 +95,12 @@ public class VirtualSonar {
 						wallFound = true;
 					} else{
 						if(nb==null){
-							System.out.println("nb=null");
+//							System.out.println("nb=null");
 						}
 					}
 				} else { //More general case
 					if(currentIntercept[1] == sensors.getNorthBorderCoor(currentT)){ //A northern intersection
+//						System.out.println("A northern intersection");
 						nb = sensors.getNorthNeigborOf(currentT);
 						if(currentT.getBorderNorth() == Border.CLOSED 
 							|| nb != null && nb.getBorderSouth()== Border.CLOSED
@@ -107,6 +108,7 @@ public class VirtualSonar {
 							wallFound = true;
 						}
 					}else if(currentIntercept[0] == sensors.getEastBorderCoor(currentT)){ //An eastern intersection
+//						System.out.println("An eastern intersection");
 						nb = sensors.getEastNeigborOf(currentT);
 						if(currentT.getBorderEast() == Border.CLOSED 
 							|| nb != null && nb.getBorderWest()== Border.CLOSED
@@ -114,6 +116,7 @@ public class VirtualSonar {
 							wallFound = true;
 						}
 					} else if (currentIntercept[1] == sensors.getSouthBorderCoor(currentT)){//A southern intersection
+//						System.out.println("A southern intersection");
 						nb = sensors.getSouthNeigborOf(currentT);
 						if(currentT.getBorderSouth() == Border.CLOSED 
 							|| nb != null && nb.getBorderNorth()== Border.CLOSED
@@ -121,8 +124,9 @@ public class VirtualSonar {
 							wallFound = true;
 						}
 					} else if(currentIntercept[0] == sensors.getWestBorderCoor(currentT)){//A western intersection
+//						System.out.println("A western intersection");
 						nb = sensors.getWestNeigborOf(currentT);
-						if(currentT.getBorderEast() == Border.CLOSED 
+						if(currentT.getBorderWest() == Border.CLOSED 
 							|| nb != null && nb.getBorderEast()== Border.CLOSED
 						   ){
 							wallFound = true;
@@ -133,7 +137,7 @@ public class VirtualSonar {
 				sortedIntersections.remove(currentIntercept);
 			}
 			if(!wallFound){//No wall is found at all.
-				System.out.println("No wall is found at all.");
+//				System.out.println("No wall is found at all.");
 				distance = NOT_IN_RANGE;
 			} else {
 				distance = getDistanceFromTo(x, y, currentIntercept[0], currentIntercept[1]);
@@ -195,6 +199,7 @@ public class VirtualSonar {
 			int checkLowY = 0;
 			int checkHighX = 0;
 			int checkHighY = 0;
+			//Decide in which quadrant intersections could be.
 			if(heading >0 && heading< 90){
 				startX = sensors.getNorthBorderCoor(imgX, imgY);
 				stopX = sensors.getMaxX();
