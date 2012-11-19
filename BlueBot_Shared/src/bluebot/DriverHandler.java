@@ -52,6 +52,9 @@ public class DriverHandler implements PacketHandler {
 			case Packet.OP_POLYGON:
 				handlePacketPolygon((PolygonPacket)packet);
 				break;
+			case Packet.OP_RESET:
+				handlePacketReset();
+				break;
 			case Packet.OP_STOP:
 				handlePacketStop();
 				break;
@@ -120,6 +123,11 @@ public class DriverHandler implements PacketHandler {
 	
 	private final void handlePacketPolygon(final PolygonPacket packet) {
 		queue.queue(new PolygonAction(packet.getCorners(), packet.getLength()));
+	}
+	
+	private final void handlePacketReset() {
+		stop();
+		driver.resetOrientation();
 	}
 	
 	private final void handlePacketStop() {

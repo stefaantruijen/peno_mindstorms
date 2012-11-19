@@ -419,7 +419,7 @@ public class VirtualRobot extends AbstractRobot {
 
 	
 	/**
-	 * This is the absolute direction of the sonar head. (where 0° = north)
+	 * This is the absolute direction of the sonar head. (where 0ï¿½ = north)
 	 * @return
 	 * 		A float in the range of [0, 360)
 	 */
@@ -682,7 +682,8 @@ public class VirtualRobot extends AbstractRobot {
 		 * The heading of the US sensor increases with clockwise rotation,
 		 * and should be within the interval [0.0, 360.0[
 		 */
-		return new Orientation(getX(), getY(), getHeading(), Utils.clampAngleDegrees(getAbsoluteSonarDirection()));
+		return new Orientation(getX(), getY(), getHeading(),
+				Utils.clampAngleDegrees(getRelativeSonarDirection()));
 	}
 	
 	/**
@@ -721,7 +722,11 @@ public class VirtualRobot extends AbstractRobot {
 		setRotateSpeed(speed);
 
 	}
-
+	
+	protected float getSpeedTravel() {
+		return (float)getTravelSpeed();
+	}
+	
 	//Refactor with setRotateSpeed?
 	@Override
 	public void setSpeedTravel(float speed) {

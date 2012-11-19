@@ -84,6 +84,10 @@ public class PhysicalRobot extends AbstractRobot {
 		return pilot;
 	}
 	
+	protected float getSpeedTravel() {
+		return (float)pilot.getTravelSpeed();
+	}
+	
 	private final Tracker getTracker() {
 		return tracker;
 	}

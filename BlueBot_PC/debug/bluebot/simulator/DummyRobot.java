@@ -76,6 +76,10 @@ public class DummyRobot extends AbstractRobot {
 				z, getHeadingHead());
 	}
 	
+	protected float getSpeedTravel() {
+		return (float)speedTravel;
+	}
+	
 	private final Tile getTile(float x, float y) {
 		final float half = (Tile.SIZE / 2F);
 		

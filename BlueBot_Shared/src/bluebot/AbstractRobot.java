@@ -43,6 +43,19 @@ public abstract class AbstractRobot implements Robot {
 		return 300F;
 	}
 	
+	public int getSpeed() {
+		float speed = (getSpeedTravel() / getMaximumSpeedTravel());
+		if (speed >= 1F) {
+			return 100;
+		}
+		if (speed <= 0F) {
+			return 0;
+		}
+		return Math.round(100 * speed);
+	}
+	
+	protected abstract float getSpeedTravel();
+	
 	public float getX() {
 		return getOrientation().getX();
 	}

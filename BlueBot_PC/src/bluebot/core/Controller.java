@@ -68,6 +68,8 @@ public interface Controller extends EventDispatcher<ControllerListener> {
 	
 	public void removeListener(SensorListener listener);
 	
+	public void reset();
+	
 	public void setSpeed(int percentage);
 	
 	/**

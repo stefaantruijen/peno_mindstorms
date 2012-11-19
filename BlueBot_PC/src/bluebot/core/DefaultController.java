@@ -106,6 +106,10 @@ public class DefaultController extends AbstractController {
 		getCommunicator().removeListeners();
 	}
 	
+	public void reset() {
+		getTranslator().reset();
+	}
+	
 	public void setSpeed(final int percentage) {
 		getTranslator().setSpeed(percentage);
 	}

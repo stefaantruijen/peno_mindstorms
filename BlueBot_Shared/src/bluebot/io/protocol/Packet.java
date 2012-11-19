@@ -17,6 +17,7 @@ public abstract class Packet {
 	public static final int OP_DISCONNECT = 0x00;
 	public static final int OP_STOP       = 0x01;
 	public static final int OP_MOVE       = 0x02;
+	public static final int OP_RESET      = 0x03;
 	public static final int OP_COMMAND    = 0x10;
 	public static final int OP_POLYGON    = 0x11;
 	public static final int OP_MOTION     = 0x20;

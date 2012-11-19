@@ -58,6 +58,10 @@ public class ClientTranslator extends Translator {
 		sendPacket(getPacketFactory().createMoveForward(distance));
 	}
 	
+	public void reset() {
+		sendPacket(getPacketFactory().createReset());
+	}
+	
 	@Override
 	protected void sendPacket(final Packet packet) {
 		sendPacket(packet, true);

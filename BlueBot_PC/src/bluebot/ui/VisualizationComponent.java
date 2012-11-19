@@ -265,7 +265,7 @@ public class VisualizationComponent extends RenderingComponent
 		gfx.setPaint(TEXTURE_TILE);
 		gfx.fillRect(x, y, TILE_RESOLUTION, TILE_RESOLUTION);
 		
-		final int thickness = (TILE_RESOLUTION >> 4);
+		int thickness = (TILE_RESOLUTION >> 4);
 		
 		final Border[] borders = {
 			tile.getBorderNorth(),
@@ -284,6 +284,37 @@ public class VisualizationComponent extends RenderingComponent
 			{ x, (y + TILE_RESOLUTION - thickness), TILE_RESOLUTION, thickness },
 			{ x, y, thickness, TILE_RESOLUTION }
 		};
+		
+		final int bits = tile.getBarCode();
+		if (bits != -1) {
+			thickness = Math.max(1, (TILE_RESOLUTION / 20));
+			
+			final Color[] colors = {
+				Color.BLACK,
+				(((bits & 0x20) == 0) ? Color.BLACK : Color.WHITE),
+				(((bits & 0x10) == 0) ? Color.BLACK : Color.WHITE),
+				(((bits & 0x08) == 0) ? Color.BLACK : Color.WHITE),
+				(((bits & 0x04) == 0) ? Color.BLACK : Color.WHITE),
+				(((bits & 0x02) == 0) ? Color.BLACK : Color.WHITE),
+				(((bits & 0x01) == 0) ? Color.BLACK : Color.WHITE),
+				Color.BLACK
+			};
+			if (borders[0] == Border.CLOSED) {
+				// Horizontal
+				int xx = ((TILE_RESOLUTION >>> 1) - (thickness << 2));
+				for (int i = 0; i < 8; i++) {
+					gfx.setColor(colors[i]);
+					gfx.fillRect(xx, 0, thickness, TILE_RESOLUTION);
+				}
+			} else {
+				// Vertical
+				int yy = ((TILE_RESOLUTION >>> 1) - (thickness << 2));
+				for (int i = 0; i < 8; i++) {
+					gfx.setColor(colors[i]);
+					gfx.fillRect(0, yy, TILE_RESOLUTION, thickness);
+				}
+			}
+		}
 		
 		int[] bounds;
 		for (final Border border : order) {
@@ -492,6 +523,12 @@ public class VisualizationComponent extends RenderingComponent
 		
 		drawMaze(gfx, w, h);
 		drawRobot(gfx, w, h);
+	}
+	
+	public void reset() {
+		synchronized (lock) {
+			maze = null;
+		}
 	}
 	
 	private static final BufferedImage resizeImage(final BufferedImage image,
