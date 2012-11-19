@@ -471,6 +471,7 @@ public class VirtualLightSensor {
 	public void drawHorizontalBarAbsolute(int x, int y, Color color){
 		Graphics2D graphics = img.createGraphics();
 		graphics.setColor(color);
+		System.out.println("Drawing Horiz: "+x+" "+y+" "+color);
 		graphics.fillRect(x, y, bitWidthResolution, barcodeWidth);
 	}
 	
@@ -480,6 +481,7 @@ public class VirtualLightSensor {
 	public void drawVerticalBarAbsolute(int x, int y, Color color){
 		Graphics2D graphics = img.createGraphics();
 		graphics.setColor(color);
+		System.out.println("Drawing Vertic: "+x+" "+y+" "+color);
 		graphics.fillRect(x, y, barcodeWidth, bitWidthResolution);
 	}
 	
@@ -525,14 +527,14 @@ public class VirtualLightSensor {
 			int yOffset = (Sensors.TILE_SIZE-barcodeWidth)/2;
 			drawHorizontalBlackBarAbsolute(x*Sensors.TILE_SIZE+xOffset, y*Sensors.TILE_SIZE+yOffset);
 			//Leave space for 6 functional bars
-			drawHorizontalBlackBarAbsolute(x*Sensors.TILE_SIZE+xOffset+7, y*Sensors.TILE_SIZE+yOffset);
+			drawHorizontalBlackBarAbsolute(x*Sensors.TILE_SIZE+xOffset+7*bitWidthResolution, y*Sensors.TILE_SIZE+yOffset);
 			}
 		else{//VERTICAL
 			int xOffset = (Sensors.TILE_SIZE-barcodeWidth)/2;
 			int yOffset = (Sensors.TILE_SIZE-barcodeLength)/2;
 			drawVerticalBlackBarAbsolute(x*Sensors.TILE_SIZE+xOffset, y*Sensors.TILE_SIZE+yOffset);
 			//Leave space for 6 functional bars
-			drawVerticalBlackBarAbsolute(x*Sensors.TILE_SIZE+xOffset, y*Sensors.TILE_SIZE+yOffset+7);
+			drawVerticalBlackBarAbsolute(x*Sensors.TILE_SIZE+xOffset, y*Sensors.TILE_SIZE+yOffset+7*bitWidthResolution);
 		}
 	}
 	
@@ -544,6 +546,7 @@ public class VirtualLightSensor {
 	 * @param position		a number [0..5] indicating the place of the bit in the code. (Barcode-positions: /edge/-0-1-2-3-4-5-/edge/ )
 	 */
 	public void drawSingleBitOnTile(int x, int y, int orientation, char bit, int position){
+		position *= bitWidthResolution;
 		if(orientation==1){//HORIZONTAL
 			int xOffset = (Sensors.TILE_SIZE-barcodeLength)/2;
 			int yOffset = (Sensors.TILE_SIZE-barcodeWidth)/2;
@@ -601,6 +604,7 @@ public class VirtualLightSensor {
 		length = binaryCode.length();
 //		System.out.println("post: "+binaryCode);
 		int index = length-1;
+		drawEdgesOfBarcodeOnTile(x, y, orientation);
 		while(index>=0){//index should always start at 5 and descend down to, including, 0 because we only have 6-bit codes.
 			drawSingleBitOnTile(x, y, orientation, binaryCode.charAt(index), index);
 			index--;
