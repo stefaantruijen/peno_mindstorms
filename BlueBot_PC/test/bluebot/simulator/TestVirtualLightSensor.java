@@ -54,9 +54,12 @@ public class TestVirtualLightSensor {
 	public void drawAndPrintImage(){
 		Tile t11 = new Tile(1,1);
 		t11.setAllBordersOpen(true);
-		t11.setBorderNorth(Border.CLOSED);
-		t11.setBorderSouth(Border.CLOSED);
-		t11.setBarCode(19);
+//		t11.setBorderNorth(Border.CLOSED);
+//		t11.setBorderSouth(Border.CLOSED);
+		t11.setBorderEast(Border.CLOSED);
+		t11.setBorderWest(Border.CLOSED);
+//		t11.setBarCode(19);
+		t11.setBarCode(5);
 		Tile[] tileList2= new Tile[]{
 			new Tile(0,0),
 			new Tile(0,1),

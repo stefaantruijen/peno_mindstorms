@@ -491,14 +491,14 @@ public class VirtualRobot extends AbstractRobot {
 	}
 	@Override
 	public void moveBackward(float distance, boolean wait) {
-		if(!lookingBackwards() || isObstructed()){
-			return;
-		} else {
+//		if(!lookingBackwards() || isObstructed()){
+//			return;
+//		} else {
 			commitPreviousAction();
 			setCurrentAction(Action.TRAVEL);
 			setCurrentArgument(-distance);
 			initializeMove(wait);
-		}
+//		}
 	}
 	
 	@Override
@@ -508,14 +508,14 @@ public class VirtualRobot extends AbstractRobot {
 	
 	@Override
 	public void moveForward(float distance, boolean wait) {
-		if(!lookingForwards() || isObstructed()){
-			return;
-		} else {
+//		if(!lookingForwards() || isObstructed()){
+//			return;
+//		} else {
 			commitPreviousAction();
 			setCurrentAction(Action.TRAVEL);
 			setCurrentArgument(distance);
 			initializeMove(wait);
-		}
+//		}
 	}
 
 
@@ -573,14 +573,12 @@ public class VirtualRobot extends AbstractRobot {
 	@Override
 	public void resetOrientation() {
 //		//Clear any possible action so no problems occur.
-//		clearAction();
-//		//Set every inital value correctly.
-//		setInitAbsoluteX(0);
-//		setInitAbsoluteY(0);
-////		setInitAbsoluteHeading(0);
-//		setInitSonarDirection(0);
-//		setImgStartX(getImgX());
-//		setImgStartY(getImgY());
+		clearAction();
+		//Set every inital value correctly.
+		setInitAbsoluteX(0);
+		setInitAbsoluteY(0);
+		setInitAbsoluteHeading(0);
+		setInitSonarDirection(0);
 	}
 	
 	@Override
