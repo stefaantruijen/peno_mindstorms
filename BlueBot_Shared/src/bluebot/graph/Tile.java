@@ -20,6 +20,7 @@ public class Tile {
 	
 	private byte borders;
 	private int x, y;
+	private int barCode = -1;
 	private boolean explored;
 	
 	public Tile(final int x, final int y) {
@@ -174,6 +175,7 @@ public class Tile {
 	
 	public static Tile read(final DataInput input) throws IOException {
 		final Tile tile = new Tile(input.readByte(), input.readByte());
+		tile.setBarCode(input.readByte());
 		tile.borders = input.readByte();
 		return tile;
 	}
@@ -186,6 +188,7 @@ public class Tile {
 	public void write(final DataOutput output) throws IOException {
 		output.writeByte(getX());
 		output.writeByte(getY());
+		output.writeByte(getBarCode());
 		output.writeByte(borders);
 	}
 	
@@ -275,5 +278,21 @@ public class Tile {
 		
 		throw new IllegalStateException("This tile is not yet explored.");
 		
+	}
+
+
+	/**
+	 * Returns the barcode of this tile.
+	 * 
+	 * @return -1 if no barcode is available. 
+	 */
+	public int getBarCode() {
+		return barCode;
+	}
+
+
+
+	public void setBarCode(int barCode) {
+		this.barCode = barCode;
 	}
 }

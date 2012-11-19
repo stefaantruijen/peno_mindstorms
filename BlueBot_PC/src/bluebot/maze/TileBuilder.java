@@ -17,7 +17,11 @@ public class TileBuilder {
 		String[] tileElements = source.split("\\.");
 		TileType tt = TileType.getType(tileElements[0]);
 		if(tt != TileType.CROSS){
-			return setUpTile(new Tile(x,y),tt,Orientation.getOrientation(tileElements[1]));
+			Tile tile = new Tile(x,y);
+			if(tileElements.length == 3 && tt == TileType.STRAIGHT){
+				tile.setBarCode(Integer.parseInt(tileElements[2]));
+			}
+			return setUpTile(tile,tt,Orientation.getOrientation(tileElements[1]));
 		}
 		
 		return new Tile(x,y);
