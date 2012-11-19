@@ -97,11 +97,11 @@ public class WhiteLineAction extends Action {
 		if (flag) {
 			while (!isAborted()
 					&& driver.isMoving()
-					&& (driver.readSensorLight() <= threshold));
+					&& (driver.readSensorLightValue() <= threshold));
 		} else {
 			while (!isAborted()
 					&& driver.isMoving()
-					&& (driver.readSensorLight() > threshold));
+					&& (driver.readSensorLightValue() > threshold));
 		}
 	}
 	
@@ -109,7 +109,7 @@ public class WhiteLineAction extends Action {
 		final int threshold = this.threshold;
 		while (!isAborted()
 				&& driver.isMoving()
-				&& (driver.readSensorLight() <= threshold)
+				&& (driver.readSensorLightValue() <= threshold)
 				&& (driver.readSensorUltraSonic() > 14));
 	}
 	

@@ -10,6 +10,7 @@ package bluebot.sensors;
 public class Calibration {
 	
 	private int lightThresholdWhite = -1;
+	private int lightThresholdBlack = -1;
 	
 	
 	
@@ -17,12 +18,19 @@ public class Calibration {
 		return lightThresholdWhite;
 	}
 	
+	public int getLightThresholdBlack() {
+		return lightThresholdBlack;
+	}
+	
 	public boolean isCalibrated() {
-		return (getLightThresholdWhite() != -1);
+		return ((getLightThresholdWhite() != -1)&&(getLightThresholdBlack() != -1));
 	}
 	
 	public void setLightThresholdWhite(final int value) {
 		this.lightThresholdWhite = value;
+	}
+	public void setLightThresholdBlack(final int value) {
+		this.lightThresholdBlack = value;
 	}
 	
 }
