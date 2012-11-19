@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import algorithms.Dijkstra;
 import bluebot.Driver;
 import bluebot.actions.Action;
 import bluebot.actions.ActionException;
@@ -54,7 +53,7 @@ public class WallFollower extends Action{
 					this.findBlackSpots();
 				}
 			}while(this.hasUnvisitedNeighbors(this.maze.getRootTile())||this.hasUnvisitedNeighbors(current)||this.graphHasUnvisitedNeighbors());
-			
+			/**
 			Dijkstra dijkstra = new Dijkstra(maze);
 			dijkstra.execute(current);
 			List<Tile> path = dijkstra.getPath(maze.getVertex(3, 5));
@@ -62,7 +61,7 @@ public class WallFollower extends Action{
 			for(Tile t : path){
 				this.moveTo(t);
 				this.current = t;
-			}
+			}**/
 			
 		}
 		
