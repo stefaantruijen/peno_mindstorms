@@ -18,20 +18,6 @@ import bluebot.graph.Tile;
  */
 public class CheckTileAction extends Action {
 	
-	/*
-	 * This flag determines whether the "Maze" button in the GUI
-	 * should start the MazeAction, or this CheckTileAction.
-	 * 
-	 * TRUE  => CheckTileAction
-	 * FALSE => MazeAction
-	 * 
-	 * This is a rather ugly way to implement the feature,
-	 * but it avoids polluting the protocol with temporary packets.
-	 */
-	public static final boolean USE_MANUAL_CHECK_TILE = true;
-	
-	
-	
 	/**
 	 * Determines whether or not the robot is facing a wall
 	 * 
@@ -77,7 +63,7 @@ public class CheckTileAction extends Action {
 		
 		// Generate a Tile object for the current tile
 		final Tile tile = new Tile(x, y);
-		bluebot.graph.Orientation headDirection = Orientation.forHeading(pos.getHeading());
+		bluebot.graph.Orientation headDirection = Orientation.forHeading(pos.getHeadingBody());
 		for(int i = 0;i<=3;i++){
 			switch(headDirection){
 				case SOUTH:

@@ -60,8 +60,8 @@ public abstract class AbstractController
 	}
 	
 	protected void fireMotion(final float x, final float y,
-			final float heading) {
-		maze.fireMotion(x, y, heading);
+			final float body, final float head) {
+		maze.fireMotion(x, y, body, head);
 	}
 	
 	protected void fireSensorLight(final int value) {
@@ -126,9 +126,9 @@ public abstract class AbstractController
 	private static final class MazeDispatcher extends AbstractEventDispatcher<MazeListener> {
 		
 		public void fireMotion(final float x, final float y,
-				final float heading) {
+				final float body, final float head) {
 			for (final MazeListener listener : getListeners()) {
-				listener.onMotion(x, y, heading);
+				listener.onMotion(x, y, body, head);
 			}
 		}
 		

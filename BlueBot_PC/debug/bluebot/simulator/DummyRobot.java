@@ -135,6 +135,11 @@ public class DummyRobot extends AbstractRobot {
 		return 50;
 	}
 	
+	// TODO: Remove asap
+	public int readSensorLightValue() {
+		return (int)Math.round(10.23D * readSensorLight());
+	}
+	
 	@Override
 	protected int readSensorUltraSonic(float x, float y,
 			final float heading) {

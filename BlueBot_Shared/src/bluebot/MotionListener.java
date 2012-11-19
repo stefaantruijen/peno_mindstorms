@@ -17,8 +17,9 @@ public interface MotionListener extends EventListener {
 	 * 
 	 * @param x - the position on the X axis
 	 * @param y - the position on the Y axis
-	 * @param heading - the heading (in degrees), zero equals north
+	 * @param body - the heading of the body (in degrees), zero equals north
+	 * @param head - the heading of the head (in degrees), relative to the body
 	 */
-	public void onMotion(float x, float y, float heading);
+	public void onMotion(float x, float y, float body, float head);
 	
 }
