@@ -46,7 +46,6 @@ public class Dijkstra {
 	   * @param source
 	   */
 	  public void execute(Tile source) {
-		  System.out.println("Calculating paths");
 	    settledNodes = new ArrayList<Tile>();
 	    unSettledNodes = new ArrayList<Tile>();
 	    distance = new HashMap<Tile, Integer>();
@@ -59,7 +58,6 @@ public class Dijkstra {
 	      unSettledNodes.remove(node);
 	      findMinimalDistances(node);
 	    }
-	    System.out.println("Paths found");
 	  }
 	  /**
 	   * Find the minimal distance for a given node.
@@ -87,7 +85,6 @@ public class Dijkstra {
 	   * @return
 	   */
 	  private int getDistance(Tile t1, Tile t2) {
-		  System.out.println(edges.size());
 	    for (Edge edge : edges) {
 	      if (edge.getTiles().contains(t1)&&edge.getTiles().contains(t2)) {
 	        return edge.getWeight();

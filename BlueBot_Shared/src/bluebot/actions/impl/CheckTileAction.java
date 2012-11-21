@@ -69,21 +69,29 @@ public class CheckTileAction extends Action {
 				case SOUTH:
 					if(checkForWall(driver)){
 						tile.setBorderSouth(Border.CLOSED);
+					}else{
+						tile.setBorderSouth(Border.OPEN);
 					}
 					break;
 				case WEST:
 					if(checkForWall(driver)){
 						tile.setBorderWest(Border.CLOSED);
+					}else{
+						tile.setBorderWest(Border.OPEN);
 					}
 					break;
 				case EAST:
 					if(checkForWall(driver)){
 						tile.setBorderEast(Border.CLOSED);
+					}else{
+						tile.setBorderEast(Border.OPEN);
 					}
 					break;
 				case NORTH:
 					if(checkForWall(driver)){
 						tile.setBorderNorth(Border.CLOSED);
+					}else{
+						tile.setBorderNorth(Border.OPEN);
 					}
 					break;
 				default:
@@ -98,7 +106,6 @@ public class CheckTileAction extends Action {
 			driver.turnHeadCounterClockWise(90);
 			headDirection = headDirection.rotateCCW();
 		}
-		tile.setExplored();
 		driver.sendTile(tile);
 		
 		

@@ -202,18 +202,53 @@ public class Graph {
 		  }
 	  }
 	  
-	  public void validateAllEdges(){
+	  private void validateAllEdges(){
 		  for(Tile t:this.getVerticies()){
-			  if(t.isExplored()){
-				  for(Tile n : t.getNeighbors()){
+			  
+				  for(Tile n : this.getNeighborsFrom(t)){
 					  if(t.isNeighborFrom(n)){
 						  this.addEdge(t, n);
 					  }
 					  
 				  }
-			  }
+			  
 		  }
 	  }
+	  
+	  public List<Tile> getUnExploredTiles(){
+		  List<Tile> tiles = new ArrayList<Tile>();
+		  for(Tile t : this.getVerticies()){
+			  if(!t.isExplored()){
+				  tiles.add(t);
+			  }
+		  }
+		  
+		  return tiles;
+	  }
+	  
+	  public List<Tile> getNeighborsFrom(Tile t){
+		  int x = t.getX();
+		  int y = t.getY();
+		  
+		  List<Tile> neighbors = new ArrayList<Tile>();
+			if(t.getBorderEast()==Border.OPEN){
+				neighbors.add(this.getVertex(x+1,y));
+			}
+			if(t.getBorderNorth()==Border.OPEN){
+				neighbors.add(this.getVertex(x,y+1));
+			}
+			
+			if(t.getBorderSouth()==Border.OPEN){
+				neighbors.add(this.getVertex(x,y-1));
+			}
+			
+			if(t.getBorderWest()==Border.OPEN){
+				neighbors.add(this.getVertex(x-1,y));
+			}
+			
+			return neighbors;
+	  }
+	  
 
 }
 	

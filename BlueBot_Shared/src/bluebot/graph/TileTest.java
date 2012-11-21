@@ -100,5 +100,13 @@ public class TileTest {
 		tile1.setBorderWest(Border.CLOSED);
 		assertEquals(Border.CLOSED, tile1.getBorderWest());
 	}
+	
+	@Test
+	public void testOnceUnknownTest(){
+		Tile t1 = new Tile(0,0);
+		t1.setBorderNorth(Border.OPEN);
+		t1.setBorderNorth(Border.UNKNOWN);
+		assertFalse(t1.getBorderNorth() == Border.UNKNOWN);
+	}
 
 }

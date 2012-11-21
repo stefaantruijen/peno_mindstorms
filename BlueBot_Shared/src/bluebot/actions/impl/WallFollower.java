@@ -21,6 +21,7 @@ public class WallFollower extends Action{
 		private int tilesTravelledBetweenCalib = 0;
 		private List<Tile> blackSpots;
 		
+		
 		public WallFollower(){
 			this.maze = new Graph();
 			this.headDirection=Direction.UP;
@@ -39,16 +40,19 @@ public class WallFollower extends Action{
 			this.driver.resetOrientation();
 			this.initializeRootTile();
 			do{
+				this.processUnExploredTiles();
 				if(isAborted()){
 					return;
 				}
 				Tile next = this.determineNextTile();
 				this.moveTo(next);
 				if(!next.isExplored()){
-					this.exploreTile(next);
+					
+					this.checkEfficicientlyTile(next);
+					this.processUnExploredTiles();
 				}
 				this.maze.addEdge(current, next);
-				this.maze.addVerticies(next.getNeighbors());
+				this.maze.addVerticies(next.getAbsoluteNeighbors());
 				this.current = next;
 				driver.sendDebug("CURRENT TILE : "+current.toString());
 				if(current == this.maze.getRootTile() && !hasUnvisitedNeighbors(this.maze.getRootTile())){
@@ -79,21 +83,59 @@ public class WallFollower extends Action{
 				driver.sendDebug("Tiles are the same");
 			}
 			if(next.isEastFrom(this.current)){
-				driver.sendDebug("TRAVELLING EAST");
 				this.travelEast();
 			}else if(next.isWestFrom(this.current)){
-				driver.sendDebug("TRAVELLING WEST");
 				this.travelWest();
 			}else if(next.isNorthFrom(this.current)){
-				driver.sendDebug("TRAVELLING NORTH");
 				this.travelNorth();
 			}else if(next.isSouthFrom(this.current)){
-				driver.sendDebug("TRAVELLING SOUTH");
 				this.travelSouth();
 			}else{
 				driver.sendError("Something strange happend.");
 			}
 			
+		}
+		/**
+		 * This makes the algorithm 'smarter'. It will check if we can gather information about unexplored tiles from tiles we already have explored.
+		 */
+		private void processUnExploredTiles(){
+			for(Tile t : this.maze.getUnExploredTiles()){
+				this.driver.sendTile(t);
+				for(Tile t2 : this.maze.getVerticies()){
+					if(t.isAbsoluteNeighborFrom(t2)){
+						determineBorders(t,t2);
+					}
+				}
+			}
+		}
+		/**
+		 * Determine the already known border information for 2 given tiles and update the unexplored tile.
+		 * 
+		 * @param t
+		 * @param t2
+		 */
+		private void determineBorders(Tile t, Tile t2) {
+			if(t.isWestFrom(t2)){
+				t.setBorderEast(t2.getBorderWest());
+				t2.setBorderWest(t.getBorderEast());
+			}
+			if(t.isEastFrom(t2)){
+				t.setBorderWest(t2.getBorderEast());
+				t2.setBorderEast(t.getBorderWest());
+			}
+			
+			if(t.isNorthFrom(t2)){
+				t.setBorderSouth(t2.getBorderNorth());
+				t2.setBorderNorth(t.getBorderSouth());
+			}
+			
+			if(t.isSouthFrom(t2)){
+				t.setBorderNorth(t2.getBorderSouth());
+				t2.setBorderSouth(t.getBorderNorth());
+			}
+			
+			driver.sendTile(t);
+			driver.sendTile(t2);
 		}
 		/**
 		 * Move forward , every 4 tiles orientate the robot.
@@ -358,9 +400,10 @@ public class WallFollower extends Action{
 			
 			Tile root = this.exploreTile(new Tile(0,0));
 			this.maze.setRootTile(root);
-			this.maze.addVerticies(root.getNeighbors());
+			this.maze.addVerticies(root.getAbsoluteNeighbors());
 			driver.sendTile(root);
 			this.current = root;
+			this.processUnExploredTiles();
 		}
 		/**
 		 * Explore and update a given tile.
@@ -369,27 +412,36 @@ public class WallFollower extends Action{
 		 * @return
 		 * @throws InterruptedException
 		 */
+		@Deprecated
 		private Tile exploreTile(Tile t) throws InterruptedException{
 			for(int i = 0;i<=3;i++){
 				switch(headDirection){
 					case DOWN:
 						if(checkForWall()){
 							t.setBorderSouth(Border.CLOSED);
+						}else{
+							t.setBorderSouth(Border.OPEN);
 						}
 						break;
 					case LEFT:
 						if(checkForWall()){
 							t.setBorderWest(Border.CLOSED);
+						}else{
+							t.setBorderWest(Border.OPEN);
 						}
 						break;
 					case RIGHT:
 						if(checkForWall()){
 							t.setBorderEast(Border.CLOSED);
+						}else{
+							t.setBorderEast(Border.OPEN);	
 						}
 						break;
 					case UP:
 						if(checkForWall()){
 							t.setBorderNorth(Border.CLOSED);
+						}else{
+							t.setBorderNorth(Border.OPEN);
 						}
 						break;
 					default:
@@ -404,7 +456,6 @@ public class WallFollower extends Action{
 				driver.turnHeadCounterClockWise(90);
 				this.headDirection = headDirection.turnCCWise();
 			}
-			t.setExplored();
 			return t;
 		}
 		/**
@@ -449,5 +500,167 @@ public class WallFollower extends Action{
 				}
 			}
 			
+		}
+		/**
+		 * Check efficiently a given tile.
+		 * 
+		 * @param t
+		 * @throws InterruptedException
+		 */
+		private void checkEfficicientlyTile(Tile t) throws InterruptedException{
+			for(Direction d : this.getBordersToBeChecked(t)){
+				checkBorder(d,t);
+			}
+		}
+		/**
+		 * Check the border from a given tile in a given direction.
+		 * 
+		 * @param d
+		 * @param t
+		 * @throws InterruptedException
+		 */
+		private void checkBorder(Direction d, Tile t) throws InterruptedException {
+			switch(d){
+			case DOWN:
+				if(wallInDirection(d)){
+					t.setBorderSouth(Border.CLOSED);
+				}else{
+					t.setBorderSouth(Border.OPEN);
+				}
+				break;
+			case LEFT:
+				if(wallInDirection(d)){
+					t.setBorderWest(Border.CLOSED);
+				}else{
+					t.setBorderWest(Border.OPEN);
+				}
+				break;
+			case RIGHT:
+				if(wallInDirection(d)){
+					t.setBorderEast(Border.CLOSED);
+				}else{
+					t.setBorderEast(Border.OPEN);
+				}
+				break;
+			case UP:
+				if(wallInDirection(d)){
+					t.setBorderNorth(Border.CLOSED);
+				}else{
+					t.setBorderNorth(Border.OPEN);
+				}
+				break;
+			default:
+				throw new IllegalStateException("Woops, the world has collapsed.");
+			
+			}
+			
+		}
+		/**
+		 * Check for a wall in a given direction.
+		 * 
+		 * @param d
+		 * @return true if a wall is detected, false otherwise.
+		 * @throws InterruptedException
+		 */
+		private boolean wallInDirection(Direction d) throws InterruptedException{
+			boolean wall;
+			switch(this.headDirection){
+			case DOWN:
+				if(d == Direction.DOWN){
+					wall = checkForWall();
+					
+				}else if(d == Direction.LEFT){
+					driver.turnHeadClockWise(90);
+					wall = checkForWall();
+					driver.turnHeadCounterClockWise(90);
+				}else if(d == Direction.RIGHT){
+					driver.turnHeadCounterClockWise(90);
+					wall = checkForWall();
+					driver.turnHeadClockWise(90);
+				}else{
+					driver.turnHeadClockWise(180);
+					wall = checkForWall();
+					driver.turnHeadCounterClockWise(180);
+				}
+				return wall;
+			case LEFT:
+				if(d == Direction.DOWN){
+					driver.turnHeadCounterClockWise(90);
+					wall = checkForWall();
+					driver.turnHeadClockWise(90);
+				}else if(d == Direction.LEFT){
+					wall = checkForWall();
+				}else if(d == Direction.RIGHT){
+					driver.turnHeadClockWise(180);
+					wall = checkForWall();
+					driver.turnHeadCounterClockWise(180);
+				}else{
+					driver.turnHeadClockWise(90);
+					wall = checkForWall();
+					driver.turnHeadCounterClockWise(90);
+				}
+				return wall;
+			case RIGHT:
+				if(d == Direction.DOWN){
+					
+					driver.turnHeadClockWise(90);
+					wall = checkForWall();
+					driver.turnHeadCounterClockWise(90);
+					
+				}else if(d == Direction.LEFT){
+					driver.turnHeadClockWise(180);
+					wall = checkForWall();
+					driver.turnHeadCounterClockWise(180);
+				}else if(d == Direction.RIGHT){
+					wall = checkForWall();
+				}else{
+					driver.turnHeadCounterClockWise(90);
+					wall = checkForWall();
+					driver.turnHeadClockWise(90);
+				}
+				return wall;
+			case UP:
+				if(d == Direction.DOWN){
+					driver.turnHeadClockWise(180);
+					wall = checkForWall();
+					driver.turnHeadCounterClockWise(180);
+				}else if(d == Direction.LEFT){
+					driver.turnHeadCounterClockWise(90);
+					wall = checkForWall();
+					driver.turnHeadClockWise(90);
+				}else if(d == Direction.RIGHT){
+					driver.turnHeadClockWise(90);
+					wall =checkForWall();
+					driver.turnHeadCounterClockWise(90);
+				}else{
+					wall = checkForWall();
+				}
+				return wall;
+			
+			}
+			throw new IllegalStateException("Should not happen here.");
+		}
+		/**
+		 * Determine which borders still need to be checked for a given tile.
+		 * 
+		 * @param t
+		 * @return list of directions the tile still needs to be checked.
+		 */
+		private List<Direction> getBordersToBeChecked(Tile t){
+			List<Direction> directions = new ArrayList<Direction>();
+			if(t.getBorderEast()==Border.UNKNOWN){
+				directions.add(Direction.RIGHT);
+			}
+			if(t.getBorderNorth()==Border.UNKNOWN){
+				directions.add(Direction.UP);
+			}
+			if(t.getBorderSouth() == Border.UNKNOWN){
+				directions.add(Direction.DOWN);
+			}
+			if(t.getBorderWest() == Border.UNKNOWN){
+				directions.add(Direction.LEFT);
+			}
+			
+			return directions;
 		}
 	}
