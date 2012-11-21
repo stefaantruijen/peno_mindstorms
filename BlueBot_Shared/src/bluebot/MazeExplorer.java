@@ -229,8 +229,6 @@ public class MazeExplorer implements Runnable {
 		return first;
 	}
 
-
-
 	/**
 	 * Turn this robot clockwise and update currentDirection.
 	 */
