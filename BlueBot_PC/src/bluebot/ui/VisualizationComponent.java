@@ -285,7 +285,6 @@ public class VisualizationComponent extends RenderingComponent
 			{ x, y, thickness, TILE_RESOLUTION }
 		};
 		
-		/*
 		final int bits = tile.getBarCode();
 		if (bits != -1) {
 			thickness = Math.max(1, (TILE_RESOLUTION / 20));
@@ -316,7 +315,6 @@ public class VisualizationComponent extends RenderingComponent
 				}
 			}
 		}
-		*/
 		
 		int[] bounds;
 		for (final Border border : order) {

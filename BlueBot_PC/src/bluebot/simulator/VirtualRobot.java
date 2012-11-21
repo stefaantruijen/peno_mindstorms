@@ -57,7 +57,7 @@ public class VirtualRobot extends AbstractRobot {
 	/**
 	 * 
 	 */
-	public static final int OBSTRUCTION_THRESHOLD = (LIGHT_SENSOR_OFFSET_CM -SONAR_OFFSET_CM) +4;
+	public static final int OBSTRUCTION_THRESHOLD_CM = (LIGHT_SENSOR_OFFSET_CM -SONAR_OFFSET_CM) +4;
 	
 	/**
 	 * Variable holding the travel speed of the robot.
@@ -489,33 +489,50 @@ public class VirtualRobot extends AbstractRobot {
 	public void moveBackward() {
 		moveBackward(Float.MAX_VALUE, false);
 	}
-	@Override
+	@Override 
 	public void moveBackward(float distance, boolean wait) {
-//		if(!lookingBackwards() || isObstructed()){
-//			return;
-//		} else {
+		//TODO: decide what to do. Always set this looking backwards?
+		//I know this currently just makes an assumption about looking forwards.
+		if(!lookingBackwards() || isObstructed()){
+			this.turnHeadClockWise(180);
+			return;
+		} else {
+			int clearDistanceCM = this.readSensorUltraSonic();
+			float distToMove;
+			if(distance > clearDistanceCM*10){
+				distToMove =(float) (clearDistanceCM-OBSTRUCTION_THRESHOLD_CM)*10;
+			} else {
+				distToMove = distance;
+			}
 			commitPreviousAction();
 			setCurrentAction(Action.TRAVEL);
-			setCurrentArgument(-distance);
+			setCurrentArgument(-distToMove);
 			initializeMove(wait);
-//		}
+		}
 	}
 	
 	@Override
 	public void moveForward() {
-		moveForward(Float.MAX_VALUE, false);
+			moveForward(Float.MAX_VALUE, false);
 	}
 	
 	@Override
 	public void moveForward(float distance, boolean wait) {
-//		if(!lookingForwards() || isObstructed()){
-//			return;
-//		} else {
+		if(!lookingForwards() || isObstructed()){
+			return;
+		} else {
+			int clearDistanceCM = this.readSensorUltraSonic();
+			float distToMove;
+			if(distance > clearDistanceCM*10){
+				distToMove =(float) (clearDistanceCM-OBSTRUCTION_THRESHOLD_CM)*10;
+			} else {
+				distToMove = distance;
+			}
 			commitPreviousAction();
 			setCurrentAction(Action.TRAVEL);
-			setCurrentArgument(distance);
+			setCurrentArgument(distToMove);
 			initializeMove(wait);
-//		}
+		}
 	}
 
 
@@ -960,7 +977,7 @@ public class VirtualRobot extends AbstractRobot {
 	 * 			If
 	 */
 	private boolean isObstructed() {
-		if(readSensorUltraSonic() <= OBSTRUCTION_THRESHOLD){
+		if(readSensorUltraSonic() <= OBSTRUCTION_THRESHOLD_CM){
 				return true;
 		}
 		return false;
