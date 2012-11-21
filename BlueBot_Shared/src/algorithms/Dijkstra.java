@@ -6,8 +6,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+
 import java.util.Map;
-import java.util.Set;
+
 
 import bluebot.graph.Graph;
 import bluebot.graph.Tile;
@@ -29,8 +30,8 @@ import bluebot.graph.Edge;
 public class Dijkstra {
 	
 	  private final List<Edge> edges;
-	  private Set<Tile> settledNodes;
-	  private Set<Tile> unSettledNodes;
+	  private List<Tile> settledNodes;
+	  private List<Tile> unSettledNodes;
 	  private Map<Tile, Tile> predecessors;
 	  private Map<Tile, Integer> distance;
 	  private Graph graph;
@@ -46,8 +47,8 @@ public class Dijkstra {
 	   */
 	  public void execute(Tile source) {
 		  System.out.println("Calculating paths");
-	    settledNodes = new HashSet<Tile>();
-	    unSettledNodes = new HashSet<Tile>();
+	    settledNodes = new ArrayList<Tile>();
+	    unSettledNodes = new ArrayList<Tile>();
 	    distance = new HashMap<Tile, Integer>();
 	    predecessors = new HashMap<Tile, Tile>();
 	    distance.put(source, 0);
@@ -111,7 +112,7 @@ public class Dijkstra {
 	    return neighbors;
 	  }
 	  
-	  private Tile getMinimum(Set<Tile> vertexes) {
+	  private Tile getMinimum(List<Tile> vertexes) {
 	    Tile minimum = null;
 	    for (Tile vertex : vertexes) {
 	      if (minimum == null) {
@@ -142,7 +143,7 @@ public class Dijkstra {
 	   * This method returns the path from the source to the selected target and
 	   * NULL if no path exists
 	   */
-	  public LinkedList<Tile> getPath(Tile target) {
+	  public List<Tile> getPath(Tile target) {
 	    LinkedList<Tile> path = new LinkedList<Tile>();
 	    Tile step = target;
 	    // Check if a path exists
@@ -155,8 +156,16 @@ public class Dijkstra {
 	      path.add(step);
 	    }
 	    // Put it into the correct order
-	    Collections.reverse(path);
-	    return path;
+	    return this.reverse(path);
+	   
+	  }
+	  
+	  private List<Tile> reverse(List<Tile> path){
+		  List<Tile> tmp = new LinkedList<Tile>();
+		  for(int i = path.size()-1;i>=0;i--){
+			  tmp.add(path.get(i));
+		  }
+		  return tmp;
 	  }
 
 }
