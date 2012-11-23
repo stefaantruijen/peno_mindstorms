@@ -57,8 +57,15 @@ public class VirtualRobot extends AbstractRobot {
 	/**
 	 * 
 	 */
+	@Deprecated
 	public static final int OBSTRUCTION_THRESHOLD_CM = (LIGHT_SENSOR_OFFSET_CM -SONAR_OFFSET_CM) +4;
 	
+	public static int TOUCHSENSOR_FRONT_OFFSET_CM = 11;
+	public static int TOUCHSENSOR_BACK_OFFSET_CM = 9;
+	
+	public static final int OBSTRUCTION_THRESHOLD_FRONT_CM = TOUCHSENSOR_FRONT_OFFSET_CM -SONAR_OFFSET_CM;
+	public static final int OBSTRUCTION_THRESHOLD_BACK_CM = TOUCHSENSOR_BACK_OFFSET_CM -SONAR_OFFSET_CM;
+
 	/**
 	 * Variable holding the travel speed of the robot.
 	 */
@@ -138,7 +145,6 @@ public class VirtualRobot extends AbstractRobot {
 	 * VirtualSonar object that holds the sonar of the VirtualRobot.
 	 */
 	private VirtualSonar sonar;
-	private float angleIncrease;
 	/**
 	 * Minimal offset of the borders of a tile for placing the VirtualRobot randomly in one.
 	 */
@@ -491,16 +497,13 @@ public class VirtualRobot extends AbstractRobot {
 	}
 	@Override 
 	public void moveBackward(float distance, boolean wait) {
-		//TODO: decide what to do. Always set this looking backwards?
-		//I know this currently just makes an assumption about looking forwards.
-		if(!lookingBackwards() || isObstructed()){
-			this.turnHeadClockWise(180);
+		if(checkBackClearDistance()<=OBSTRUCTION_THRESHOLD_BACK_CM){
 			return;
 		} else {
-			int clearDistanceCM = this.readSensorUltraSonic();
+			int clearDistanceCM = this.checkBackClearDistance();
 			float distToMove;
 			if(distance > clearDistanceCM*10){
-				distToMove =(float) (clearDistanceCM-OBSTRUCTION_THRESHOLD_CM)*10;
+				distToMove =(float) (clearDistanceCM-OBSTRUCTION_THRESHOLD_BACK_CM)*10;
 			} else {
 				distToMove = distance;
 			}
@@ -518,13 +521,13 @@ public class VirtualRobot extends AbstractRobot {
 	
 	@Override
 	public void moveForward(float distance, boolean wait) {
-		if(!lookingForwards() || isObstructed()){
+		if(checkFrontClearDistance()<=OBSTRUCTION_THRESHOLD_FRONT_CM){
 			return;
 		} else {
-			int clearDistanceCM = this.readSensorUltraSonic();
+			int clearDistanceCM = this.checkFrontClearDistance();
 			float distToMove;
 			if(distance > clearDistanceCM*10){
-				distToMove =(float) (clearDistanceCM-OBSTRUCTION_THRESHOLD_CM)*10;
+				distToMove =(float) (clearDistanceCM-OBSTRUCTION_THRESHOLD_FRONT_CM)*10;
 			} else {
 				distToMove = distance;
 			}
@@ -544,10 +547,8 @@ public class VirtualRobot extends AbstractRobot {
 	@Override
 	public int readSensorLight() {
 		double radialHeading = Math.toRadians(getHeading());
-		double xOffset = LIGHT_SENSOR_OFFSET_CM * Math.sin(radialHeading);
-		int sensorX = (int) (getImgX() + xOffset); 	
-		double yOffset = LIGHT_SENSOR_OFFSET_CM * Math.cos(radialHeading);
-		int sensorY = (int) (getImgY() + yOffset);
+		int sensorX = calculateOffsettedXByRadialHeading(radialHeading, LIGHT_SENSOR_OFFSET_CM);
+		int sensorY = calculateOffsettedYByRadialHeading(radialHeading, LIGHT_SENSOR_OFFSET_CM);
 		return lightSensor.getLightValuePercentage(sensorX, sensorY);
 	}
 	
@@ -559,10 +560,8 @@ public class VirtualRobot extends AbstractRobot {
 //	@Override <= TODO u this
 	public int readSensorLightValue() {
 		double radialHeading = Math.toRadians(getHeading());
-		double xOffset = LIGHT_SENSOR_OFFSET_CM * Math.sin(radialHeading);
-		int sensorX = (int) (getImgX() + xOffset); 	
-		double yOffset = LIGHT_SENSOR_OFFSET_CM * Math.cos(radialHeading);
-		int sensorY = (int) (getImgY() + yOffset);
+		int sensorX = calculateOffsettedXByRadialHeading(radialHeading, LIGHT_SENSOR_OFFSET_CM);
+		int sensorY = calculateOffsettedYByRadialHeading(radialHeading, LIGHT_SENSOR_OFFSET_CM);
 		return lightSensor.getLightValue(sensorX, sensorY);
 	}
 	
@@ -572,14 +571,17 @@ public class VirtualRobot extends AbstractRobot {
 	@Override
 	public int readSensorUltraSonic() {
 //		System.out.println("Heading = "+ getHeading());
-		float sonarHeading = getAbsoluteSonarDirection();
-		double radialSonarHeading = Math.toRadians(sonarHeading);
-		double xOffset = SONAR_OFFSET_CM*Math.sin(radialSonarHeading);
-		int sensorX = (int)(getImgX() + xOffset);
-		double yOffset = (int)(SONAR_OFFSET_CM * Math.cos(radialSonarHeading));
-		int sensorY = (int)(getImgY() + yOffset);
-//		System.out.println("("+sensorX+","+sensorY+","+sonarHeading+")");
-		return sonar.getSonarValue(sensorX, sensorY,sonarHeading);
+		return readSensorUltraSonic(getAbsoluteSonarDirection());
+	}
+	
+	/**
+	 * Returns the touch sensor value at the current position and heading.
+	 * 
+	 * @return A number between
+	 */
+//	@Override TODO
+	public boolean readSensorTouch() {
+		return checkFrontClearDistance()<=OBSTRUCTION_THRESHOLD_FRONT_CM;
 	}
 	
 	/**
@@ -969,19 +971,6 @@ public class VirtualRobot extends AbstractRobot {
 		return true;
 	}
 	
-
-	/**
-	 * Returns if the sonar registers an extreme low value.
-	 * 
-	 * @return true
-	 * 			If
-	 */
-	private boolean isObstructed() {
-		if(readSensorUltraSonic() <= OBSTRUCTION_THRESHOLD_CM){
-				return true;
-		}
-		return false;
-	}
 	
 	private float angleToPoseConvention(float angle){
 		if(angle >= 0 && angle <= 180){
@@ -992,5 +981,30 @@ public class VirtualRobot extends AbstractRobot {
 			return 360-angle+ 90;
 		}
 		return 0;
+	}
+	
+	private int checkFrontClearDistance() {
+		return readSensorUltraSonic(getHeading());
+	}
+	
+	private int checkBackClearDistance() {
+		return readSensorUltraSonic(Utils.clampAngleDegrees(getHeading()+180));
+	}
+	
+	private int readSensorUltraSonic(float heading){
+		double radialHeading = Math.toRadians(heading);
+		int x = calculateOffsettedXByRadialHeading(radialHeading,SONAR_OFFSET_CM);
+		int y = calculateOffsettedYByRadialHeading(radialHeading,SONAR_OFFSET_CM);
+		return sonar.getSonarValue(x, y, heading);
+	}
+	
+	private int calculateOffsettedXByRadialHeading(double radialSonarHeading, int offset){
+		double xOffset = offset*Math.sin(radialSonarHeading);
+		return (int)(getImgX() + xOffset);
+	}
+	
+	private int calculateOffsettedYByRadialHeading(double radialSonarHeading, int offset){
+		double yOffset = offset * Math.cos(radialSonarHeading);
+		return (int)(getImgY() + yOffset);
 	}
 }
