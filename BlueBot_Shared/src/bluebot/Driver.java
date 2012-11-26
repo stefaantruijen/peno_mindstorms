@@ -2,7 +2,9 @@ package bluebot;
 
 
 import bluebot.graph.Tile;
+import bluebot.sensors.Brightness;
 import bluebot.sensors.Calibration;
+import bluebot.sensors.CalibrationException;
 
 
 
@@ -40,6 +42,15 @@ public interface Driver extends Mobile {
 	 * @return an <code>int</code> from the interval [0, 100]
 	 */
 	public int readSensorLight();
+	
+	/**
+	 * Returns the current brightness level detected by the light sensor
+	 * 
+	 * @return a {@link Brightness} value
+	 * 
+	 * @throws CalibrationException if the light sensor is not calibrated
+	 */
+	public Brightness readSensorLightBrightness() throws CalibrationException;
 	
 	/**
 	 * Returns the current value of the light sensor

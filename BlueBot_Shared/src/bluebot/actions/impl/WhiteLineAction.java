@@ -16,6 +16,7 @@ public class WhiteLineAction extends Action {
 
 	public void execute(final Driver driver)
 			throws ActionException, InterruptedException {
+		int speed = driver.getSpeed();
 		// exception if not calibrated
 		if (!driver.getCalibration().isCalibrated()) {
 			throw new ActionException("Calibration of the light sensor is required");
@@ -90,6 +91,7 @@ public class WhiteLineAction extends Action {
 			driver.turnLeft(90, true);
 			this.execute(driver);
 		}
+		driver.setSpeed(speed);
 	}
 	
 	private final void waitForWhite(final Driver driver, final boolean flag) {

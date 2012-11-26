@@ -2,6 +2,7 @@ package bluebot.actions;
 
 
 import bluebot.Driver;
+import bluebot.DriverException;
 import bluebot.actions.impl.WhiteLineAction;
 
 
@@ -30,10 +31,11 @@ public abstract class Action {
 	 * @param driver - the {@link Driver} to be executed on
 	 * 
 	 * @throws ActionException if an error occurs during execution
+	 * @throws DriverException if an error occurs in the {@link Driver} API
 	 * @throws InterruptedException if interrupted
 	 */
 	public abstract void execute(Driver driver)
-			throws ActionException, InterruptedException;
+			throws ActionException, DriverException, InterruptedException;
 	
 	/**
 	 * Executes the white-line algorithm

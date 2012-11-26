@@ -2,6 +2,7 @@ package bluebot.actions;
 
 
 import bluebot.Driver;
+import bluebot.DriverException;
 import bluebot.util.BlockingQueue;
 import bluebot.util.Threaded;
 
@@ -65,6 +66,8 @@ public class ActionQueue extends Threaded {
 				}
 				action.execute(driver);
 			} catch (final ActionException e) {
+				driver.sendError(e.getMessage());
+			} catch (final DriverException e) {
 				driver.sendError(e.getMessage());
 			} catch (final InterruptedException e) {
 				// ignored
