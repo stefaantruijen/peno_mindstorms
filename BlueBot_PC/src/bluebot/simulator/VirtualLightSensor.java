@@ -1,8 +1,14 @@
 package bluebot.simulator;
 
+import static org.junit.Assert.assertFalse;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 import bluebot.graph.Border;
 import bluebot.graph.Tile;
@@ -17,6 +23,9 @@ import bluebot.graph.Tile;
  *
  */
 public class VirtualLightSensor {
+	private static final String fileType = "png";
+//	private static final String originalPath = "src\\brown-bg-original."+ fileType;
+	private static final String destinationPath = "src\\simMap."+ fileType;
 	
 	//Public static Color objects. These can be used to experiment with the colors.
 	public static final Color WHITE = Color.getHSBColor(1f, 0f, 1f);
@@ -81,6 +90,11 @@ public class VirtualLightSensor {
 		setWhiteLineColor(STANDARD_WHITE_LINE_COLOR);
 		setEmptySpaceColor(STANDARD_EMPTY_SPACE_COLOR);
 		generateMap();
+		try {
+			ImageIO.write(img, fileType, new File(destinationPath));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -118,8 +132,9 @@ public class VirtualLightSensor {
 	 * 		!sensors.isValid(x,y)
 	 */
 	public int getLightValuePercentage(int x, int y){
-		if(sensors.isValid(x,y)){
-		  int clr=  img.getRGB(x,y); 
+		int correctedY = sensors.getMaxY() - y;
+		if(sensors.isValid(x,correctedY)){
+		  int clr=  img.getRGB(x,correctedY); 
 		  int lightValue = calculateLightValuePercentage(clr);
 //		  System.out.println("Lightsensor white-value: "+lightValue);
 		  return lightValue;
@@ -141,8 +156,9 @@ public class VirtualLightSensor {
 	 * 		!sensors.isValid(x,y)
 	 */
 	public int getLightValue(int x, int y){
-		if(sensors.isValid(x,y)){
-		  int clr=  img.getRGB(x,y); 
+		int correctedY = sensors.getMaxY() - y;
+		if(sensors.isValid(x,correctedY)){
+		  int clr=  img.getRGB(x,correctedY); 
 		  int lightValue = calculateLightValue(clr);
 //		  System.out.println("Lightsensor white-value: "+lightValue);
 		  return lightValue;

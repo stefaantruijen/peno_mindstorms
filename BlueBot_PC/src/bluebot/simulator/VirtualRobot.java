@@ -1000,4 +1000,24 @@ public class VirtualRobot extends AbstractRobot {
 		double yOffset = offset * Math.cos(radialSonarHeading);
 		return (int)(getImgY() + yOffset);
 	}
+	
+	/**
+	 * If a small error on the heading is introduced in the simulator
+	 *  this method resets the heading back to one of the orientations 
+	 *  that is very close to the current heading.
+	 *  
+	 *  This method should be only called after a method.
+	 */
+	@Override
+	public void modifyOrientation(){
+		if(this.getHeading() > 358 || this.getHeading() <2){
+			this.setInitAbsoluteHeading(0);
+		} else if (this.getHeading() > 88 && this.getHeading() < 92){
+			this.setInitAbsoluteHeading(90);
+		} else if (this.getHeading() > 178 && this.getHeading() < 182){
+			this.setInitAbsoluteHeading(180);
+		} else if (this.getHeading() > 268 && this.getHeading() < 272){
+			this.setInitAbsoluteHeading(270);
+		}
+	}
 }

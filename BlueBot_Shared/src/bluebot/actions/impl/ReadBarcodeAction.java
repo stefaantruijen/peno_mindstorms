@@ -44,18 +44,23 @@ public class ReadBarcodeAction extends Action {
 		driver.setSpeed(slow);
 		
 		if(!readBlack()){
-			driver.moveBackward(30, false);
+			int maxDriveDistance = 50;
+			//Drive backwards to the first black line.
+			driver.moveBackward(maxDriveDistance, false);
 			waitForBlack(driver, true);
 			if (readBlack()) {
 				driver.stop();
 			} else {
 				//No barcode in this Tile.
-				driver.moveForward(30, true);
+				driver.moveForward(maxDriveDistance, true);
 				return;
 			}
 		}
-		driver.moveForward();
-		waitForBlack(driver,false);
+		//Compensate for case that we are in the barcode.
+		while(!readGrey()){
+			driver.moveForward(20, true);
+		}
+		
 		driver.moveBackward();
 		waitForBlack(driver, true);
 		float difference = getPosition(driver);
@@ -92,6 +97,7 @@ public class ReadBarcodeAction extends Action {
 		int validatedBarcode = BarcodeValidator.validate(barcode);
 		if(validatedBarcode != -1){
 			currentTile.setBarCode(validatedBarcode);
+			driver.sendMessage("Barcode found:" +validatedBarcode, "barcode");
 		}
 	}
 
@@ -130,6 +136,10 @@ public class ReadBarcodeAction extends Action {
 					&& driver.isMoving()
 					&& readBlack());
 		}
+	}
+
+	private boolean readGrey() throws CalibrationException {
+		return driver.readSensorLightBrightness() == Brightness.GRAY;
 	}
 
 	public int getBarcode() {
