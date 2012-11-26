@@ -267,8 +267,9 @@ public class VisualizationComponent extends RenderingComponent
 		
 		final double cos = Math.cos(head);
 		final double sin = Math.sin(head);
-		final int offset = (int)Math.round((sin * sin * dx / 2D)
-				+ (cos * cos * dy / 2D));
+		
+		final int offset = (int)Math.round(0.55D
+				* ((sin * sin * dx / 2D) + (cos * cos * dy / 2D)));
 		
 		img = IMAGE_SENSOR;
 		size = calculateScaledSize(img, IMAGE_SENSOR_SCALE);
