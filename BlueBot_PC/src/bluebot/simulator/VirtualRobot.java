@@ -19,6 +19,9 @@ import bluebot.util.Utils;
  * The {@link Robot} implementation for the simulator
  * 
  * @author Dieter Castel, Ruben Feyen, Michiel Ruelens 
+ * 
+ * TODO: afronden van 91 na orientate
+ * TODO: play that funky music!
  */
 public class VirtualRobot extends AbstractRobot {
 	/**
@@ -33,17 +36,7 @@ public class VirtualRobot extends AbstractRobot {
 	 * The size of the tiles in cm on which the VirtualRobot will be driving. //TODO: get this from a higher lvl.
 	 */
 	public static int TILE_SIZE_CM = 40;
-	/**
-	 * Static that holds the standard travel speed in mm/s. This is the speed we measured in the real NXT robot.
-	 */
-	public static double STANDARD_TRAVEL_SPEED = 200; //Probably get this value from other class.//TODO: see what this is irl
-	/**
-	 * Static that holds the standard rotate speed in degrees/s. This is the speed we measured in the real NXT robot.
-	 */
-	public static double STANDARD_ROTATE_SPEED = 30; //Probably get this value from other class.//TODO: see what this is irl
-	/**
-	 * Static that holds the standard rotate speed in degrees/s. This is the speed we measured in the real NXT robot.
-	 */
+	
 	public static double STANDARD_SONAR_ROTATE_SPEED = 250; //Probably get this value from other class.//TODO: see what this is irl
 	
 	/**
@@ -172,8 +165,8 @@ public class VirtualRobot extends AbstractRobot {
 			this.sensors = new Sensors(this.tilesList);
 			lightSensor = sensors.getLightSensor();
 			sonar = sensors.getSonar();
-			setTravelSpeed(STANDARD_TRAVEL_SPEED);
-			setRotateSpeed(STANDARD_ROTATE_SPEED);
+			setTravelSpeed(DEFAULT_SPEED_TRAVEL);
+			setRotateSpeed(DEFAULT_SPEED_ROTATE);
 			setSonarRotateSpeed(STANDARD_SONAR_ROTATE_SPEED);
 			clearAction();
 		} else {
