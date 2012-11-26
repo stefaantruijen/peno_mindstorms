@@ -144,10 +144,10 @@ public class WallFollower extends Action{
 		 * @throws ActionException 
 		 */
 		private void moveForward() throws InterruptedException, ActionException {
-			//if(tilesTravelledBetweenCalib<3){
+			if(tilesTravelledBetweenCalib<3){
 				this.driver.moveForward(400F, true);
 				driver.sendDebug("MOVE FORWARD");
-			/**	tilesTravelledBetweenCalib++;
+				tilesTravelledBetweenCalib++;
 			}else{
 				this.driver.moveForward(40F, true);
 				WhiteLineAction wa = new WhiteLineAction();
@@ -158,8 +158,7 @@ public class WallFollower extends Action{
 				driver.sendDebug("MOVE FORWARD");
 				this.tilesTravelledBetweenCalib = 0;
 			}
-			
-			driver.modifyOrientation();**/
+			driver.modifyOrientation();
 		}
 		/**
 		 * Let the robot travel south.

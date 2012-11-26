@@ -1,18 +1,26 @@
 package bluebot;
 
+import bluebot.graph.Graph;
+import bluebot.graph.Tile;
+
 /**
  * 
- * @author Dieter, Michiel
+ * @author Dieter, Michiel,Dario
  *
  */
 public class BarcodeExecuter {
 	private final Driver driver;
+	private final Graph graph;
+	private Tile currentTile;
 
-	public BarcodeExecuter(Driver driver) {
+	public BarcodeExecuter(Driver driver,Graph g) {
 		this.driver = driver;
+		this.graph = g;
+		
 	}
-	public void executeBarcode(String binaryCode) {
+	public void executeBarcode(String binaryCode,Tile currentTile) {
 		int code = convertBinaryToInt(binaryCode);
+		this.currentTile = currentTile;
 		executeBarcode(code);
 	}
 
@@ -129,8 +137,7 @@ public class BarcodeExecuter {
 			sendNotImplemented(code);
 			break;
 		case 55:
-			// TODO: "110111": Deze tegel is de finish!
-			driver.sendMessage("Executing " + convertIntToBinary(code)+": Marking this tile as the finish.", "BARCODE");
+			this.graph.setFinishVertex(this.currentTile);
 			break;
 		default:
 			driver.sendError(convertIntToBinary(code) + " is an illegal barcode. No action will be undertaken.");
@@ -177,6 +184,9 @@ public class BarcodeExecuter {
 	 */
 	public int convertBinaryToInt(String binaryString){
 		return Integer.parseInt(binaryString, 2);
+	}
+	public Graph getGraph() {
+		return graph;
 	}
 	
 }

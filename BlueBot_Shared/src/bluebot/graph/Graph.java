@@ -16,6 +16,9 @@ public class Graph {
 
 	  /** The tile identified as the root of the graph */
 	  private Tile rootVertex;
+	  
+	  private Tile finishVertex,checkpointVertex;
+	  
 
 	  /**
 	   * Construct a new graph without any vertices or edges
@@ -248,6 +251,22 @@ public class Graph {
 			
 			return neighbors;
 	  }
+
+	public Tile getFinishVertex() {
+		return finishVertex;
+	}
+
+	public void setFinishVertex(Tile finishVertex) {
+		this.finishVertex = finishVertex;
+	}
+	
+	public Tile getCheckpointVertex(){
+		return this.checkpointVertex;
+	}
+	
+	public void setCheckpointVertex(Tile t){
+		this.checkpointVertex = t;
+	}
 	  
 
 }
