@@ -20,6 +20,8 @@ public class MazeAction extends Action {
 		
 		wf = new WallFollower();
 		wf.execute(driver);
+		
+		
 	}
 	
 	@Override

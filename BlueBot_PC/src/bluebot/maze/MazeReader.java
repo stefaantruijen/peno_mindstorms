@@ -45,8 +45,6 @@ public class MazeReader {
 			      yLimit--;
 		    	}
 		    }
-		    System.out.println(maze);
-		    System.out.println(maze.getEdges().size());
 		    in.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
