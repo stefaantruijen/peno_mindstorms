@@ -39,6 +39,7 @@ public class VisualizationComponent extends RenderingComponent
 		implements ActionListener, MazeListener, MouseWheelListener {
 	private static final long serialVersionUID = 1L;
 	
+	private static final Color COLOR_WALL;
 	private static final BufferedImage IMAGE_BRICK;
 	private static final double IMAGE_BRICK_SCALE = 0.5D;
 	private static final BufferedImage IMAGE_SENSOR;
@@ -47,6 +48,8 @@ public class VisualizationComponent extends RenderingComponent
 	public static final int TILE_RESOLUTION = 50;
 	private static final double ZOOM_STEP = 0.25D;
 	static {
+		COLOR_WALL = new Color(0xFF593E1A, true);
+		
 		IMAGE_BRICK  = loadImage("nxt_brick.png");
 		IMAGE_SENSOR = loadImage("nxt_sensor.png");
 		
@@ -358,14 +361,14 @@ public class VisualizationComponent extends RenderingComponent
 	private static final Color getBorderColor(final Border border) {
 		switch (border) {
 			case CLOSED:
-				return Color.BLACK;
+				return COLOR_WALL;
 			case OPEN:
 				return Color.WHITE;
 			case UNKNOWN:
-				return Color.GRAY;
+				return Color.ORANGE;
 			default:
 				// Indicates an invalid value
-				return Color.RED;
+				return Color.CYAN;
 		}
 	}
 	
