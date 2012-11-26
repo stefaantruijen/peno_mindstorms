@@ -1,6 +1,8 @@
 package bluebot;
 
 
+import java.io.File;
+
 import bluebot.graph.Tile;
 import bluebot.io.Connection;
 import bluebot.io.ServerTranslator;
@@ -347,6 +349,12 @@ public abstract class AbstractDriver implements Driver {
 			}
 		}
 		
+	}
+	/**
+	 * plays the given file (.wav)
+	 */
+	public void playSound(File file){
+		getRobot().playSound(file);
 	}
 	
 }

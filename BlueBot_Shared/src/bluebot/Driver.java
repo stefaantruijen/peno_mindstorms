@@ -1,6 +1,8 @@
 package bluebot;
 
 
+import java.io.File;
+
 import bluebot.graph.Tile;
 import bluebot.sensors.Brightness;
 import bluebot.sensors.Calibration;
@@ -94,5 +96,10 @@ public interface Driver extends Mobile {
 	 * @param tile - the (updated) {@link Tile}
 	 */
 	public void sendTile(Tile tile);
+	/**
+	 * plays the given wav file
+	 * @param file
+	 */
+	public void playSound(File file);
 	
 }

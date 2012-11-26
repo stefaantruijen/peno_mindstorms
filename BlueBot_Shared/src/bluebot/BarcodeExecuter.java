@@ -1,8 +1,15 @@
 package bluebot;
 
+import java.io.File;
+import java.util.List;
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
+
 import bluebot.graph.Graph;
 import bluebot.graph.Tile;
 import bluebot.maze.BarcodeValidator;
+import javax.swing.filechooser.FileFilter;
 
 /**
  * 
@@ -58,6 +65,9 @@ public class BarcodeExecuter {
 		case 15: 
 			// TODO: "001111": speel een muziekje
 			driver.sendMessage("Executing " + convertIntToBinary(code)+": Playing music.", "BARCODE");
+			String path = new File("").getAbsolutePath();
+			File file = new File(path + "/Bells.wav");
+			driver.playSound(file);
 			break;
 		case 19: 
 			// "010011": wacht 5 seconden
@@ -129,6 +139,30 @@ public class BarcodeExecuter {
 	}
 	public Graph getGraph() {
 		return graph;
+	}
+	
+	private final void loadSound(Driver driver) {
+		final JFileChooser fc = new JFileChooser(new File("."));
+		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		for (final FileFilter filter : fc.getChoosableFileFilters()) {
+			fc.removeChoosableFileFilter(filter);
+		}
+		fc.addChoosableFileFilter(new FileFilter() {
+			public boolean accept(final File file) {
+				return (file.isDirectory() || file.getName().endsWith(".wav"));
+			}
+			
+			public String getDescription() {
+				return "Sound files (.wav)";
+			}
+		});
+		
+		fc.setApproveButtonText("Load");
+		fc.setDialogTitle("Load a sound file");
+		
+		final File file = fc.getSelectedFile();
+		driver.playSound(file);
+		
 	}
 	
 }

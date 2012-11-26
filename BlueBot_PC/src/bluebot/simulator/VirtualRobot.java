@@ -1,5 +1,12 @@
 package bluebot.simulator;
+import java.io.File;
 import java.util.Random;
+
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
 
 import bluebot.AbstractRobot;
 import bluebot.Robot;
@@ -1019,5 +1026,22 @@ public class VirtualRobot extends AbstractRobot {
 		} else if (this.getHeading() > 268 && this.getHeading() < 272){
 			this.setInitAbsoluteHeading(270);
 		}
+	}
+	
+	@Override
+	public void playSound(File file) {
+		try{
+			File yourFile = file;
+		    AudioInputStream stream = AudioSystem.getAudioInputStream(yourFile);
+		    AudioFormat format = stream.getFormat();
+		    DataLine.Info info = new DataLine.Info(Clip.class, format);
+		    Clip clip = (Clip) AudioSystem.getLine(info);
+		    clip.open(stream);
+		    clip.start();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		
 	}
 }

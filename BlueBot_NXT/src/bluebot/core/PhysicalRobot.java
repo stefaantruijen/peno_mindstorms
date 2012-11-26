@@ -1,9 +1,12 @@
 package bluebot.core;
 
 
+import java.io.File;
+
 import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
+import lejos.nxt.Sound;
 import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.localization.OdometryPoseProvider;
 import lejos.robotics.navigation.DifferentialPilot;
@@ -237,6 +240,11 @@ public class PhysicalRobot extends AbstractRobot {
 			return (accuracy * Math.round(value / accuracy));
 		}
 		
+	}
+
+	@Override
+	public void playSound(File file) {
+		Sound.playSample(file);
 	}
 
 	
