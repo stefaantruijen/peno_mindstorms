@@ -13,7 +13,6 @@ public class CalibrationAction extends Action {
 	
 	public void execute(final Driver driver) throws InterruptedException {
 		int speed = driver.getSpeed();
-		driver.sendMessage(""+speed, "speed");
 		// Set speed to 35%
 		driver.setSpeed(35);
 		int max = 0;
