@@ -251,6 +251,18 @@ public class Graph {
 			
 			return neighbors;
 	  }
+	  public List<Tile> getAbsoluteNeighborsFrom(Tile t){
+		  int x = t.getX();
+		  int y = t.getY();
+		  
+		  List<Tile> neighbors = new ArrayList<Tile>();
+		  neighbors.add(this.getVertex(x+1,y));
+		  neighbors.add(this.getVertex(x,y+1));
+		  neighbors.add(this.getVertex(x,y-1));
+		  neighbors.add(this.getVertex(x-1,y));
+		  
+		  return neighbors;
+	  }
 
 	public Tile getFinishVertex() {
 		return finishVertex;
