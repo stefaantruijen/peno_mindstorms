@@ -32,7 +32,7 @@ public class CalibrationAction extends Action {
 			return;
 		}
 		
-		final int thresholdWhite = (max + 5);
+		final int thresholdWhite = (max + 15);
 
 		int black = 1023;
 		driver.moveForward(400, false);
