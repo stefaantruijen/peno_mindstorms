@@ -8,10 +8,13 @@ import java.awt.Paint;
 import java.awt.TexturePaint;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -20,8 +23,10 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import bluebot.graph.Border;
+import bluebot.graph.Graph;
 import bluebot.graph.Tile;
 import bluebot.maze.MazeListener;
+import bluebot.maze.MazeReader;
 import bluebot.util.Utils;
 
 
@@ -64,6 +69,20 @@ public class VisualizationComponent extends RenderingComponent
 		setPreferredSize(new Dimension(size, size));
 		
 		addMouseWheelListener(this);
+		addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(final MouseEvent event) {
+				final Graph graph = new MazeReader().parseMaze(new File("maze.txt").getAbsolutePath());
+				graph.getVerticies();
+				
+				for (final Tile tile : graph.getVerticies()) {
+					if (tile.getBarCode() != -1) {
+						System.out.println(tile + ":  " + tile.getBarCode());
+					}
+					onTileUpdate(tile);
+				}
+			}
+		});
 	}
 	
 	
@@ -287,7 +306,9 @@ public class VisualizationComponent extends RenderingComponent
 		
 		final int bits = tile.getBarCode();
 		if (bits != -1) {
+			System.out.println("Drawing code:  " + bits);
 			thickness = Math.max(1, (TILE_RESOLUTION / 20));
+			System.out.println("thickness = " + thickness);
 			
 			final Color[] colors = {
 				Color.BLACK,
@@ -299,19 +320,24 @@ public class VisualizationComponent extends RenderingComponent
 				(((bits & 0x01) == 0) ? Color.BLACK : Color.WHITE),
 				Color.BLACK
 			};
+			for (final Color color : colors) {
+				System.out.println(color);
+			}
 			if (borders[0] == Border.CLOSED) {
 				// Horizontal
-				int xx = ((TILE_RESOLUTION >>> 1) - (thickness << 2));
+				int xx = x + ((TILE_RESOLUTION >>> 1) - (thickness << 2));
 				for (int i = 0; i < 8; i++) {
 					gfx.setColor(colors[i]);
-					gfx.fillRect(xx, 0, thickness, TILE_RESOLUTION);
+					gfx.fillRect(xx, y, thickness, TILE_RESOLUTION);
+					xx += thickness;
 				}
 			} else {
 				// Vertical
-				int yy = ((TILE_RESOLUTION >>> 1) - (thickness << 2));
+				int yy = y + ((TILE_RESOLUTION >>> 1) - (thickness << 2));
 				for (int i = 0; i < 8; i++) {
 					gfx.setColor(colors[i]);
-					gfx.fillRect(0, yy, TILE_RESOLUTION, thickness);
+					gfx.fillRect(x, yy, TILE_RESOLUTION, thickness);
+					yy += thickness;
 				}
 			}
 		}

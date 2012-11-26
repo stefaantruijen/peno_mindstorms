@@ -32,7 +32,8 @@ import bluebot.core.ControllerListener;
  */
 public class ControllerFrame extends JFrame implements ControllerListener {
 	private static final long serialVersionUID = 1L;
-
+	
+	private VisualizationComponent canvas;
 	private Controller controller;
 
 	public ControllerFrame(final Controller controller) {
@@ -105,6 +106,16 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 			}
 		});
 		
+		final JButton buttonReset = new JButton("Reset");
+		buttonReset.setFocusable(false);
+		buttonReset.setFont(font);
+		buttonReset.addActionListener(new ActionListener() {
+			public void actionPerformed(final ActionEvent event) {
+				canvas.reset();
+				controller.reset();
+			}
+		});
+		
 		final JButton buttonTile = new JButton("Tile");
 		buttonTile.setFocusable(false);
 		buttonTile.setFont(font);
@@ -117,7 +128,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		final JPanel panel = new JPanel();
 		
 		final GridBagLayout layout = new GridBagLayout();
-		layout.columnWeights = new double[] { 1D, 1D, 1D, 1D, 1D };
+		layout.columnWeights = new double[] { 1D, 1D, 1D, 1D, 1D, 1D };
 		layout.rowHeights = new int[] { 64 };
 		layout.rowWeights = new double[] { 1D };
 		panel.setLayout(layout);
@@ -138,6 +149,9 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		
 		gbc.gridx++;
 		panel.add(buttonPolygon, gbc);
+		
+		gbc.gridx++;
+		panel.add(buttonReset, gbc);
 		
 		gbc.gridx++;
 		panel.add(buttonTile, gbc);
@@ -202,7 +216,8 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 	}
 	
 	private final Component createModuleVisualization() {
-		final VisualizationComponent canvas = new VisualizationComponent();
+		canvas = new VisualizationComponent();
+//		canvas = new VisualizationComponent3D();
 		controller.addListener(canvas);
 		return createModule(canvas, "Visualization");
 	}
