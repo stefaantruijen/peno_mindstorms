@@ -4,6 +4,8 @@ package bluebot.actions.impl;
 import bluebot.Driver;
 import bluebot.actions.Action;
 import bluebot.actions.ActionException;
+import bluebot.sensors.Brightness;
+import bluebot.sensors.CalibrationException;
 
 
 
@@ -11,18 +13,14 @@ import bluebot.actions.ActionException;
  * {@link Action} implementation for the "Align on white line" algorithm
  */
 public class WhiteLineAction extends Action {
-	
-	private int threshold;
 
 	public void execute(final Driver driver)
-			throws ActionException, InterruptedException {
+			throws ActionException, InterruptedException, CalibrationException {
 		int speed = driver.getSpeed();
 		// exception if not calibrated
 		if (!driver.getCalibration().isCalibrated()) {
 			throw new ActionException("Calibration of the light sensor is required");
 		}
-		
-		threshold = driver.getCalibration().getLightThresholdWhite();
 		
 		// forward until white line (50%)
 		driver.setSpeed(50);
@@ -94,24 +92,22 @@ public class WhiteLineAction extends Action {
 		driver.setSpeed(speed);
 	}
 	
-	private final void waitForWhite(final Driver driver, final boolean flag) {
-		final int threshold = this.threshold;
+	private final void waitForWhite(final Driver driver, final boolean flag) throws CalibrationException {
 		if (flag) {
 			while (!isAborted()
 					&& driver.isMoving()
-					&& (driver.readSensorLightValue() <= threshold));
+					&& (driver.readSensorLightBrightness() != Brightness.WHITE));
 		} else {
 			while (!isAborted()
 					&& driver.isMoving()
-					&& (driver.readSensorLightValue() > threshold));
+					&& (driver.readSensorLightBrightness() == Brightness.WHITE));
 		}
 	}
 	
-	private final void waitForWhiteOrWall(final Driver driver){
-		final int threshold = this.threshold;
+	private final void waitForWhiteOrWall(final Driver driver) throws CalibrationException{
 		while (!isAborted()
 				&& driver.isMoving()
-				&& (driver.readSensorLightValue() <= threshold)
+				&& (driver.readSensorLightBrightness() != Brightness.WHITE)
 				&& (driver.readSensorUltraSonic() > 14));
 	}
 	

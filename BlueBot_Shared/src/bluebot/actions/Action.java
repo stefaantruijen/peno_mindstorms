@@ -4,6 +4,7 @@ package bluebot.actions;
 import bluebot.Driver;
 import bluebot.DriverException;
 import bluebot.actions.impl.WhiteLineAction;
+import bluebot.sensors.CalibrationException;
 
 
 
@@ -44,9 +45,10 @@ public abstract class Action {
 	 * 
 	 * @throws ActionException if an error occurs during execution
 	 * @throws InterruptedException if interrupted
+	 * @throws CalibrationException 
 	 */
 	protected void executeWhiteLine(final Driver driver)
-			throws ActionException, InterruptedException {
+			throws ActionException, InterruptedException, CalibrationException {
 		new WhiteLineAction().execute(driver);
 	}
 	
