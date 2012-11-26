@@ -22,9 +22,11 @@ public class TileBuilder {
 				tile.setBarCode(Integer.parseInt(tileElements[2]));
 			}
 			return setUpTile(tile,tt,Orientation.getOrientation(tileElements[1]));
+		}else{
+			Tile tile = new Tile(x,y);
+			tile.setAllBordersOpen(true);
+			return tile;
 		}
-		
-		return new Tile(x,y);
 		
 		
 	}
