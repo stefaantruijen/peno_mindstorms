@@ -4,7 +4,9 @@ package bluebot;
 import bluebot.graph.Tile;
 import bluebot.io.Connection;
 import bluebot.io.ServerTranslator;
+import bluebot.sensors.Brightness;
 import bluebot.sensors.Calibration;
+import bluebot.sensors.CalibrationException;
 import bluebot.sensors.SensorType;
 import bluebot.util.Orientation;
 
@@ -123,6 +125,22 @@ public abstract class AbstractDriver implements Driver {
 	
 	public int readSensorLight() {
 		return getRobot().readSensorLight();
+	}
+	
+	public Brightness readSensorLightBrightness() throws CalibrationException {
+		final Calibration calibration = getCalibration();
+		if (!calibration.isCalibrated()) {
+			throw new CalibrationException("The light sensor has not been calibrated");
+		}
+		
+		final int value = readSensorLightValue();
+		if (value >= calibration.getLightThresholdWhite()) {
+			return Brightness.WHITE;
+		} else if (value > calibration.getLightThresholdBlack()) {
+			return Brightness.GRAY;
+		} else {
+			return Brightness.BLACK;
+		}
 	}
 	
 	public int readSensorLightValue() {
