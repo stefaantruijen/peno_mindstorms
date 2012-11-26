@@ -12,6 +12,8 @@ import bluebot.actions.Action;
 public class CalibrationAction extends Action {
 	
 	public void execute(final Driver driver) throws InterruptedException {
+		int speed = driver.getSpeed();
+		driver.sendMessage(""+speed, "speed");
 		// Set speed to 35%
 		driver.setSpeed(35);
 		int max = 0;
@@ -32,7 +34,7 @@ public class CalibrationAction extends Action {
 			return;
 		}
 		
-		final int thresholdWhite = (max + 15);
+		final int thresholdWhite = (max + 20);
 
 		int black = 1023;
 		driver.moveForward(400, false);
@@ -46,6 +48,7 @@ public class CalibrationAction extends Action {
 		int thresholdBlack = (black + min )/2;
 		driver.getCalibration().setLightThresholdWhite(thresholdWhite);
 		driver.getCalibration().setLightThresholdBlack(thresholdBlack);
+		driver.setSpeed(speed);
 		//	The next few lines of code will send
 		//	a report of the calibration to any client(s)
 		final String msg = ("Threshold (white) = " + thresholdWhite +"\n Threshold (black) = " + thresholdBlack);
