@@ -6,6 +6,8 @@ import bluebot.actions.ActionException;
 import bluebot.graph.Orientation;
 import bluebot.graph.Tile;
 import bluebot.maze.BarcodeValidator;
+import bluebot.sensors.Brightness;
+import bluebot.sensors.CalibrationException;
 
 /**
  * Precodition:
@@ -20,8 +22,6 @@ import bluebot.maze.BarcodeValidator;
  */
 public class ReadBarcodeAction extends Action {
 	private Driver driver;
-	private int blackThreshold;
-	private int whiteThreshold;
 	private int slow = 16;
 	private int barcode =0;
 	private boolean hasBarcode = false;
@@ -35,16 +35,12 @@ public class ReadBarcodeAction extends Action {
 	public ReadBarcodeAction(Tile currentTile) {
 		this.currentTile = currentTile;  
 	}
-
+	
 	@Override
 	public void execute(Driver driver) throws ActionException,
-			InterruptedException {
+			CalibrationException, InterruptedException {
 		this.driver = driver;
-		if(!driver.getCalibration().isCalibrated()){
-			throw new ActionException("Calibration of the light sensor is required to run the barcode reading algorithm.");
-		} 	
-		this.blackThreshold = driver.getCalibration().getLightThresholdBlack();
-		this.whiteThreshold = driver.getCalibration().getLightThresholdWhite();
+		
 		driver.setSpeed(slow);
 		
 		if(!readBlack()){
@@ -120,17 +116,19 @@ public class ReadBarcodeAction extends Action {
 	 * Waits till a 'black' lightvalue is found. 
 	 * @param driver
 	 * @param flag
+	 * 
+	 * @throws CalibrationException if the light sensor has not been calibrated
 	 */
 	//TODO: make this an action to prevent code duplication.
-	private final void waitForBlack(final Driver driver, final boolean flag) {
+	private final void waitForBlack(final Driver driver, final boolean flag) throws CalibrationException {
 		if (flag) {
 			while (!isAborted()
 					&& driver.isMoving()
-					&& (driver.readSensorLightValue() > blackThreshold));
+					&& !readBlack());
 		} else {
 			while (!isAborted()
 					&& driver.isMoving()
-					&& (driver.readSensorLightValue() <= blackThreshold));
+					&& readBlack());
 		}
 	}
 
@@ -176,13 +174,12 @@ public class ReadBarcodeAction extends Action {
 		return result;
 	}
 	
-	private boolean readBlack(){
-		return driver.readSensorLightValue() <= blackThreshold;
+	private boolean readBlack() throws CalibrationException{
+		return driver.readSensorLightBrightness() == Brightness.BLACK;
 	}
 
-	
-	private boolean readWhite(){
-		return driver.readSensorLightValue() >= whiteThreshold;
+	private boolean readWhite() throws CalibrationException{
+		return driver.readSensorLightBrightness() == Brightness.WHITE;
 	}
 	
 	public boolean hasBarCode(){
