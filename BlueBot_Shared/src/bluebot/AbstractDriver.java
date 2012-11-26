@@ -63,6 +63,10 @@ public abstract class AbstractDriver implements Driver {
 		return robot;
 	}
 	
+	public int getSpeed() {
+		return getRobot().getSpeed();
+	}
+	
 	private final ServerTranslator getTranslator() {
 		return translator;
 	}

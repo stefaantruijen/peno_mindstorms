@@ -19,6 +19,13 @@ public interface Mobile {
 	public Orientation getOrientation();
 	
 	/**
+	 * Returns the current speed (percentage)
+	 * 
+	 * @return an <code>int</code> from the range [0, 100]
+	 */
+	public int getSpeed();
+	
+	/**
 	 * Determines whether or not a movement is in progress
 	 * 
 	 * @return <code>TRUE</code> if moving, <code>FALSE</code> otherwise
