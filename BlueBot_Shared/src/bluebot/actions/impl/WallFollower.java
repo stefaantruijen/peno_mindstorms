@@ -40,26 +40,21 @@ public class WallFollower extends Action{
 			this.driver.resetOrientation();
 			this.initializeRootTile();
 			do{
-				this.processUnExploredTiles();
 				if(isAborted()){
 					return;
 				}
 				Tile next = this.determineNextTile();
 				this.moveTo(next);
 				if(!next.isExplored()){
-					
 					this.checkEfficicientlyTile(next);
-					this.processUnExploredTiles();
 				}
 				this.maze.addEdge(current, next);
 				this.maze.addVerticies(next.getAbsoluteNeighbors());
 				this.current = next;
-				driver.sendDebug("CURRENT TILE : "+current.toString());
 				if(current == this.maze.getRootTile() && !hasUnvisitedNeighbors(this.maze.getRootTile())){
 					this.findBlackSpots();
 				}
 			}while(this.hasUnvisitedNeighbors(this.maze.getRootTile())||this.hasUnvisitedNeighbors(current)||this.graphHasUnvisitedNeighbors());
-			this.processUnExploredTiles();
 			Dijkstra dijkstra = new Dijkstra(maze);
 			dijkstra.execute(current);
 			List<Tile> path = dijkstra.getPath(maze.getVertex(3, 5));
@@ -80,7 +75,7 @@ public class WallFollower extends Action{
 		 */
 		private void moveTo(Tile next) throws InterruptedException, ActionException {
 			if(next.equals(current)){
-				driver.sendDebug("Tiles are the same");
+				driver.sendError("Tiles are the same");
 			}
 			if(next.isEastFrom(this.current)){
 				this.travelEast();
@@ -91,13 +86,14 @@ public class WallFollower extends Action{
 			}else if(next.isSouthFrom(this.current)){
 				this.travelSouth();
 			}else{
-				driver.sendError("Something strange happend.");
+				driver.sendError("[EXCEPTION]-Something strange happend.");
 			}
 			
 		}
 		/**
 		 * This makes the algorithm 'smarter'. It will check if we can gather information about unexplored tiles from tiles we already have explored.
 		 */
+		@Deprecated
 		private void processUnExploredTiles(){
 			for(Tile t : this.maze.getUnExploredTiles()){
 				this.driver.sendTile(t);
@@ -144,11 +140,11 @@ public class WallFollower extends Action{
 		 * @throws ActionException 
 		 */
 		private void moveForward() throws InterruptedException, ActionException {
-			if(tilesTravelledBetweenCalib<3){
+			//if(tilesTravelledBetweenCalib<3){
 				this.driver.moveForward(400F, true);
-				driver.sendDebug("MOVE FORWARD");
-				tilesTravelledBetweenCalib++;
-			}else{
+				
+				//tilesTravelledBetweenCalib++;
+			/**}else{
 				this.driver.moveForward(40F, true);
 				WhiteLineAction wa = new WhiteLineAction();
 					driver.sendDebug("ORIENTATING");
@@ -157,7 +153,7 @@ public class WallFollower extends Action{
 				this.driver.moveForward(200F, true);
 				driver.sendDebug("MOVE FORWARD");
 				this.tilesTravelledBetweenCalib = 0;
-			}
+			}**/
 			driver.modifyOrientation();
 		}
 		/**
@@ -396,13 +392,14 @@ public class WallFollower extends Action{
 		 * @throws InterruptedException
 		 */
 		private void initializeRootTile() throws InterruptedException{
-			
-			Tile root = this.exploreTile(new Tile(0,0));
+			Tile root = new Tile(0,0);
+			this.checkEfficicientlyTile(root);
+			//Tile root = this.exploreTile(new Tile(0,0));
 			this.maze.setRootTile(root);
 			this.maze.addVerticies(root.getAbsoluteNeighbors());
 			driver.sendTile(root);
 			this.current = root;
-			this.processUnExploredTiles();
+			//this.processUnExploredTiles();
 		}
 		/**
 		 * Explore and update a given tile.
@@ -519,40 +516,66 @@ public class WallFollower extends Action{
 		 * @throws InterruptedException
 		 */
 		private void checkBorder(Direction d, Tile t) throws InterruptedException {
+			Tile neighbor = this.getNeighborForGivenDirection(d,t);
+			Border flag = Border.OPEN;
+			if(wallInDirection(d)){
+				flag = Border.CLOSED;
+			}
 			switch(d){
 			case DOWN:
-				if(wallInDirection(d)){
-					t.setBorderSouth(Border.CLOSED);
-				}else{
-					t.setBorderSouth(Border.OPEN);
-				}
+				t.setBorderSouth(flag);
+				neighbor.setBorderNorth(flag);
 				break;
 			case LEFT:
-				if(wallInDirection(d)){
-					t.setBorderWest(Border.CLOSED);
-				}else{
-					t.setBorderWest(Border.OPEN);
-				}
+				t.setBorderWest(flag);
+				neighbor.setBorderEast(flag);
 				break;
 			case RIGHT:
-				if(wallInDirection(d)){
-					t.setBorderEast(Border.CLOSED);
-				}else{
-					t.setBorderEast(Border.OPEN);
-				}
+				t.setBorderEast(flag);
+				neighbor.setBorderWest(flag);
 				break;
 			case UP:
-				if(wallInDirection(d)){
-					t.setBorderNorth(Border.CLOSED);
-				}else{
-					t.setBorderNorth(Border.OPEN);
-				}
+				t.setBorderNorth(flag);
+				neighbor.setBorderSouth(flag);
 				break;
 			default:
 				throw new IllegalStateException("Woops, the world has collapsed.");
 			
 			}
+			driver.sendTile(t);
+			driver.sendTile(neighbor);
+		}
+		private Tile getNeighborForGivenDirection(Direction d,Tile t) {
+			this.maze.addVerticies(t.getAbsoluteNeighbors());
+			for(Tile n : this.maze.getAbsoluteNeighborsFrom(t)){
+				switch(d){
+					case DOWN:
+						if(n.isSouthFrom(t)){
+							return n;
+						}
+						break;
+					case LEFT:
+						if(n.isWestFrom(t)){
+							return n;
+						}
+						break;
+					case RIGHT:
+						if(n.isEastFrom(t)){
+							return n;
+						}
+						break;
+					case UP:
+						if(n.isNorthFrom(t)){
+							return n;
+						}
+						break;
+					default:
+						break;
+				
+				}
+			}
 			
+			throw new IllegalStateException("Oh dear, shouldn't happen.");
 		}
 		/**
 		 * Check for a wall in a given direction.
