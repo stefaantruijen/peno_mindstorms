@@ -41,6 +41,11 @@ public class CommandPacket extends Packet {
 		return OP_COMMAND;
 	}
 	
+	@Override
+	public boolean isVerbose() {
+		return true;
+	}
+	
 	protected void readPayload(final DataInput input) throws IOException {
 		setCommand(input.readUTF());
 	}

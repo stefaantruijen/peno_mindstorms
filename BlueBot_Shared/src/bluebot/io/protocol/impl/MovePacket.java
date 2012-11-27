@@ -74,6 +74,11 @@ public class MovePacket extends Packet {
 		return (quantity != null);
 	}
 	
+	@Override
+	public boolean isVerbose() {
+		return true;
+	}
+	
 	protected void readPayload(final DataInput input) throws IOException {
 		setDirection(input.readUnsignedByte());
 		if (input.readBoolean()) {

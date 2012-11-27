@@ -50,7 +50,7 @@ public abstract class Packet {
 	 * 			<code>FALSE</code> otherwise
 	 */
 	public boolean isVerbose() {
-		return true;
+		return false;
 	}
 	
 	/**

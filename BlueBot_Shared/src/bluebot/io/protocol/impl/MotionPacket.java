@@ -52,11 +52,6 @@ public class MotionPacket extends Packet {
 		return y;
 	}
 	
-	@Override
-	public boolean isVerbose() {
-		return false;
-	}
-	
 	protected void readPayload(final DataInput input) throws IOException {
 		setX(input.readFloat());
 		setY(input.readFloat());

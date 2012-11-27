@@ -36,11 +36,6 @@ public class TilePacket extends Packet {
 		return tile;
 	}
 	
-	@Override
-	public boolean isVerbose() {
-		return false;
-	}
-	
 	protected void readPayload(final DataInput input) throws IOException {
 		setTile(Tile.read(input));
 	}

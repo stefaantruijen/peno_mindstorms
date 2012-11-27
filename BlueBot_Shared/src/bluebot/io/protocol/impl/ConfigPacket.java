@@ -55,6 +55,11 @@ public class ConfigPacket extends Packet {
 		return fp;
 	}
 	
+	@Override
+	public boolean isVerbose() {
+		return true;
+	}
+	
 	protected void readPayload(final DataInput input) throws IOException {
 		setId(input.readUnsignedByte());
 		setFloatingPoint(input.readBoolean());
