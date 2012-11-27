@@ -1,6 +1,5 @@
 package bluebot.simulator;
 
-import static org.junit.Assert.assertFalse;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
