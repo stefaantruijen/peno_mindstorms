@@ -128,6 +128,13 @@ public abstract class AbstractDriver implements Driver {
 		}
 	}
 	
+	/**
+	 * plays the given file (.wav)
+	 */
+	public void playSound(File file){
+		getRobot().playSound(file);
+	}
+	
 	public int readSensorLight() {
 		return getRobot().readSensorLight();
 	}
@@ -345,19 +352,13 @@ public abstract class AbstractDriver implements Driver {
 			}
 			
 			try {
-				sendSensorLight(readSensorLight());
+				sendSensorLight(readSensorLightValue());
 				sendSensorUltraSonic(readSensorUltraSonic());
 			} catch (final RuntimeException e) {
 				// The robot is not in a happy place right now
 			}
 		}
 		
-	}
-	/**
-	 * plays the given file (.wav)
-	 */
-	public void playSound(File file){
-		getRobot().playSound(file);
 	}
 	
 }

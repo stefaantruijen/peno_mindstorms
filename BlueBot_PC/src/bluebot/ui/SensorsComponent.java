@@ -25,7 +25,8 @@ public class SensorsComponent extends JPanel
 	private static final Font DEFAULT_FONT =
 			new Font(Font.MONOSPACED, Font.BOLD, 24);
 	private static final Dimension DEFAULT_SIZE =
-			new Dimension(50, 1);
+			new Dimension(75, 1);
+	private static final int MAX_VALUE_LIGHT = 1023;
 	
 	private GraphComponent graphLight, graphUltraSonic;
 	private JLabel labelLight, labelUltraSonic;
@@ -88,7 +89,7 @@ public class SensorsComponent extends JPanel
 	public void onSensorValueLight(final int value) {
 		graphLight.addData(value);
 		
-		final int gray = (255 * value / 100);
+		final int gray = (255 * value / MAX_VALUE_LIGHT);
 //		final float s = (1F - (Math.abs(value - 50) / 50F));
 //		final float b = (value / 100F);
 		
