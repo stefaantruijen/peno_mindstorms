@@ -446,5 +446,14 @@ public class DummyRobot extends AbstractRobot {
 		}
 		
 	}
+
+
+
+
+
+	@Override
+	public float getArcLimit() {
+		return 100;
+	}
 	
 }

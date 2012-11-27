@@ -97,6 +97,7 @@ public class ReadBarcodeAction extends Action {
 		int validatedBarcode = BarcodeValidator.validate(barcode);
 		if(validatedBarcode != -1){
 			currentTile.setBarCode(validatedBarcode);
+//			TODO: Maybe remove this message cause it is quite intrusive in the GUI
 			driver.sendMessage("Barcode found:" +validatedBarcode, "barcode");
 		}
 	}
@@ -161,27 +162,6 @@ public class ReadBarcodeAction extends Action {
 	private void appendWhiteToBarcode(){
 		barcode <<= 1;
 		barcode |= 1;
-	}
-	
-	/**
-	 * Returns whether the given string is a valid barcode.
-	 * @return
-	 */
-	//TODO: see how this works in combination with the executing of the barcodes.
-	private boolean isValidBarcode(String s){
-		return true;
-	}
-	
-	/**
-	 * Returns the reverse of the given string
-	 * @return
-	 */
-	private String reverse(String s){
-		String result = "";
-		for(int i = s.length()-1; i>=0; i--){
-			result += s.charAt(i);
-		}
-		return result;
 	}
 	
 	private boolean readBlack() throws CalibrationException{

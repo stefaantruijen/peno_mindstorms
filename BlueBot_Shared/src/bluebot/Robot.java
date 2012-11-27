@@ -76,6 +76,8 @@ public interface Robot extends Mobile {
 	public float getAngleIncrement();
 	//TODO: getDistanceIncrement()? 
 
+	public float getArcLimit();
+
 	/**
 	 * plays the given wav file
 	 * @param file

@@ -45,9 +45,12 @@ public abstract class AbstractDriver implements Driver {
 		stopUpdater();
 	}
 	
-	// TODO: Remove and use getHeading() instead
 	public float getAngleIncrement(){
 		return getRobot().getAngleIncrement();
+	}
+	
+	public float getArcLimit(){
+		return getRobot().getArcLimit();
 	}
 	
 	public Calibration getCalibration() {

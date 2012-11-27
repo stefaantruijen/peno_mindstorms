@@ -73,7 +73,8 @@ public class WhiteLineAction extends Action {
 			}
 			
 	//		float totalArc = Math.abs(arc) + Math.abs(arc1);
-			if(totalArc<=150){
+			// 150 
+			if(totalArc<=driver.getArcLimit()){
 				driver.turnLeft();
 				this.waitForWhite(driver, false);
 				this.waitForWhite(driver, true);

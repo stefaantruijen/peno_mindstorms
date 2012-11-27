@@ -27,8 +27,6 @@ import bluebot.util.Utils;
  * 
  * @author Dieter Castel, Ruben Feyen, Michiel Ruelens 
  * 
- * TODO: afronden van 91 na orientate
- * TODO: play that funky music!
  */
 public class VirtualRobot extends AbstractRobot {
 	/**
@@ -657,6 +655,11 @@ public class VirtualRobot extends AbstractRobot {
 	}
 	
 	
+	@Override
+	public float getArcLimit() {
+		return 100;
+	}
+
 	/**
 	 * Returns the current heading of the VirtualRobot.
 	 * 
@@ -761,6 +764,43 @@ public class VirtualRobot extends AbstractRobot {
 	
 	
 	
+	/**
+	 * If a small error on the heading is introduced in the simulator
+	 *  this method resets the heading back to one of the orientations 
+	 *  that is very close to the current heading.
+	 *  
+	 *  This method should be only called after a method.
+	 */
+	@Override
+	public void modifyOrientation(){
+		if(this.getHeading() > 358 || this.getHeading() <2){
+			this.setInitAbsoluteHeading(0);
+		} else if (this.getHeading() > 88 && this.getHeading() < 92){
+			this.setInitAbsoluteHeading(90);
+		} else if (this.getHeading() > 178 && this.getHeading() < 182){
+			this.setInitAbsoluteHeading(180);
+		} else if (this.getHeading() > 268 && this.getHeading() < 272){
+			this.setInitAbsoluteHeading(270);
+		}
+	}
+
+	@Override
+	public void playSound(File file) {
+		try{
+			File yourFile = file;
+		    AudioInputStream stream = AudioSystem.getAudioInputStream(yourFile);
+		    AudioFormat format = stream.getFormat();
+		    DataLine.Info info = new DataLine.Info(Clip.class, format);
+		    Clip clip = (Clip) AudioSystem.getLine(info);
+		    clip.open(stream);
+		    clip.start();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		
+	}
+
 	//PRIVATE HELP METHODS:
 	/**
 	 * Resets the initial X,Y or headings after a move is completed.
@@ -1006,42 +1046,5 @@ public class VirtualRobot extends AbstractRobot {
 	private int calculateOffsettedYByRadialHeading(double radialSonarHeading, int offset){
 		double yOffset = offset * Math.cos(radialSonarHeading);
 		return (int)(getImgY() + yOffset);
-	}
-	
-	/**
-	 * If a small error on the heading is introduced in the simulator
-	 *  this method resets the heading back to one of the orientations 
-	 *  that is very close to the current heading.
-	 *  
-	 *  This method should be only called after a method.
-	 */
-	@Override
-	public void modifyOrientation(){
-		if(this.getHeading() > 358 || this.getHeading() <2){
-			this.setInitAbsoluteHeading(0);
-		} else if (this.getHeading() > 88 && this.getHeading() < 92){
-			this.setInitAbsoluteHeading(90);
-		} else if (this.getHeading() > 178 && this.getHeading() < 182){
-			this.setInitAbsoluteHeading(180);
-		} else if (this.getHeading() > 268 && this.getHeading() < 272){
-			this.setInitAbsoluteHeading(270);
-		}
-	}
-	
-	@Override
-	public void playSound(File file) {
-		try{
-			File yourFile = file;
-		    AudioInputStream stream = AudioSystem.getAudioInputStream(yourFile);
-		    AudioFormat format = stream.getFormat();
-		    DataLine.Info info = new DataLine.Info(Clip.class, format);
-		    Clip clip = (Clip) AudioSystem.getLine(info);
-		    clip.open(stream);
-		    clip.start();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		
-		
 	}
 }

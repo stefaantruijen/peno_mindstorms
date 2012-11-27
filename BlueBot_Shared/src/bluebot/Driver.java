@@ -22,10 +22,14 @@ public interface Driver extends Mobile {
 	 */
 	public void dispose();
 	
-	// TODO: Remove and use getHeading() instead
-	@Deprecated
+	/**
+	 * Returns the angle moved since the start of the movement.
+	 * @return
+	 */
 	public float getAngleIncrement();
 	
+	public float getArcLimit();
+
 	/**
 	 * Returns the calibration data of the driver
 	 * 

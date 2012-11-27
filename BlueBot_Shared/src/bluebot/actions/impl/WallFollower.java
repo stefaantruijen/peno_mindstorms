@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import algorithms.Dijkstra;
+import bluebot.BarcodeExecuter;
 import bluebot.Driver;
 import bluebot.actions.Action;
 import bluebot.actions.ActionException;
@@ -12,7 +13,13 @@ import bluebot.graph.Border;
 import bluebot.graph.Direction;
 import bluebot.graph.Graph;
 import bluebot.graph.Tile;
+import bluebot.sensors.CalibrationException;
 
+/**
+ * 
+ * @author Dario, Dieter
+ *
+ */
 public class WallFollower extends Action{
 		private Driver driver;
 		private final Graph maze;
@@ -20,34 +27,52 @@ public class WallFollower extends Action{
 		private Tile current;
 		private int tilesTravelledBetweenCalib = 0;
 		private List<Tile> blackSpots;
-		
+		private BarcodeExecuter barcodeExecuter;
 		
 		public WallFollower(){
 			this.maze = new Graph();
 			this.headDirection=Direction.UP;
 			this.moveDirection=Direction.UP;
 			this.blackSpots = null;
+			this.barcodeExecuter = new BarcodeExecuter(driver, maze);
 		}
 		/**
 		 * Execute the wall following algorithm. Always keep the wall to your right. Till we're back on the start position and all
 		 * Start neighbors are explored. This means 'black spots' still remain in the maze. The algorithm detects black spots and will visit the black spots to explore the remaining tiles.
 		 * @throws ActionException 
+		 * @throws CalibrationException 
 		 */
 		@Override
-		public void execute(Driver driver) throws InterruptedException, ActionException {
+		public void execute(Driver driver) throws InterruptedException, ActionException, CalibrationException {
 			this.driver = driver;
 			this.driver.setSpeed(80);
 			this.driver.resetOrientation();
 			this.initializeRootTile();
+			
+			
 			do{
 				if(isAborted()){
 					return;
 				}
+				
 				Tile next = this.determineNextTile();
 				this.moveTo(next);
 				if(!next.isExplored()){
 					this.checkEfficicientlyTile(next);
 				}
+				
+				if(next.canHaveBarcode()){
+					ReadBarcodeAction read = new ReadBarcodeAction(next);
+					read.execute(driver);
+					int barcode = read.getBarcode();
+					// barcode == 0 then there is no barcode on this tile.
+					if(barcode != 0){
+						this.barcodeExecuter.executeBarcode(barcode, next);
+						//Because the ReadBarcodeAction recalibrates when he found a barcode
+						this.tilesTravelledBetweenCalib = 0;
+					}
+				}
+				
 				this.maze.addEdge(current, next);
 				this.maze.addVerticies(next.getAbsoluteNeighbors());
 				this.current = next;
@@ -72,8 +97,9 @@ public class WallFollower extends Action{
 		 * @param next
 		 * @throws InterruptedException
 		 * @throws ActionException 
+		 * @throws CalibrationException 
 		 */
-		private void moveTo(Tile next) throws InterruptedException, ActionException {
+		private void moveTo(Tile next) throws InterruptedException, ActionException, CalibrationException {
 			if(next.equals(current)){
 				driver.sendError("Tiles are the same");
 			}
@@ -139,12 +165,11 @@ public class WallFollower extends Action{
 		 * @throws InterruptedException
 		 * @throws ActionException 
 		 */
-		private void moveForward() throws InterruptedException, ActionException {
-			//if(tilesTravelledBetweenCalib<3){
+		private void moveForward() throws InterruptedException, ActionException, CalibrationException {
+			if(tilesTravelledBetweenCalib<3){
 				this.driver.moveForward(400F, true);
-				
-				//tilesTravelledBetweenCalib++;
-			/**}else{
+				tilesTravelledBetweenCalib++;
+			}else{
 				this.driver.moveForward(40F, true);
 				WhiteLineAction wa = new WhiteLineAction();
 					driver.sendDebug("ORIENTATING");
@@ -153,7 +178,7 @@ public class WallFollower extends Action{
 				this.driver.moveForward(200F, true);
 				driver.sendDebug("MOVE FORWARD");
 				this.tilesTravelledBetweenCalib = 0;
-			}**/
+			}
 			driver.modifyOrientation();
 		}
 		/**
@@ -162,7 +187,7 @@ public class WallFollower extends Action{
 		 * @throws InterruptedException
 		 * @throws ActionException 
 		 */
-		private void travelSouth() throws InterruptedException, ActionException {
+		private void travelSouth() throws InterruptedException, ActionException, CalibrationException {
 			switch(moveDirection){
 				case DOWN:
 					break;
@@ -189,8 +214,9 @@ public class WallFollower extends Action{
 		 * 
 		 * @throws InterruptedException
 		 * @throws ActionException 
+		 * @throws CalibrationException 
 		 */
-		private void travelWest() throws InterruptedException, ActionException {
+		private void travelWest() throws InterruptedException, ActionException, CalibrationException {
 			switch(moveDirection){
 				case DOWN:
 					this.driver.turnRight(90F, true);
@@ -221,8 +247,9 @@ public class WallFollower extends Action{
 		 * 
 		 * @throws InterruptedException
 		 * @throws ActionException 
+		 * @throws CalibrationException 
 		 */
-		private void travelNorth() throws InterruptedException, ActionException {
+		private void travelNorth() throws InterruptedException, ActionException, CalibrationException {
 			switch(moveDirection){
 				case DOWN:
 					this.driver.turnRight(180F, true);
@@ -252,8 +279,9 @@ public class WallFollower extends Action{
 		 * 
 		 * @throws InterruptedException
 		 * @throws ActionException 
+		 * @throws CalibrationException 
 		 */
-		private void travelEast() throws InterruptedException, ActionException {
+		private void travelEast() throws InterruptedException, ActionException, CalibrationException {
 			switch(moveDirection){
 				case DOWN:
 					this.driver.turnLeft(90F, true);

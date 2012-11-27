@@ -356,4 +356,18 @@ public class Tile {
 	public void setBarCode(int barCode) {
 		this.barCode = barCode;
 	}
+
+
+	/**
+	 * Returns whether this tile is allowed to have a barcode.
+	 * 
+	 * Current specification is that only in straight tiles there can be barcodes.
+	 * 
+	 * @return
+	 */
+	public boolean canHaveBarcode() {
+		boolean vertical = this.getBorderEast() == Border.CLOSED && this.getBorderWest() == Border.CLOSED;
+		boolean horizontal = this.getBorderNorth() == Border.CLOSED && this.getBorderSouth() == Border.CLOSED;
+		return vertical || horizontal;
+	}
 }
