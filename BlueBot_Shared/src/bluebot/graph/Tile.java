@@ -366,8 +366,8 @@ public class Tile {
 	 * @return
 	 */
 	public boolean canHaveBarcode() {
-		boolean vertical = this.getBorderEast() == Border.CLOSED && this.getBorderWest() == Border.CLOSED;
-		boolean horizontal = this.getBorderNorth() == Border.CLOSED && this.getBorderSouth() == Border.CLOSED;
+		boolean vertical = this.getBorderEast() == Border.CLOSED && this.getBorderWest() == Border.CLOSED && this.getBorderNorth() == Border.OPEN && this.getBorderSouth() == Border.OPEN;
+		boolean horizontal = this.getBorderNorth() == Border.CLOSED && this.getBorderSouth() == Border.CLOSED && this.getBorderEast() == Border.OPEN && this.getBorderWest() == Border.OPEN;
 		return vertical || horizontal;
 	}
 }

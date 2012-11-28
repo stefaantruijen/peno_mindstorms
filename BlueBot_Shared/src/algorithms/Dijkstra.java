@@ -85,12 +85,14 @@ public class Dijkstra {
 	   * @return
 	   */
 	  private int getDistance(Tile t1, Tile t2) {
+		  /**
 	    for (Edge edge : edges) {
 	      if (edge.getTiles().contains(t1)&&edge.getTiles().contains(t2)) {
 	        return edge.getWeight();
 	      }
 	    }
-	    throw new RuntimeException("Should not happen");
+	    throw new RuntimeException("Should not happen");**/
+		  return 1;
 	  }
 	  /**
 	   * Get all neighbors for a given tile.

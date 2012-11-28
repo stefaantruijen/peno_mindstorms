@@ -29,12 +29,16 @@ public class WallFollower extends Action{
 		private int tilesTravelledBetweenCalib = 0;
 		private List<Tile> blackSpots;
 		private BarcodeExecuter barcodeExecuter;
+		private ArrayList<Tile> stillCheckForBarcode;
+		private Dijkstra dijkstra;
 		
 		public WallFollower(){
 			this.maze = new Graph();
 			this.headDirection=Direction.UP;
 			this.moveDirection=Direction.UP;
 			this.blackSpots = null;
+			this.stillCheckForBarcode = new ArrayList<Tile>();
+			this.dijkstra = new Dijkstra(this.maze);
 		}
 		/**
 		 * Execute the wall following algorithm. Always keep the wall to your right. Till we're back on the start position and all
@@ -47,6 +51,7 @@ public class WallFollower extends Action{
 			this.driver = driver;
 			this.driver.setSpeed(80);
 			this.driver.resetOrientation();
+			long startTime = System.currentTimeMillis();
 			this.initializeRootTile();
 			
 			// The barcode executor can only be initialized here,
@@ -79,10 +84,43 @@ public class WallFollower extends Action{
 					this.findBlackSpots();
 				}
 			}while(this.hasUnvisitedNeighbors(this.maze.getRootTile())||this.hasUnvisitedNeighbors(current)||this.graphHasUnvisitedNeighbors());
-			Dijkstra dijkstra = new Dijkstra(maze);
-			dijkstra.execute(current);
-			List<Tile> path = dijkstra.getPath(maze.getVertex(3, 5));
-			path.remove(0);
+			if(stillCheckForBarcode.size()>0){
+				for(Tile t:stillCheckForBarcode){
+					dijkstra.execute(current);
+					List<Tile> path = dijkstra.getPath(t);
+					this.followPath(path);
+				}
+			}
+			long stopTime = System.currentTimeMillis();
+			long duration = stopTime-startTime;
+			int seconds = (int) (duration / 1000) % 60 ;
+			int minutes = (int) ((duration / (1000*60)) % 60);
+			String finishStamp = null;
+			if(this.maze.getFinishVertex() != null){
+				long startFinish = System.currentTimeMillis();
+				driver.sendDebug(new Integer(this.maze.getEdges().size()).toString());
+				dijkstra.execute(current);
+				List<Tile> path = dijkstra.getPath(maze.getFinishVertex());
+				path.remove(0);
+				this.followPath(path);
+				long endFinish = System.currentTimeMillis();
+				long finishDuration = endFinish-startFinish;
+				int finishseconds = (int) (finishDuration / 1000) % 60 ;
+				int finishminutes = (int) ((finishDuration / (1000*60)) % 60);
+				finishStamp = (finishminutes<10 ? "0"+finishminutes : finishminutes)+":"+(finishseconds<10 ? "0"+finishseconds : finishseconds);
+			}else{
+				driver.sendError("No finish tile was scanned.");
+			}
+			StringBuilder str = new StringBuilder();
+			str.append("It took "+(minutes<10 ? "0"+minutes : minutes)+":"+(seconds<10 ? "0"+seconds : seconds)+" to explore the maze.");
+			if(finishStamp != null){
+				str.append("\nIt took "+finishStamp+" to reach the finish tile.");
+			}
+			driver.sendMessage(str.toString(), "Maze explored !");
+			
+		}
+		
+		private void followPath(List<Tile> path) throws CalibrationException, InterruptedException, ActionException{
 			for(Tile t : path){
 				this.moveTo(t);
 				this.current = t;
@@ -571,6 +609,9 @@ public class WallFollower extends Action{
 			}
 			driver.sendTile(t);
 			driver.sendTile(neighbor);
+			if(neighbor.getBarCode()!=-1 && neighbor.canHaveBarcode()){
+				this.stillCheckForBarcode.add(neighbor);
+			}
 		}
 		private Tile getNeighborForGivenDirection(Direction d,Tile t) {
 			this.maze.addVerticies(t.getAbsoluteNeighbors());
