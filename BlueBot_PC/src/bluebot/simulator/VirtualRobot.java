@@ -30,6 +30,7 @@ import bluebot.util.Utils;
  * 
  */
 public class VirtualRobot extends AbstractRobot {
+	private static final String AUDIO_FILE_PATH = "data\\Bells.wav";
 	/**
  	 *Static that holds the maximum travel speed in degrees/s.
 	 */
@@ -539,15 +540,7 @@ public class VirtualRobot extends AbstractRobot {
 	
 	public void playSound() {
 		try{
-			playSound(new File("Bells.wav"));
-			
-//			final AudioInputStream stream =
-//					AudioSystem.getAudioInputStream(VirtualRobot.class.getResource("music.wav"));
-//			final DataLine.Info info =
-//					new DataLine.Info(Clip.class, stream.getFormat());
-//			final Clip clip = (Clip)AudioSystem.getLine(info);
-//		    clip.open(stream);
-//		    clip.start();
+			playSound(new File(AUDIO_FILE_PATH));
 		} catch (final Exception e) {
 			Toolkit.getDefaultToolkit().beep();
 			e.printStackTrace();
