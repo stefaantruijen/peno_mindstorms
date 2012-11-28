@@ -77,20 +77,16 @@ public class WallFollower extends Action{
 					}
 				}
 				
-				this.maze.addEdge(current, next);
 				this.maze.addVerticies(next.getAbsoluteNeighbors());
-				this.current = next;
+				
 				if(current == this.maze.getRootTile() && !hasUnvisitedNeighbors(this.maze.getRootTile())){
 					this.findBlackSpots();
 				}
+				
 			}while(this.hasUnvisitedNeighbors(this.maze.getRootTile())||this.hasUnvisitedNeighbors(current)||this.graphHasUnvisitedNeighbors());
-			if(stillCheckForBarcode.size()>0){
-				for(Tile t:stillCheckForBarcode){
-					dijkstra.execute(current);
-					List<Tile> path = dijkstra.getPath(t);
-					this.followPath(path);
-				}
-			}
+			
+			this.processBarcodes();
+			
 			long stopTime = System.currentTimeMillis();
 			long duration = stopTime-startTime;
 			int seconds = (int) (duration / 1000) % 60 ;
@@ -119,7 +115,37 @@ public class WallFollower extends Action{
 			driver.sendMessage(str.toString(), "Maze explored !");
 			
 		}
-		
+		/**
+		 * Check for tiles that still need to be checked for barcodes. And process them if necessary.
+		 * 
+		 * @throws CalibrationException
+		 * @throws InterruptedException
+		 * @throws ActionException
+		 * @throws DriverException
+		 */
+		private void processBarcodes() throws CalibrationException,
+				InterruptedException, ActionException, DriverException {
+			if(stillCheckForBarcode.size()>0){
+				for(Tile t:stillCheckForBarcode){
+					dijkstra.execute(current);
+					List<Tile> path = dijkstra.getPath(t);
+					this.followPath(path);
+					final int barcode = scanBarcode(current);
+					if (barcode > 0) {
+						this.barcodeExecuter.executeBarcode(barcode, current);
+					}
+					
+				}
+			}
+		}
+		/**
+		 * Follow a given path of tiles.
+		 * 
+		 * @param path
+		 * @throws CalibrationException
+		 * @throws InterruptedException
+		 * @throws ActionException
+		 */
 		private void followPath(List<Tile> path) throws CalibrationException, InterruptedException, ActionException{
 			for(Tile t : path){
 				this.moveTo(t);
@@ -151,51 +177,11 @@ public class WallFollower extends Action{
 			}else{
 				driver.sendError("[EXCEPTION]-Something strange happend.");
 			}
+			this.current = next;
 			
 		}
-		/**
-		 * This makes the algorithm 'smarter'. It will check if we can gather information about unexplored tiles from tiles we already have explored.
-		 */
-		@Deprecated
-		private void processUnExploredTiles(){
-			for(Tile t : this.maze.getUnExploredTiles()){
-				this.driver.sendTile(t);
-				for(Tile t2 : this.maze.getVerticies()){
-					if(t.isAbsoluteNeighborFrom(t2)){
-						determineBorders(t,t2);
-					}
-				}
-			}
-		}
-		/**
-		 * Determine the already known border information for 2 given tiles and update the unexplored tile.
-		 * 
-		 * @param t
-		 * @param t2
-		 */
-		private void determineBorders(Tile t, Tile t2) {
-			if(t.isWestFrom(t2)){
-				t.setBorderEast(t2.getBorderWest());
-				t2.setBorderWest(t.getBorderEast());
-			}
-			if(t.isEastFrom(t2)){
-				t.setBorderWest(t2.getBorderEast());
-				t2.setBorderEast(t.getBorderWest());
-			}
-			
-			if(t.isNorthFrom(t2)){
-				t.setBorderSouth(t2.getBorderNorth());
-				t2.setBorderNorth(t.getBorderSouth());
-			}
-			
-			if(t.isSouthFrom(t2)){
-				t.setBorderNorth(t2.getBorderSouth());
-				t2.setBorderSouth(t.getBorderNorth());
-			}
-			
-			driver.sendTile(t);
-			driver.sendTile(t2);
-		}
+		
+		
 		/**
 		 * Move forward , every 4 tiles orientate the robot.
 		 * 
@@ -466,59 +452,7 @@ public class WallFollower extends Action{
 			this.current = root;
 			//this.processUnExploredTiles();
 		}
-		/**
-		 * Explore and update a given tile.
-		 * 
-		 * @param t
-		 * @return
-		 * @throws InterruptedException
-		 */
-		@Deprecated
-		private Tile exploreTile(Tile t) throws InterruptedException{
-			for(int i = 0;i<=3;i++){
-				switch(headDirection){
-					case DOWN:
-						if(checkForWall()){
-							t.setBorderSouth(Border.CLOSED);
-						}else{
-							t.setBorderSouth(Border.OPEN);
-						}
-						break;
-					case LEFT:
-						if(checkForWall()){
-							t.setBorderWest(Border.CLOSED);
-						}else{
-							t.setBorderWest(Border.OPEN);
-						}
-						break;
-					case RIGHT:
-						if(checkForWall()){
-							t.setBorderEast(Border.CLOSED);
-						}else{
-							t.setBorderEast(Border.OPEN);	
-						}
-						break;
-					case UP:
-						if(checkForWall()){
-							t.setBorderNorth(Border.CLOSED);
-						}else{
-							t.setBorderNorth(Border.OPEN);
-						}
-						break;
-					default:
-						break;
-				
-				}
-				driver.turnHeadClockWise(90);
-				this.headDirection = headDirection.turnCWise();
-				this.driver.sendTile(t);
-			}
-			for(int i = 0;i<=3;i++){
-				driver.turnHeadCounterClockWise(90);
-				this.headDirection = headDirection.turnCCWise();
-			}
-			return t;
-		}
+		
 		/**
 		 * Check if a given tile has unvisited neighbors.
 		 * @param t
@@ -613,6 +547,13 @@ public class WallFollower extends Action{
 				this.stillCheckForBarcode.add(neighbor);
 			}
 		}
+		/**
+		 * Ask the neighboring tile in a given direction and given tile.
+		 * 
+		 * @param d
+		 * @param t
+		 * @return
+		 */
 		private Tile getNeighborForGivenDirection(Direction d,Tile t) {
 			this.maze.addVerticies(t.getAbsoluteNeighbors());
 			for(Tile n : this.maze.getAbsoluteNeighborsFrom(t)){
@@ -753,7 +694,15 @@ public class WallFollower extends Action{
 			
 			return directions;
 		}
-		
+		/**
+		 * Scan a given tile for a barcode.
+		 * 
+		 * @param tile
+		 * @return
+		 * @throws ActionException
+		 * @throws DriverException
+		 * @throws InterruptedException
+		 */
 		private final int scanBarcode(final Tile tile)
 				throws ActionException, DriverException, InterruptedException {
 			int barcode = tile.getBarCode();
