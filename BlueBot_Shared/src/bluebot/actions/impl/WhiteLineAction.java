@@ -97,18 +97,18 @@ public class WhiteLineAction extends Action {
 		if (flag) {
 			while (!isAborted()
 					&& driver.isMoving()
-					&& (driver.readSensorLightBrightness() != Brightness.WHITE));
+					&& !driver.readsWhite());
 		} else {
 			while (!isAborted()
 					&& driver.isMoving()
-					&& (driver.readSensorLightBrightness() == Brightness.WHITE));
+					&& driver.readsWhite());
 		}
 	}
 	
 	private final void waitForWhiteOrWall(final Driver driver) throws CalibrationException{
 		while (!isAborted()
 				&& driver.isMoving()
-				&& (driver.readSensorLightBrightness() != Brightness.WHITE)
+				&& !driver.readsWhite()
 				&& (driver.readSensorUltraSonic() > 14));
 	}
 	

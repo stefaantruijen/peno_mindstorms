@@ -167,6 +167,18 @@ public abstract class AbstractDriver implements Driver {
 		return getRobot().readSensorUltraSonic();
 	}
 	
+	public boolean readsBlack() throws CalibrationException{
+		return this.readSensorLightBrightness() == Brightness.BLACK;
+	}
+
+	public boolean readsWhite() throws CalibrationException{
+		return this.readSensorLightBrightness() == Brightness.WHITE;
+	}
+	
+	public boolean readsGray() throws CalibrationException{
+		return this.readSensorLightBrightness() == Brightness.GRAY;
+	}
+	
 	public void resetOrientation() {
 		getRobot().resetOrientation();
 	}

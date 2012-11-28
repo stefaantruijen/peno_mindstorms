@@ -1,6 +1,7 @@
 package bluebot.actions.impl;
 
 import bluebot.Driver;
+import bluebot.Robot;
 import bluebot.actions.Action;
 import bluebot.actions.ActionException;
 import bluebot.graph.Orientation;
@@ -24,7 +25,6 @@ public class ReadBarcodeAction extends Action {
 	private Driver driver;
 	private int slow = 16;
 	private int barcode =0;
-	private boolean hasBarcode = false;
 	private Tile currentTile;
 	
 	/**
@@ -43,12 +43,12 @@ public class ReadBarcodeAction extends Action {
 		
 		driver.setSpeed(slow);
 		
-		if(!readBlack()){
+		if(!driver.readsBlack()){
 			int maxDriveDistance = 50;
 			//Drive backwards to the first black line.
 			driver.moveBackward(maxDriveDistance, false);
 			waitForBlack(driver, true);
-			if (readBlack()) {
+			if (driver.readsBlack()) {
 				driver.stop();
 			} else {
 				//No barcode in this Tile.
@@ -57,7 +57,7 @@ public class ReadBarcodeAction extends Action {
 			}
 		}
 		//Compensate for case that we are in the barcode.
-		while(!readGrey()){
+		while(!driver.readsGray()){
 			driver.moveForward(20, true);
 		}
 		
@@ -69,45 +69,44 @@ public class ReadBarcodeAction extends Action {
 		difference = Math.abs(difference - getPosition(driver));
 		//Position robot in middle of first black line
 		driver.moveBackward(difference/2F+10, true);
-		if(!readBlack()){
+		if(!driver.readsBlack()){
 			//Positioning failed
 			throw new ActionException("First black line moved. :0");
 		}
 		//We are in the middle of the first black line.
 		for(int i=6; i>0; i--){ // Read the 6 significant lines.
 			driver.moveBackward(20, true);
-			if(readBlack()){
+			if(driver.readsBlack()){
 				appendBlackToBarcode();
-			} else if(readWhite()){
+			} else if(driver.readsWhite()){
 				appendWhiteToBarcode();
 			}
 		}
+		//Move robot to center of the ending black line
 		driver.moveBackward(20, true);
-		if(!readBlack()){
+		if(!driver.readsBlack()){
 			//Positioning failed
-			throw new ActionException("Second black line moved. :0");
+			throw new ActionException("End black line moved. :0");
 		}
 		
-		//Now validate the readed barcode and update the tile.
+		//Now validate the read barcode and update the tile.
 		barcode = BarcodeValidator.validate(barcode);
 		if(barcode != -1){
 			currentTile.setBarCode(barcode);
 			driver.sendTile(currentTile);
-//			TODO: Maybe remove this message cause it is quite intrusive in the GUI
-			//     OR just use the Driver.sendDebug(String) method?
 			driver.sendDebug("Barcode found:  " + barcode);
-//			driver.sendMessage("Barcode found:" +barcode, "barcode");
 		}
 		
 		// Return to the middle of the tile.
-		// TODO: There's no need to adjust/correct our heading,
-		//        since this algorithm never turns the robot.
-		//        We could simply drive backwards
-		//        until we discover the white line,
-		//        and then move forward (200 + |sensor-center|) mm
-		driver.moveForward(200, true);
-		executeWhiteLine(driver);
-		driver.moveBackward(200, true);
+		//	There's no need to adjust/correct our heading,
+		//      since this algorithm never turns the robot.
+		//      We could simply drive backwards
+		//      until we discover the white line,
+		//      and then move forward (200 + |sensor-center|) mm
+		driver.moveBackward();
+		waitForWhite(driver, true);
+		driver.stop();
+		driver.moveForward(200 + Robot.OFFSET_SENSOR_LIGHT, true);
 	}
 
 	private float getPosition(Driver driver) {
@@ -139,18 +138,33 @@ public class ReadBarcodeAction extends Action {
 		if (flag) {
 			while (!isAborted()
 					&& driver.isMoving()
-					&& !readBlack());
+					&& !driver.readsBlack());
 		} else {
 			while (!isAborted()
 					&& driver.isMoving()
-					&& readBlack());
+					&& driver.readsBlack());
 		}
 	}
 
-	private boolean readGrey() throws CalibrationException {
-		return driver.readSensorLightBrightness() == Brightness.GRAY;
+	//TODO: make this an action to prevent code duplication.
+	private final void waitForWhite(final Driver driver, final boolean flag) throws CalibrationException {
+		if (flag) {
+			while (!isAborted()
+					&& driver.isMoving()
+					&& !driver.readsWhite());
+		} else {
+			while (!isAborted()
+					&& driver.isMoving()
+					&& driver.readsWhite());
+		}
 	}
 
+	/**
+	 * This returns the value of the barcode if there is one. 
+	 * @return
+	 * 		If a barcode is found returns it's value (>0)
+	 * 		If no barcode is found or an illegal one is found returns -1.
+	 */
 	public int getBarcode() {
 		return barcode;
 	}
@@ -170,17 +184,5 @@ public class ReadBarcodeAction extends Action {
 	private void appendWhiteToBarcode(){
 		barcode <<= 1;
 		barcode |= 1;
-	}
-	
-	private boolean readBlack() throws CalibrationException{
-		return driver.readSensorLightBrightness() == Brightness.BLACK;
-	}
-
-	private boolean readWhite() throws CalibrationException{
-		return driver.readSensorLightBrightness() == Brightness.WHITE;
-	}
-	
-	public boolean hasBarCode(){
-		return hasBarcode;
 	}
 }

@@ -78,6 +78,34 @@ public interface Driver extends Mobile {
 	public int readSensorUltraSonic();
 	
 	/**
+	 * Returns true if the light sensor reads a black brightness
+	 * 
+	 * @return
+	 * @throws CalibrationException
+	 * 		If the driver is not yet calibrated
+	 */
+	public boolean readsBlack() throws CalibrationException;
+
+	/**
+	 * Returns true if the light sensor reads a white brightness
+	 * 
+	 * @return
+	 * @throws CalibrationException
+ 	 * 		If the driver is not yet calibrated
+	 */
+	public boolean readsWhite() throws CalibrationException;
+	
+	/**
+	 * Returns true if the light sensor reads a 'gray' brightness
+	 * 'gray' here means strictly not white and not black.
+	 * 
+	 * @return
+	 * @throws CalibrationException
+ 	 * 		If the driver is not yet calibrated
+	 */
+	public boolean readsGray() throws CalibrationException;
+	
+	/**
 	 * Sends a debug message
 	 * 
 	 * @param msg - the message to be sent

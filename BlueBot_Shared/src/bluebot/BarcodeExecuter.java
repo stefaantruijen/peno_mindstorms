@@ -41,12 +41,20 @@ public class BarcodeExecuter {
 	}
 
 	/**
+	 * Executes the appropriate action for the given code. 
+	 * If a non-valid code is given the method send and error message.
+	 * 	
+	 * In every case there should be a:
+	 * 	 sendDebugAndMessage(msg, bool);
+	 * The bool should depend on the action. If the action has clear feedback in de GUI (sound, turning of car, ...) bool should be false.
+	 * Otherwise bool should be true;
 	 * 
 	 * @param code
 	 * @param currentTile
 	 */
 	public void executeBarcode(int code, Tile currentTile) {
 		this.currentTile = currentTile;
+		String msg;
 		int validatedCode = BarcodeValidator.validate(code);
 		if(validatedCode == -1){
 			driver.sendError(convertIntToBinary(code) + " is an illegal barcode. No action will be undertaken.");
@@ -56,28 +64,32 @@ public class BarcodeExecuter {
 		switch (validatedCode) {
 		case 5: 
 			// "000101": Draai een rondje naar links
-			driver.sendMessage("Executing " + convertIntToBinary(validatedCode)+": Turning 360� left.", "BARCODE");
+			msg = "Executing " + convertIntToBinary(validatedCode)+": Turning 360 degrees left.";
+			sendDebugAndMessage(msg, false);
 			driver.turnLeft(360, true);
 			break;
 		case 9: 
 			// "001001": Draai een rondje naar rechts
-			driver.sendMessage("Executing " + convertIntToBinary(validatedCode)+": Turning 360� right.", "BARCODE");
+			msg = "Executing " + convertIntToBinary(validatedCode)+": Turning 360 degrees right.";
+			sendDebugAndMessage(msg, false);
 			driver.turnRight(360, true);
+			break;
+		case 13:
+			msg = "Executing" + convertIntToBinary(validatedCode)+": Checkpoint found ("+currentTile.getX()+","+currentTile.getY()+")";
+			sendDebugAndMessage(msg, true);
+			this.graph.setCheckpointVertex(this.currentTile);
 			break;
 		case 15: 
 			// "001111": speel een muziekje
-			driver.sendMessage("Executing " + convertIntToBinary(validatedCode)+": Playing music.", "BARCODE");
-//			File file = new File(pathToMusic);
-//			System.out.println("abs =" + file.getAbsolutePath());
-//			if(file.exists()){
-//				driver.playSound(file);
-//			}
+			msg = "Executing " + convertIntToBinary(validatedCode)+": Playing music.";
+			sendDebugAndMessage(msg, false);
 			driver.playSound();
 			break;
 		case 19: 
 			// "010011": wacht 5 seconden
 			//TODO: dit is mogelijk geen correcte implementatie (wegens multi threading). Hogerop nodig? Vraag na en/of test
-			driver.sendMessage("Executing " + convertIntToBinary(validatedCode)+": Waiting 5 seconds.", "BARCODE");
+			msg = "Executing " + convertIntToBinary(validatedCode)+": Waiting 5 seconds.";
+			sendDebugAndMessage(msg, true);
 			double startTime = System.currentTimeMillis();
 			while ((System.currentTimeMillis() - startTime) < 5000) {
 				// wait
@@ -85,16 +97,19 @@ public class BarcodeExecuter {
 			break;
 		case 25: 
 			// "011001": vanaf nu aan trage snelheid rijden
-			driver.sendMessage("Executing " + convertIntToBinary(validatedCode)+": Setting a slow speed (20%).", "BARCODE");
+			msg = "Executing " + convertIntToBinary(validatedCode)+": Setting a slow speed (20%).";
+			sendDebugAndMessage(msg, true);
 			driver.setSpeed(lowSpeed);
 			break;
 		case 37: 
 			// "100101": vanaf nu aan hoge snelheid rijden
-			driver.sendMessage("Executing " + convertIntToBinary(validatedCode)+": Setting a fast speed (100%).", "BARCODE");
+			msg = "Executing " + convertIntToBinary(validatedCode)+": Setting a fast speed (100%).";
+			sendDebugAndMessage(msg, true);
 			driver.setSpeed(highSpeed);
 		case 55:
+			msg = "Executing" + convertIntToBinary(validatedCode)+": Finish found ("+currentTile.getX()+","+currentTile.getY()+")";
+			sendDebugAndMessage(msg, true);
 			this.graph.setFinishVertex(this.currentTile);
-			driver.sendMessage("Executing" + convertIntToBinary(validatedCode)+": Finish found ("+currentTile.getX()+","+currentTile.getY()+")", "BARCODE");
 			break;
 		default:
 			//Valid barcode but not yet implemented.
@@ -109,7 +124,7 @@ public class BarcodeExecuter {
 	 */
 	private void sendNotImplemented(int code) {
 		String msg = "No action implemented for barcode " + convertIntToBinary(code) +".";
-//		driver.sendMessage(msg, "BARCODE");
+		driver.sendMessage(msg, "BARCODE");
 		driver.sendDebug(msg);
 	}
 	
@@ -171,6 +186,13 @@ public class BarcodeExecuter {
 		final File file = fc.getSelectedFile();
 		driver.playSound(file);
 		
+	}
+	
+	private void sendDebugAndMessage(String msg, boolean sendMessage){
+		if(sendMessage){
+			driver.sendMessage(msg,"BARCODE");
+		}
+		driver.sendDebug(msg);
 	}
 	
 }
