@@ -7,6 +7,7 @@ import java.util.List;
 import algorithms.Dijkstra;
 import bluebot.BarcodeExecuter;
 import bluebot.Driver;
+import bluebot.DriverException;
 import bluebot.actions.Action;
 import bluebot.actions.ActionException;
 import bluebot.graph.Border;
@@ -43,7 +44,7 @@ public class WallFollower extends Action{
 		 * @throws CalibrationException 
 		 */
 		@Override
-		public void execute(Driver driver) throws InterruptedException, ActionException, CalibrationException {
+		public void execute(Driver driver) throws InterruptedException, ActionException, DriverException {
 			this.driver = driver;
 			this.driver.setSpeed(80);
 			this.driver.resetOrientation();
