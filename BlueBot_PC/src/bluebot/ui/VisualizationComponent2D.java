@@ -303,10 +303,8 @@ public class VisualizationComponent2D extends VisualizationComponent
 		};
 		
 		final int bits = tile.getBarCode();
-		if (bits != -1) {
-			System.out.println("Drawing code:  " + bits);
+		if (bits > 0) {
 			thickness = Math.max(1, (TILE_RESOLUTION / 20));
-			System.out.println("thickness = " + thickness);
 			
 			final Color[] colors = {
 				Color.BLACK,
@@ -318,9 +316,6 @@ public class VisualizationComponent2D extends VisualizationComponent
 				(((bits & 0x01) == 0) ? Color.BLACK : Color.WHITE),
 				Color.BLACK
 			};
-			for (final Color color : colors) {
-				System.out.println(color);
-			}
 			if (borders[0] == Border.CLOSED) {
 				// Horizontal
 				int xx = x + ((TILE_RESOLUTION >>> 1) - (thickness << 2));

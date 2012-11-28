@@ -216,7 +216,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 	}
 	
 	private final Component createModuleVisualization() {
-		canvas = new VisualizationComponent();
+		canvas = new VisualizationComponent2D();
 //		canvas = new VisualizationComponent3D();
 		controller.addListener(canvas);
 		return createModule(canvas, "Visualization");

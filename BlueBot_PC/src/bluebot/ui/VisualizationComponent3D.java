@@ -257,8 +257,6 @@ public class VisualizationComponent3D extends VisualizationComponent {
 			}
 		}
 		
-		
-		
 		img.setRGB(0, 0, w, h, pixels, 0, w);
 		
 //		gfx.dispose();
