@@ -1,6 +1,7 @@
 package bluebot.simulator;
 
 
+import java.awt.Toolkit;
 import java.io.File;
 import java.lang.reflect.Method;
 
@@ -117,6 +118,10 @@ public class DummyRobot extends AbstractRobot {
 		if (wait) {
 			finishMotion();
 		}
+	}
+	
+	public void playSound() {
+		Toolkit.getDefaultToolkit().beep();
 	}
 	
 	public void playSound(final File file) {

@@ -67,11 +67,12 @@ public class BarcodeExecuter {
 		case 15: 
 			// "001111": speel een muziekje
 			driver.sendMessage("Executing " + convertIntToBinary(validatedCode)+": Playing music.", "BARCODE");
-			File file = new File(pathToMusic);
-			System.out.println("abs =" + file.getAbsolutePath());
-			if(file.exists()){
-				driver.playSound(file);
-			}
+//			File file = new File(pathToMusic);
+//			System.out.println("abs =" + file.getAbsolutePath());
+//			if(file.exists()){
+//				driver.playSound(file);
+//			}
+			driver.playSound();
 			break;
 		case 19: 
 			// "010011": wacht 5 seconden

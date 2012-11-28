@@ -88,11 +88,6 @@ public class ReadBarcodeAction extends Action {
 			throw new ActionException("Second black line moved. :0");
 		}
 		
-		//Return to the middle of the tile.
-		driver.moveForward(200, true);
-		executeWhiteLine(driver);
-		driver.moveBackward(200, true);
-		
 		//Now validate the readed barcode and update the tile.
 		barcode = BarcodeValidator.validate(barcode);
 		if(barcode != -1){
@@ -103,6 +98,16 @@ public class ReadBarcodeAction extends Action {
 			driver.sendDebug("Barcode found:  " + barcode);
 //			driver.sendMessage("Barcode found:" +barcode, "barcode");
 		}
+		
+		// Return to the middle of the tile.
+		// TODO: There's no need to adjust/correct our heading,
+		//        since this algorithm never turns the robot.
+		//        We could simply drive backwards
+		//        until we discover the white line,
+		//        and then move forward (200 + |sensor-center|) mm
+		driver.moveForward(200, true);
+		executeWhiteLine(driver);
+		driver.moveBackward(200, true);
 	}
 
 	private float getPosition(Driver driver) {

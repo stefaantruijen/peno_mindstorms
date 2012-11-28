@@ -128,6 +128,10 @@ public abstract class AbstractDriver implements Driver {
 		}
 	}
 	
+	public void playSound() {
+		getRobot().playSound();
+	}
+	
 	/**
 	 * plays the given file (.wav)
 	 */

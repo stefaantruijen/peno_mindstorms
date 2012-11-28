@@ -120,6 +120,10 @@ public class PhysicalRobot extends AbstractRobot {
 		getPilot().travel(Math.abs(distance), !wait);
 	}
 	
+	public void playSound() {
+		// TODO
+	}
+	
 	public int readSensorLight() {
 		return sensorLight.getLightValue();
 //		return sensorLight.getNormalizedLightValue();

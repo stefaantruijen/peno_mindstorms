@@ -167,19 +167,19 @@ public class WallFollower extends Action{
 		 * @throws ActionException 
 		 */
 		private void moveForward() throws InterruptedException, ActionException, CalibrationException {
-			if(tilesTravelledBetweenCalib<3){
+//			if(tilesTravelledBetweenCalib<3){
 				this.driver.moveForward(400F, true);
-				tilesTravelledBetweenCalib++;
-			}else{
-				this.driver.moveForward(40F, true);
-				WhiteLineAction wa = new WhiteLineAction();
-					driver.sendDebug("ORIENTATING");
-					wa.execute(this.driver);		
-				this.driver.setSpeed(80);
-				this.driver.moveForward(200F, true);
-				driver.sendDebug("MOVE FORWARD");
-				this.tilesTravelledBetweenCalib = 0;
-			}
+//				tilesTravelledBetweenCalib++;
+//			}else{
+//				this.driver.moveForward(40F, true);
+//				WhiteLineAction wa = new WhiteLineAction();
+//					driver.sendDebug("ORIENTATING");
+//					wa.execute(this.driver);		
+//				this.driver.setSpeed(80);
+//				this.driver.moveForward(200F, true);
+//				driver.sendDebug("MOVE FORWARD");
+//				this.tilesTravelledBetweenCalib = 0;
+//			}
 			driver.modifyOrientation();
 		}
 		/**

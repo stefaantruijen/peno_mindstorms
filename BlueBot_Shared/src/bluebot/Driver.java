@@ -43,6 +43,11 @@ public interface Driver extends Mobile {
 	public void modifyOrientation();
 	
 	/**
+	 * Plays a little bit of music
+	 */
+	public void playSound();
+	
+	/**
 	 * Returns the current value of the light sensor
 	 * 
 	 * @return an <code>int</code> from the interval [0, 100]

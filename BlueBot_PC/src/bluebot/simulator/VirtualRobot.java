@@ -1,4 +1,5 @@
 package bluebot.simulator;
+import java.awt.Toolkit;
 import java.io.File;
 import java.util.Random;
 
@@ -535,8 +536,24 @@ public class VirtualRobot extends AbstractRobot {
 			initializeMove(wait);
 		}
 	}
-
-
+	
+	public void playSound() {
+		try{
+			playSound(new File("Bells.wav"));
+			
+//			final AudioInputStream stream =
+//					AudioSystem.getAudioInputStream(VirtualRobot.class.getResource("music.wav"));
+//			final DataLine.Info info =
+//					new DataLine.Info(Clip.class, stream.getFormat());
+//			final Clip clip = (Clip)AudioSystem.getLine(info);
+//		    clip.open(stream);
+//		    clip.start();
+		} catch (final Exception e) {
+			Toolkit.getDefaultToolkit().beep();
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * Returns the light sensor value at the current position and heading.
 	 * 
