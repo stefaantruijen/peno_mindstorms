@@ -187,6 +187,11 @@ public class PhysicalRobot extends AbstractRobot {
 	}
 	
 	@Override
+	public float getArcLimit() {
+		return 150;
+	}
+	
+	@Override
 	public void turnHeadClockWise(int offset) {
 		this.head.rotate(-Math.abs(offset));
 		
