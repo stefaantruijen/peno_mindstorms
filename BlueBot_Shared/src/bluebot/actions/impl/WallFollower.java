@@ -35,7 +35,6 @@ public class WallFollower extends Action{
 			this.headDirection=Direction.UP;
 			this.moveDirection=Direction.UP;
 			this.blackSpots = null;
-			this.barcodeExecuter = new BarcodeExecuter(driver, maze);
 		}
 		/**
 		 * Execute the wall following algorithm. Always keep the wall to your right. Till we're back on the start position and all
@@ -50,6 +49,10 @@ public class WallFollower extends Action{
 			this.driver.resetOrientation();
 			this.initializeRootTile();
 			
+			// The barcode executor can only be initialized here,
+			// because there is no Driver instance
+			// to pass to its constructor before this point.
+			this.barcodeExecuter = new BarcodeExecuter(driver, maze);
 			
 			do{
 				if(isAborted()){
@@ -63,11 +66,8 @@ public class WallFollower extends Action{
 				}
 				
 				if(next.canHaveBarcode()){
-					ReadBarcodeAction read = new ReadBarcodeAction(next);
-					read.execute(driver);
-					int barcode = read.getBarcode();
-					// barcode == 0 then there is no barcode on this tile.
-					if(barcode != 0){
+					final int barcode = scanBarcode(next);
+					if (barcode > 0) {
 						this.barcodeExecuter.executeBarcode(barcode, next);
 						//Because the ReadBarcodeAction recalibrates when he found a barcode
 						this.tilesTravelledBetweenCalib = 0;
@@ -714,4 +714,37 @@ public class WallFollower extends Action{
 			
 			return directions;
 		}
+		
+		private final int scanBarcode(final Tile tile)
+				throws ActionException, DriverException, InterruptedException {
+			int barcode = tile.getBarCode();
+			if (barcode == 0) {
+				// The tile has been checked before,
+				// and it has no barcode
+				return -1;
+			}
+			if (barcode > 0) {
+				// The tile has been checked before,
+				// and it has a valid barcode
+				return barcode;
+			}
+			
+			final ReadBarcodeAction reader = new ReadBarcodeAction(tile);
+			
+			final int speed = driver.getSpeed();
+			reader.execute(driver);
+			driver.setSpeed(speed);
+			
+			barcode = reader.getBarcode();
+			if (barcode <= 0) {
+				// Remember to not check this tile again
+				tile.setBarCode(0);
+				return -1;
+			}
+			
+			tile.setBarCode(barcode);
+			driver.sendTile(tile);
+			return barcode;
+		}
+		
 	}

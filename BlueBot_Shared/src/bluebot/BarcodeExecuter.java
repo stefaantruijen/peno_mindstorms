@@ -56,12 +56,12 @@ public class BarcodeExecuter {
 		switch (validatedCode) {
 		case 5: 
 			// "000101": Draai een rondje naar links
-			driver.sendMessage("Executing " + convertIntToBinary(validatedCode)+": Turning 360° left.", "BARCODE");
+			driver.sendMessage("Executing " + convertIntToBinary(validatedCode)+": Turning 360ï¿½ left.", "BARCODE");
 			driver.turnLeft(360, true);
 			break;
 		case 9: 
 			// "001001": Draai een rondje naar rechts
-			driver.sendMessage("Executing " + convertIntToBinary(validatedCode)+": Turning 360° right.", "BARCODE");
+			driver.sendMessage("Executing " + convertIntToBinary(validatedCode)+": Turning 360ï¿½ right.", "BARCODE");
 			driver.turnRight(360, true);
 			break;
 		case 15: 
@@ -108,7 +108,7 @@ public class BarcodeExecuter {
 	 */
 	private void sendNotImplemented(int code) {
 		String msg = "No action implemented for barcode " + convertIntToBinary(code) +".";
-		driver.sendMessage(msg, "BARCODE");
+//		driver.sendMessage(msg, "BARCODE");
 		driver.sendDebug(msg);
 	}
 	

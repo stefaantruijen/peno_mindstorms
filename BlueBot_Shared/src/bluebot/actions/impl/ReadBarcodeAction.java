@@ -94,11 +94,14 @@ public class ReadBarcodeAction extends Action {
 		driver.moveBackward(200, true);
 		
 		//Now validate the readed barcode and update the tile.
-		int validatedBarcode = BarcodeValidator.validate(barcode);
-		if(validatedBarcode != -1){
-			currentTile.setBarCode(validatedBarcode);
+		barcode = BarcodeValidator.validate(barcode);
+		if(barcode != -1){
+			currentTile.setBarCode(barcode);
+			driver.sendTile(currentTile);
 //			TODO: Maybe remove this message cause it is quite intrusive in the GUI
-			driver.sendMessage("Barcode found:" +validatedBarcode, "barcode");
+			//     OR just use the Driver.sendDebug(String) method?
+			driver.sendDebug("Barcode found:  " + barcode);
+//			driver.sendMessage("Barcode found:" +barcode, "barcode");
 		}
 	}
 
