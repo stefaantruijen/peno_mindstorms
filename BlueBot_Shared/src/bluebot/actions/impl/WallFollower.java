@@ -69,8 +69,6 @@ public class WallFollower extends Action{
 					final int barcode = scanBarcode(next);
 					if (barcode > 0) {
 						this.barcodeExecuter.executeBarcode(barcode, next);
-						//Because the ReadBarcodeAction recalibrates when he found a barcode
-						this.tilesTravelledBetweenCalib = 0;
 					}
 				}
 				
