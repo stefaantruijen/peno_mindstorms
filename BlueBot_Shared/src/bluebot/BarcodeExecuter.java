@@ -76,7 +76,7 @@ public class BarcodeExecuter {
 			break;
 		case 13:
 			msg = "Executing" + convertIntToBinary(validatedCode)+": Checkpoint found ("+currentTile.getX()+","+currentTile.getY()+")";
-			sendDebugAndMessage(msg, true);
+			sendDebugAndMessage(msg, false);
 			this.graph.setCheckpointVertex(this.currentTile);
 			break;
 		case 15: 
@@ -89,7 +89,7 @@ public class BarcodeExecuter {
 			// "010011": wacht 5 seconden
 			//TODO: dit is mogelijk geen correcte implementatie (wegens multi threading). Hogerop nodig? Vraag na en/of test
 			msg = "Executing " + convertIntToBinary(validatedCode)+": Waiting 5 seconds.";
-			sendDebugAndMessage(msg, true);
+			sendDebugAndMessage(msg, false);
 			double startTime = System.currentTimeMillis();
 			while ((System.currentTimeMillis() - startTime) < 5000) {
 				// wait
@@ -98,17 +98,18 @@ public class BarcodeExecuter {
 		case 25: 
 			// "011001": vanaf nu aan trage snelheid rijden
 			msg = "Executing " + convertIntToBinary(validatedCode)+": Setting a slow speed (20%).";
-			sendDebugAndMessage(msg, true);
+			sendDebugAndMessage(msg, false);
 			driver.setSpeed(lowSpeed);
 			break;
 		case 37: 
 			// "100101": vanaf nu aan hoge snelheid rijden
 			msg = "Executing " + convertIntToBinary(validatedCode)+": Setting a fast speed (100%).";
-			sendDebugAndMessage(msg, true);
+			sendDebugAndMessage(msg, false);
 			driver.setSpeed(highSpeed);
+			break;
 		case 55:
 			msg = "Executing" + convertIntToBinary(validatedCode)+": Finish found ("+currentTile.getX()+","+currentTile.getY()+")";
-			sendDebugAndMessage(msg, true);
+			sendDebugAndMessage(msg, false);
 			this.graph.setFinishVertex(this.currentTile);
 			break;
 		default:
