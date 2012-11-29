@@ -1,5 +1,6 @@
 package bluebot.actions.impl;
 
+
 import bluebot.Driver;
 import bluebot.Robot;
 import bluebot.actions.Action;
@@ -9,6 +10,8 @@ import bluebot.graph.Tile;
 import bluebot.maze.BarcodeValidator;
 import bluebot.sensors.Brightness;
 import bluebot.sensors.CalibrationException;
+
+
 
 /**
  * Precodition:
@@ -44,7 +47,7 @@ public class ReadBarcodeAction extends Action {
 		driver.setSpeed(slow);
 		
 		if(!driver.readsBlack()){
-			int maxDriveDistance = 50;
+			int maxDriveDistance = 120;
 			//Drive backwards to the first black line.
 			driver.moveBackward(maxDriveDistance, false);
 			waitForBlack(driver, true);
