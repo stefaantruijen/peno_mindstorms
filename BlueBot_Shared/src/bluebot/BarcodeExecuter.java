@@ -49,6 +49,8 @@ public class BarcodeExecuter {
 	 * The bool should depend on the action. If the action has clear feedback in de GUI (sound, turning of car, ...) bool should be false.
 	 * Otherwise bool should be true;
 	 * 
+	 * TODO: remove the specific testing cases and change back to normal.
+	 * 
 	 * @param code
 	 * @param currentTile
 	 */
@@ -74,12 +76,12 @@ public class BarcodeExecuter {
 			sendDebugAndMessage(msg, true, validatedCode);
 			driver.turnRight(360, true);
 			break;
-		case 13:
+		case 37: //13
 			msg = "Checkpoint found ("+currentTile.getX()+","+currentTile.getY()+")";
 			sendDebugAndMessage(msg, true, validatedCode);
 			this.graph.setCheckpointVertex(this.currentTile);
 			break;
-		case 15: 
+		case 47: //15
 			// "001111": speel een muziekje
 			msg = "Playing music.";
 			sendDebugAndMessage(msg, true, validatedCode);
@@ -101,13 +103,13 @@ public class BarcodeExecuter {
 			sendDebugAndMessage(msg, true, validatedCode);
 			driver.setSpeed(lowSpeed);
 			break;
-		case 37: 
+		case 38: //37
 			// "100101": vanaf nu aan hoge snelheid rijden
-			msg = "Setting a fast speed (100%).";
+			msg = "Sett ccing a fast speed (100%).";
 			sendDebugAndMessage(msg, true, validatedCode);
 			driver.setSpeed(highSpeed);
 			break;
-		case 55:
+		case 35: // 55
 			msg = "Finish found ("+currentTile.getX()+","+currentTile.getY()+")";
 			sendDebugAndMessage(msg, true, validatedCode);
 			this.graph.setFinishVertex(this.currentTile);
