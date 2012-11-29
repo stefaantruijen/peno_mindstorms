@@ -92,7 +92,11 @@ public class WallFollower extends Action{
 			int seconds = (int) (duration / 1000) % 60 ;
 			int minutes = (int) ((duration / (1000*60)) % 60);
 			String finishStamp = null;
-			if(this.maze.getFinishVertex() != null){
+			if(this.maze.getFinishVertex() != null && this.maze.getCheckpointVertex() != null){
+				dijkstra.execute(current);
+				List<Tile> path1 = dijkstra.getPath(maze.getCheckpointVertex());
+				path1.remove(0);
+				this.followPath(path1);
 				long startFinish = System.currentTimeMillis();
 				driver.sendDebug(new Integer(this.maze.getEdges().size()).toString());
 				dijkstra.execute(current);
