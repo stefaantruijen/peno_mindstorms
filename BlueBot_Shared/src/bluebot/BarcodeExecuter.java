@@ -124,9 +124,9 @@ public class BarcodeExecuter {
 	 * @param code
 	 */
 	private void sendNotImplemented(int code) {
-		String msg = "No action implemented for barcode " + convertIntToBinary(code) +".";
-		driver.sendMessage(msg, "BARCODE");
+		String msg = "No action implemented for barcode " + convertIntToBinary(code);
 		driver.sendDebug(msg);
+		driver.sendMessage((code + ":" + msg), "barcode");
 	}
 	
 	/**
