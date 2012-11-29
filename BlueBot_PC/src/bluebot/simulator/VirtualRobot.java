@@ -30,7 +30,7 @@ import bluebot.util.Utils;
  * 
  */
 public class VirtualRobot extends AbstractRobot {
-	private static final String AUDIO_FILE_PATH = "data\\Bells.wav";
+	private static final String AUDIO_FILE_PATH = "data/Bells.wav";
 	/**
  	 *Static that holds the maximum travel speed in degrees/s.
 	 */
