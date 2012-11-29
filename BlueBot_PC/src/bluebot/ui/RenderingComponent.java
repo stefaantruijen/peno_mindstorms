@@ -20,6 +20,7 @@ public abstract class RenderingComponent extends JComponent {
 	
 	public RenderingComponent() {
 		setFocusable(false);
+		setLayout(null);
 	}
 	
 	

@@ -8,13 +8,11 @@ import java.awt.Paint;
 import java.awt.TexturePaint;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -23,10 +21,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import bluebot.graph.Border;
-import bluebot.graph.Graph;
 import bluebot.graph.Tile;
 import bluebot.maze.MazeListener;
-import bluebot.maze.MazeReader;
 
 
 
@@ -66,20 +62,6 @@ public class VisualizationComponent2D extends VisualizationComponent
 		setPreferredSize(new Dimension(size, size));
 		
 		addMouseWheelListener(this);
-		addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(final MouseEvent event) {
-				final Graph graph = new MazeReader().parseMaze(new File("maze.txt").getAbsolutePath());
-				graph.getVerticies();
-				
-				for (final Tile tile : graph.getVerticies()) {
-					if (tile.getBarCode() != -1) {
-						System.out.println(tile + ":  " + tile.getBarCode());
-					}
-					onTileUpdate(tile);
-				}
-			}
-		});
 	}
 	
 	
@@ -281,6 +263,22 @@ public class VisualizationComponent2D extends VisualizationComponent
 //		gfx.setColor(Color.YELLOW);
 		gfx.setPaint(TEXTURE_TILE);
 		gfx.fillRect(x, y, TILE_RESOLUTION, TILE_RESOLUTION);
+		
+		Color overlay = null;
+		switch (tile.getBarCode()) {
+			case 13:
+				// Waypoint
+				overlay = new Color(0x33FF0000, true);
+				break;
+			case 55:
+				// Finish
+				overlay = new Color(0x3300FF00, true);
+				break;
+		}
+		if (overlay != null) {
+			gfx.setColor(overlay);
+			gfx.fillRect(x, y, TILE_RESOLUTION, TILE_RESOLUTION);
+		}
 		
 		int thickness = (TILE_RESOLUTION >> 4);
 		
@@ -507,6 +505,22 @@ public class VisualizationComponent2D extends VisualizationComponent
 		gfx.dispose();
 		
 		repaint(0L);
+	}
+	
+	@Override
+	protected void processMouseEvent(final MouseEvent event) {
+		super.processMouseEvent(event);
+//		if (event.getID() == MouseEvent.MOUSE_CLICKED) {
+//			final Graph graph = new MazeReader().parseMaze(new File("maze.txt").getAbsolutePath());
+//			graph.getVerticies();
+//			
+//			for (final Tile tile : graph.getVerticies()) {
+//				if (tile.getBarCode() != -1) {
+//					System.out.println(tile + ":  " + tile.getBarCode());
+//				}
+//				onTileUpdate(tile);
+//			}
+//		}
 	}
 	
 	protected void render(final Graphics2D gfx, final int w, final int h) {

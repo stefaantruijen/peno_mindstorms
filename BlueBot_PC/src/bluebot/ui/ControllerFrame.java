@@ -33,6 +33,7 @@ import bluebot.core.ControllerListener;
 public class ControllerFrame extends JFrame implements ControllerListener {
 	private static final long serialVersionUID = 1L;
 	
+	private BarcodeComponent barcode;
 	private VisualizationComponent canvas;
 	private Controller controller;
 
@@ -219,10 +220,32 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		canvas = new VisualizationComponent2D();
 //		canvas = new VisualizationComponent3D();
 		controller.addListener(canvas);
-		return createModule(canvas, "Visualization");
+		
+		barcode = new BarcodeComponent();
+		barcode.setPreferredSize(new Dimension(-1, 24));
+		
+		final GridBagLayout layout = new GridBagLayout();
+		layout.columnWeights = new double[] { 1D };
+		layout.rowWeights = new double[] { 1D, 0D };
+		
+		final GridBagConstraints gbc = new GridBagConstraints();
+		
+		final JPanel panel = new JPanel(layout);
+		
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.insets.set(0, 0, 5, 0);
+		panel.add(canvas, gbc);
+		
+		gbc.gridy++;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.insets.set(5, 5, 5, 5);
+		panel.add(barcode, gbc);
+		
+		return createModule(panel, "Visualization");
 	}
 	
-	private final JTabbedPane createTabs() {
+	private final Component createTabs() {
 		final JTabbedPane tabs = new JTabbedPane(JTabbedPane.TOP);
 		tabs.addTab("Communication", createModuleCommunication());
 		tabs.addTab("Visualization", createModuleVisualization());
@@ -266,8 +289,14 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 	}
 	
 	public void onMessage(final String msg, final String title) {
-		JOptionPane.showMessageDialog(this, msg, title,
-				JOptionPane.INFORMATION_MESSAGE);
+		if (title.toLowerCase().equals("barcode")) {
+			final int split = msg.indexOf(':');
+			barcode.setBarcode(Integer.parseInt(msg.substring(0, split)));
+			barcode.setText(msg.substring(split + 1));
+		} else {
+			JOptionPane.showMessageDialog(this, msg, title,
+					JOptionPane.INFORMATION_MESSAGE);
+		}
 	}
 	
 }
