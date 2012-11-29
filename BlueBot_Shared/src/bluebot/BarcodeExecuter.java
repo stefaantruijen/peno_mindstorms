@@ -64,32 +64,32 @@ public class BarcodeExecuter {
 		switch (validatedCode) {
 		case 5: 
 			// "000101": Draai een rondje naar links
-			msg = "Executing " + convertIntToBinary(validatedCode)+": Turning 360 degrees left.";
-			sendDebugAndMessage(msg, false);
+			msg = "Turning 360 degrees left.";
+			sendDebugAndMessage(msg, true, validatedCode);
 			driver.turnLeft(360, true);
 			break;
 		case 9: 
 			// "001001": Draai een rondje naar rechts
-			msg = "Executing " + convertIntToBinary(validatedCode)+": Turning 360 degrees right.";
-			sendDebugAndMessage(msg, false);
+			msg = "Turning 360 degrees right.";
+			sendDebugAndMessage(msg, true, validatedCode);
 			driver.turnRight(360, true);
 			break;
 		case 13:
-			msg = "Executing" + convertIntToBinary(validatedCode)+": Checkpoint found ("+currentTile.getX()+","+currentTile.getY()+")";
-			sendDebugAndMessage(msg, false);
+			msg = "Checkpoint found ("+currentTile.getX()+","+currentTile.getY()+")";
+			sendDebugAndMessage(msg, true, validatedCode);
 			this.graph.setCheckpointVertex(this.currentTile);
 			break;
 		case 15: 
 			// "001111": speel een muziekje
-			msg = "Executing " + convertIntToBinary(validatedCode)+": Playing music.";
-			sendDebugAndMessage(msg, false);
+			msg = "Playing music.";
+			sendDebugAndMessage(msg, true, validatedCode);
 			driver.playSound();
 			break;
 		case 19: 
 			// "010011": wacht 5 seconden
 			//TODO: dit is mogelijk geen correcte implementatie (wegens multi threading). Hogerop nodig? Vraag na en/of test
-			msg = "Executing " + convertIntToBinary(validatedCode)+": Waiting 5 seconds.";
-			sendDebugAndMessage(msg, false);
+			msg = "Waiting 5 seconds.";
+			sendDebugAndMessage(msg, true, validatedCode);
 			double startTime = System.currentTimeMillis();
 			while ((System.currentTimeMillis() - startTime) < 5000) {
 				// wait
@@ -97,19 +97,19 @@ public class BarcodeExecuter {
 			break;
 		case 25: 
 			// "011001": vanaf nu aan trage snelheid rijden
-			msg = "Executing " + convertIntToBinary(validatedCode)+": Setting a slow speed (20%).";
-			sendDebugAndMessage(msg, false);
+			msg = "Setting a slow speed (20%).";
+			sendDebugAndMessage(msg, true, validatedCode);
 			driver.setSpeed(lowSpeed);
 			break;
 		case 37: 
 			// "100101": vanaf nu aan hoge snelheid rijden
-			msg = "Executing " + convertIntToBinary(validatedCode)+": Setting a fast speed (100%).";
-			sendDebugAndMessage(msg, false);
+			msg = "Setting a fast speed (100%).";
+			sendDebugAndMessage(msg, true, validatedCode);
 			driver.setSpeed(highSpeed);
 			break;
 		case 55:
-			msg = "Executing" + convertIntToBinary(validatedCode)+": Finish found ("+currentTile.getX()+","+currentTile.getY()+")";
-			sendDebugAndMessage(msg, false);
+			msg = "Finish found ("+currentTile.getX()+","+currentTile.getY()+")";
+			sendDebugAndMessage(msg, true, validatedCode);
 			this.graph.setFinishVertex(this.currentTile);
 			break;
 		default:
@@ -165,35 +165,12 @@ public class BarcodeExecuter {
 		return graph;
 	}
 	
-	private final void loadSound(Driver driver) {
-		final JFileChooser fc = new JFileChooser(new File("."));
-		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		for (final FileFilter filter : fc.getChoosableFileFilters()) {
-			fc.removeChoosableFileFilter(filter);
-		}
-		fc.addChoosableFileFilter(new FileFilter() {
-			public boolean accept(final File file) {
-				return (file.isDirectory() || file.getName().endsWith(".wav"));
-			}
-			
-			public String getDescription() {
-				return "Sound files (.wav)";
-			}
-		});
-		
-		fc.setApproveButtonText("Load");
-		fc.setDialogTitle("Load a sound file");
-		
-		final File file = fc.getSelectedFile();
-		driver.playSound(file);
-		
-	}
-	
-	private void sendDebugAndMessage(String msg, boolean sendMessage){
+	private void sendDebugAndMessage(String msg, boolean sendMessage, int barcode){
+		String result = barcode + ": " + msg + " (" + convertIntToBinary(barcode) +")";
 		if(sendMessage){
-			driver.sendMessage(msg,"BARCODE");
+			driver.sendMessage(result,"BARCODE");
 		}
-		driver.sendDebug(msg);
+		driver.sendDebug(result);
 	}
 	
 }
