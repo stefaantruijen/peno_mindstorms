@@ -279,6 +279,8 @@ public class Graph {
 	public void setCheckpointVertex(Tile t){
 		this.checkpointVertex = t;
 	}
+	
+	
 	  
 
 }

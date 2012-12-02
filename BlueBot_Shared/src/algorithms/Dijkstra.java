@@ -1,18 +1,14 @@
 package algorithms;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-
 import java.util.Map;
 
-
+import bluebot.graph.Edge;
 import bluebot.graph.Graph;
 import bluebot.graph.Tile;
-import bluebot.graph.Edge;
 /**
  * Dijkstra's Shortest Path Algorithm in Java
  * 
@@ -27,7 +23,7 @@ import bluebot.graph.Edge;
  * @author Lars Vogel,Incalza Dario
  *
  */
-public class Dijkstra {
+public class Dijkstra implements PathFinder{
 	
 	  private final List<Edge> edges;
 	  private List<Tile> settledNodes;
@@ -45,7 +41,7 @@ public class Dijkstra {
 	   * 
 	   * @param source
 	   */
-	  public void execute(Tile source) {
+	  private void execute(Tile source) {
 	    settledNodes = new ArrayList<Tile>();
 	    unSettledNodes = new ArrayList<Tile>();
 	    distance = new HashMap<Tile, Integer>();
@@ -142,7 +138,7 @@ public class Dijkstra {
 	   * This method returns the path from the source to the selected target and
 	   * NULL if no path exists
 	   */
-	  public List<Tile> getPath(Tile target) {
+	  private List<Tile> getPath(Tile target) {
 	    LinkedList<Tile> path = new LinkedList<Tile>();
 	    Tile step = target;
 	    // Check if a path exists
@@ -166,5 +162,10 @@ public class Dijkstra {
 		  }
 		  return tmp;
 	  }
+	@Override
+	public List<Tile> findShortestPath(Tile from, Tile to) {
+		this.execute(from);
+		return this.getPath(to);
+	}
 
 }

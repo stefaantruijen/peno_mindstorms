@@ -13,7 +13,7 @@ import java.util.List;
  * 
  * @author Ruben Feyen
  */
-public class Tile {
+public class Tile implements Comparable{
 	
 	/**    The size of a tile (in mm)    */
 	public static final float SIZE = 400F;
@@ -21,10 +21,19 @@ public class Tile {
 	private byte borders;
 	private int x, y;
 	private int barCode = -1;
+
+	private double distanceFromStart;
+
+	private Tile parent;
+
+	private double heuristicDistanceFromGoal;
+
+	private Direction orientationToReach;
 	
 	public Tile(final int x, final int y) {
 		this.x = x;
 		this.y = y;
+		this.distanceFromStart = Double.MAX_VALUE;
 		
 	}
 	
@@ -370,4 +379,78 @@ public class Tile {
 		boolean horizontal = this.getBorderNorth() == Border.CLOSED && this.getBorderSouth() == Border.CLOSED && this.getBorderEast() == Border.OPEN && this.getBorderWest() == Border.OPEN;
 		return vertical || horizontal;
 	}
+
+
+
+	public void setDistanceFromStart(double neighborDistanceFromStart) {
+		this.distanceFromStart = neighborDistanceFromStart;
+		
+	}
+
+
+
+	public double getDistanceFromStart() {
+		return this.distanceFromStart;
+	}
+
+
+
+	public void setPreviousNode(Tile current) {
+		this.parent = current;
+		
+	}
+
+
+
+	public void setHeuristicDistanceFromGoal(double determineHeuristicValue) {
+		this.heuristicDistanceFromGoal = determineHeuristicValue;
+		
+	}
+
+
+
+	public Tile getPreviousNode() {
+		
+		return this.parent;
+	}
+
+
+
+	@Override
+	public int compareTo(Object arg0) {
+		Tile otherNode = (Tile) arg0;
+		double thisTotalDistanceFromGoal = heuristicDistanceFromGoal + distanceFromStart;
+        double otherTotalDistanceFromGoal = otherNode.getHeuristicDistanceFromGoal() + otherNode.getDistanceFromStart();
+        
+        if (thisTotalDistanceFromGoal < otherTotalDistanceFromGoal) {
+                return -1;
+        } else if (thisTotalDistanceFromGoal > otherTotalDistanceFromGoal) {
+                return 1;
+        } else {
+                return 0;
+        }
+	}
+
+
+
+	private double getHeuristicDistanceFromGoal() {
+		return this.heuristicDistanceFromGoal;
+	}
+
+
+
+	public void setOrientationToReach(Direction bestDir) {
+		this.orientationToReach = bestDir;
+		
+	}
+
+
+
+	public Direction getOrientationToReach() {
+		return this.orientationToReach;
+	}
+
+
+
+	
 }
