@@ -4,6 +4,7 @@ package bluebot.actions.impl;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Stack;
 
 import algorithms.PathFinder;
 import algorithms.PathFinderFactory;
@@ -93,9 +94,8 @@ public class MazeAction extends Action {
 		
 		this.processBarcodes();
 		this.current.setOrientationToReach(this.moveDirection);
-		for(Tile t : pf.findShortestPath(current, this.maze.getVertex(3,0))){
-			this.moveTo(t);
-		}
+		this.followEfficientlyPath(pf.findShortestPath(current, this.maze.getVertex(3,0)));
+		
 		
 		/**
 		long stopTime = System.currentTimeMillis();
@@ -746,6 +746,28 @@ public class MazeAction extends Action {
 		tile.setBarCode(barcode);
 		driver.sendTile(tile);
 		return barcode;
+	}
+	
+	private void followEfficientlyPath(List<Tile> path) throws CalibrationException, InterruptedException, ActionException{
+		ArrayList<Tile> straightLine = new ArrayList<Tile>();
+		for(Tile t : path){
+			if(this.isOnStraighLine(t)){
+				straightLine.add(t);
+			}else{
+				if(straightLine.size()>0){
+					int distanceForward = straightLine.size()*400;
+					this.driver.moveForward(distanceForward,true);
+				}
+				this.moveTo(t);
+				straightLine.clear();
+			}
+			this.current = t;
+		}
+		
+	}
+	
+	private boolean isOnStraighLine(Tile t){
+		return t.equals(getNeighborForGivenDirection(this.moveDirection, this.current));
 	}
 	
 }
