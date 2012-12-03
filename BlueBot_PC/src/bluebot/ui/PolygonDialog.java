@@ -1,7 +1,7 @@
 package bluebot.ui;
 
 
-import static bluebot.ui.SwingUtils.*;
+import static bluebot.ui.SwingUtils.showWarning;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -11,7 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
@@ -21,29 +20,19 @@ import javax.swing.JTextField;
  * 
  * @author Ruben Feyen
  */
-public class PolygonDialog extends JDialog {
+public class PolygonDialog extends AbstractDialog<Boolean> {
 	private static final long serialVersionUID = 1L;
 	
-	private boolean confirmed;
 	private JTextField inputCorners;
 	private JTextField inputLength;
 	
 	
-	public PolygonDialog() {
-		super((Window)null, "Polygon");
-		initComponents();
-		pack();
-		setLocationRelativeTo(null);
-		setModal(true);
-		setResizable(false);
+	public PolygonDialog(final Window owner) {
+		super(owner, "Polygon");
+		setResult(false);
 	}
 	
 	
-	
-	public boolean confirm() {
-		setVisible(true);
-		return confirmed;
-	}
 	
 	public int getCorners() {
 		try {
@@ -61,7 +50,7 @@ public class PolygonDialog extends JDialog {
 		}
 	}
 	
-	private final void initComponents() {
+	protected void initComponents() {
 		final Dimension sizeLabel = new Dimension(190, 25);
 		
 		final JLabel lblCorners = new JLabel("Number of corners:");
@@ -93,7 +82,7 @@ public class PolygonDialog extends JDialog {
 					return;
 				}
 				
-				confirmed = true;
+				setResult(true);
 				dispose();
 			}
 		});

@@ -14,6 +14,7 @@ import bluebot.io.protocol.Packet;
 import bluebot.io.protocol.PacketHandler;
 import bluebot.io.protocol.impl.CommandPacket;
 import bluebot.io.protocol.impl.ConfigPacket;
+import bluebot.io.protocol.impl.MazePacket;
 import bluebot.io.protocol.impl.MovePacket;
 import bluebot.io.protocol.impl.PolygonPacket;
 
@@ -47,6 +48,9 @@ public class DriverHandler implements PacketHandler {
 				break;
 			case Packet.OP_DISCONNECT:
 				handlePacketDisconnect();
+				break;
+			case Packet.OP_MAZE:
+				handlePacketMaze((MazePacket)packet);
 				break;
 			case Packet.OP_MOVE:
 				handlePacketMove((MovePacket)packet);
@@ -94,6 +98,11 @@ public class DriverHandler implements PacketHandler {
 	private final void handlePacketDisconnect() {
 		stop();
 		driver.dispose();
+	}
+	
+	private final void handlePacketMaze(final MazePacket packet) {
+		// TODO: Actually select the path-finding algorithm ...
+		queue.queue(new MazeAction());
 	}
 	
 	private final void handlePacketMove(final MovePacket packet) {
