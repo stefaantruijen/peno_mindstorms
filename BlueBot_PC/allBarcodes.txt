@@ -1,0 +1,11 @@
+6 8
+
+# 2012-13 - Semester 1 - Demo 2 - doolhof voor simulator (Straight.N.15 was Straight.W.00)
+Corner.N	Corner.E	Corner.N	T.N		T.N		Corner.E
+Straight.N.55	Cross	Straight.N.19	Straight.N.04	Cross	Corner.E
+Straight.N.9	Straight.N.4	Straight.N.25	Straight.N.37	Cross	DeadEnd.S
+Straight.N.13	Straight.N.0	Straight.N.5	Straight.N.04	Cross	Corner.S
+Straight.N.15	DeadEnd.S	Straight.N.00	Straight.N.04	Corner.W	Corner.S
+T.W		Straight.W.00	Cross		Cross		Corner.E	DeadEnd.N
+Corner.W	DeadEnd.E	Straight.N.37	Straight.S.00	Straight.S.00	Straight.N.13	
+DeadEnd.W	Straight.W.15	Corner.S	DeadEnd.S	Corner.W	Corner.S
