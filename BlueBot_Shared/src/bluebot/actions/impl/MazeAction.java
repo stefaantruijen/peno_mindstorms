@@ -97,7 +97,7 @@ public class MazeAction extends Action {
 		long duration = stopTime-startTime;
 		int seconds = (int) (duration / 1000) % 60 ;
 		int minutes = (int) ((duration / (1000*60)) % 60);
-		String finishStamp = null;/**
+		String finishStamp = null;
 		if(this.maze.getFinishVertex() != null && this.maze.getCheckpointVertex() != null){
 			this.followEfficientlyPath(pf.findShortestPath(current, this.maze.getCheckpointVertex()));
 			long startFinish = System.currentTimeMillis();
@@ -116,8 +116,8 @@ public class MazeAction extends Action {
 			str.append("\nIt took "+finishStamp+" to reach the finish tile.");
 		}
 		driver.sendMessage(str.toString(), "Maze explored !");
-		**/
-		this.followPath(pf.findShortestPath(current, maze.getVertex(0,3)));
+		
+		//this.followPath(pf.findShortestPath(current, maze.getVertex(0,3)));
 		
 	}
 	/**
