@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
+import algorithms.Dijkstra;
 import algorithms.PathFinder;
 import algorithms.PathFinderFactory;
 import bluebot.BarcodeExecuter;
@@ -34,19 +35,17 @@ public class MazeAction extends Action {
 	private List<Tile> blackSpots;
 	private BarcodeExecuter barcodeExecuter;
 	private ArrayList<Tile> stillCheckForBarcode;
-	private final PathFinder pf;
+	private final Dijkstra pf;
+	
 	
 	public MazeAction(){
-		this(PathFinder.ASTAR);
-	}
-	
-	public MazeAction(int pathFinderChoice){
 		this.maze = new Graph();
 		this.headDirection=Direction.UP;
 		this.moveDirection=Direction.UP;
 		this.blackSpots = null;
 		this.stillCheckForBarcode = new ArrayList<Tile>();
-		this.pf = PathFinderFactory.createPathFinder(this.maze, pathFinderChoice);
+		this.pf = new Dijkstra(this.maze);
+		//this.pf = PathFinderFactory.createPathFinder(this.maze, pathFinderChoice);
 	}
 	/**
 	 * Execute the wall following algorithm. Always keep the wall to your right. Till we're back on the start position and all
@@ -98,7 +97,7 @@ public class MazeAction extends Action {
 		long duration = stopTime-startTime;
 		int seconds = (int) (duration / 1000) % 60 ;
 		int minutes = (int) ((duration / (1000*60)) % 60);
-		String finishStamp = null;
+		String finishStamp = null;/**
 		if(this.maze.getFinishVertex() != null && this.maze.getCheckpointVertex() != null){
 			this.followEfficientlyPath(pf.findShortestPath(current, this.maze.getCheckpointVertex()));
 			long startFinish = System.currentTimeMillis();
@@ -117,6 +116,8 @@ public class MazeAction extends Action {
 			str.append("\nIt took "+finishStamp+" to reach the finish tile.");
 		}
 		driver.sendMessage(str.toString(), "Maze explored !");
+		**/
+		this.followPath(pf.findShortestPath(current, maze.getVertex(0,3)));
 		
 	}
 	/**
