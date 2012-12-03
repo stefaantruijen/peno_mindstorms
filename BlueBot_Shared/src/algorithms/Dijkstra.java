@@ -160,6 +160,7 @@ public class Dijkstra implements PathFinder{
 		  for(int i = path.size()-1;i>=0;i--){
 			  tmp.add(path.get(i));
 		  }
+		  tmp.remove(0);
 		  return tmp;
 	  }
 	@Override
