@@ -94,26 +94,15 @@ public class MazeAction extends Action {
 		
 		this.processBarcodes();
 		this.current.setOrientationToReach(this.moveDirection);
-		this.followEfficientlyPath(pf.findShortestPath(current, this.maze.getVertex(3,0)));
-		
-		
-		/**
 		long stopTime = System.currentTimeMillis();
 		long duration = stopTime-startTime;
 		int seconds = (int) (duration / 1000) % 60 ;
 		int minutes = (int) ((duration / (1000*60)) % 60);
 		String finishStamp = null;
 		if(this.maze.getFinishVertex() != null && this.maze.getCheckpointVertex() != null){
-			dijkstra.execute(current);
-			List<Tile> path1 = dijkstra.getPath(maze.getCheckpointVertex());
-			path1.remove(0);
-			this.followPath(path1);
+			this.followEfficientlyPath(pf.findShortestPath(current, this.maze.getCheckpointVertex()));
 			long startFinish = System.currentTimeMillis();
-			driver.sendDebug(new Integer(this.maze.getEdges().size()).toString());
-			dijkstra.execute(current);
-			List<Tile> path = dijkstra.getPath(maze.getFinishVertex());
-			path.remove(0);
-			this.followPath(path);
+			this.followEfficientlyPath(pf.findShortestPath(current, this.maze.getFinishVertex()));
 			long endFinish = System.currentTimeMillis();
 			long finishDuration = endFinish-startFinish;
 			int finishseconds = (int) (finishDuration / 1000) % 60 ;
@@ -127,7 +116,7 @@ public class MazeAction extends Action {
 		if(finishStamp != null){
 			str.append("\nIt took "+finishStamp+" to reach the finish tile.");
 		}
-		driver.sendMessage(str.toString(), "Maze explored !");**/
+		driver.sendMessage(str.toString(), "Maze explored !");
 		
 	}
 	/**
@@ -142,7 +131,7 @@ public class MazeAction extends Action {
 			InterruptedException, ActionException, DriverException {
 		if(stillCheckForBarcode.size()>0){
 			for(Tile t:stillCheckForBarcode){
-				this.followPath(pf.findShortestPath(current, t));
+				this.followEfficientlyPath(pf.findShortestPath(current,t));;
 				final int barcode = scanBarcode(current);
 				if (barcode > 0) {
 					this.barcodeExecuter.executeBarcode(barcode, current);
@@ -749,6 +738,7 @@ public class MazeAction extends Action {
 	}
 	
 	private void followEfficientlyPath(List<Tile> path) throws CalibrationException, InterruptedException, ActionException{
+		this.driver.setSpeed(100);
 		ArrayList<Tile> straightLine = new ArrayList<Tile>();
 		for(Tile t : path){
 			if(this.isOnStraighLine(t)){
