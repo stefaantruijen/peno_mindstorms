@@ -76,12 +76,12 @@ public class BarcodeExecuter {
 			sendDebugAndMessage(msg, true, validatedCode);
 			driver.turnRight(360, true);
 			break;
-		case 37: //13
+		case 13:
 			msg = "Checkpoint found ("+currentTile.getX()+","+currentTile.getY()+")";
 			sendDebugAndMessage(msg, true, validatedCode);
 			this.graph.setCheckpointVertex(this.currentTile);
 			break;
-		case 47: //15
+		case 15:
 			// "001111": speel een muziekje
 			msg = "Playing music.";
 			sendDebugAndMessage(msg, true, validatedCode);
@@ -103,13 +103,13 @@ public class BarcodeExecuter {
 			sendDebugAndMessage(msg, true, validatedCode);
 			driver.setSpeed(lowSpeed);
 			break;
-		case 38: //37
+		case 37:
 			// "100101": vanaf nu aan hoge snelheid rijden
 			msg = "Sett ccing a fast speed (100%).";
 			sendDebugAndMessage(msg, true, validatedCode);
 			driver.setSpeed(highSpeed);
 			break;
-		case 35: // 55
+		case 55:
 			msg = "Finish found ("+currentTile.getX()+","+currentTile.getY()+")";
 			sendDebugAndMessage(msg, true, validatedCode);
 			this.graph.setFinishVertex(this.currentTile);
