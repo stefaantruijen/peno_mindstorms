@@ -124,7 +124,8 @@ public class PhysicalRobot extends AbstractRobot {
 	}
 	
 	public void playSound() {
-		Sound.beepSequenceUp();
+		File file = new File("Bells9.wav");
+		Sound.playSample(file,100);
 	}
 	
 	public int readSensorLight() {
