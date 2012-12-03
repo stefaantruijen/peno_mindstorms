@@ -1,7 +1,7 @@
 package algorithms;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import bluebot.graph.Direction;
@@ -91,7 +91,7 @@ public class AStar implements PathFinder
 
     private class SortedNodeList {
 
-            private List<Tile> list = new ArrayList<Tile>();
+            private LinkedList<Tile> list = new LinkedList<Tile>();
 
             public Tile getFirst() {
                     return list.get(0);
@@ -102,8 +102,19 @@ public class AStar implements PathFinder
             }
 
             public void add(Tile node) {
-                    list.add(node);
-                    Collections.sort(list);
+            	if(list.isEmpty()){
+            		list.add(node);
+            		return;
+            	}
+                    int index = 0;
+                    while(index <= list.size()-1){
+                    	if(node.compareTo(list.get(index)) == -1){
+                    		list.add(index, node);
+                    		break;
+                    	}
+                    	index++;
+                    }
+                    
             }
 
             public void remove(Tile n) {
