@@ -13,6 +13,7 @@ import bluebot.io.protocol.impl.CommandPacket;
 import bluebot.io.protocol.impl.ConfigPacket;
 import bluebot.io.protocol.impl.DebugPacket;
 import bluebot.io.protocol.impl.ErrorPacket;
+import bluebot.io.protocol.impl.MazePacket;
 import bluebot.io.protocol.impl.MessagePacket;
 import bluebot.io.protocol.impl.MotionPacket;
 import bluebot.io.protocol.impl.MovePacket;
@@ -62,6 +63,8 @@ public class Channel {
 					return new DebugPacket(input);
 				case OP_ERROR:
 					return new ErrorPacket(input);
+				case OP_MAZE:
+					return new MazePacket(input);
 				case OP_MESSAGE:
 					return new MessagePacket(input);
 				case OP_MOTION:

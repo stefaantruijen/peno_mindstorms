@@ -4,11 +4,8 @@ package bluebot.actions.impl;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Stack;
 
 import algorithms.Dijkstra;
-import algorithms.PathFinder;
-import algorithms.PathFinderFactory;
 import bluebot.BarcodeExecuter;
 import bluebot.Driver;
 import bluebot.DriverException;
@@ -31,7 +28,7 @@ public class MazeAction extends Action {
 	private final Graph maze;
 	private Direction headDirection,moveDirection;
 	private Tile current;
-	private int tilesTravelledBetweenCalib = 0;
+	private int turnTimes = 0;
 	private List<Tile> blackSpots;
 	private BarcodeExecuter barcodeExecuter;
 	private ArrayList<Tile> stillCheckForBarcode;
@@ -149,6 +146,7 @@ public class MazeAction extends Action {
 	 * @throws InterruptedException
 	 * @throws ActionException
 	 */
+	@Deprecated
 	private void followPath(List<Tile> path) throws CalibrationException, InterruptedException, ActionException{
 		for(Tile t : path){
 			this.moveTo(t);
@@ -192,19 +190,7 @@ public class MazeAction extends Action {
 	 * @throws ActionException 
 	 */
 	private void moveForward() throws InterruptedException, ActionException, CalibrationException {
-		if(tilesTravelledBetweenCalib<3){
-			this.driver.moveForward(400F, true);
-			tilesTravelledBetweenCalib++;
-		}else{
-			this.driver.moveForward(40F, true);
-			WhiteLineAction wa = new WhiteLineAction();
-				driver.sendDebug("ORIENTATING");
-				wa.execute(this.driver);		
-			
-			this.driver.moveForward(200F, true);
-			driver.sendDebug("MOVE FORWARD");
-			this.tilesTravelledBetweenCalib = 0;
-		}
+		this.driver.moveForward(400F, true);
 		driver.modifyOrientation();
 	}
 	/**

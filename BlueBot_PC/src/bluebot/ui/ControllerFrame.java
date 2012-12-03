@@ -81,7 +81,10 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		buttonMaze.setFont(font);
 		buttonMaze.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {
-				controller.doMaze();
+				final int pathfinder = new MazeDialog(ControllerFrame.this).display();
+				if (pathfinder > 0) {
+					controller.doMaze(pathfinder);
+				}
 			}
 		});
 		
@@ -99,8 +102,8 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		buttonPolygon.setFont(font);
 		buttonPolygon.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {
-				final PolygonDialog dialog = new PolygonDialog();
-				if (dialog.confirm()) {
+				final PolygonDialog dialog = new PolygonDialog(ControllerFrame.this);
+				if (dialog.display()) {
 					controller.doPolygon(dialog.getCorners(),
 							dialog.getLength());
 				}
@@ -148,14 +151,14 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		gbc.gridx++;
 		panel.add(buttonOrientate, gbc);
 		
-		gbc.gridx++;
-		panel.add(buttonPolygon, gbc);
+//		gbc.gridx++;
+//		panel.add(buttonPolygon, gbc);
 		
 		gbc.gridx++;
 		panel.add(buttonReset, gbc);
 		
-		gbc.gridx++;
-		panel.add(buttonTile, gbc);
+//		gbc.gridx++;
+//		panel.add(buttonTile, gbc);
 		
 		return createModule(panel, "Commands");
 	}

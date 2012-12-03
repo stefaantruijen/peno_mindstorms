@@ -1,12 +1,14 @@
 package bluebot.io.protocol;
 
 
+import algorithms.PathFinder;
 import bluebot.graph.Tile;
 import bluebot.io.protocol.impl.CommandPacket;
 import bluebot.io.protocol.impl.ConfigPacket;
 import bluebot.io.protocol.impl.DebugPacket;
 import bluebot.io.protocol.impl.DisconnectPacket;
 import bluebot.io.protocol.impl.ErrorPacket;
+import bluebot.io.protocol.impl.MazePacket;
 import bluebot.io.protocol.impl.MessagePacket;
 import bluebot.io.protocol.impl.MotionPacket;
 import bluebot.io.protocol.impl.MovePacket;
@@ -51,10 +53,15 @@ public class PacketFactory {
 	/**
 	 * Creates a command packet for the maze algorithm
 	 * 
+	 * @param pathfinder an <code>int</code> representing the desired pathfinding algorithm
+	 * 
 	 * @return a {@link Packet} object
+	 * 
+	 * @see PathFinder#ASTAR
+	 * @see PathFinder#DIJKSTRA
 	 */
-	public Packet createCommandMaze() {
-		return createCommand(CommandPacket.MAZE);
+	public Packet createCommandMaze(final int pathfinder) {
+		return new MazePacket(pathfinder);
 	}
 	
 	/**
