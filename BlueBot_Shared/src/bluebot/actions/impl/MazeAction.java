@@ -779,6 +779,10 @@ public class MazeAction extends Action {
 			return driver.isMoving();
 		}
 		
+		protected void print(final String msg) {
+			driver.sendDebug(msg);
+		}
+		
 		protected Brightness readSensor() {
 			try {
 				return driver.readSensorLightBrightness();
