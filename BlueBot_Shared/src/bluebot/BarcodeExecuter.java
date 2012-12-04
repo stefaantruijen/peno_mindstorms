@@ -137,7 +137,7 @@ public class BarcodeExecuter {
 	 * this conversion, where needed! This happens in the {@link addLeadingZeros()}
 	 * method.
 	 */
-	private String convertIntToBinary(int number) {
+	public static String convertIntToBinary(int number) {
 		return addLeadingZeros(Integer.toBinaryString(number));
 	}
 
@@ -145,7 +145,7 @@ public class BarcodeExecuter {
 	 * Adds leading zeros to a barcode that is less that 6 bits long. ("101" =>
 	 * "000101")
 	 */
-	private String addLeadingZeros(String binaryCode) {
+	private static String addLeadingZeros(String binaryCode) {
 		int length = binaryCode.length();
 		if (length < 6) {
 			int nbOfLeadingZeros = 6 - length;

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import algorithms.AbstractBarcodeScanner;
 import algorithms.PathFinder;
 import algorithms.PathFinderFactory;
 import bluebot.BarcodeExecuter;
@@ -16,7 +17,9 @@ import bluebot.graph.Border;
 import bluebot.graph.Direction;
 import bluebot.graph.Graph;
 import bluebot.graph.Tile;
+import bluebot.sensors.Brightness;
 import bluebot.sensors.CalibrationException;
+import bluebot.util.Orientation;
 
 
 
@@ -32,6 +35,7 @@ public class MazeAction extends Action {
 	private int turnTimes = 0;
 	private List<Tile> blackSpots;
 	private BarcodeExecuter barcodeExecuter;
+	private MyBarcodeScanner barcodeScanner;
 	private ArrayList<Tile> stillCheckForBarcode;
 	private final PathFinder pf;
 	
@@ -62,9 +66,12 @@ public class MazeAction extends Action {
 		// because there is no Driver instance
 		// to pass to its constructor before this point.
 		this.barcodeExecuter = new BarcodeExecuter(driver, maze);
+		this.barcodeScanner = new MyBarcodeScanner();
+		barcodeScanner.start();
 		
 		do{
 			if(isAborted()){
+				barcodeScanner.stop();
 				return;
 			}
 			
@@ -74,12 +81,12 @@ public class MazeAction extends Action {
 				this.checkEfficicientlyTile(next);
 			}
 			
-			if(next.canHaveBarcode()){
-				final int barcode = scanBarcode(next);
-				if (barcode > 0) {
-					this.barcodeExecuter.executeBarcode(barcode, next);
-				}
-			}
+//			if(next.canHaveBarcode()){
+//				final int barcode = scanBarcode(next);
+//				if (barcode > 0) {
+//					this.barcodeExecuter.executeBarcode(barcode, next);
+//				}
+//			}
 			
 			this.maze.addVerticies(next.getAbsoluteNeighbors());
 			
@@ -91,7 +98,7 @@ public class MazeAction extends Action {
 		
 		this.processBarcodes();
 		this.current.setOrientationToReach(this.moveDirection);
-		/**
+		/*
 		long stopTime = System.currentTimeMillis();
 		long duration = stopTime-startTime;
 		int seconds = (int) (duration / 1000) % 60 ;
@@ -115,9 +122,9 @@ public class MazeAction extends Action {
 			str.append("\nIt took "+finishStamp+" to reach the finish tile.");
 		}
 		driver.sendMessage(str.toString(), "Maze explored !");
-		**/
+		*/
+		barcodeScanner.stop();
 		this.followPath(pf.findShortestPath(current, maze.getVertex(3,0)));
-		
 	}
 	/**
 	 * Check for tiles that still need to be checked for barcodes. And process them if necessary.
@@ -747,6 +754,39 @@ public class MazeAction extends Action {
 	
 	private boolean isOnStraighLine(Tile t){
 		return t.equals(getNeighborForGivenDirection(this.moveDirection, this.current));
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	private class MyBarcodeScanner extends AbstractBarcodeScanner {
+		
+		protected Orientation getOrientation() {
+			return driver.getOrientation();
+		}
+		
+		protected Tile getTile() {
+			return current;
+		}
+		
+		protected boolean isMoving() {
+			return driver.isMoving();
+		}
+		
+		protected Brightness readSensor() {
+			try {
+				return driver.readSensorLightBrightness();
+			} catch (final CalibrationException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		
 	}
 	
 }

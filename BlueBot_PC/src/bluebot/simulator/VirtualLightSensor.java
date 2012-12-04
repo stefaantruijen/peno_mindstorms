@@ -89,11 +89,11 @@ public class VirtualLightSensor {
 		setWhiteLineColor(STANDARD_WHITE_LINE_COLOR);
 		setEmptySpaceColor(STANDARD_EMPTY_SPACE_COLOR);
 		generateMap();
-		try {
-			ImageIO.write(img, fileType, new File(destinationPath));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			ImageIO.write(img, fileType, new File(destinationPath));
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	/**
@@ -486,7 +486,7 @@ public class VirtualLightSensor {
 	public void drawHorizontalBarAbsolute(int x, int y, Color color){
 		Graphics2D graphics = img.createGraphics();
 		graphics.setColor(color);
-		System.out.println("Drawing Horiz: "+x+" "+y+" "+color);
+//		System.out.println("Drawing Horiz: "+x+" "+y+" "+color);
 		graphics.fillRect(x, y, bitWidthResolution, barcodeWidth);
 	}
 	
@@ -496,7 +496,7 @@ public class VirtualLightSensor {
 	public void drawVerticalBarAbsolute(int x, int y, Color color){
 		Graphics2D graphics = img.createGraphics();
 		graphics.setColor(color);
-		System.out.println("Drawing Vertic: "+x+" "+y+" "+color);
+//		System.out.println("Drawing Vertic: "+x+" "+y+" "+color);
 		graphics.fillRect(x, y, barcodeWidth, bitWidthResolution);
 	}
 	
