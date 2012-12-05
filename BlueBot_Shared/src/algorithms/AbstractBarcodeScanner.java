@@ -125,6 +125,7 @@ public abstract class AbstractBarcodeScanner extends Threaded {
 			nextPos = getPosition();
 			if (lastColor == null) {
 				lastColor = nextColor;
+				lastPos = nextPos;
 			} else {
 				if (nextColor != lastColor) {
 					final int length = Math.round(Math.abs(nextPos - lastPos) / STRIP_LENGTH);
