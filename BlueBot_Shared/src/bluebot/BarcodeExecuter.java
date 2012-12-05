@@ -1,15 +1,11 @@
 package bluebot;
 
-import java.io.File;
-import java.util.List;
-
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
 
 import bluebot.graph.Graph;
 import bluebot.graph.Tile;
 import bluebot.maze.BarcodeValidator;
-import javax.swing.filechooser.FileFilter;
+
+
 
 /**
  * 
@@ -20,7 +16,6 @@ public class BarcodeExecuter {
 	private final Driver driver;
 	private final Graph graph;
 	private Tile currentTile;
-	private String pathToMusic = "data\\Bells.wav";
 	private int lowSpeed = 20;
 	private int highSpeed = 80;
 

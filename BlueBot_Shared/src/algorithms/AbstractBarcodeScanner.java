@@ -117,7 +117,6 @@ public abstract class AbstractBarcodeScanner extends Threaded {
 			try {
 				Thread.sleep(SENSOR_READING_INTERVAL);
 			} catch (final InterruptedException e) {
-				System.err.println("Thread interrupted so I'm clearing the strips!");
 				strips.clear();
 				return;
 			}
@@ -135,7 +134,6 @@ public abstract class AbstractBarcodeScanner extends Threaded {
 							strips.clear();
 						}
 					} else {
-						// Finish previous strip
 						print("[A] Adding " + lastColor + " x" + length);
 						for (int i = length; i > 0; i--) {
 							strips.add(lastColor);
@@ -144,9 +142,6 @@ public abstract class AbstractBarcodeScanner extends Threaded {
 					lastColor = nextColor;
 					lastPos = nextPos;
 				} else if (!isMoving()) {
-					// Remember:
-					// Timing might be the cause of bug(s)
-					// when the MazeAction continues before the barcode is read
 					if (!strips.isEmpty()) {
 						if (nextColor == Brightness.GRAY) {
 							checkCode();
@@ -157,9 +152,6 @@ public abstract class AbstractBarcodeScanner extends Threaded {
 								strips.add(nextColor);
 							}
 							checkCode();
-	//						for (int i = Math.min(strips.size(), length); i > 0; i--) {
-	//							strips.remove(strips.size() - 1);
-	//						}
 						}
 						strips.clear();
 					}

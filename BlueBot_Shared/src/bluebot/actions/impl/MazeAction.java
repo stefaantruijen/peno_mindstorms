@@ -32,6 +32,7 @@ public class MazeAction extends Action {
 	private final Graph maze;
 	private Direction headDirection,moveDirection;
 	private Tile current;
+	@SuppressWarnings("unused")
 	private int turnTimes = 0;
 	private List<Tile> blackSpots;
 	private BarcodeExecuter barcodeExecuter;
@@ -59,6 +60,7 @@ public class MazeAction extends Action {
 	public void execute(Driver driver) throws InterruptedException, ActionException, DriverException {
 		this.driver = driver;
 		this.driver.resetOrientation();
+		@SuppressWarnings("unused")
 		long startTime = System.currentTimeMillis();
 		this.initializeRootTile();
 		
@@ -67,7 +69,7 @@ public class MazeAction extends Action {
 		// to pass to its constructor before this point.
 		this.barcodeExecuter = new BarcodeExecuter(driver, maze);
 		this.barcodeScanner = new MyBarcodeScanner();
-		barcodeScanner.start();
+//		barcodeScanner.start();
 		
 		do{
 			if(isAborted()){
@@ -77,16 +79,29 @@ public class MazeAction extends Action {
 			
 			Tile next = this.determineNextTile();
 			this.moveTo(next);
-			if(!next.isExplored()){
+			if (next.isExplored()) {
+				// Wait until we have stopped moving
+				waitForMoving(driver, false);
+				// At this point the barcode scanner will start processing information
+				// so we give it some time to get the work done before we continue
+				try {
+					Thread.sleep(100L);
+				} finally {
+					barcodeScanner.stop();
+				}
+			} else {
+				// The barcode scanner has enough time to process information
+				// while we analyze the current tile
 				this.checkEfficicientlyTile(next);
+				barcodeScanner.stop();
 			}
 			
-//			if(next.canHaveBarcode()){
-//				final int barcode = scanBarcode(next);
-//				if (barcode > 0) {
-//					this.barcodeExecuter.executeBarcode(barcode, next);
-//				}
-//			}
+			if(next.canHaveBarcode()){
+				final int barcode = current.getBarCode(); // scanBarcode(next);
+				if (barcode > 0) {
+					this.barcodeExecuter.executeBarcode(barcode, next);
+				}
+			}
 			
 			this.maze.addVerticies(next.getAbsoluteNeighbors());
 			
@@ -123,7 +138,7 @@ public class MazeAction extends Action {
 		}
 		driver.sendMessage(str.toString(), "Maze explored !");
 		*/
-		barcodeScanner.stop();
+//		barcodeScanner.stop();
 		this.followPath(pf.findShortestPath(current, maze.getVertex(3,0)));
 	}
 	/**
@@ -199,6 +214,11 @@ public class MazeAction extends Action {
 	 * @throws ActionException 
 	 */
 	private void moveForward() throws InterruptedException, ActionException, CalibrationException {
+		// Start the barcode scanner before we move forward
+		barcodeScanner.start();
+		// Allow the barcode scanner some time to kick into action
+		Thread.sleep(100L);
+		// Move forward
 		this.driver.moveForward(400F, true);
 		driver.modifyOrientation();
 	}
