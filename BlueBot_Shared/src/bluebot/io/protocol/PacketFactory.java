@@ -1,7 +1,6 @@
 package bluebot.io.protocol;
 
 
-import algorithms.PathFinder;
 import bluebot.graph.Tile;
 import bluebot.io.protocol.impl.CommandPacket;
 import bluebot.io.protocol.impl.ConfigPacket;

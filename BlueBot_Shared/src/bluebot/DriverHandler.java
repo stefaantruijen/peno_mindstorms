@@ -97,7 +97,7 @@ public class DriverHandler implements PacketHandler {
 	}
 	
 	private final void handlePacketMaze(final MazePacket packet) {
-		queue.queue(new MazeAction(packet.getPathFinder()));
+		queue.queue(new MazeAction());
 //		queue.queue(new TestAction());
 	}
 	

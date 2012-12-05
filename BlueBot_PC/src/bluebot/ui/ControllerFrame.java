@@ -81,10 +81,11 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		buttonMaze.setFont(font);
 		buttonMaze.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {
-				final int pathfinder = new MazeDialog(ControllerFrame.this).display();
-				if (pathfinder > 0) {
-					controller.doMaze(pathfinder);
-				}
+				controller.doMaze(0);
+//				final int pathfinder = new MazeDialog(ControllerFrame.this).display();
+//				if (pathfinder > 0) {
+//					controller.doMaze(pathfinder);
+//				}
 			}
 		});
 		

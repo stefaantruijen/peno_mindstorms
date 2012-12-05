@@ -9,8 +9,6 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 
-import algorithms.PathFinder;
-
 
 
 /**
@@ -32,7 +30,8 @@ public class MazeDialog extends AbstractDialog<Integer> {
 		final JButton buttonAStar = new JButton("A*");
 		buttonAStar.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {
-				setResult(PathFinder.ASTAR);
+				// TODO
+//				setResult(PathFinder.ASTAR);
 				dispose();
 			}
 		});
@@ -40,7 +39,8 @@ public class MazeDialog extends AbstractDialog<Integer> {
 		final JButton buttonDijkstra = new JButton("Dijkstra");
 		buttonDijkstra.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {
-				setResult(PathFinder.DIJKSTRA);
+				// TODO
+//				setResult(PathFinder.DIJKSTRA);
 				dispose();
 			}
 		});

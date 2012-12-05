@@ -81,9 +81,9 @@ public class MazeReader {
 			
 			i++;
 		}
-		for(Tile t : rowList){
-			System.out.println(t);
-		}
+//		for(Tile t : rowList){
+//			System.out.println(t);
+//		}
 		return rowList;
 	}
 }
