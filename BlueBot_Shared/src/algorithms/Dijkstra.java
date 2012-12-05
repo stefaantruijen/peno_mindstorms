@@ -23,7 +23,7 @@ import bluebot.graph.Tile;
  * @author Lars Vogel,Incalza Dario
  *
  */
-public class Dijkstra implements PathFinder{
+public class Dijkstra{
 	
 	  private final List<Edge> edges;
 	  private List<Tile> settledNodes;
@@ -163,7 +163,7 @@ public class Dijkstra implements PathFinder{
 		  tmp.remove(0);
 		  return tmp;
 	  }
-	@Override
+	
 	public List<Tile> findShortestPath(Tile from, Tile to) {
 		this.execute(from);
 		return this.getPath(to);

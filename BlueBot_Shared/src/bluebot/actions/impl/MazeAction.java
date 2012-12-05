@@ -6,8 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import algorithms.AbstractBarcodeScanner;
-import algorithms.PathFinder;
-import algorithms.PathFinderFactory;
+import algorithms.Dijkstra;
 import bluebot.BarcodeExecuter;
 import bluebot.Driver;
 import bluebot.DriverException;
@@ -32,23 +31,25 @@ public class MazeAction extends Action {
 	private final Graph maze;
 	private Direction headDirection,moveDirection;
 	private Tile current;
-	@SuppressWarnings("unused")
 	private int turnTimes = 0;
 	private List<Tile> blackSpots;
 	private BarcodeExecuter barcodeExecuter;
 	private MyBarcodeScanner barcodeScanner;
 	private ArrayList<Tile> stillCheckForBarcode;
-	private final PathFinder pf;
+	private final Dijkstra pf;
+	private boolean orientateToExplore = true;
+	private boolean orientateHorizontal = true;
+	private boolean orientateVertical = false;
+	private final WhiteLineAction wa;
 	
-	
-	public MazeAction(int pathFinderChoice){
+	public MazeAction(){
 		this.maze = new Graph();
 		this.headDirection=Direction.UP;
 		this.moveDirection=Direction.UP;
 		this.blackSpots = null;
 		this.stillCheckForBarcode = new ArrayList<Tile>();
-		//this.pf = new Dijkstra(this.maze);
-		this.pf = PathFinderFactory.createPathFinder(this.maze, pathFinderChoice);
+		this.pf = new Dijkstra(maze);
+		this.wa = new WhiteLineAction();
 	}
 	/**
 	 * Execute the wall following algorithm. Always keep the wall to your right. Till we're back on the start position and all
@@ -60,7 +61,6 @@ public class MazeAction extends Action {
 	public void execute(Driver driver) throws InterruptedException, ActionException, DriverException {
 		this.driver = driver;
 		this.driver.resetOrientation();
-		@SuppressWarnings("unused")
 		long startTime = System.currentTimeMillis();
 		this.initializeRootTile();
 		
@@ -108,12 +108,12 @@ public class MazeAction extends Action {
 			if(current == this.maze.getRootTile() && !hasUnvisitedNeighbors(this.maze.getRootTile())){
 				this.findBlackSpots();
 			}
-			
+			orientateIfNeeded();
 		}while(this.hasUnvisitedNeighbors(this.maze.getRootTile())||this.hasUnvisitedNeighbors(current)||this.graphHasUnvisitedNeighbors());
 		
 		this.processBarcodes();
 		this.current.setOrientationToReach(this.moveDirection);
-		/*
+		
 		long stopTime = System.currentTimeMillis();
 		long duration = stopTime-startTime;
 		int seconds = (int) (duration / 1000) % 60 ;
@@ -137,9 +137,15 @@ public class MazeAction extends Action {
 			str.append("\nIt took "+finishStamp+" to reach the finish tile.");
 		}
 		driver.sendMessage(str.toString(), "Maze explored !");
-		*/
-//		barcodeScanner.stop();
-		this.followPath(pf.findShortestPath(current, maze.getVertex(3,0)));
+		
+	}
+	private void orientateIfNeeded() {
+		if(this.orientateHorizontal){
+			if(current.getBorderNorth() == Border.OPEN){
+				
+			}
+		}
+		
 	}
 	/**
 	 * Check for tiles that still need to be checked for barcodes. And process them if necessary.
@@ -763,11 +769,17 @@ public class MazeAction extends Action {
 				if(straightLine.size()>0){
 					int distanceForward = straightLine.size()*400;
 					this.driver.moveForward(distanceForward,true);
+					this.current = t;
 				}
 				this.moveTo(t);
 				straightLine.clear();
 			}
-			this.current = t;
+			
+		}
+		if(straightLine.size()>0){
+			int distanceForward = straightLine.size()*400;
+			this.driver.moveForward(distanceForward,true);
+			this.current = straightLine.get(straightLine.size()-1);
 		}
 		
 	}
@@ -785,6 +797,22 @@ public class MazeAction extends Action {
 	
 	
 	
+	public boolean isOrientateToExplore() {
+		return orientateToExplore;
+	}
+	public void setOrientateToExplore(boolean orientateToExplore) {
+		this.orientateToExplore = orientateToExplore;
+	}
+
+
+
+
+
+
+
+
+
+
 	private class MyBarcodeScanner extends AbstractBarcodeScanner {
 		
 		protected Orientation getOrientation() {
