@@ -31,6 +31,7 @@ public abstract class AbstractBarcodeScanner extends Threaded {
 		print("#strips = " + strips.size());
 		if ((strips.size() < 7)
 				|| (strips.get(0) != Brightness.BLACK)) {
+			print("strips.size() < 7");
 			return;
 		}
 		
@@ -42,9 +43,11 @@ public abstract class AbstractBarcodeScanner extends Threaded {
 						print("BIT black");
 						barcode.addBlack();
 						if (checkCode(barcode)) {
+							ready = false;
 							return;
 						}
 					} else {
+						print("First Black Read");
 						ready = true;
 					}
 					break;
@@ -60,6 +63,7 @@ public abstract class AbstractBarcodeScanner extends Threaded {
 						print("BIT white");
 						barcode.addWhite();
 						if (checkCode(barcode)) {
+							ready = false;
 							return;
 						}
 					}
@@ -68,7 +72,7 @@ public abstract class AbstractBarcodeScanner extends Threaded {
 				default:
 					throw new RuntimeException("Invalid enum value");
 			}
-		}
+		}	
 	}
 	
 	private final boolean checkCode(final Barcode barcode) {
