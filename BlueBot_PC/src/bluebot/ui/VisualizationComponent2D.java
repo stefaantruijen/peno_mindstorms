@@ -268,11 +268,11 @@ public class VisualizationComponent2D extends VisualizationComponent
 		switch (tile.getBarCode()) {
 			case 13:
 				// Waypoint
-				overlay = new Color(0x33FF0000, true);
+				overlay = new Color(0x66FF0000, true);
 				break;
 			case 55:
 				// Finish
-				overlay = new Color(0x3300FF00, true);
+				overlay = new Color(0x6600FF00, true);
 				break;
 		}
 		if (overlay != null) {
@@ -464,6 +464,7 @@ public class VisualizationComponent2D extends VisualizationComponent
 	}
 	
 	public void onTileUpdate(final Tile tile) {
+		System.out.println("UPDATE TILE  " + tile);
 		final int tx = tile.getX();
 		final int ty = tile.getY();
 		

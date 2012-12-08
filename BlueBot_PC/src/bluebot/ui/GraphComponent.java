@@ -79,9 +79,10 @@ public class GraphComponent extends RenderingComponent {
 		gfx.setColor(getForeground());
 		
 		final ArrayList<Integer> data = getData();
-		final int delta = Math.max(1, (max - min));
+		final int base = 0; // min
+		final int delta = Math.max(1, (max - base));
 		for (int x = 0; ((x < width) && (x < data.size())); x++) {
-			final int h = (height * (data.get(x) - min) / delta);
+			final int h = Math.max(1, (height * (data.get(x) - base) / delta));
 			gfx.fillRect(x, (height - h), 1, h);
 		}
 	}

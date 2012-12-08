@@ -179,6 +179,11 @@ public class GaugeComponent extends RenderingComponent {
 			final int dx = (x - cx);
 			final int dy = (cy - y);
 			
+			final int r = (Math.min(cx, cy) - 10);
+			if (((dx * dx) + (dy * dy)) >= (r * r)) {
+				return -1;
+			}
+			
 			if (dx == 0) {
 				return ((dy < 0) ? 0 : 50);
 			}
@@ -226,7 +231,7 @@ public class GaugeComponent extends RenderingComponent {
 		
 		private final void onEvent(final MouseEvent event) {
 			final int percentage = calculatePercentage(event.getX(), event.getY());
-			if (percentage != getValue()) {
+			if ((percentage >= 0) && (percentage != getValue())) {
 				controller.setSpeed(percentage);
 			}
 		}
