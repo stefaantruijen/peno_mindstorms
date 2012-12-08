@@ -34,11 +34,11 @@ public class MazeAction extends Action {
 	private int turnDegrees = 0;
 	private List<Tile> blackSpots;
 	private BarcodeExecuter barcodeExecuter;
-	private MyBarcodeScanner barcodeScanner;
+//	private MyBarcodeScanner barcodeScanner;
 	private ArrayList<Tile> stillCheckForBarcode;
 	private final Dijkstra pf;
 	private boolean stillExploring=true;
-	private final WhiteLineAction wa;
+//	private final WhiteLineAction wa;
 	private boolean orientateHorizontal=false;
 	private boolean orientateVertical=false;
 	
@@ -49,7 +49,7 @@ public class MazeAction extends Action {
 		this.blackSpots = null;
 		this.stillCheckForBarcode = new ArrayList<Tile>();
 		this.pf = new Dijkstra(maze);
-		this.wa = new WhiteLineAction();
+//		this.wa = new WhiteLineAction();
 	}
 	/**
 	 * Execute the wall following algorithm. Always keep the wall to your right. Till we're back on the start position and all
@@ -68,12 +68,12 @@ public class MazeAction extends Action {
 		// because there is no Driver instance
 		// to pass to its constructor before this point.
 		this.barcodeExecuter = new BarcodeExecuter(driver, maze);
-		this.barcodeScanner = new MyBarcodeScanner();
+//		this.barcodeScanner = new MyBarcodeScanner();
 //		barcodeScanner.start();
 		
 		do{
 			if(isAborted()){
-				barcodeScanner.stop();
+//				barcodeScanner.stop();
 				return;
 			}
 			
@@ -87,17 +87,19 @@ public class MazeAction extends Action {
 				try {
 					Thread.sleep(100L);
 				} finally {
-					barcodeScanner.stop();
+//					barcodeScanner.stop();
 				}
 			} else {
 				// The barcode scanner has enough time to process information
 				// while we analyze the current tile
 				this.checkEfficicientlyTile(next);
-				barcodeScanner.stop();
+//				barcodeScanner.stop();
 			}
 			
 			if(next.canHaveBarcode()){
-				final int barcode = current.getBarCode(); // scanBarcode(next);
+				final int barcode =
+//						current.getBarCode();
+						scanBarcode(next);
 				if (barcode > 0) {
 					this.barcodeExecuter.executeBarcode(barcode, next);
 				}
@@ -198,7 +200,7 @@ public class MazeAction extends Action {
 	 */
 	private void moveForward() throws InterruptedException, ActionException, CalibrationException {
 		// Start the barcode scanner before we move forward
-		barcodeScanner.start();
+//		barcodeScanner.start();
 		// Allow the barcode scanner some time to kick into action
 		Thread.sleep(100L);
 		// Move forward 
@@ -829,8 +831,17 @@ public class MazeAction extends Action {
 			}
 		}
 	}
-
-
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	@SuppressWarnings("unused")
 	private class MyBarcodeScanner extends AbstractBarcodeScanner {
 		
 		protected Orientation getOrientation() {
