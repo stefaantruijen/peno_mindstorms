@@ -31,16 +31,16 @@ public class MazeAction extends Action {
 	private final Graph maze;
 	private Direction headDirection,moveDirection;
 	private Tile current;
-	private int turnTimes = 0;
+	private int turnDegrees = 0;
 	private List<Tile> blackSpots;
 	private BarcodeExecuter barcodeExecuter;
 	private MyBarcodeScanner barcodeScanner;
 	private ArrayList<Tile> stillCheckForBarcode;
 	private final Dijkstra pf;
-	private boolean orientateToExplore = true;
-	private boolean orientateHorizontal = true;
-	private boolean orientateVertical = false;
+	private boolean stillExploring=true;
 	private final WhiteLineAction wa;
+	private boolean orientateHorizontal=false;
+	private boolean orientateVertical=false;
 	
 	public MazeAction(){
 		this.maze = new Graph();
@@ -108,12 +108,12 @@ public class MazeAction extends Action {
 			if(current == this.maze.getRootTile() && !hasUnvisitedNeighbors(this.maze.getRootTile())){
 				this.findBlackSpots();
 			}
-			orientateIfNeeded();
+			
 		}while(this.hasUnvisitedNeighbors(this.maze.getRootTile())||this.hasUnvisitedNeighbors(current)||this.graphHasUnvisitedNeighbors());
 		
 		this.processBarcodes();
 		this.current.setOrientationToReach(this.moveDirection);
-		
+		this.stillExploring = false;
 		long stopTime = System.currentTimeMillis();
 		long duration = stopTime-startTime;
 		int seconds = (int) (duration / 1000) % 60 ;
@@ -139,14 +139,7 @@ public class MazeAction extends Action {
 		driver.sendMessage(str.toString(), "Maze explored !");
 		
 	}
-	private void orientateIfNeeded() {
-		if(this.orientateHorizontal){
-			if(current.getBorderNorth() == Border.OPEN){
-				
-			}
-		}
-		
-	}
+	
 	/**
 	 * Check for tiles that still need to be checked for barcodes. And process them if necessary.
 	 * 
@@ -167,22 +160,6 @@ public class MazeAction extends Action {
 				
 			}
 		}
-	}
-	/**
-	 * Follow a given path of tiles.
-	 * 
-	 * @param path
-	 * @throws CalibrationException
-	 * @throws InterruptedException
-	 * @throws ActionException
-	 */
-	@Deprecated
-	private void followPath(List<Tile> path) throws CalibrationException, InterruptedException, ActionException{
-		for(Tile t : path){
-			this.moveTo(t);
-			this.current = t;
-		}
-		
 	}
 	
 	/**
@@ -224,9 +201,47 @@ public class MazeAction extends Action {
 		barcodeScanner.start();
 		// Allow the barcode scanner some time to kick into action
 		Thread.sleep(100L);
-		// Move forward
-		this.driver.moveForward(400F, true);
+		// Move forward 
+		if(!stillExploring){
+			this.driver.moveForward(400F, true);
+		}
+		else{
+			if(this.orientationIsNeeded()){
+				if(this.orientateVertical){
+					if((moveDirection.equals(Direction.UP)||moveDirection.equals(Direction.DOWN))&&!checkForWall()){
+						this.driver.moveForward(40F, true);
+						new WhiteLineAction().execute(driver);
+						this.driver.moveForward(200F,true);
+						this.turnDegrees=0;
+						this.orientateVertical = false;
+					}else{
+						this.driver.moveForward(400F, true);
+					}
+				}else if(this.orientateHorizontal){
+					if((moveDirection.equals(Direction.LEFT)||moveDirection.equals(Direction.RIGHT))&&!checkForWall()){
+						this.driver.moveForward(40F, true);
+						new WhiteLineAction().execute(driver);
+						this.driver.moveForward(200F,true);
+						this.turnDegrees=0;
+						this.orientateHorizontal = false;
+					}else{
+						this.driver.moveForward(400F, true);
+					}
+				}else{
+					this.driver.moveForward(400F, true);
+				}
+			}else{
+				this.driver.moveForward(400F, true);
+			}
+		}
+		
 		driver.modifyOrientation();
+	}
+	
+	private boolean orientationIsNeeded(){
+		if(this.orientateHorizontal||this.orientateVertical)
+			return true;
+		return false;
 	}
 	/**
 	 * Let the robot travel south.
@@ -239,21 +254,25 @@ public class MazeAction extends Action {
 			case DOWN:
 				break;
 			case LEFT:
-				this.driver.turnLeft(90F, true);
+				this.driver.turnLeft(90F,true);
+				this.incrementTurnTimes(90);
 				break;
 			case RIGHT:
 				this.driver.turnRight(90F,true);
+				this.incrementTurnTimes(90);
 				break;
 			case UP:
 				this.driver.turnRight(180F,true);
+				this.incrementTurnTimes(180);
 				break;
 			default:
 				break;
 			
 		}
-		this.moveForward();
+		
 		this.moveDirection = Direction.DOWN;
 		this.headDirection = moveDirection;
+		this.moveForward();
 		
 	}
 	/**
@@ -266,27 +285,28 @@ public class MazeAction extends Action {
 	private void travelWest() throws InterruptedException, ActionException, CalibrationException {
 		switch(moveDirection){
 			case DOWN:
-				this.driver.turnRight(90F, true);
-				
+				this.driver.turnRight(90F,true);
+				this.incrementTurnTimes(90);
 				break;
 			case LEFT:
 				
 				break;
 			case RIGHT:
-				this.driver.turnRight(180F, true);
-				
+				this.driver.turnRight(180F,true);
+				this.incrementTurnTimes(180);
 				break;
 			case UP:
 				this.driver.turnLeft(90F,true);
-
+				this.incrementTurnTimes(90);
 				break;
 			default:
 				break;
 		
 		}
-		this.moveForward();
+		
 		this.moveDirection = Direction.LEFT;
 		this.headDirection = this.moveDirection;
+		this.moveForward();
 		
 	}
 	/**
@@ -299,16 +319,16 @@ public class MazeAction extends Action {
 	private void travelNorth() throws InterruptedException, ActionException, CalibrationException {
 		switch(moveDirection){
 			case DOWN:
-				this.driver.turnRight(180F, true);
-				
+				this.driver.turnRight(180F,true);
+				this.incrementTurnTimes(180);
 				break;
 			case LEFT:
-				this.driver.turnRight(90F, true);
-				
+				this.driver.turnRight(90F,true);
+				this.incrementTurnTimes(90);
 				break;
 			case RIGHT:
-				this.driver.turnLeft(90F, true);
-				
+				this.driver.turnLeft(90F,true);
+				this.incrementTurnTimes(90);
 				break;
 			case UP:
 				
@@ -317,9 +337,10 @@ public class MazeAction extends Action {
 				break;
 			
 		}
-		this.moveForward();
+		
 		this.moveDirection = Direction.UP;
 		this.headDirection = this.moveDirection;
+		this.moveForward();
 	}
 	/**
 	 * Let the robot travel east.
@@ -331,24 +352,28 @@ public class MazeAction extends Action {
 	private void travelEast() throws InterruptedException, ActionException, CalibrationException {
 		switch(moveDirection){
 			case DOWN:
-				this.driver.turnLeft(90F, true);
+				this.driver.turnLeft(90F,true);
+				this.incrementTurnTimes(90);
 				break;
 			case LEFT:
 				this.driver.turnRight(180F,true);
+				this.incrementTurnTimes(180);
 				break;
 			case RIGHT:
 				break;
 			case UP:
-				this.driver.turnRight(90F, true);		
+				this.driver.turnRight(90F, true);
+				this.incrementTurnTimes(90);
 				break;
 			default:
 				break;
 			
 		}
 		
-		this.moveForward();
+		
 		this.moveDirection = Direction.RIGHT;
 		this.headDirection = moveDirection;
+		this.moveForward();
 		
 	}
 	/**
@@ -777,7 +802,7 @@ public class MazeAction extends Action {
 			
 		}
 		if(straightLine.size()>0){
-			int distanceForward = straightLine.size()*400;
+			int distanceForward = (straightLine.size()+1)*400;
 			this.driver.moveForward(distanceForward,true);
 			this.current = straightLine.get(straightLine.size()-1);
 		}
@@ -788,29 +813,22 @@ public class MazeAction extends Action {
 		return t.equals(getNeighborForGivenDirection(this.moveDirection, this.current));
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	public boolean isOrientateToExplore() {
-		return orientateToExplore;
-	}
-	public void setOrientateToExplore(boolean orientateToExplore) {
-		this.orientateToExplore = orientateToExplore;
+
+	public boolean isStillExploring() {
+		return stillExploring;
 	}
 
-
-
-
-
-
-
-
+	private void incrementTurnTimes(int amount) {
+		this.turnDegrees = this.turnDegrees+amount;
+		if(this.turnDegrees >= 360){
+			if(!this.orientateHorizontal){
+				this.orientateHorizontal = true;
+			}
+			if(!this.orientateVertical){
+				this.orientateVertical = true;
+			}
+		}
+	}
 
 
 	private class MyBarcodeScanner extends AbstractBarcodeScanner {
