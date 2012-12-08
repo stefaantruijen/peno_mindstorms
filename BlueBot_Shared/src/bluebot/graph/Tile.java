@@ -1,11 +1,13 @@
 package bluebot.graph;
 
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import bluebot.util.Barcode;
 
 
 
@@ -13,7 +15,7 @@ import java.util.List;
  * 
  * @author Ruben Feyen
  */
-public class Tile implements Comparable{
+public class Tile implements Comparable<Tile> {
 	
 	/**    The size of a tile (in mm)    */
 	public static final float SIZE = 400F;
@@ -56,6 +58,14 @@ public class Tile implements Comparable{
 			return ((tile.x == x) && (tile.y == y));
 		}
 		return false;
+	}
+	
+	public String getBarcodeAsString() {
+		final int barcode = getBarCode();
+		if (barcode <= 0) {
+			return "none";
+		}
+		return Barcode.format(barcode);
 	}
 	
 	private final Border getBorder(final int shift) {
@@ -236,7 +246,12 @@ public class Tile implements Comparable{
 	
 	@Override
 	public String toString(){
-		return ("("+this.getX()+","+this.getY()+")");
+		return new StringBuilder()
+		.append('[')
+		.append('(').append(getX()).append(", ").append(getY())
+		.append("), ").append(getBarcodeAsString())
+		.append(']')
+		.toString();
 	}
 	
 	public void write(final DataOutput output) throws IOException {
@@ -413,12 +428,8 @@ public class Tile implements Comparable{
 		
 		return this.parent;
 	}
-
-
-
-	@Override
-	public int compareTo(Object arg0) {
-		Tile otherNode = (Tile) arg0;
+	
+	public int compareTo(final Tile otherNode) {
 		double thisTotalDistanceFromGoal = heuristicDistanceFromGoal + distanceFromStart;
         double otherTotalDistanceFromGoal = otherNode.getHeuristicDistanceFromGoal() + otherNode.getDistanceFromStart();
         

@@ -32,6 +32,15 @@ public class Barcode {
 		return bits;
 	}
 	
+	public static final String format(final int barcode) {
+		final String binary = Integer.toBinaryString(barcode);
+		final StringBuilder sb = new StringBuilder(6);
+		for (int i = (6 - binary.length()); i > 0; i--) {
+			sb.append('0');
+		}
+		return sb.append(binary).toString();
+	}
+	
 	public int getValue() {
 		return BarcodeValidator.validate(value);
 	}
