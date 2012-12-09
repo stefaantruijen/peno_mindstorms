@@ -16,8 +16,8 @@ public class BarcodeExecuter {
 	private final Driver driver;
 	private final Graph graph;
 	private Tile currentTile;
-	private int lowSpeed = 20;
-	private int highSpeed = 80;
+	private int lowSpeed = 40;
+	private int highSpeed = 100;
 
 	public BarcodeExecuter(Driver driver,Graph g) {
 		this.driver = driver;
@@ -43,8 +43,6 @@ public class BarcodeExecuter {
 	 * 	 sendDebugAndMessage(msg, bool);
 	 * The bool should depend on the action. If the action has clear feedback in de GUI (sound, turning of car, ...) bool should be false.
 	 * Otherwise bool should be true;
-	 * 
-	 * TODO: remove the specific testing cases and change back to normal.
 	 * 
 	 * @param code
 	 * @param currentTile
@@ -94,13 +92,13 @@ public class BarcodeExecuter {
 			break;
 		case 25: 
 			// "011001": vanaf nu aan trage snelheid rijden
-			msg = "Setting a slow speed (20%).";
+			msg = "Setting a slow speed ("+ lowSpeed +"%).";
 			sendDebugAndMessage(msg, true, validatedCode);
 			driver.setSpeed(lowSpeed);
 			break;
 		case 37:
 			// "100101": vanaf nu aan hoge snelheid rijden
-			msg = "Sett ccing a fast speed (100%).";
+			msg = "Setting a fast speed ("+ highSpeed +"%).";
 			sendDebugAndMessage(msg, true, validatedCode);
 			driver.setSpeed(highSpeed);
 			break;
@@ -163,7 +161,7 @@ public class BarcodeExecuter {
 	}
 	
 	private void sendDebugAndMessage(String msg, boolean sendMessage, int barcode){
-		String result = barcode + ": " + msg + " (" + convertIntToBinary(barcode) +")";
+		String result = barcode + ": " + msg + " (" + barcode +")";
 		if(sendMessage){
 			driver.sendMessage(result,"BARCODE");
 		}
