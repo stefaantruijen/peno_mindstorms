@@ -114,7 +114,6 @@ public class MazeAction extends Action {
 		}while(this.hasUnvisitedNeighbors(this.maze.getRootTile())||this.hasUnvisitedNeighbors(current)||this.graphHasUnvisitedNeighbors());
 		
 		this.processBarcodes();
-		this.current.setOrientationToReach(this.moveDirection);
 		this.stillExploring = false;
 		long stopTime = System.currentTimeMillis();
 		long duration = stopTime-startTime;
@@ -790,29 +789,37 @@ public class MazeAction extends Action {
 		this.driver.setSpeed(100);
 		ArrayList<Tile> straightLine = new ArrayList<Tile>();
 		for(Tile t : path){
-			if(this.isOnStraighLine(t)){
+			Tile currentTileInList = null;
+			if(straightLine.size()>0){
+				currentTileInList = straightLine.get(straightLine.size()-1);
+			}else{
+				currentTileInList = this.current;
+			}
+			
+			if(this.isOnStraighLine(currentTileInList,t)){
 				straightLine.add(t);
 			}else{
 				if(straightLine.size()>0){
-					int distanceForward = straightLine.size()*400;
+					int distanceForward = (straightLine.size())*400;
 					this.driver.moveForward(distanceForward,true);
-					this.current = t;
+					this.current = straightLine.get(straightLine.size()-1);
 				}
 				this.moveTo(t);
 				straightLine.clear();
+				this.current = t;
 			}
 			
 		}
 		if(straightLine.size()>0){
-			int distanceForward = (straightLine.size()+1)*400;
+			int distanceForward = (straightLine.size())*400;
 			this.driver.moveForward(distanceForward,true);
 			this.current = straightLine.get(straightLine.size()-1);
 		}
 		
 	}
 	
-	private boolean isOnStraighLine(Tile t){
-		return t.equals(getNeighborForGivenDirection(this.moveDirection, this.current));
+	private boolean isOnStraighLine(Tile t1,Tile t2){
+		return t2.equals(getNeighborForGivenDirection(this.moveDirection, t1));
 	}
 	
 
