@@ -9,11 +9,14 @@ import java.awt.TexturePaint;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.JMenu;
@@ -31,25 +34,28 @@ import bluebot.maze.MazeListener;
  * @author Ruben Feyen
  */
 public class VisualizationComponent2D extends VisualizationComponent
-		implements ActionListener, MazeListener, MouseWheelListener {
+		implements ActionListener, MazeListener {
 	private static final long serialVersionUID = 1L;
 	
 	private static final BufferedImage IMAGE_BRICK;
 	private static final double IMAGE_BRICK_SCALE = 0.5D;
 	private static final BufferedImage IMAGE_SENSOR;
 	private static final double IMAGE_SENSOR_SCALE = 0.2D;
+	private static final HashMap<String, BufferedImage> IMAGES;
 	private static final Paint TEXTURE_TILE;
 	public static final int TILE_RESOLUTION = 50;
 	private static final double ZOOM_STEP = 0.25D;
 	static {
 		IMAGE_BRICK  = loadImage("nxt_brick.png");
 		IMAGE_SENSOR = loadImage("nxt_sensor.png");
+		IMAGES = new HashMap<String, BufferedImage>();
 		
 		TEXTURE_TILE = loadTexture("hardboard.jpg");
 	}
 	
 	private final Object lock = new Object();
 	
+	private int dx, dy;
 	private int maxX, maxY;
 	private BufferedImage maze;
 	private int minX, minY;
@@ -58,10 +64,13 @@ public class VisualizationComponent2D extends VisualizationComponent
 	
 	public VisualizationComponent2D() {
 		final int size = calculatePreferredSize();
-		setComponentPopupMenu(createContextMenu());
+//		setComponentPopupMenu(createContextMenu());
 		setPreferredSize(new Dimension(size, size));
 		
-		addMouseWheelListener(this);
+		final MouseMonitor monitor = new MouseMonitor();
+		addMouseListener(monitor);
+		addMouseMotionListener(monitor);
+		addMouseWheelListener(monitor);
 	}
 	
 	
@@ -115,6 +124,7 @@ public class VisualizationComponent2D extends VisualizationComponent
 		return new int[] { dx, dy };
 	}
 	
+	@SuppressWarnings("unused")
 	private final JPopupMenu createContextMenu() {
 		final JPopupMenu menu = new JPopupMenu();
 		
@@ -172,11 +182,11 @@ public class VisualizationComponent2D extends VisualizationComponent
 			
 			final int thickness = Math.max(1, (resolution >> 6));
 			
-			int dx = Math.round(resolution * this.x / Tile.SIZE);
+			int dx = (Math.round(resolution * this.x / Tile.SIZE) - this.dx);
 			for (; dx < 0; dx += resolution);
 			dx %= resolution;
 			
-			int dy = (resolution - Math.round(resolution * this.y / Tile.SIZE));
+			int dy = ((resolution - Math.round(resolution * this.y / Tile.SIZE)) - this.dy);
 			for (; dy < 0; dy += resolution);
 			dy %= resolution;
 			
@@ -220,12 +230,15 @@ public class VisualizationComponent2D extends VisualizationComponent
 				dy = (int)Math.round(factor * dy);
 			}
 			
-			gfx.drawImage(img, ((w / 2) - ax), ((h / 2) - ay), dx, dy, this);
+			gfx.drawImage(img,
+					((w / 2) - ax + this.dx),
+					((h / 2) - ay + this.dy),
+					dx, dy, this);
 		}
 	}
 	
 	protected void drawRobot(final Graphics2D gfx, final int w, final int h) {
-		gfx.translate((w / 2), (h / 2));
+		gfx.translate(((w / 2) + dx), ((h / 2) + dy));
 		
 		int dx, dy;
 		BufferedImage img;
@@ -264,21 +277,21 @@ public class VisualizationComponent2D extends VisualizationComponent
 		gfx.setPaint(TEXTURE_TILE);
 		gfx.fillRect(x, y, TILE_RESOLUTION, TILE_RESOLUTION);
 		
-		Color overlay = null;
-		switch (tile.getBarCode()) {
-			case 13:
-				// Waypoint
-				overlay = new Color(0x66FF0000, true);
-				break;
-			case 55:
-				// Finish
-				overlay = new Color(0x6600FF00, true);
-				break;
-		}
-		if (overlay != null) {
-			gfx.setColor(overlay);
-			gfx.fillRect(x, y, TILE_RESOLUTION, TILE_RESOLUTION);
-		}
+//		Color overlay = null;
+//		switch (tile.getBarCode()) {
+//			case 13:
+//				// Waypoint
+//				overlay = new Color(0x66FF0000, true);
+//				break;
+//			case 55:
+//				// Finish
+//				overlay = new Color(0x6600FF00, true);
+//				break;
+//		}
+//		if (overlay != null) {
+//			gfx.setColor(overlay);
+//			gfx.fillRect(x, y, TILE_RESOLUTION, TILE_RESOLUTION);
+//		}
 		
 		int thickness = (TILE_RESOLUTION >> 4);
 		
@@ -300,36 +313,45 @@ public class VisualizationComponent2D extends VisualizationComponent
 			{ x, y, thickness, TILE_RESOLUTION }
 		};
 		
-		final int bits = tile.getBarCode();
-		if (bits > 0) {
-			thickness = Math.max(1, (TILE_RESOLUTION / 20));
-			
-			final Color[] colors = {
-				Color.BLACK,
-				(((bits & 0x20) == 0) ? Color.BLACK : Color.WHITE),
-				(((bits & 0x10) == 0) ? Color.BLACK : Color.WHITE),
-				(((bits & 0x08) == 0) ? Color.BLACK : Color.WHITE),
-				(((bits & 0x04) == 0) ? Color.BLACK : Color.WHITE),
-				(((bits & 0x02) == 0) ? Color.BLACK : Color.WHITE),
-				(((bits & 0x01) == 0) ? Color.BLACK : Color.WHITE),
-				Color.BLACK
-			};
-			if (borders[0] == Border.CLOSED) {
-				// Horizontal
-				int xx = x + ((TILE_RESOLUTION >>> 1) - (thickness << 2));
-				for (int i = 0; i < 8; i++) {
-					gfx.setColor(colors[i]);
-					gfx.fillRect(xx, y, thickness, TILE_RESOLUTION);
-					xx += thickness;
+		final int barcode = tile.getBarCode();
+		if (barcode > 0) {
+			final BufferedImage icon = getBarcodeImage(barcode);
+			if (icon == null) {
+				thickness = Math.max(1, (TILE_RESOLUTION / 20));
+				
+				final Color[] colors = {
+					Color.BLACK,
+					(((barcode & 0x20) == 0) ? Color.BLACK : Color.WHITE),
+					(((barcode & 0x10) == 0) ? Color.BLACK : Color.WHITE),
+					(((barcode & 0x08) == 0) ? Color.BLACK : Color.WHITE),
+					(((barcode & 0x04) == 0) ? Color.BLACK : Color.WHITE),
+					(((barcode & 0x02) == 0) ? Color.BLACK : Color.WHITE),
+					(((barcode & 0x01) == 0) ? Color.BLACK : Color.WHITE),
+					Color.BLACK
+				};
+				if (borders[0] == Border.CLOSED) {
+					// Horizontal
+					int xx = x + ((TILE_RESOLUTION >>> 1) - (thickness << 2));
+					for (int i = 0; i < 8; i++) {
+						gfx.setColor(colors[i]);
+						gfx.fillRect(xx, y, thickness, TILE_RESOLUTION);
+						xx += thickness;
+					}
+				} else {
+					// Vertical
+					int yy = y + ((TILE_RESOLUTION >>> 1) - (thickness << 2));
+					for (int i = 0; i < 8; i++) {
+						gfx.setColor(colors[i]);
+						gfx.fillRect(x, yy, TILE_RESOLUTION, thickness);
+						yy += thickness;
+					}
 				}
 			} else {
-				// Vertical
-				int yy = y + ((TILE_RESOLUTION >>> 1) - (thickness << 2));
-				for (int i = 0; i < 8; i++) {
-					gfx.setColor(colors[i]);
-					gfx.fillRect(x, yy, TILE_RESOLUTION, thickness);
-					yy += thickness;
-				}
+				final int delta = (TILE_RESOLUTION / 8);
+				gfx.drawImage(icon,
+						(x + delta), (y + delta),
+						(6 * delta), (6 * delta),
+						this);
 			}
 		}
 		
@@ -342,6 +364,29 @@ public class VisualizationComponent2D extends VisualizationComponent
 					gfx.fillRect(bounds[0], bounds[1], bounds[2], bounds[3]);
 				}
 			}
+		}
+	}
+	
+	private final BufferedImage getBarcodeImage(final int barcode) {
+		switch (barcode) {
+			case 5:
+				return loadImageBarcode("turn_left");
+			case 9:
+				return loadImageBarcode("turn_right");
+			case 13:
+				return loadImageBarcode("waypoint");
+			case 15:
+				return loadImageBarcode("music");
+			case 19:
+				return loadImageBarcode("wait");
+			case 25:
+				return loadImageBarcode("slow");
+			case 37:
+				return loadImageBarcode("fast");
+			case 55:
+				return loadImageBarcode("finish");
+			default:
+				return null;
 		}
 	}
 	
@@ -376,6 +421,21 @@ public class VisualizationComponent2D extends VisualizationComponent
 		} catch (final IOException e) {
 			return null;
 		}
+	}
+	
+	private static final BufferedImage loadImageBarcode(final String name) {
+		BufferedImage image = IMAGES.get(name);
+		if (image != null) {
+			return image;
+		}
+		
+		image = loadImage("barcode_" + name + ".png");
+		if (image == null) {
+			return null;
+		}
+		
+		IMAGES.put(name, image);
+		return image;
 	}
 	
 	@SuppressWarnings("unused")
@@ -432,39 +492,7 @@ public class VisualizationComponent2D extends VisualizationComponent
 				new Rectangle2D.Double(0, 0, img.getWidth(), img.getHeight()));
 	}
 	
-	public void mouseWheelMoved(final MouseWheelEvent event) {
-		int scroll = -event.getWheelRotation();
-		if (scroll == 0) {
-			return;
-		}
-		
-		switch (event.getScrollType()) {
-			case MouseWheelEvent.WHEEL_BLOCK_SCROLL:
-				if ((scroll < 4) && (scroll > -4)) {
-					scroll = ((scroll > 0) ? 4 : -4);
-				}
-				break;
-			case MouseWheelEvent.WHEEL_UNIT_SCROLL:
-				if (scroll > 1) {
-					scroll = 1;
-				} else if (scroll < -1) {
-					scroll = -1;
-				}
-				break;
-		}
-		
-		zoom += scroll;
-		if (zoom > 8) {
-			zoom = 8;
-		} else if (zoom < -2) {
-			zoom = -2;
-		}
-		
-		repaint(0L);
-	}
-	
 	public void onTileUpdate(final Tile tile) {
-		System.out.println("UPDATE TILE  " + tile);
 		final int tx = tile.getX();
 		final int ty = tile.getY();
 		
@@ -545,6 +573,98 @@ public class VisualizationComponent2D extends VisualizationComponent
 		
 		gfx.dispose();
 		return resized;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	private final class MouseMonitor implements MouseListener,
+			MouseMotionListener, MouseWheelListener {
+		
+		private int dx, dy, x0, y0;
+		
+		
+		
+		public void mouseClicked(final MouseEvent event) {
+			// ignored
+		}
+		
+		public void mouseEntered(final MouseEvent event) {
+			// ignored
+		}
+		
+		public void mouseExited(final MouseEvent event) {
+			// ignored
+		}
+		
+		public void mouseDragged(final MouseEvent event) {
+			VisualizationComponent2D.this.dx = (dx + event.getX() - x0);
+			VisualizationComponent2D.this.dy = (dy + event.getY() - y0);
+			repaint(0L);
+		}
+		
+		public void mouseMoved(final MouseEvent event) {
+			// ignored
+		}
+		
+		public void mousePressed(final MouseEvent event) {
+			switch (event.getButton()) {
+				case MouseEvent.BUTTON1:
+					dx = VisualizationComponent2D.this.dx;
+					dy = VisualizationComponent2D.this.dy;
+					x0 = event.getX();
+					y0 = event.getY();
+					break;
+					
+				case MouseEvent.BUTTON3:
+					VisualizationComponent2D.this.dx = 0;
+					VisualizationComponent2D.this.dy = 0;
+					repaint(0L);
+					break;
+			}
+		}
+		
+		public void mouseReleased(final MouseEvent event) {
+			// ignored
+		}
+		
+		public void mouseWheelMoved(final MouseWheelEvent event) {
+			int scroll = -event.getWheelRotation();
+			if (scroll == 0) {
+				return;
+			}
+			
+			switch (event.getScrollType()) {
+				case MouseWheelEvent.WHEEL_BLOCK_SCROLL:
+					if ((scroll < 4) && (scroll > -4)) {
+						scroll = ((scroll > 0) ? 4 : -4);
+					}
+					break;
+				case MouseWheelEvent.WHEEL_UNIT_SCROLL:
+					if (scroll > 1) {
+						scroll = 1;
+					} else if (scroll < -1) {
+						scroll = -1;
+					}
+					break;
+			}
+			
+			zoom += scroll;
+			if (zoom > 8) {
+				zoom = 8;
+			} else if (zoom < -2) {
+				zoom = -2;
+			}
+			
+			repaint(0L);
+		}
+		
 	}
 	
 }
