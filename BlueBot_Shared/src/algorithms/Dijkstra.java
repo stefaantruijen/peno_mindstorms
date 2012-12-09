@@ -41,7 +41,7 @@ public class Dijkstra{
 	   * 
 	   * @param source
 	   */
-	  private void execute(Tile source) {
+	  public void execute(Tile source) {
 	    settledNodes = new ArrayList<Tile>();
 	    unSettledNodes = new ArrayList<Tile>();
 	    distance = new HashMap<Tile, Integer>();
@@ -138,7 +138,7 @@ public class Dijkstra{
 	   * This method returns the path from the source to the selected target and
 	   * NULL if no path exists
 	   */
-	  private List<Tile> getPath(Tile target) {
+	  public List<Tile> getPath(Tile target) {
 	    LinkedList<Tile> path = new LinkedList<Tile>();
 	    Tile step = target;
 	    // Check if a path exists

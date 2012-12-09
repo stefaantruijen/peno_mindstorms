@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+
 import algorithms.AbstractBarcodeScanner;
 import algorithms.Dijkstra;
 import bluebot.BarcodeExecuter;
@@ -109,6 +110,8 @@ public class MazeAction extends Action {
 			
 			if(current == this.maze.getRootTile() && !hasUnvisitedNeighbors(this.maze.getRootTile())){
 				this.findBlackSpots();
+				this.processBlackSpots();
+				this.abort();
 			}
 			
 		}while(this.hasUnvisitedNeighbors(this.maze.getRootTile())||this.hasUnvisitedNeighbors(current)||this.graphHasUnvisitedNeighbors());
@@ -141,6 +144,18 @@ public class MazeAction extends Action {
 		
 	}
 	
+	private void processBlackSpots() throws CalibrationException, InterruptedException, ActionException {
+		for(Tile t : this.blackSpots){
+			List<Tile> path = pf.findShortestPath(current, t);
+			if(path!=null){
+				this.followEfficientlyPath(path);
+				this.checkEfficicientlyTile(current);
+				this.maze.addVerticies(t.getNeighbors());
+				this.findBlackSpots();
+			}
+		}
+		
+	}
 	/**
 	 * Check for tiles that still need to be checked for barcodes. And process them if necessary.
 	 * 
