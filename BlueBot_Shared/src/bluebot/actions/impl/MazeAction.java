@@ -145,16 +145,40 @@ public class MazeAction extends Action {
 	}
 	
 	private void processBlackSpots() throws CalibrationException, InterruptedException, ActionException {
-		for(Tile t : this.blackSpots){
-			List<Tile> path = pf.findShortestPath(current, t);
-			if(path!=null){
-				this.followEfficientlyPath(path);
-				this.checkEfficicientlyTile(current);
-				this.maze.addVerticies(t.getNeighbors());
-				this.findBlackSpots();
+		
+		List<Tile> validSpots = getValidBlackSpots();
+		
+		for(Tile t : validSpots){
+			if(!t.isExplored()){
+				List<Tile> path = pf.findShortestPath(current, t);
+				if(path!=null){
+					this.followEfficientlyPath(path);
+					this.checkEfficicientlyTile(current);
+					this.maze.addVerticies(t.getNeighbors());
+					
+				}
 			}
 		}
+		this.findBlackSpots();
+		if(this.blackSpots.size()>0){
+			this.processBlackSpots();
+		}else{
+			return;
+		}
 		
+	}
+	private List<Tile> getValidBlackSpots() {
+		List<Tile> validSpots = new ArrayList<Tile>();
+		pf.execute(current);
+		Iterator<Tile> iter = this.blackSpots.iterator(); 
+		while(iter.hasNext()){
+			Tile t = iter.next();
+			if(pf.getPath(t)!=null){
+				validSpots.add(t);
+			}
+			iter.remove();
+		}
+		return validSpots;
 	}
 	/**
 	 * Check for tiles that still need to be checked for barcodes. And process them if necessary.
@@ -510,12 +534,10 @@ public class MazeAction extends Action {
 	private void initializeRootTile() throws InterruptedException{
 		Tile root = new Tile(0,0);
 		this.checkEfficicientlyTile(root);
-		//Tile root = this.exploreTile(new Tile(0,0));
 		this.maze.setRootTile(root);
 		this.maze.addVerticies(root.getAbsoluteNeighbors());
 		driver.sendTile(root);
 		this.current = root;
-		//this.processUnExploredTiles();
 	}
 	
 	/**
@@ -556,7 +578,10 @@ public class MazeAction extends Action {
 		this.blackSpots = new ArrayList<Tile>();
 		for(Tile t : this.maze.getVerticies()){
 			if(!t.isExplored()){
-				blackSpots.add(t);
+				if(pf.findShortestPath(current, t)!=null){
+					blackSpots.add(t);
+				}
+				
 			}
 		}
 		
@@ -854,15 +879,7 @@ public class MazeAction extends Action {
 		}
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	@SuppressWarnings("unused")
 	private class MyBarcodeScanner extends AbstractBarcodeScanner {
 		
