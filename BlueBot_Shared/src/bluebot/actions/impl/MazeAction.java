@@ -110,8 +110,6 @@ public class MazeAction extends Action {
 			
 			if(current == this.maze.getRootTile() && !hasUnvisitedNeighbors(this.maze.getRootTile())){
 				this.findBlackSpots();
-				this.processBlackSpots();
-				this.abort();
 			}
 			
 		}while(this.hasUnvisitedNeighbors(this.maze.getRootTile())||this.hasUnvisitedNeighbors(current)||this.graphHasUnvisitedNeighbors());
@@ -422,6 +420,7 @@ public class MazeAction extends Action {
 	 * @return
 	 */
 	private Tile determineNextTile() {
+		
 		if(this.blackSpots != null){
 			Iterator<Tile> iter = this.blackSpots.iterator();
 			while(iter.hasNext()){
@@ -578,10 +577,7 @@ public class MazeAction extends Action {
 		this.blackSpots = new ArrayList<Tile>();
 		for(Tile t : this.maze.getVerticies()){
 			if(!t.isExplored()){
-				if(pf.findShortestPath(current, t)!=null){
 					blackSpots.add(t);
-				}
-				
 			}
 		}
 		
