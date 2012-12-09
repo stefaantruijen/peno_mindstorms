@@ -114,6 +114,7 @@ public abstract class AbstractBarcodeScanner extends Threaded {
 	
 	protected abstract Brightness readSensor();
 	
+	@Override
 	public void run() {
 		Brightness lastColor = null, nextColor;
 		float lastPos = 0F, nextPos;
@@ -164,5 +165,11 @@ public abstract class AbstractBarcodeScanner extends Threaded {
 			}
 		}
 	}
-	
+
+	@Override
+	public void stop() {
+		strips.clear();
+		ready = false;
+		super.stop();
+	}
 }

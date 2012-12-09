@@ -44,7 +44,7 @@ public class CalibrationAction extends Action {
 			}
 		}
 		
-		int thresholdBlack = (black + min )/2;
+		int thresholdBlack = (black + min )/2 - 1 ;
 		driver.getCalibration().setLightThresholdWhite(thresholdWhite);
 		driver.getCalibration().setLightThresholdBlack(thresholdBlack);
 		driver.setSpeed(speed);
