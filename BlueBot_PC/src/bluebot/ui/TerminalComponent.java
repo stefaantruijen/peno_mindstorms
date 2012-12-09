@@ -23,24 +23,9 @@ import javax.swing.text.StyleContext;
 public class TerminalComponent extends JTextPane {
 	private static final long serialVersionUID = 1L;
 	
-	private static final String[] COMMANDS;
 	public static final char DEFAULT_DELIMITER = '#';
-	static {
-		COMMANDS = new String[] {
-				"calibrate",
-				"clear",
-				"maze",
-				"move",
-				"orientate",
-				"polygon",
-				"reset",
-				"stop",
-				"set",
-				"tile",
-				"turn"
-		};
-	}
 	
+	private AutoCompleteListener autoComplete;
 	private char delimiter;
 	private int offset;
 	
@@ -53,7 +38,6 @@ public class TerminalComponent extends JTextPane {
 		this.delimiter = delimiter;
 		
 		prefix();
-		getDocument().addDocumentListener(new AutoCompleteListener());
 	}
 	
 	
@@ -228,13 +212,13 @@ public class TerminalComponent extends JTextPane {
 		listenerList.remove(TerminalListener.class, listener);
 	}
 	
-	private static final String suggest(final String input) {
-		for (final String possible : COMMANDS) {
-			if (possible.startsWith(input)) {
-				return possible;
-			}
+	public void setSuggestions(final SuggestionProvider suggestions) {
+		final Document doc = getDocument();
+		if (autoComplete != null) {
+			doc.removeDocumentListener(autoComplete);
 		}
-		return null;
+		autoComplete = new AutoCompleteListener(suggestions);
+		doc.addDocumentListener(autoComplete);
 	}
 	
 	
@@ -248,6 +232,15 @@ public class TerminalComponent extends JTextPane {
 	
 	private final class AutoCompleteListener implements DocumentListener {
 		
+		private SuggestionProvider suggestions;
+		
+		
+		public AutoCompleteListener(final SuggestionProvider suggestions) {
+			this.suggestions = suggestions;
+		}
+		
+		
+		
 		public void changedUpdate(final DocumentEvent event) {
 			// ignored
 		}
@@ -255,7 +248,7 @@ public class TerminalComponent extends JTextPane {
 		public void insertUpdate(final DocumentEvent event) {
 			final String input = getInput();
 			if (!input.isEmpty() && !input.contains(" ")) {
-				final String suggested = suggest(input);
+				final String suggested = suggestions.provideSuggestion(input);
 				if ((suggested != null) && (suggested.length() > input.length())) {
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
@@ -278,6 +271,16 @@ public class TerminalComponent extends JTextPane {
 		public void removeUpdate(final DocumentEvent event) {
 			// ignored
 		}
+		
+	}
+	
+	
+	
+	
+	
+	public static interface SuggestionProvider {
+		
+		public String provideSuggestion(String input);
 		
 	}
 	
