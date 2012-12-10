@@ -1,10 +1,8 @@
 package algorithms;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import bluebot.graph.Edge;
 import bluebot.graph.Graph;
@@ -28,8 +26,8 @@ public class Dijkstra{
 	  private final List<Edge> edges;
 	  private List<Tile> settledNodes;
 	  private List<Tile> unSettledNodes;
-	  private Map<Tile, Tile> predecessors;
-	  private Map<Tile, Integer> distance;
+	  private ArrayList<Predecessor> predecessors;
+	  private ArrayList<Distance> distance;
 	  private Graph graph;
 
 	  public Dijkstra(Graph graph) {
@@ -44,9 +42,9 @@ public class Dijkstra{
 	  public void execute(Tile source) {
 	    settledNodes = new ArrayList<Tile>();
 	    unSettledNodes = new ArrayList<Tile>();
-	    distance = new HashMap<Tile, Integer>();
-	    predecessors = new HashMap<Tile, Tile>();
-	    distance.put(source, 0);
+	    distance = new ArrayList<Distance>();
+	    predecessors = new ArrayList<Predecessor>();
+	    distance.add(new Distance(source, 0));
 	    unSettledNodes.add(source);
 	    while (unSettledNodes.size() > 0) {
 	      Tile node = getMinimum(unSettledNodes);
@@ -65,9 +63,9 @@ public class Dijkstra{
 	    for (Tile target : adjacentNodes) {
 	      if (getShortestDistance(target) > getShortestDistance(node)
 	          + getDistance(node, target)) {
-	        distance.put(target, getShortestDistance(node)
-	            + getDistance(node, target));
-	        predecessors.put(target, node);
+	        distance.add(new Distance(target, getShortestDistance(node)
+	            + getDistance(node, target)));
+	        predecessors.add(new Predecessor(target, node));
 	        unSettledNodes.add(target);
 	      }
 	    }
@@ -126,12 +124,22 @@ public class Dijkstra{
 	  }
 
 	  private int getShortestDistance(Tile destination) {
-	    Integer d = distance.get(destination);
+	    Integer d = this.getDistanceForTile(destination);
 	    if (d == null) {
 	      return Integer.MAX_VALUE;
 	    } else {
 	      return d;
 	    }
+	  }
+	  
+	  private Integer getDistanceForTile(Tile destination){
+		  for(Distance d : distance){
+			  if(d.getTile().equals(destination)){
+				  return d.getInteg();
+			  }
+		  }
+		  
+		  return null;
 	  }
 
 	  /*
@@ -142,17 +150,27 @@ public class Dijkstra{
 	    LinkedList<Tile> path = new LinkedList<Tile>();
 	    Tile step = target;
 	    // Check if a path exists
-	    if (predecessors.get(step) == null) {
+	    if (this.getPredecessorForKey(step) == null) {
 	      return null;
 	    }
 	    path.add(step);
-	    while (predecessors.get(step) != null) {
-	      step = predecessors.get(step);
+	    while (this.getPredecessorForKey(step) != null) {
+	      step = this.getPredecessorForKey(step);
 	      path.add(step);
 	    }
 	    // Put it into the correct order
 	    return this.reverse(path);
 	   
+	  }
+	  
+	  private Tile getPredecessorForKey(Tile key){
+		  for(Predecessor p : this.predecessors){
+			  if(p.getKey().equals(key)){
+				  return p.getValue();
+			  }
+		  }
+		  
+		  return null;
 	  }
 	  
 	  private List<Tile> reverse(List<Tile> path){
@@ -168,5 +186,6 @@ public class Dijkstra{
 		this.execute(from);
 		return this.getPath(to);
 	}
+
 
 }

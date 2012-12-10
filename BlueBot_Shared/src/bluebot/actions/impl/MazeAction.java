@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-
-import algorithms.AbstractBarcodeScanner;
 import algorithms.Dijkstra;
 import bluebot.BarcodeExecuter;
 import bluebot.Driver;
@@ -32,7 +30,10 @@ public class MazeAction extends Action {
 	private final Graph maze;
 	private Direction headDirection,moveDirection;
 	private Tile current;
-	private int turnDegrees = 0;
+	private int calibParam = 0;
+	private int turnCalibCost = 3;
+	private int moveCalibCost = 2;
+	
 	private List<Tile> blackSpots;
 	private BarcodeExecuter barcodeExecuter;
 //	private MyBarcodeScanner barcodeScanner;
@@ -42,6 +43,7 @@ public class MazeAction extends Action {
 //	private final WhiteLineAction wa;
 	private boolean orientateHorizontal=false;
 	private boolean orientateVertical=false;
+	private int calibLimit = 10;
 	
 	public MazeAction(){
 		this.maze = new Graph();
@@ -108,7 +110,7 @@ public class MazeAction extends Action {
 			
 			this.maze.addVerticies(next.getAbsoluteNeighbors());
 			
-			if(current == this.maze.getRootTile() && !hasUnvisitedNeighbors(this.maze.getRootTile())){
+			if(current == this.maze.getRootTile()){
 				this.findBlackSpots();
 			}
 			
@@ -142,42 +144,6 @@ public class MazeAction extends Action {
 		
 	}
 	
-	private void processBlackSpots() throws CalibrationException, InterruptedException, ActionException {
-		
-		List<Tile> validSpots = getValidBlackSpots();
-		
-		for(Tile t : validSpots){
-			if(!t.isExplored()){
-				List<Tile> path = pf.findShortestPath(current, t);
-				if(path!=null){
-					this.followEfficientlyPath(path);
-					this.checkEfficicientlyTile(current);
-					this.maze.addVerticies(t.getNeighbors());
-					
-				}
-			}
-		}
-		this.findBlackSpots();
-		if(this.blackSpots.size()>0){
-			this.processBlackSpots();
-		}else{
-			return;
-		}
-		
-	}
-	private List<Tile> getValidBlackSpots() {
-		List<Tile> validSpots = new ArrayList<Tile>();
-		pf.execute(current);
-		Iterator<Tile> iter = this.blackSpots.iterator(); 
-		while(iter.hasNext()){
-			Tile t = iter.next();
-			if(pf.getPath(t)!=null){
-				validSpots.add(t);
-			}
-			iter.remove();
-		}
-		return validSpots;
-	}
 	/**
 	 * Check for tiles that still need to be checked for barcodes. And process them if necessary.
 	 * 
@@ -250,7 +216,7 @@ public class MazeAction extends Action {
 						this.driver.moveForward(40F, true);
 						new WhiteLineAction().execute(driver);
 						this.driver.moveForward(200F,true);
-						this.turnDegrees=0;
+						this.calibParam=0;
 						this.orientateVertical = false;
 					}else{
 						this.driver.moveForward(400F, true);
@@ -260,7 +226,7 @@ public class MazeAction extends Action {
 						this.driver.moveForward(40F, true);
 						new WhiteLineAction().execute(driver);
 						this.driver.moveForward(200F,true);
-						this.turnDegrees=0;
+						this.calibParam=0;
 						this.orientateHorizontal = false;
 					}else{
 						this.driver.moveForward(400F, true);
@@ -272,7 +238,7 @@ public class MazeAction extends Action {
 				this.driver.moveForward(400F, true);
 			}
 		}
-		
+		this.incrementCalibParam(this.moveCalibCost);
 		driver.modifyOrientation();
 	}
 	
@@ -293,15 +259,15 @@ public class MazeAction extends Action {
 				break;
 			case LEFT:
 				this.driver.turnLeft(90F,true);
-				this.incrementTurnTimes(90);
+				this.incrementCalibParam(this.turnCalibCost);
 				break;
 			case RIGHT:
 				this.driver.turnRight(90F,true);
-				this.incrementTurnTimes(90);
+				this.incrementCalibParam(this.turnCalibCost);
 				break;
 			case UP:
 				this.driver.turnRight(180F,true);
-				this.incrementTurnTimes(180);
+				this.incrementCalibParam(this.turnCalibCost);
 				break;
 			default:
 				break;
@@ -324,18 +290,18 @@ public class MazeAction extends Action {
 		switch(moveDirection){
 			case DOWN:
 				this.driver.turnRight(90F,true);
-				this.incrementTurnTimes(90);
+				this.incrementCalibParam(this.turnCalibCost);
 				break;
 			case LEFT:
 				
 				break;
 			case RIGHT:
 				this.driver.turnRight(180F,true);
-				this.incrementTurnTimes(180);
+				this.incrementCalibParam(this.turnCalibCost);
 				break;
 			case UP:
 				this.driver.turnLeft(90F,true);
-				this.incrementTurnTimes(90);
+				this.incrementCalibParam(this.turnCalibCost);
 				break;
 			default:
 				break;
@@ -358,15 +324,15 @@ public class MazeAction extends Action {
 		switch(moveDirection){
 			case DOWN:
 				this.driver.turnRight(180F,true);
-				this.incrementTurnTimes(180);
+				this.incrementCalibParam(this.turnCalibCost);
 				break;
 			case LEFT:
 				this.driver.turnRight(90F,true);
-				this.incrementTurnTimes(90);
+				this.incrementCalibParam(this.turnCalibCost);
 				break;
 			case RIGHT:
 				this.driver.turnLeft(90F,true);
-				this.incrementTurnTimes(90);
+				this.incrementCalibParam(this.turnCalibCost);
 				break;
 			case UP:
 				
@@ -391,17 +357,17 @@ public class MazeAction extends Action {
 		switch(moveDirection){
 			case DOWN:
 				this.driver.turnLeft(90F,true);
-				this.incrementTurnTimes(90);
+				this.incrementCalibParam(this.turnCalibCost);
 				break;
 			case LEFT:
 				this.driver.turnRight(180F,true);
-				this.incrementTurnTimes(180);
+				this.incrementCalibParam(this.turnCalibCost);
 				break;
 			case RIGHT:
 				break;
 			case UP:
 				this.driver.turnRight(90F, true);
-				this.incrementTurnTimes(90);
+				this.incrementCalibParam(this.turnCalibCost);
 				break;
 			default:
 				break;
@@ -420,7 +386,6 @@ public class MazeAction extends Action {
 	 * @return
 	 */
 	private Tile determineNextTile() {
-		
 		if(this.blackSpots != null){
 			Iterator<Tile> iter = this.blackSpots.iterator();
 			while(iter.hasNext()){
@@ -533,10 +498,12 @@ public class MazeAction extends Action {
 	private void initializeRootTile() throws InterruptedException{
 		Tile root = new Tile(0,0);
 		this.checkEfficicientlyTile(root);
+		//Tile root = this.exploreTile(new Tile(0,0));
 		this.maze.setRootTile(root);
 		this.maze.addVerticies(root.getAbsoluteNeighbors());
 		driver.sendTile(root);
 		this.current = root;
+		//this.processUnExploredTiles();
 	}
 	
 	/**
@@ -545,12 +512,11 @@ public class MazeAction extends Action {
 	 * @return
 	 */
 	private boolean hasUnvisitedNeighbors(Tile t){
-		for(Tile n : t.getNeighbors()){
-			if(!maze.getVertex(n.getX(), n.getY()).isExplored()){
+		for(Tile tile : this.maze.getNeighborsFrom(t)){
+			if(!tile.isExplored()){
 				return true;
 			}
 		}
-		
 		return false;
 		
 	}
@@ -577,7 +543,7 @@ public class MazeAction extends Action {
 		this.blackSpots = new ArrayList<Tile>();
 		for(Tile t : this.maze.getVerticies()){
 			if(!t.isExplored()){
-					blackSpots.add(t);
+				blackSpots.add(t);
 			}
 		}
 		
@@ -863,9 +829,9 @@ public class MazeAction extends Action {
 		return stillExploring;
 	}
 
-	private void incrementTurnTimes(int amount) {
-		this.turnDegrees = this.turnDegrees+amount;
-		if(this.turnDegrees >= 360){
+	private void incrementCalibParam(int amount) {
+		this.calibParam = this.calibParam+amount;
+		if(this.calibParam >= this.calibLimit ){
 			if(!this.orientateHorizontal){
 				this.orientateHorizontal = true;
 			}
@@ -873,36 +839,6 @@ public class MazeAction extends Action {
 				this.orientateVertical = true;
 			}
 		}
-	}
-	
-
-	@SuppressWarnings("unused")
-	private class MyBarcodeScanner extends AbstractBarcodeScanner {
-		
-		protected Orientation getOrientation() {
-			return driver.getOrientation();
-		}
-		
-		protected Tile getTile() {
-			return current;
-		}
-		
-		protected boolean isMoving() {
-			return driver.isMoving();
-		}
-		
-		protected void print(final String msg) {
-			driver.sendDebug(msg);
-		}
-		
-		protected Brightness readSensor() {
-			try {
-				return driver.readSensorLightBrightness();
-			} catch (final CalibrationException e) {
-				throw new RuntimeException(e);
-			}
-		}
-		
 	}
 	
 }
