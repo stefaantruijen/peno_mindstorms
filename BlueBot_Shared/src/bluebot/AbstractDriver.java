@@ -294,6 +294,7 @@ public abstract class AbstractDriver implements Driver {
 	}
 	
 	protected synchronized void stopUpdater() {
+		new RuntimeException("DRIVER UPDATER STOPPED").printStackTrace();
 		if (updater != null) {
 			updater.interrupt();
 			updater = null;
