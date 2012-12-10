@@ -43,7 +43,7 @@ public class MazeAction extends Action {
 //	private final WhiteLineAction wa;
 	private boolean orientateHorizontal=false;
 	private boolean orientateVertical=false;
-	private int calibLimit = 1000;
+	private int calibLimit = 10;
 	
 	public MazeAction(){
 		this.maze = new Graph();
@@ -152,11 +152,12 @@ public class MazeAction extends Action {
 			if(path!=null){
 				this.followEfficientlyPath(pf.findShortestPath(current, t));
 				this.checkEfficicientlyTile(this.maze.getVertex(t.getX(), t.getY()));
-				final int b = scanBarcode(current);
-				if(b>0){
-					this.barcodeExecuter.executeBarcode(b,current);
+				if (current.canHaveBarcode()) {
+					final int b = scanBarcode(current);
+					if(b>0){
+						this.barcodeExecuter.executeBarcode(b,current);
+					}
 				}
-				
 			}
 		}
 		this.findBlackSpots();
