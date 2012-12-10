@@ -14,10 +14,12 @@ import bluebot.actions.ActionException;
 import bluebot.graph.Border;
 import bluebot.graph.Direction;
 import bluebot.graph.Graph;
+import bluebot.graph.Orientation;
 import bluebot.graph.Tile;
-import bluebot.sensors.Brightness;
+import bluebot.maze.AbstractPathProvider;
 import bluebot.sensors.CalibrationException;
-import bluebot.util.Orientation;
+import bluebot.util.Timer;
+import bluebot.util.Utils;
 
 
 
@@ -63,8 +65,12 @@ public class MazeAction extends Action {
 	@Override
 	public void execute(Driver driver) throws InterruptedException, ActionException, DriverException {
 		this.driver = driver;
+		
+		final Timer timer = new Timer();
+		timer.reset();
+		
 		this.driver.resetOrientation();
-		long startTime = System.currentTimeMillis();
+//		long startTime = System.currentTimeMillis();
 		this.initializeRootTile();
 		
 		// The barcode executor can only be initialized here,
@@ -74,6 +80,59 @@ public class MazeAction extends Action {
 //		this.barcodeScanner = new MyBarcodeScanner();
 //		barcodeScanner.start();
 		
+		final MyPathProvider route = new MyPathProvider();
+		for (Tile[] path; (path = route.getPathToNextTile()) != null;) {
+			if (isAborted()) {
+				return;
+			}
+			
+			// We have located a tile that requires scanning
+			// Travel to it using the optimal path
+			for (int i = 1; i < path.length; i++) {
+				moveTo(path[i]);
+			}
+			
+			final Tile tile = current;
+			// Scan the current tile
+			checkEfficicientlyTile(tile);
+			// Only add the neighbors next to open borders,
+			// to avoid having the excess tiles on the outer rim
+			maze.addVerticies(tile.getAbsoluteNeighbors());
+			
+			// Check for a barcode if necessary
+			if (tile.canHaveBarcode()) {
+				final int barcode = scanBarcode(tile);
+				if (barcode > 0) {
+					barcodeExecuter.executeBarcode(barcode, tile);
+				}
+			}
+		}
+		
+		final long timeExploration = timer.read();
+		
+		Tile a = maze.getCheckpointVertex();
+		if (a == null) {
+			a = current;
+		} else {
+			followEfficientlyPath(pf.findShortestPath(current, a));
+		}
+		
+		Tile b = maze.getFinishVertex();
+		if (b == null) {
+			b = maze.getVertex(0, 0);
+		}
+		
+		timer.reset();
+		followEfficientlyPath(pf.findShortestPath(a, b));
+		final long timeShortestPath = timer.read();
+		
+		final String msg = new StringBuilder()
+		.append(Utils.formatDuration(timeExploration)).append(" to explore the maze.\n")
+		.append(Utils.formatDuration(timeShortestPath)).append(" to reach the finish.")
+		.toString();
+		driver.sendMessage(msg, "Finished");
+		
+		/*
 		do{
 			if(isAborted()){
 //				barcodeScanner.stop();
@@ -143,9 +202,10 @@ public class MazeAction extends Action {
 			str.append("\nIt took "+finishStamp+" to reach the finish tile.");
 		}
 		driver.sendMessage(str.toString(), "Maze explored !");
-		
+		*/
 	}
 	
+	@SuppressWarnings("unused")
 	private void processBlackSpots() throws InterruptedException, ActionException, DriverException {
 		for(Tile t : this.blackSpots){
 			List<Tile> path = pf.findShortestPath(current, t);
@@ -182,6 +242,7 @@ public class MazeAction extends Action {
 	 * @throws ActionException
 	 * @throws DriverException
 	 */
+	@SuppressWarnings("unused")
 	private void processBarcodes() throws CalibrationException,
 			InterruptedException, ActionException, DriverException {
 		if(stillCheckForBarcode.size()>0){
@@ -415,6 +476,7 @@ public class MazeAction extends Action {
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	private Tile determineNextTile() {/*
 		if(this.blackSpots != null){
 			Iterator<Tile> iter = this.blackSpots.iterator();
@@ -559,6 +621,7 @@ public class MazeAction extends Action {
 	 * Check if the graph still has unvisited neighbors left.
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	private boolean graphHasUnvisitedNeighbors(){
 		for(Tile t : this.maze.getVerticies()){
 			if(t.isExplored()){
@@ -874,6 +937,42 @@ public class MazeAction extends Action {
 				this.orientateVertical = true;
 			}
 		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	private final class MyPathProvider extends AbstractPathProvider {
+		
+		protected Tile getCurrentTile() {
+			return current;
+		}
+		
+		protected Orientation getCurrentDirection() {
+			switch (moveDirection) {
+				case UP:
+					return Orientation.NORTH;
+				case RIGHT:
+					return Orientation.EAST;
+				case DOWN:
+					return Orientation.SOUTH;
+				case LEFT:
+					return Orientation.WEST;
+				default:
+					throw new RuntimeException("Invalid direction:  " + moveDirection);
+			}
+		}
+		
+		protected Tile getTile(final int x, final int y) {
+			return maze.getVertex(x, y);
+		}
+		
 	}
 	
 }

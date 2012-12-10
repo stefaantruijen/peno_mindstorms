@@ -294,7 +294,6 @@ public abstract class AbstractDriver implements Driver {
 	}
 	
 	protected synchronized void stopUpdater() {
-		new RuntimeException("DRIVER UPDATER STOPPED").printStackTrace();
 		if (updater != null) {
 			updater.interrupt();
 			updater = null;
@@ -350,9 +349,7 @@ public abstract class AbstractDriver implements Driver {
 					try {
 						Thread.sleep(time);
 					} catch (final InterruptedException e) {
-						for (int i = 10; i > 0; i--) {
-							sendDebug("UPDATER THREAD INTERRUPTED");
-						}
+						sendDebug("Updater thread interrupted");
 						return;
 					}
 				}

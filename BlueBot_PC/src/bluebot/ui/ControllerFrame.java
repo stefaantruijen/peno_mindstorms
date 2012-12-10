@@ -3,17 +3,12 @@ package bluebot.ui;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -23,6 +18,8 @@ import javax.swing.JTabbedPane;
 import bluebot.ConfigListener;
 import bluebot.core.Controller;
 import bluebot.core.ControllerListener;
+import bluebot.graph.Tile;
+import bluebot.ui.TerminalComponent.SuggestionProvider;
 
 
 
@@ -57,120 +54,135 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 			}
 		});
 	}
-
-	private final Component createModule(final JComponent content,
-			final String title) {
-		content.setBorder(BorderFactory.createEtchedBorder());
-		return content;
-	}
-
-	private final Component createModuleCommands() {
-		final Font font = new Font(Font.SANS_SERIF, Font.BOLD, 12);
-		
-		final JButton buttonCalibrate = new JButton("Calibrate");
-		buttonCalibrate.setFocusable(false);
-		buttonCalibrate.setFont(font);
-		buttonCalibrate.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				controller.doCalibrate();
-			}
-		});
-		
-		final JButton buttonMaze = new JButton("Maze");
-		buttonMaze.setFocusable(false);
-		buttonMaze.setFont(font);
-		buttonMaze.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				controller.doMaze(0);
-//				final int pathfinder = new MazeDialog(ControllerFrame.this).display();
-//				if (pathfinder > 0) {
-//					controller.doMaze(pathfinder);
-//				}
-			}
-		});
-		
-		final JButton buttonOrientate = new JButton("Orientate");
-		buttonOrientate.setFocusable(false);
-		buttonOrientate.setFont(font);
-		buttonOrientate.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				controller.doWhiteLineOrientation();
-			}
-		});
-		
-		final JButton buttonPolygon = new JButton("Polygon");
-		buttonPolygon.setFocusable(false);
-		buttonPolygon.setFont(font);
-		buttonPolygon.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				final PolygonDialog dialog = new PolygonDialog(ControllerFrame.this);
-				if (dialog.display()) {
-					controller.doPolygon(dialog.getCorners(),
-							dialog.getLength());
+	
+	private final Component createModuleCLI() {
+		final TerminalComponent cli = new TerminalComponent();
+		cli.addListener(new TerminalListener() {
+			public void onTerminalCommand(final TerminalComponent component,
+					final String[] command) {
+				final String cmd = command[0];
+				if ((cmd == null) || cmd.isEmpty()) {
+					// ignored
+				} else if (cmd.equals("calibrate")) {
+					controller.doCalibrate();
+				} else if (cmd.equals("maze")) {
+					controller.doMaze(0);
+				} else if (cmd.equals("move")) {
+					try {
+						final float distance;
+						if (command.length < 3) {
+							distance = Tile.SIZE;
+						} else {
+							distance = Float.parseFloat(command[2]);
+						}
+						switch (command[1].charAt(0)) {
+							case 'B':
+							case 'b':
+								controller.moveBackward(distance);
+								break;
+							case 'F':
+							case 'f':
+								controller.moveForward(distance);
+								break;
+							default:
+								throw new IllegalArgumentException();
+						}
+					} catch (final Exception e) {
+						cli.echo("Syntax:  move <f|b> [<distance>]");
+					}
+				} else if (cmd.equals("orientate")) {
+					controller.doWhiteLineOrientation();
+				} else if (cmd.equals("polygon")) {
+					try {
+						controller.doPolygon(Integer.parseInt(command[1]),
+								Float.parseFloat(command[2]));
+					} catch (final Exception e) {
+						cli.echo("Syntax:  polygon <corners> <length>");
+					}
+				} else if (cmd.equals("reset")) {
+					canvas.reset();
+					controller.reset();
+				} else if (cmd.equals("set")) {
+					try {
+						final String setting = command[1].toLowerCase();
+						if (setting.isEmpty()) {
+							throw new IllegalArgumentException();
+						} else if (setting.equals("speed")) {
+							controller.setSpeed(Integer.parseInt(command[2]));
+						}
+					} catch (final Exception e) {
+						cli.echo("Syntax:  set <setting> <value>");
+					}
+				} else if (cmd.equals("stop")) {
+					controller.stop();
+				} else if (cmd.equals("tile")) {
+					controller.doTile();
+				} else if (cmd.equals("turn")) {
+					try {
+						final float angle;
+						if (command.length < 3) {
+							angle = 90F;
+						} else {
+							angle = Float.parseFloat(command[2]);
+						}
+						switch (command[1].toLowerCase().charAt(0)) {
+							case 'L':
+							case 'l':
+								controller.turnLeft(angle);
+								break;
+							case 'R':
+							case 'r':
+								controller.turnRight(angle);
+								break;
+							default:
+								throw new IllegalArgumentException();
+						}
+					} catch (final Exception e) {
+						cli.echo("Syntax:  turn <l|r> [<angle>]");
+					}
+				} else {
+					cli.echo("Invalid command");
 				}
 			}
 		});
-		
-		final JButton buttonReset = new JButton("Reset");
-		buttonReset.setFocusable(false);
-		buttonReset.setFont(font);
-		buttonReset.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				canvas.reset();
-				controller.reset();
+		cli.setSuggestions(new SuggestionProvider() {
+			public String provideSuggestion(String input) {
+				final String[] commands = {
+						"calibrate",
+						"clear",
+						"maze",
+						"move",
+						"orientate",
+						"polygon",
+						"reset",
+						"stop",
+						"set",
+						"tile",
+						"turn"
+				};
+				for (final String command : commands) {
+					if (command.startsWith(input)) {
+						return command;
+					}
+				}
+				return null;
 			}
 		});
 		
-		final JButton buttonTile = new JButton("Tile");
-		buttonTile.setFocusable(false);
-		buttonTile.setFont(font);
-		buttonTile.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent event) {
-				controller.doTile();
-			}
-		});
-		
-		final JPanel panel = new JPanel();
-		
-		final GridBagLayout layout = new GridBagLayout();
-		layout.columnWeights = new double[] { 1D, 1D, 1D, 1D, 1D, 1D };
-		layout.rowHeights = new int[] { 64 };
-		layout.rowWeights = new double[] { 1D };
-		panel.setLayout(layout);
-		
-		final GridBagConstraints gbc = SwingUtils.createGBC();
-		gbc.fill = GridBagConstraints.BOTH;
-		gbc.insets.set(2, 2, 2, 2);
-		
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		panel.add(buttonCalibrate, gbc);
-		
-		gbc.gridx++;
-		panel.add(buttonMaze, gbc);
-		
-		gbc.gridx++;
-		panel.add(buttonOrientate, gbc);
-		
-//		gbc.gridx++;
-//		panel.add(buttonPolygon, gbc);
-		
-		gbc.gridx++;
-		panel.add(buttonReset, gbc);
-		
-//		gbc.gridx++;
-//		panel.add(buttonTile, gbc);
-		
-		return createModule(panel, "Commands");
+		final JScrollPane scroll = new JScrollPane(cli,
+				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scroll.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+		return scroll;
 	}
-
+	
 	private final Component createModuleCommunication() {
 		final CommunicationTable table = new CommunicationTable();
 		controller.addListener(table.getModel());
-
+		
 		final JScrollPane scroll = table.createScrollPane();
-		scroll.setMinimumSize(new Dimension(1, 1));
-		return createModule(scroll, "Communication");
+		scroll.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+		return scroll;
 	}
 
 	private final Component createModuleControls() {
@@ -187,7 +199,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		
 		final GridBagConstraints gbc = SwingUtils.createGBC();
 		gbc.fill = GridBagConstraints.BOTH;
-		gbc.insets.set(5, 5, 5, 5);
+		gbc.insets.set(10, 10, 10, 10);
 		
 		gbc.gridx = 0;
 		gbc.gridy = 0;
@@ -211,13 +223,13 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		ControllerFrame.this.setFocusTraversalPolicy(
 				new SingleFocusTraversalPolicy(joystick));
 		
-		return createModule(panel, "Controls");
+		return panel;
 	}
 
 	private final Component createModuleSensors() {
 		final SensorsComponent sensors = new SensorsComponent();
 		controller.addListener(sensors);
-		return createModule(sensors, "Sensors");
+		return sensors;
 	}
 	
 	private final Component createModuleVisualization() {
@@ -246,17 +258,23 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		gbc.insets.set(5, 5, 5, 5);
 		panel.add(barcode, gbc);
 		
-		return createModule(panel, "Visualization");
+		return panel;
 	}
 	
-	private final Component createTabs() {
-		final JTabbedPane tabs = new JTabbedPane(JTabbedPane.TOP);
-		tabs.addTab("Communication", createModuleCommunication());
-		tabs.addTab("Visualization", createModuleVisualization());
-		tabs.setSelectedIndex(1);
+	private final Component createTabsLeft() {
+		final JTabbedPane tabs = new IconTabbedPane();
+		tabs.addTab("icon_visualization", createModuleVisualization());
+		tabs.addTab("icon_bluetooth", createModuleCommunication());
 		return tabs;
 	}
-
+	
+	private final Component createTabsRight() {
+		final JTabbedPane tabs = new IconTabbedPane();
+		tabs.addTab("icon_cli", createModuleCLI());
+		tabs.addTab("icon_sensors", createModuleSensors());
+		return tabs;
+	}
+	
 	private final void initComponents() {
 		final GridBagLayout layout = new GridBagLayout();
 		layout.columnWeights = new double[] { 0D, 0D };
@@ -267,11 +285,11 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.insets.set(5, 5, 5, 5);
 		
-		gbc.gridheight = 3;
+		gbc.gridheight = 2;
 		
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		add(createTabs(), gbc);
+		add(createTabsLeft(), gbc);
 		
 		gbc.gridheight = 1;
 		
@@ -279,12 +297,8 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		add(createModuleControls(), gbc);
 		
 		gbc.gridy++;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		add(createModuleCommands(), gbc);
-		
-		gbc.gridy++;
 		gbc.fill = GridBagConstraints.BOTH;
-		add(createModuleSensors(), gbc);
+		add(createTabsRight(), gbc);
 	}
 	
 	public void onError(final String msg) {

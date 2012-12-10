@@ -17,11 +17,12 @@ public class GraphComponent extends RenderingComponent {
 	private static final long serialVersionUID = 1L;
 	
 	private LinkedList<Integer> data;
-	private int max, min = Integer.MAX_VALUE;
+	private int max; //, min = Integer.MAX_VALUE;
 	
 	
-	public GraphComponent() {
-//		setOpaque(true);
+	public GraphComponent(final int max) {
+		this.max = max;
+		
 		addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(final ComponentEvent event) {
@@ -48,9 +49,9 @@ public class GraphComponent extends RenderingComponent {
 		if (value > max) {
 			max = value;
 		}
-		if (value < min) {
-			min = value;
-		}
+//		if (value < min) {
+//			min = value;
+//		}
 		
 		repaint(0L);
 	}

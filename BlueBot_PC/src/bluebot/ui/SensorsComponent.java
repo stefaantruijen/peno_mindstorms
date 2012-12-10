@@ -38,8 +38,8 @@ public class SensorsComponent extends JPanel
 	
 	
 	
-	private static final GraphComponent createGraph() {
-		final GraphComponent graph = new GraphComponent();
+	private static final GraphComponent createGraph(final int max) {
+		final GraphComponent graph = new GraphComponent(max);
 		graph.setPreferredSize(DEFAULT_SIZE);
 		return graph;
 	}
@@ -63,7 +63,7 @@ public class SensorsComponent extends JPanel
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.insets.set(2, 2, 2, 2);
 		
-		graphUltraSonic = createGraph();
+		graphUltraSonic = createGraph(255);
 		
 		gbc.gridx = 0;
 		gbc.gridy = 0;
@@ -74,7 +74,7 @@ public class SensorsComponent extends JPanel
 		gbc.gridx++;
 		add(labelUltraSonic, gbc);
 		
-		graphLight = createGraph();
+		graphLight = createGraph(1023);
 		
 		gbc.gridx = 0;
 		gbc.gridy++;

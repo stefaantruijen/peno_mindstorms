@@ -311,7 +311,6 @@ public class Tile implements Comparable<Tile> {
 		}
 	}
 	
-	
 	public boolean isExplored(){
 		if(this.getBorderEast() == Border.UNKNOWN){
 			return false;
@@ -325,6 +324,7 @@ public class Tile implements Comparable<Tile> {
 			return true;
 		}
 	}
+	
 	/**
 	 * Get the neighbors of this tile. The tile needs to be explored in order to determine the neighbors.
 	 * 

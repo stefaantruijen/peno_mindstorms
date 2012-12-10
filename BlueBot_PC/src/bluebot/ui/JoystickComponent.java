@@ -1,28 +1,28 @@
 package bluebot.ui;
 
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
-import javax.swing.JLabel;
+import javax.swing.Icon;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JToggleButton;
 
 import bluebot.core.Controller;
+import bluebot.util.Resources;
 
 
 
@@ -36,21 +36,15 @@ public class JoystickComponent extends JPanel {
 	
 	private Behavior behavior;
 	private Button buttonBackward, buttonForward, buttonLeft, buttonRight, buttonStop;
+	private boolean special;
 	
 	
 	public JoystickComponent(final Controller controller) {
-		setBehavior(new FixedBehavior(controller));
-//		setBehavior(new FreeBehavior(controller));
+		setBehavior(new FixedBehavior(controller, FixedBehavior.DISTANCE_LONG));
 		
 		initComponents();
 		setComponentPopupMenu(createContextMenu());
 		setFocusable(true);
-		addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusLost(final FocusEvent event) {
-				requestFocusInWindow();
-			}
-		});
 		addKeyListener(createKeyListener());
 		addMouseListener(new MouseAdapter() {
 			@Override
@@ -102,6 +96,7 @@ public class JoystickComponent extends JPanel {
 		return new ThrottledKeyAdapter(new KeyMonitor());
 	}
 	
+	/*
 	private final void fireBackward(final KeyEvent event) {
 		switch (event.getID()) {
 			case KeyEvent.KEY_PRESSED:
@@ -166,17 +161,63 @@ public class JoystickComponent extends JPanel {
 				break;
 		}
 	}
+	*/
 	
 	private final Behavior getBehavior() {
 		return behavior;
 	}
 	
 	private final void initComponents() {
-		buttonForward = new Button("Z");
-		buttonBackward = new Button("S");
-		buttonLeft = new Button("Q");
-		buttonRight = new Button("D");
-		buttonStop = new Button("H");
+		buttonBackward = new Button(loadIcon("arrow_down"));
+		buttonBackward.addItemListener(new ButtonListener() {
+			protected void firePressed() {
+				getBehavior().onBackwardPressed(false);
+			}
+			
+			protected void fireReleased() {
+				getBehavior().onBackwardReleased();
+			}
+		});
+		buttonForward = new Button(loadIcon("arrow_up"));
+		buttonForward.addItemListener(new ButtonListener() {
+			protected void firePressed() {
+				getBehavior().onForwardPressed(false);
+			}
+			
+			protected void fireReleased() {
+				getBehavior().onForwardReleased();
+			}
+		});
+		buttonLeft = new Button(loadIcon("arrow_left"));
+		buttonLeft.addItemListener(new ButtonListener() {
+			protected void firePressed() {
+				getBehavior().onLeftPressed(false);
+			}
+			
+			protected void fireReleased() {
+				getBehavior().onLeftReleased();
+			}
+		});
+		buttonRight = new Button(loadIcon("arrow_right"));
+		buttonRight.addItemListener(new ButtonListener() {
+			protected void firePressed() {
+				getBehavior().onRightPressed(false);
+			}
+			
+			protected void fireReleased() {
+				getBehavior().onRightReleased();
+			}
+		});
+		buttonStop = new Button(loadIcon("stop"));
+		buttonStop.addItemListener(new ButtonListener() {
+			protected void firePressed() {
+				getBehavior().onStopPressed();
+			}
+			
+			protected void fireReleased() {
+				getBehavior().onStopReleased();
+			}
+		});
 		
 		final GridBagLayout layout = new GridBagLayout();
 		layout.columnWeights = new double[] { 0D, 0D, 0D };
@@ -204,17 +245,29 @@ public class JoystickComponent extends JPanel {
 		add(buttonBackward, gbc);
 	}
 	
+	private static final Icon loadIcon(final String name) {
+		return Resources.loadIcon(JoystickComponent.class, (name + ".png"));
+	}
+	
 	private final void setBehavior(final Behavior behavior) {
+		if (behavior == null) {
+			throw new NullPointerException("Behavior may not be NULL");
+		}
 		this.behavior = behavior;
 	}
 	
 	private final void setBehaviorFixed() {
-//		System.out.println("FIXED");
-		setBehavior(new FixedBehavior(getBehavior().getController()));
+		final Controller controller = getBehavior().getController();
+		final Behavior behavior;
+		if (special) {
+			behavior = new FixedBehavior(controller, FixedBehavior.DISTANCE_SHORT);
+		} else {
+			behavior = new FixedBehavior(controller, FixedBehavior.DISTANCE_LONG);
+		}
+		setBehavior(behavior);
 	}
 	
 	private final void setBehaviorFree() {
-//		System.out.println("FREE");
 		setBehavior(new FreeBehavior(getBehavior().getController()));
 	}
 	
@@ -282,32 +335,85 @@ public class JoystickComponent extends JPanel {
 	
 	
 	
-	private static final class Button extends JLabel {
+	private static final class Button extends JToggleButton {
 		private static final long serialVersionUID = 1L;
 		
 		private static final Dimension DEFAULT_SIZE = new Dimension(64, 64);
 		
 		
-		public Button(final String label) {
-			super(label, CENTER);
-			setBorder(BorderFactory.createEtchedBorder());
-			setMinimumSize(DEFAULT_SIZE);
-			setOpaque(true);
+		public Button(final Icon icon) {
+			super(icon);
+//			setMinimumSize(DEFAULT_SIZE);
 			setPreferredSize(DEFAULT_SIZE);
-			setPressed(false);
+//			setPressed(false);
+			setSelected(false);
+		}
+//		public Button(final String label) {
+//			super(label, CENTER);
+//			setBorder(BorderFactory.createEtchedBorder());
+//			setMinimumSize(DEFAULT_SIZE);
+//			setOpaque(true);
+//			setPreferredSize(DEFAULT_SIZE);
+//			setPressed(false);
+//			addItemListener(new ItemListener() {
+//				public void itemStateChanged(final ItemEvent event) {
+//					
+//				}
+//			});
+//		}
+		
+		
+		
+		@Override
+		protected void processMouseEvent(final MouseEvent event) {
+//			System.out.println(event);
+			if (isEnabled()) {
+				switch (event.getID()) {
+					case MouseEvent.MOUSE_PRESSED:
+						setSelected(true);
+						break;
+						
+					case MouseEvent.MOUSE_RELEASED:
+					case MouseEvent.MOUSE_EXITED:
+						setSelected(false);
+						break;
+				}
+			}
 		}
 		
+//		public void setPressed(final boolean pressed) {
+//			if (pressed) {
+//				setBackground(Color.BLACK);
+//				setForeground(Color.WHITE);
+//			} else {
+//				setBackground(Color.WHITE);
+//				setForeground(Color.BLACK);
+//			}
+//			repaint(0L);
+//		}
 		
+	}
+	
+	
+	
+	
+	
+	private static abstract class ButtonListener implements ItemListener {
 		
-		public void setPressed(final boolean pressed) {
-			if (pressed) {
-				setBackground(Color.BLACK);
-				setForeground(Color.WHITE);
-			} else {
-				setBackground(Color.WHITE);
-				setForeground(Color.BLACK);
+		protected abstract void firePressed();
+		
+		protected abstract void fireReleased();
+		
+		public void itemStateChanged(final ItemEvent event) {
+			switch (event.getStateChange()) {
+				case ItemEvent.DESELECTED:
+					fireReleased();
+					break;
+					
+				case ItemEvent.SELECTED:
+					firePressed();
+					break;
 			}
-			repaint(0L);
 		}
 		
 	}
@@ -322,15 +428,18 @@ public class JoystickComponent extends JPanel {
 		private static final float DISTANCE_LONG = 400F;
 		private static final float DISTANCE_SHORT = 200F;
 		
+		private float distance;
 		
-		private FixedBehavior(final Controller controller) {
+		
+		private FixedBehavior(final Controller controller, final float distance) {
 			super(controller);
+			this.distance = distance;
 		}
 		
 		
 		
 		public void onBackwardPressed(final boolean mod) {
-			getController().moveBackward(mod ? DISTANCE_SHORT : DISTANCE_LONG);
+			getController().moveBackward(distance);
 		}
 		
 		public void onBackwardReleased() {
@@ -338,7 +447,7 @@ public class JoystickComponent extends JPanel {
 		}
 		
 		public void onForwardPressed(final boolean mod) {
-			getController().moveForward(mod ? DISTANCE_SHORT : DISTANCE_LONG);
+			getController().moveForward(distance);
 		}
 		
 		public void onForwardReleased() {
@@ -413,75 +522,102 @@ public class JoystickComponent extends JPanel {
 		
 		@Override
 		public void keyPressed(final KeyEvent event) {
-//			Debug.print("KEY CODE:  " + event.getKeyCode());
+			if (!isEnabled()) {
+				return;
+			}
+			if (!special && event.isControlDown()) {
+				special = true;
+				if (getBehavior() instanceof FixedBehavior) {
+					setBehaviorFixed();
+				}
+			}
 			switch (event.getKeyCode()) {
 				case KeyEvent.VK_W:
 				case KeyEvent.VK_Z:
 				case KeyEvent.VK_UP:
 				case KeyEvent.VK_NUMPAD8:
-					fireForward(event);
+//					fireForward(event);
+					buttonForward.setSelected(true);
 					break;
 					
 				case KeyEvent.VK_S:
 				case KeyEvent.VK_DOWN:
 				case KeyEvent.VK_NUMPAD2:
-					fireBackward(event);
+//					fireBackward(event);
+					buttonBackward.setSelected(true);
 					break;
 					
 				case KeyEvent.VK_A:
 				case KeyEvent.VK_Q:
 				case KeyEvent.VK_LEFT:
 				case KeyEvent.VK_NUMPAD4:
-					fireLeft(event);
+//					fireLeft(event);
+					buttonLeft.setSelected(true);
 					break;
 					
 				case KeyEvent.VK_D:
 				case KeyEvent.VK_RIGHT:
 				case KeyEvent.VK_NUMPAD6:
-					fireRight(event);
+//					fireRight(event);
+					buttonRight.setSelected(true);
 					break;
 					
 				case KeyEvent.VK_H:
 				case KeyEvent.VK_SPACE:
 				case KeyEvent.VK_NUMPAD5:
-					fireStop(event);
+//					fireStop(event);
+					buttonStop.setSelected(true);
 					break;
 			}
 		}
 		
 		@Override
 		public void keyReleased(final KeyEvent event) {
+			if (!isEnabled()) {
+				return;
+			}
+			if (special && !event.isControlDown()) {
+				special = false;
+				if (getBehavior() instanceof FixedBehavior) {
+					setBehaviorFixed();
+				}
+			}
 			switch (event.getKeyCode()) {
 				case KeyEvent.VK_W:
 				case KeyEvent.VK_Z:
 				case KeyEvent.VK_UP:
 				case KeyEvent.VK_NUMPAD8:
-					fireForward(event);
+//					fireForward(event);
+					buttonForward.setSelected(false);
 					break;
 					
 				case KeyEvent.VK_S:
 				case KeyEvent.VK_DOWN:
 				case KeyEvent.VK_NUMPAD2:
-					fireBackward(event);
+//					fireBackward(event);
+					buttonBackward.setSelected(false);
 					break;
 					
 				case KeyEvent.VK_A:
 				case KeyEvent.VK_Q:
 				case KeyEvent.VK_LEFT:
 				case KeyEvent.VK_NUMPAD4:
-					fireLeft(event);
+//					fireLeft(event);
+					buttonLeft.setSelected(false);
 					break;
 					
 				case KeyEvent.VK_D:
 				case KeyEvent.VK_RIGHT:
 				case KeyEvent.VK_NUMPAD6:
-					fireRight(event);
+//					fireRight(event);
+					buttonRight.setSelected(false);
 					break;
 					
 				case KeyEvent.VK_H:
 				case KeyEvent.VK_SPACE:
 				case KeyEvent.VK_NUMPAD5:
-					fireStop(event);
+//					fireStop(event);
+					buttonStop.setSelected(false);
 					break;
 			}
 		}
