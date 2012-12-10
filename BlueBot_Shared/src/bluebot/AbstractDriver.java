@@ -349,6 +349,9 @@ public abstract class AbstractDriver implements Driver {
 					try {
 						Thread.sleep(time);
 					} catch (final InterruptedException e) {
+						for (int i = 10; i > 0; i--) {
+							sendDebug("UPDATER THREAD INTERRUPTED");
+						}
 						return;
 					}
 				}
