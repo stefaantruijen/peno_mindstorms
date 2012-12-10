@@ -396,72 +396,77 @@ public class MazeAction extends Action {
 				}
 			}
 		}
+		List<Tile> possibs = new ArrayList<Tile>();
 		switch(moveDirection){
 			case DOWN:
 				if(current.getBorderWest() == Border.OPEN){
-					return maze.getVertex(current.getX()-1,current.getY());
+					possibs.add(maze.getVertex(current.getX()-1,current.getY()));
 				}
 				if(current.getBorderSouth() == Border.OPEN){
-					return maze.getVertex(current.getX(),current.getY()-1);
+					possibs.add(maze.getVertex(current.getX(),current.getY()-1));
 				}
 				if(current.getBorderEast()==Border.OPEN){
-					return maze.getVertex(current.getX()+1,current.getY());
+					possibs.add(maze.getVertex(current.getX()+1,current.getY()));
 				}
 				if(current.getBorderNorth() == Border.OPEN){
-					return maze.getVertex(current.getX(),current.getY()+1);
+					possibs.add(maze.getVertex(current.getX(),current.getY()+1));
 					
 				}
 				break;
 			case LEFT:
 				if(current.getBorderNorth() == Border.OPEN){
-					return maze.getVertex(current.getX(),current.getY()+1);
+					possibs.add(maze.getVertex(current.getX(),current.getY()+1));
 					
 				}
 				if(current.getBorderWest() == Border.OPEN){
-					return maze.getVertex(current.getX()-1,current.getY());
+					possibs.add(maze.getVertex(current.getX()-1,current.getY()));
 				}
 				if(current.getBorderSouth() == Border.OPEN){
-					return maze.getVertex(current.getX(),current.getY()-1);
+					possibs.add(maze.getVertex(current.getX(),current.getY()-1));
 				}
 				if(current.getBorderEast()==Border.OPEN){
-					return maze.getVertex(current.getX()+1,current.getY());
+					possibs.add(maze.getVertex(current.getX()+1,current.getY()));
 				}
 				
 				break;
 			case RIGHT:
 				if(current.getBorderSouth() == Border.OPEN){
-					return maze.getVertex(current.getX(),current.getY()-1);
+					possibs.add(maze.getVertex(current.getX(),current.getY()-1));
 				}
 				if(current.getBorderEast()==Border.OPEN){
-					return maze.getVertex(current.getX()+1,current.getY());
+					possibs.add(maze.getVertex(current.getX()+1,current.getY()));
 				}
 				if(current.getBorderNorth() == Border.OPEN){
-					return maze.getVertex(current.getX(),current.getY()+1);
+					possibs.add(maze.getVertex(current.getX(),current.getY()+1));
 					
 				}
 				if(current.getBorderWest() == Border.OPEN){
-					return maze.getVertex(current.getX()-1,current.getY());
+					possibs.add(maze.getVertex(current.getX()-1,current.getY()));
 				}
 				break;
 			case UP:
 				if(current.getBorderEast()==Border.OPEN){
-					return maze.getVertex(current.getX()+1,current.getY());
+					possibs.add(maze.getVertex(current.getX()+1,current.getY()));
 				}
 				if(current.getBorderNorth() == Border.OPEN){
-					return maze.getVertex(current.getX(),current.getY()+1);
+					possibs.add(maze.getVertex(current.getX(),current.getY()+1));
 					
 				}
 				if(current.getBorderWest() == Border.OPEN){
-					return maze.getVertex(current.getX()-1,current.getY());
+					possibs.add(maze.getVertex(current.getX()-1,current.getY()));
 				}
 				if(current.getBorderSouth() == Border.OPEN){
-					return maze.getVertex(current.getX(),current.getY()-1);
+					possibs.add(maze.getVertex(current.getX(),current.getY()-1));
 				}
 				
 				break;
 		}
-		
-		return null;
+		for(Tile t : possibs){
+			if(!t.isExplored()){
+				return t;
+			}
+		}
+		return possibs.get(0);
 		
 	}
 	/**
