@@ -43,7 +43,7 @@ public class MazeAction extends Action {
 //	private final WhiteLineAction wa;
 	private boolean orientateHorizontal=false;
 	private boolean orientateVertical=false;
-	private int calibLimit = 10;
+	private int calibLimit = 7;
 	
 	public MazeAction(){
 		this.maze = new Graph();
