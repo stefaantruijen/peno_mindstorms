@@ -43,7 +43,7 @@ public class MazeAction extends Action {
 //	private final WhiteLineAction wa;
 	private boolean orientateHorizontal=false;
 	private boolean orientateVertical=false;
-	private int calibLimit = 7;
+	private int calibLimit = 1000;
 	
 	public MazeAction(){
 		this.maze = new Graph();
@@ -112,6 +112,8 @@ public class MazeAction extends Action {
 			
 			if(current == this.maze.getRootTile()){
 				this.findBlackSpots();
+				this.processBlackSpots();
+				break;
 			}
 			
 		}while(this.hasUnvisitedNeighbors(this.maze.getRootTile())||this.hasUnvisitedNeighbors(current)||this.graphHasUnvisitedNeighbors());
@@ -144,6 +146,33 @@ public class MazeAction extends Action {
 		
 	}
 	
+	private void processBlackSpots() throws InterruptedException, ActionException, DriverException {
+		for(Tile t : this.blackSpots){
+			List<Tile> path = pf.findShortestPath(current, t);
+			if(path!=null){
+				this.followEfficientlyPath(pf.findShortestPath(current, t));
+				this.checkEfficicientlyTile(this.maze.getVertex(t.getX(), t.getY()));
+				final int b = scanBarcode(current);
+				if(b>0){
+					this.barcodeExecuter.executeBarcode(b,current);
+				}
+				
+			}
+		}
+		this.findBlackSpots();
+		if(this.blackSpots.size()>0){
+			Iterator<Tile> iter = blackSpots.iterator();
+			while(iter.hasNext()){
+				Tile t = iter.next();
+				List<Tile> path = pf.findShortestPath(current, t);
+				if(path==null){
+					iter.remove();
+				}
+			}
+			this.processBlackSpots();
+		}
+		
+	}
 	/**
 	 * Check for tiles that still need to be checked for barcodes. And process them if necessary.
 	 * 
@@ -385,7 +414,7 @@ public class MazeAction extends Action {
 	 * 
 	 * @return
 	 */
-	private Tile determineNextTile() {
+	private Tile determineNextTile() {/*
 		if(this.blackSpots != null){
 			Iterator<Tile> iter = this.blackSpots.iterator();
 			while(iter.hasNext()){
@@ -395,7 +424,7 @@ public class MazeAction extends Action {
 					return t;
 				}
 			}
-		}
+		}*/
 		List<Tile> possibs = new ArrayList<Tile>();
 		switch(moveDirection){
 			case DOWN:
