@@ -82,6 +82,21 @@ public class Tile implements Comparable<Tile> {
 		}
 	}
 	
+	public Border getBorder(final Orientation dir) {
+		switch (dir) {
+			case NORTH:
+				return getBorderNorth();
+			case EAST:
+				return getBorderEast();
+			case SOUTH:
+				return getBorderSouth();
+			case WEST:
+				return getBorderWest();
+			default:
+				throw new RuntimeException("Invalid direction:  " + dir);
+		}
+	}
+	
 	public Border getBorderEast() {
 		return getBorder(2);
 	}

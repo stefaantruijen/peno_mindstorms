@@ -5,6 +5,7 @@ import bluebot.actions.ActionQueue;
 import bluebot.actions.impl.CalibrationAction;
 import bluebot.actions.impl.CheckTileAction;
 import bluebot.actions.impl.MazeAction;
+import bluebot.actions.impl.MazeActionV2;
 import bluebot.actions.impl.MovementAction;
 import bluebot.actions.impl.PolygonAction;
 import bluebot.actions.impl.WhiteLineAction;
@@ -97,7 +98,8 @@ public class DriverHandler implements PacketHandler {
 	}
 	
 	private final void handlePacketMaze(final MazePacket packet) {
-		queue.queue(new MazeAction());
+//		queue.queue(new MazeAction());
+		queue.queue(new MazeActionV2());
 //		queue.queue(new TestAction());
 	}
 	

@@ -38,7 +38,7 @@ public class VirtualRobot extends AbstractRobot {
 	/**
  	 *Static that holds the maximum travel speed in mm/s.
 	 */
-	private static final float MaxTravelSpeed = 2000; //TODO: see what this is IRL?
+	private static final float MaxTravelSpeed = 500; //TODO: see what this is IRL?
 	/**
 	 * The size of the tiles in cm on which the VirtualRobot will be driving. //TODO: get this from a higher lvl.
 	 */

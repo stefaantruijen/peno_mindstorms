@@ -44,7 +44,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		setFocusTraversalKeysEnabled(false);
 		setFocusTraversalPolicyProvider(true);
 		setLocationRelativeTo(null);
-		setResizable(false);
+//		setResizable(false);
 		
 		controller.addListener(this);
 		addWindowListener(new WindowAdapter() {
@@ -244,9 +244,10 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		layout.columnWeights = new double[] { 1D };
 		layout.rowWeights = new double[] { 1D, 0D };
 		
-		final GridBagConstraints gbc = new GridBagConstraints();
-		
 		final JPanel panel = new JPanel(layout);
+		
+		final GridBagConstraints gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.BOTH;
 		
 		gbc.gridx = 0;
 		gbc.gridy = 0;
@@ -254,7 +255,6 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		panel.add(canvas, gbc);
 		
 		gbc.gridy++;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.insets.set(5, 5, 5, 5);
 		panel.add(barcode, gbc);
 		
@@ -277,12 +277,12 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 	
 	private final void initComponents() {
 		final GridBagLayout layout = new GridBagLayout();
-		layout.columnWeights = new double[] { 0D, 0D };
-		layout.rowWeights = new double[] { 0D, 0D, 1D };
+		layout.columnWeights = new double[] { 1D, 0D };
+		layout.rowWeights = new double[] { 0D, 1D };
 		setLayout(layout);
 		
 		final GridBagConstraints gbc = new GridBagConstraints();
-		gbc.fill = GridBagConstraints.NONE;
+		gbc.fill = GridBagConstraints.BOTH;
 		gbc.insets.set(5, 5, 5, 5);
 		
 		gbc.gridheight = 2;
@@ -297,7 +297,6 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		add(createModuleControls(), gbc);
 		
 		gbc.gridy++;
-		gbc.fill = GridBagConstraints.BOTH;
 		add(createTabsRight(), gbc);
 	}
 	
