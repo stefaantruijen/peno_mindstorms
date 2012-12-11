@@ -1,7 +1,6 @@
 package bluebot.actions.impl;
 
 
-import bluebot.Driver;
 import bluebot.actions.Action;
 
 
@@ -11,16 +10,16 @@ import bluebot.actions.Action;
  */
 public class CalibrationAction extends Action {
 	
-	public void execute(final Driver driver) throws InterruptedException {
-		int speed = driver.getSpeed();
+	protected void execute() throws InterruptedException {
+		int speed = getDriver().getSpeed();
 		// Set speed to 35%
-		driver.setSpeed(35);
+		getDriver().setSpeed(35);
 		int max = 0;
 		int min = 1023;
-		//driver.moveForward(300F, false);
-		driver.turnRight(360, false);
-		while (!isAborted() && driver.isMoving()) {
-			int value = driver.readSensorLightValue();
+		//getDriver().moveForward(300F, false);
+		getDriver().turnRight(360, false);
+		while (!isAborted() && getDriver().isMoving()) {
+			int value = getDriver().readSensorLightValue();
 			if(value > max){
 				max = value;
 			}
@@ -36,22 +35,22 @@ public class CalibrationAction extends Action {
 		final int thresholdWhite = (max + 20);
 
 		int black = 1023;
-		driver.moveForward(400, false);
-		while(!isAborted() && driver.isMoving()){
-			int value = driver. readSensorLightValue();
+		getDriver().moveForward(400, false);
+		while(!isAborted() && getDriver().isMoving()){
+			int value = getDriver().readSensorLightValue();
 			if(value<black){
 				black = value;
 			}
 		}
 		
 		int thresholdBlack = (black + min )/2 - 1 ;
-		driver.getCalibration().setLightThresholdWhite(thresholdWhite);
-		driver.getCalibration().setLightThresholdBlack(thresholdBlack);
-		driver.setSpeed(speed);
+		getDriver().getCalibration().setLightThresholdWhite(thresholdWhite);
+		getDriver().getCalibration().setLightThresholdBlack(thresholdBlack);
+		getDriver().setSpeed(speed);
 		//	The next few lines of code will send
 		//	a report of the calibration to any client(s)
 		final String msg = ("Threshold (white) = " + thresholdWhite +"\n Threshold (black) = " + thresholdBlack);
-		driver.sendMessage(msg, "Calibration");
+		getDriver().sendMessage(msg, "Calibration");
 	}
 	
 }

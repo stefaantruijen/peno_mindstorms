@@ -26,21 +26,21 @@ public class CheckTileAction extends Action {
 	 * @return <code>TRUE</code> if facing a wall,
 	 * 			<code>FALSE</code> otherwise
 	 */
-	protected boolean checkForWall(final Driver driver) throws InterruptedException {
+	protected boolean checkForWall() throws InterruptedException {
 		Thread.sleep(200L);
-		int dist = driver.readSensorUltraSonic();
+		int dist = getDriver().readSensorUltraSonic();
 		if(dist < 25){
 			return true;
 		}else if(dist > 30){
 			return false;
 		}else{
-			driver.turnHeadCounterClockWise(5);
+			getDriver().turnHeadCounterClockWise(5);
 			Thread.sleep(200L);
-			int dist1 = driver.readSensorUltraSonic();
-			driver.turnHeadClockWise(10);
+			int dist1 = getDriver().readSensorUltraSonic();
+			getDriver().turnHeadClockWise(10);
 			Thread.sleep(200L);
-			int dist2 = driver.readSensorUltraSonic();
-			driver.turnHeadCounterClockWise(5);
+			int dist2 = getDriver().readSensorUltraSonic();
+			getDriver().turnHeadCounterClockWise(5);
 			if(dist1 < 25 || dist2 < 25){
 				return true;
 			}
@@ -48,14 +48,13 @@ public class CheckTileAction extends Action {
 		}
 	}
 	
-	public void execute(final Driver driver)
-			throws ActionException, InterruptedException {
+	protected void execute() throws ActionException, InterruptedException {
 		// Correct the orientation of the robot (if necessary)
-		driver.modifyOrientation();
+		getDriver().modifyOrientation();
 		
 		// The fully qualified classname is used here
 		// to avoid issues with bluebot.graph.Orientation
-		final bluebot.util.Orientation pos = driver.getOrientation();
+		final bluebot.util.Orientation pos = getDriver().getOrientation();
 		
 		// Determine X and Y in the tile coordinate-system
 		final int x = (int)Math.floor(((Tile.SIZE / 2D) + pos.getX()) / Tile.SIZE);
@@ -67,28 +66,28 @@ public class CheckTileAction extends Action {
 		for(int i = 0;i<=3;i++){
 			switch(headDirection){
 				case SOUTH:
-					if(checkForWall(driver)){
+					if(checkForWall()){
 						tile.setBorderSouth(Border.CLOSED);
 					}else{
 						tile.setBorderSouth(Border.OPEN);
 					}
 					break;
 				case WEST:
-					if(checkForWall(driver)){
+					if(checkForWall()){
 						tile.setBorderWest(Border.CLOSED);
 					}else{
 						tile.setBorderWest(Border.OPEN);
 					}
 					break;
 				case EAST:
-					if(checkForWall(driver)){
+					if(checkForWall()){
 						tile.setBorderEast(Border.CLOSED);
 					}else{
 						tile.setBorderEast(Border.OPEN);
 					}
 					break;
 				case NORTH:
-					if(checkForWall(driver)){
+					if(checkForWall()){
 						tile.setBorderNorth(Border.CLOSED);
 					}else{
 						tile.setBorderNorth(Border.OPEN);
@@ -98,15 +97,15 @@ public class CheckTileAction extends Action {
 					break;
 			
 			}
-			driver.turnHeadClockWise(90);
+			getDriver().turnHeadClockWise(90);
 			headDirection = headDirection.rotateCW();
-			driver.sendTile(tile);
+			getDriver().sendTile(tile);
 		}
 		for(int i = 0;i<=3;i++){
-			driver.turnHeadCounterClockWise(90);
+			getDriver().turnHeadCounterClockWise(90);
 			headDirection = headDirection.rotateCCW();
 		}
-		driver.sendTile(tile);
+		getDriver().sendTile(tile);
 		
 		
 	}

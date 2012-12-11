@@ -7,7 +7,6 @@ import java.util.List;
 
 import algorithms.Dijkstra;
 import bluebot.BarcodeExecuter;
-import bluebot.Driver;
 import bluebot.DriverException;
 import bluebot.actions.Action;
 import bluebot.actions.ActionException;
@@ -28,7 +27,6 @@ import bluebot.util.Utils;
  */
 public class MazeAction extends Action {
 	
-	private Driver driver;
 	private final Graph maze;
 	private Direction headDirection,moveDirection;
 	private Tile current;
@@ -62,21 +60,18 @@ public class MazeAction extends Action {
 	 * @throws ActionException 
 	 * @throws CalibrationException 
 	 */
-	@Override
-	public void execute(Driver driver) throws InterruptedException, ActionException, DriverException {
-		this.driver = driver;
-		
+	protected void execute() throws InterruptedException, ActionException, DriverException {
 		final Timer timer = new Timer();
 		timer.reset();
 		
-		this.driver.resetOrientation();
+		this.getDriver().resetOrientation();
 //		long startTime = System.currentTimeMillis();
 		this.initializeRootTile();
 		
 		// The barcode executor can only be initialized here,
 		// because there is no Driver instance
 		// to pass to its constructor before this point.
-		this.barcodeExecuter = new BarcodeExecuter(driver, maze);
+		this.barcodeExecuter = new BarcodeExecuter(getDriver(), maze);
 //		this.barcodeScanner = new MyBarcodeScanner();
 //		barcodeScanner.start();
 		
@@ -130,7 +125,7 @@ public class MazeAction extends Action {
 		.append(Utils.formatDuration(timeExploration)).append(" to explore the maze.\n")
 		.append(Utils.formatDuration(timeShortestPath)).append(" to reach the finish.")
 		.toString();
-		driver.sendMessage(msg, "Finished");
+		getDriver().sendMessage(msg, "Finished");
 		
 		/*
 		do{
@@ -143,7 +138,7 @@ public class MazeAction extends Action {
 			this.moveTo(next);
 			if (next.isExplored()) {
 				// Wait until we have stopped moving
-				waitForMoving(driver, false);
+				waitForMoving(false);
 				// At this point the barcode scanner will start processing information
 				// so we give it some time to get the work done before we continue
 				try {
@@ -194,14 +189,14 @@ public class MazeAction extends Action {
 			int finishminutes = (int) ((finishDuration / (1000*60)) % 60);
 			finishStamp = (finishminutes<10 ? "0"+finishminutes : finishminutes)+":"+(finishseconds<10 ? "0"+finishseconds : finishseconds);
 		}else{
-			driver.sendError("No finish tile was scanned.");
+			getDriver().sendError("No finish tile was scanned.");
 		}
 		StringBuilder str = new StringBuilder();
 		str.append("It took "+(minutes<10 ? "0"+minutes : minutes)+":"+(seconds<10 ? "0"+seconds : seconds)+" to explore the maze.");
 		if(finishStamp != null){
 			str.append("\nIt took "+finishStamp+" to reach the finish tile.");
 		}
-		driver.sendMessage(str.toString(), "Maze explored !");
+		getDriver().sendMessage(str.toString(), "Maze explored !");
 		*/
 	}
 	
@@ -265,9 +260,9 @@ public class MazeAction extends Action {
 	 * @throws ActionException 
 	 * @throws CalibrationException 
 	 */
-	private void moveTo(Tile next) throws InterruptedException, ActionException, CalibrationException {
+	private void moveTo(Tile next) throws ActionException, DriverException, InterruptedException {
 		if(next.equals(current)){
-			driver.sendError("Tiles are the same");
+			getDriver().sendError("Tiles are the same");
 		}
 		if(next.isEastFrom(this.current)){
 			this.travelEast();
@@ -278,7 +273,7 @@ public class MazeAction extends Action {
 		}else if(next.isSouthFrom(this.current)){
 			this.travelSouth();
 		}else{
-			driver.sendError("[EXCEPTION]-Something strange happend.");
+			getDriver().sendError("[EXCEPTION]-Something strange happend.");
 		}
 		this.current = next;
 		
@@ -288,49 +283,50 @@ public class MazeAction extends Action {
 	/**
 	 * Move forward , every 4 tiles orientate the robot.
 	 * 
+	 * @throws ActionException
+	 * @throws DriverException
 	 * @throws InterruptedException
-	 * @throws ActionException 
 	 */
-	private void moveForward() throws InterruptedException, ActionException, CalibrationException {
+	private void moveForward() throws ActionException, DriverException, InterruptedException {
 		// Start the barcode scanner before we move forward
 //		barcodeScanner.start();
 		// Allow the barcode scanner some time to kick into action
 		Thread.sleep(100L);
 		// Move forward 
 		if(!stillExploring){
-			this.driver.moveForward(400F, true);
+			this.getDriver().moveForward(400F, true);
 		}
 		else{
 			if(this.orientationIsNeeded()){
 				if(this.orientateVertical){
 					if((moveDirection.equals(Direction.UP)||moveDirection.equals(Direction.DOWN))&&!checkForWall()){
-						this.driver.moveForward(40F, true);
-						new WhiteLineAction().execute(driver);
-						this.driver.moveForward(200F,true);
+						this.getDriver().moveForward(40F, true);
+						executeWhiteLine();
+						this.getDriver().moveForward(200F,true);
 						this.calibParam=0;
 						this.orientateVertical = false;
 					}else{
-						this.driver.moveForward(400F, true);
+						this.getDriver().moveForward(400F, true);
 					}
 				}else if(this.orientateHorizontal){
 					if((moveDirection.equals(Direction.LEFT)||moveDirection.equals(Direction.RIGHT))&&!checkForWall()){
-						this.driver.moveForward(40F, true);
-						new WhiteLineAction().execute(driver);
-						this.driver.moveForward(200F,true);
+						this.getDriver().moveForward(40F, true);
+						executeWhiteLine();
+						this.getDriver().moveForward(200F,true);
 						this.calibParam=0;
 						this.orientateHorizontal = false;
 					}else{
-						this.driver.moveForward(400F, true);
+						this.getDriver().moveForward(400F, true);
 					}
 				}else{
-					this.driver.moveForward(400F, true);
+					this.getDriver().moveForward(400F, true);
 				}
 			}else{
-				this.driver.moveForward(400F, true);
+				this.getDriver().moveForward(400F, true);
 			}
 		}
 		this.incrementCalibParam(this.moveCalibCost);
-		driver.modifyOrientation();
+		getDriver().modifyOrientation();
 	}
 	
 	private boolean orientationIsNeeded(){
@@ -344,20 +340,20 @@ public class MazeAction extends Action {
 	 * @throws InterruptedException
 	 * @throws ActionException 
 	 */
-	private void travelSouth() throws InterruptedException, ActionException, CalibrationException {
+	private void travelSouth() throws ActionException, DriverException, InterruptedException {
 		switch(moveDirection){
 			case DOWN:
 				break;
 			case LEFT:
-				this.driver.turnLeft(90F,true);
+				this.getDriver().turnLeft(90F,true);
 				this.incrementCalibParam(this.turnCalibCost);
 				break;
 			case RIGHT:
-				this.driver.turnRight(90F,true);
+				this.getDriver().turnRight(90F,true);
 				this.incrementCalibParam(this.turnCalibCost);
 				break;
 			case UP:
-				this.driver.turnRight(180F,true);
+				this.getDriver().turnRight(180F,true);
 				this.incrementCalibParam(this.turnCalibCost);
 				break;
 			default:
@@ -377,21 +373,21 @@ public class MazeAction extends Action {
 	 * @throws ActionException 
 	 * @throws CalibrationException 
 	 */
-	private void travelWest() throws InterruptedException, ActionException, CalibrationException {
+	private void travelWest() throws ActionException, DriverException, InterruptedException {
 		switch(moveDirection){
 			case DOWN:
-				this.driver.turnRight(90F,true);
+				this.getDriver().turnRight(90F,true);
 				this.incrementCalibParam(this.turnCalibCost);
 				break;
 			case LEFT:
 				
 				break;
 			case RIGHT:
-				this.driver.turnRight(180F,true);
+				this.getDriver().turnRight(180F,true);
 				this.incrementCalibParam(this.turnCalibCost);
 				break;
 			case UP:
-				this.driver.turnLeft(90F,true);
+				this.getDriver().turnLeft(90F,true);
 				this.incrementCalibParam(this.turnCalibCost);
 				break;
 			default:
@@ -411,18 +407,18 @@ public class MazeAction extends Action {
 	 * @throws ActionException 
 	 * @throws CalibrationException 
 	 */
-	private void travelNorth() throws InterruptedException, ActionException, CalibrationException {
+	private void travelNorth() throws ActionException, DriverException, InterruptedException {
 		switch(moveDirection){
 			case DOWN:
-				this.driver.turnRight(180F,true);
+				this.getDriver().turnRight(180F,true);
 				this.incrementCalibParam(this.turnCalibCost);
 				break;
 			case LEFT:
-				this.driver.turnRight(90F,true);
+				this.getDriver().turnRight(90F,true);
 				this.incrementCalibParam(this.turnCalibCost);
 				break;
 			case RIGHT:
-				this.driver.turnLeft(90F,true);
+				this.getDriver().turnLeft(90F,true);
 				this.incrementCalibParam(this.turnCalibCost);
 				break;
 			case UP:
@@ -444,20 +440,20 @@ public class MazeAction extends Action {
 	 * @throws ActionException 
 	 * @throws CalibrationException 
 	 */
-	private void travelEast() throws InterruptedException, ActionException, CalibrationException {
+	private void travelEast() throws ActionException, DriverException, InterruptedException {
 		switch(moveDirection){
 			case DOWN:
-				this.driver.turnLeft(90F,true);
+				this.getDriver().turnLeft(90F,true);
 				this.incrementCalibParam(this.turnCalibCost);
 				break;
 			case LEFT:
-				this.driver.turnRight(180F,true);
+				this.getDriver().turnRight(180F,true);
 				this.incrementCalibParam(this.turnCalibCost);
 				break;
 			case RIGHT:
 				break;
 			case UP:
-				this.driver.turnRight(90F, true);
+				this.getDriver().turnRight(90F, true);
 				this.incrementCalibParam(this.turnCalibCost);
 				break;
 			default:
@@ -569,19 +565,19 @@ public class MazeAction extends Action {
 	 */
 	private Boolean checkForWall() throws InterruptedException{
 		Thread.sleep(200L);
-		int dist = driver.readSensorUltraSonic();
+		int dist = getDriver().readSensorUltraSonic();
 		if(dist < 25){
 			return true;
 		}else if(dist > 30){
 			return false;
 		}else{
-			driver.turnHeadCounterClockWise(5);
+			getDriver().turnHeadCounterClockWise(5);
 			Thread.sleep(200L);
-			int dist1 = driver.readSensorUltraSonic();
-			driver.turnHeadClockWise(10);
+			int dist1 = getDriver().readSensorUltraSonic();
+			getDriver().turnHeadClockWise(10);
 			Thread.sleep(200L);
-			int dist2 = driver.readSensorUltraSonic();
-			driver.turnHeadCounterClockWise(5);
+			int dist2 = getDriver().readSensorUltraSonic();
+			getDriver().turnHeadCounterClockWise(5);
 			if(dist1 < 25 || dist2 < 25){
 				return true;
 			}
@@ -598,7 +594,7 @@ public class MazeAction extends Action {
 		//Tile root = this.exploreTile(new Tile(0,0));
 		this.maze.setRootTile(root);
 		this.maze.addVerticies(root.getAbsoluteNeighbors());
-		driver.sendTile(root);
+		getDriver().sendTile(root);
 		this.current = root;
 		//this.processUnExploredTiles();
 	}
@@ -691,8 +687,8 @@ public class MazeAction extends Action {
 			throw new IllegalStateException("Woops, the world has collapsed.");
 		
 		}
-		driver.sendTile(t);
-		driver.sendTile(neighbor);
+		getDriver().sendTile(t);
+		getDriver().sendTile(neighbor);
 		if(neighbor.getBarCode()!=-1 && neighbor.canHaveBarcode()){
 			this.stillCheckForBarcode.add(neighbor);
 		}
@@ -751,68 +747,68 @@ public class MazeAction extends Action {
 				wall = checkForWall();
 				
 			}else if(d == Direction.LEFT){
-				driver.turnHeadClockWise(90);
+				getDriver().turnHeadClockWise(90);
 				wall = checkForWall();
-				driver.turnHeadCounterClockWise(90);
+				getDriver().turnHeadCounterClockWise(90);
 			}else if(d == Direction.RIGHT){
-				driver.turnHeadCounterClockWise(90);
+				getDriver().turnHeadCounterClockWise(90);
 				wall = checkForWall();
-				driver.turnHeadClockWise(90);
+				getDriver().turnHeadClockWise(90);
 			}else{
-				driver.turnHeadClockWise(180);
+				getDriver().turnHeadClockWise(180);
 				wall = checkForWall();
-				driver.turnHeadCounterClockWise(180);
+				getDriver().turnHeadCounterClockWise(180);
 			}
 			return wall;
 		case LEFT:
 			if(d == Direction.DOWN){
-				driver.turnHeadCounterClockWise(90);
+				getDriver().turnHeadCounterClockWise(90);
 				wall = checkForWall();
-				driver.turnHeadClockWise(90);
+				getDriver().turnHeadClockWise(90);
 			}else if(d == Direction.LEFT){
 				wall = checkForWall();
 			}else if(d == Direction.RIGHT){
-				driver.turnHeadClockWise(180);
+				getDriver().turnHeadClockWise(180);
 				wall = checkForWall();
-				driver.turnHeadCounterClockWise(180);
+				getDriver().turnHeadCounterClockWise(180);
 			}else{
-				driver.turnHeadClockWise(90);
+				getDriver().turnHeadClockWise(90);
 				wall = checkForWall();
-				driver.turnHeadCounterClockWise(90);
+				getDriver().turnHeadCounterClockWise(90);
 			}
 			return wall;
 		case RIGHT:
 			if(d == Direction.DOWN){
 				
-				driver.turnHeadClockWise(90);
+				getDriver().turnHeadClockWise(90);
 				wall = checkForWall();
-				driver.turnHeadCounterClockWise(90);
+				getDriver().turnHeadCounterClockWise(90);
 				
 			}else if(d == Direction.LEFT){
-				driver.turnHeadClockWise(180);
+				getDriver().turnHeadClockWise(180);
 				wall = checkForWall();
-				driver.turnHeadCounterClockWise(180);
+				getDriver().turnHeadCounterClockWise(180);
 			}else if(d == Direction.RIGHT){
 				wall = checkForWall();
 			}else{
-				driver.turnHeadCounterClockWise(90);
+				getDriver().turnHeadCounterClockWise(90);
 				wall = checkForWall();
-				driver.turnHeadClockWise(90);
+				getDriver().turnHeadClockWise(90);
 			}
 			return wall;
 		case UP:
 			if(d == Direction.DOWN){
-				driver.turnHeadClockWise(180);
+				getDriver().turnHeadClockWise(180);
 				wall = checkForWall();
-				driver.turnHeadCounterClockWise(180);
+				getDriver().turnHeadCounterClockWise(180);
 			}else if(d == Direction.LEFT){
-				driver.turnHeadCounterClockWise(90);
+				getDriver().turnHeadCounterClockWise(90);
 				wall = checkForWall();
-				driver.turnHeadClockWise(90);
+				getDriver().turnHeadClockWise(90);
 			}else if(d == Direction.RIGHT){
-				driver.turnHeadClockWise(90);
+				getDriver().turnHeadClockWise(90);
 				wall =checkForWall();
-				driver.turnHeadCounterClockWise(90);
+				getDriver().turnHeadCounterClockWise(90);
 			}else{
 				wall = checkForWall();
 			}
@@ -869,9 +865,9 @@ public class MazeAction extends Action {
 		
 		final ReadBarcodeAction reader = new ReadBarcodeAction(tile);
 		
-		final int speed = driver.getSpeed();
-		reader.execute(driver);
-		driver.setSpeed(speed);
+		final int speed = getDriver().getSpeed();
+		reader.execute(getDriver());
+		getDriver().setSpeed(speed);
 		
 		barcode = reader.getBarcode();
 		if (barcode <= 0) {
@@ -881,12 +877,12 @@ public class MazeAction extends Action {
 		}
 		
 		tile.setBarCode(barcode);
-		driver.sendTile(tile);
+		getDriver().sendTile(tile);
 		return barcode;
 	}
 	
-	private void followEfficientlyPath(List<Tile> path) throws CalibrationException, InterruptedException, ActionException{
-		this.driver.setSpeed(100);
+	private void followEfficientlyPath(List<Tile> path) throws ActionException, DriverException, InterruptedException {
+		this.getDriver().setSpeed(100);
 		ArrayList<Tile> straightLine = new ArrayList<Tile>();
 		for(Tile t : path){
 			Tile currentTileInList = null;
@@ -901,7 +897,7 @@ public class MazeAction extends Action {
 			}else{
 				if(straightLine.size()>0){
 					int distanceForward = (straightLine.size())*400;
-					this.driver.moveForward(distanceForward,true);
+					this.getDriver().moveForward(distanceForward,true);
 					this.current = straightLine.get(straightLine.size()-1);
 				}
 				this.moveTo(t);
@@ -912,7 +908,7 @@ public class MazeAction extends Action {
 		}
 		if(straightLine.size()>0){
 			int distanceForward = (straightLine.size())*400;
-			this.driver.moveForward(distanceForward,true);
+			this.getDriver().moveForward(distanceForward,true);
 			this.current = straightLine.get(straightLine.size()-1);
 		}
 		

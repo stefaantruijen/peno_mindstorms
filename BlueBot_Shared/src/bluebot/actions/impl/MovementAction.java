@@ -3,7 +3,6 @@ package bluebot.actions.impl;
 
 import static bluebot.io.protocol.impl.MovePacket.*;
 
-import bluebot.Driver;
 import bluebot.actions.Action;
 
 
@@ -42,22 +41,22 @@ public class MovementAction extends Action {
 		return new MovementAction(TURN_RIGHT, angle);
 	}
 	
-	public void execute(final Driver driver) throws InterruptedException {
+	protected void execute() throws InterruptedException {
 		switch (direction) {
 			case MOVE_BACKWARD:
-				driver.moveBackward(quantity, false);
+				getDriver().moveBackward(quantity, false);
 				break;
 			case MOVE_FORWARD:
-				driver.moveForward(quantity, false);
+				getDriver().moveForward(quantity, false);
 				break;
 			case TURN_LEFT:
-				driver.turnLeft(quantity, false);
+				getDriver().turnLeft(quantity, false);
 				break;
 			case TURN_RIGHT:
-				driver.turnRight(quantity, false);
+				getDriver().turnRight(quantity, false);
 				break;
 		}
-		while (!isAborted() && driver.isMoving()) {
+		while (!isAborted() && getDriver().isMoving()) {
 			Thread.sleep(10);
 		}
 	}

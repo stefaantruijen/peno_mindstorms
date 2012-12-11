@@ -4,6 +4,7 @@ package bluebot.actions;
 import bluebot.Driver;
 import bluebot.DriverException;
 import bluebot.actions.impl.WhiteLineAction;
+import bluebot.sensors.Brightness;
 import bluebot.sensors.CalibrationException;
 
 
@@ -16,6 +17,7 @@ import bluebot.sensors.CalibrationException;
 public abstract class Action {
 	
 	private boolean aborted;
+	private Driver driver;
 	
 	
 	
@@ -26,6 +28,15 @@ public abstract class Action {
 		this.aborted = true;
 	}
 	
+	protected void checkAborted() throws InterruptedException {
+		if (isAborted()) {
+			throw new InterruptedException("Action aborted");
+		}
+	}
+	
+	protected abstract void execute()
+			throws ActionException, DriverException, InterruptedException;
+	
 	/**
 	 * Executes this action on a {@link Driver}
 	 * 
@@ -35,21 +46,37 @@ public abstract class Action {
 	 * @throws DriverException if an error occurs in the {@link Driver} API
 	 * @throws InterruptedException if interrupted
 	 */
-	public abstract void execute(Driver driver)
-			throws ActionException, DriverException, InterruptedException;
+	public final void execute(final Driver driver)
+			throws ActionException, DriverException, InterruptedException {
+		this.driver = driver;
+		
+		final int speed = driver.getSpeed();
+		try {
+			execute();
+		} finally {
+			driver.setSpeed(speed);
+		}
+	}
 	
 	/**
 	 * Executes the white-line algorithm
 	 * 
-	 * @param driver - the {@link Driver} to be executed on
-	 * 
 	 * @throws ActionException if an error occurs during execution
+	 * @throws DriverException
 	 * @throws InterruptedException if interrupted
-	 * @throws CalibrationException 
 	 */
-	protected void executeWhiteLine(final Driver driver)
-			throws ActionException, InterruptedException, CalibrationException {
-		new WhiteLineAction().execute(driver);
+	protected void executeWhiteLine()
+			throws ActionException, DriverException, InterruptedException {
+		new WhiteLineAction().execute(getDriver());
+	}
+	
+	/**
+	 * DO NOT use this method in the constructor of an {@link Action} subclass
+	 * 
+	 * @return the {@link Driver} instance
+	 */
+	protected Driver getDriver() {
+		return driver;
 	}
 	
 	/**
@@ -61,33 +88,46 @@ public abstract class Action {
 		return aborted;
 	}
 	
+	protected void waitForLightSensor(final Brightness color, final boolean detect)
+			throws CalibrationException, InterruptedException {
+		final Driver driver = getDriver();
+		if (detect) {
+			while (driver.isMoving()
+					&& (driver.readSensorLightBrightness() != color)) {
+				checkAborted();
+			}
+		} else {
+			while (driver.isMoving()
+					&& (driver.readSensorLightBrightness() == color)) {
+				checkAborted();
+			}
+		}
+	}
+	
 	/**
 	 * Waits for the driver to perform a motion
 	 * 
-	 * @param driver - a {@link Driver} object
-	 * 
 	 * @throws InterruptedException if interrupted while waiting
 	 * 
-	 * @see {@link #waitForMoving(Driver, boolean)}
+	 * @see {@link #waitForMoving(boolean)}
 	 */
-	protected void waitForMotion(final Driver driver) throws InterruptedException {
-		waitForMoving(driver, true);
-		waitForMoving(driver, false);
+	protected void waitForMotion() throws InterruptedException {
+		waitForMoving(true);
+		waitForMoving(false);
 	}
 	
 	/**
 	 * Waits for the driver to either start or stop moving
 	 * 
-	 * @param driver - a {@link Driver} object
 	 * @param moving - the condition to wait for ({@link Driver#isMoving()} == <b>moving</b>)
 	 * 
 	 * @throws InterruptedException if interrupted while waiting
 	 * 
-	 * @see {@link #waitForMotion(Driver)}
+	 * @see {@link #waitForMotion()}
 	 */
-	protected void waitForMoving(final Driver driver, final boolean moving)
+	protected void waitForMoving(final boolean moving)
 			throws InterruptedException {
-		while (!isAborted() && (driver.isMoving() != moving)) {
+		while (!isAborted() && (getDriver().isMoving() != moving)) {
 			Thread.sleep(10);
 		}
 	}

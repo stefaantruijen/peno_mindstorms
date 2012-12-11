@@ -2,7 +2,6 @@ package bluebot.actions.impl;
 
 
 import algorithms.AbstractBarcodeScanner;
-import bluebot.Driver;
 import bluebot.DriverException;
 import bluebot.actions.Action;
 import bluebot.actions.ActionException;
@@ -19,14 +18,7 @@ import bluebot.util.Orientation;
  */
 public class TestAction extends Action {
 	
-	private Driver driver;
-	
-	
-	
-	public void execute(final Driver driver)
-			throws ActionException, DriverException, InterruptedException {
-		this.driver = driver;
-		
+	protected void execute() throws ActionException, DriverException, InterruptedException {
 		/*
 		driver.moveForward(400F, false);
 		waitForMoving(driver, true);
@@ -39,18 +31,18 @@ public class TestAction extends Action {
 		final AbstractBarcodeScanner scanner = new AbstractBarcodeScanner() {
 			protected Brightness readSensor() {
 				try {
-					return driver.readSensorLightBrightness();
+					return getDriver().readSensorLightBrightness();
 				} catch (final CalibrationException e) {
 					throw new RuntimeException(e);
 				}
 			}
 			
 			protected void print(String msg) {
-				driver.sendDebug(msg);
+				getDriver().sendDebug(msg);
 			}
 			
 			protected boolean isMoving() {
-				return driver.isMoving();
+				return getDriver().isMoving();
 			}
 			
 			protected Tile getTile() {
@@ -58,18 +50,18 @@ public class TestAction extends Action {
 			}
 			
 			protected Orientation getOrientation() {
-				return driver.getOrientation();
+				return getDriver().getOrientation();
 			}
 		};
 		scanner.start();
-		driver.moveForward(400F, true);
+		getDriver().moveForward(400F, true);
 		Thread.sleep(5000L);
 		scanner.stop();
 	}
 	
 	@SuppressWarnings("unused")
 	private final float getPosition() {
-		final Orientation pos = driver.getOrientation();
+		final Orientation pos = getDriver().getOrientation();
 		switch (bluebot.graph.Orientation.forHeading(pos.getHeadingBody())) {
 			case NORTH:
 			case SOUTH:

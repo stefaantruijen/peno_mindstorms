@@ -1,7 +1,6 @@
 package bluebot.actions.impl;
 
 
-import bluebot.Driver;
 import bluebot.actions.Action;
 
 
@@ -24,13 +23,19 @@ public class PolygonAction extends Action {
 	
 	
 	
-	public void execute(final Driver driver) throws InterruptedException {
+	protected void execute() throws InterruptedException {
 		final float angle = (360F / corners);
 		for (int i = corners; i > 0; i--) {
-			driver.moveForward(length, false);
-			waitForMotion(driver);
-			driver.turnRight(angle, false);
-			waitForMotion(driver);
+			if (isAborted()) {
+				return;
+			}
+			getDriver().moveForward(length, false);
+			waitForMotion();
+			if (isAborted()) {
+				return;
+			}
+			getDriver().turnRight(angle, false);
+			waitForMotion();
 		}
 	}
 	
