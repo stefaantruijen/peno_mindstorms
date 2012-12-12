@@ -17,8 +17,6 @@ import bluebot.graph.Orientation;
 import bluebot.graph.Tile;
 import bluebot.maze.Maze;
 import bluebot.sensors.Brightness;
-import bluebot.sensors.CalibrationException;
-import bluebot.util.Barcode;
 import bluebot.util.Timer;
 import bluebot.util.Utils;
 
@@ -32,8 +30,8 @@ public class MazeActionV2 extends Action {
 	private Tile current;
 	private Maze maze;
 	private Movement moves;
-	private boolean scan;
-	private BarcodeScanner scanner;
+//	private boolean scan;
+//	private BarcodeScanner scanner;
 	private int twist;
 	
 	
@@ -153,10 +151,10 @@ public class MazeActionV2 extends Action {
 		
 		moves = new Movement();
 		maze = new Maze();
-		scanner = new BarcodeScanner();
+//		scanner = new BarcodeScanner();
 		twist = 0;
 		
-		scanner.start();
+//		scanner.start();
 		
 		scanBorders(current = maze.addTile(0, 0));
 		
@@ -171,47 +169,47 @@ public class MazeActionV2 extends Action {
 				continue;
 			}
 			
-			scan = false;
+//			scan = false;
 			for (int i = 1; i < (path.length - 1); i++) {
 				checkAborted();
 				moveTo(path[i]);
 			}
 			
 			checkAborted();
-			scan = true;
+//			scan = true;
 			moveTo(path[path.length - 1]);
-			scan = false;
+//			scan = false;
 			
 			final Tile tile = current;
 			
-			final int barcode = scanner.stopScanning();
+//			final int barcode = scanner.stopScanning();
 			scanBorders(tile);
 			
-			if (tile.canHaveBarcode()) {
-				if (barcode > 0) {
-					if (tile.getBarCode() != barcode) {
-						tile.setBarCode(barcode);
-						getDriver().sendTile(tile);
-					}
-					checkAborted();
-					barcodes.executeBarcode(barcode, tile);
-				} else {
-					tile.setBarCode(0);
-				}
-			}
-			
 //			if (tile.canHaveBarcode()) {
-//				final int barcode = scanBarcode(tile);
 //				if (barcode > 0) {
+//					if (tile.getBarCode() != barcode) {
+//						tile.setBarCode(barcode);
+//						getDriver().sendTile(tile);
+//					}
 //					checkAborted();
 //					barcodes.executeBarcode(barcode, tile);
+//				} else {
+//					tile.setBarCode(0);
 //				}
 //			}
+			
+			if (tile.canHaveBarcode()) {
+				final int barcode = scanBarcode(tile);
+				if (barcode > 0) {
+					checkAborted();
+					barcodes.executeBarcode(barcode, tile);
+				}
+			}
 		}
 		
 		final long timeExploration = timer.read();
 		
-		scanner.alive = false;
+//		scanner.alive = false;
 		resetHead();
 		
 		graph.addVerticies(maze.getTiles());
@@ -487,7 +485,6 @@ public class MazeActionV2 extends Action {
 		}
 	}
 	
-	@SuppressWarnings("unused")
 	private final int scanBarcode(final Tile tile) throws ActionException,
 			DriverException, InterruptedException {
 		int barcode = tile.getBarCode();
@@ -703,6 +700,7 @@ public class MazeActionV2 extends Action {
 	
 	
 	
+	/*
 	private final class BarcodeScanner extends Thread {
 		
 		private final Object lock = new Object();
@@ -786,6 +784,7 @@ public class MazeActionV2 extends Action {
 			}
 		}
 		
+		@SuppressWarnings("unused")
 		public synchronized int stopScanning() {
 			scanning = false;
 			
@@ -869,6 +868,7 @@ public class MazeActionV2 extends Action {
 		}
 		
 	}
+	*/
 	
 	
 	
@@ -888,10 +888,11 @@ public class MazeActionV2 extends Action {
 				// The error on the rotation is too big
 				// Execute white-line to correct this
 				getDriver().moveForward(40F, true);
+				resetHead();
 				executeWhiteLine();
-				if (scan) {
-					scanner.startScanning();
-				}
+//				if (scan) {
+//					scanner.startScanning();
+//				}
 				getDriver().moveForward(200F, true);
 				reset(true);
 			} else if (isTranslated()) {
@@ -908,29 +909,31 @@ public class MazeActionV2 extends Action {
 				getDriver().setSpeed(50);
 				getDriver().moveForward(Robot.OFFSET_SENSOR_LIGHT, true);
 				getDriver().setSpeed(speed);
-				if (scan) {
-					scanner.startScanning();
-				}
+//				if (scan) {
+//					scanner.startScanning();
+//				}
 				getDriver().moveForward(200F, true);
 				reset(false);
 			} else {
-				if (scan) {
-					getDriver().moveForward(Tile.SIZE, false);
-					waitForLightSensor(Brightness.WHITE, true);
-					waitForLightSensor(Brightness.WHITE, false);
-					scanner.startScanning();
-					waitForMoving(false);
-				} else {
+//				if (scan) {
+//					getDriver().moveForward(Tile.SIZE, false);
+//					waitForLightSensor(Brightness.WHITE, true);
+//					waitForLightSensor(Brightness.WHITE, false);
+//					scanner.startScanning();
+//					waitForMoving(false);
+//				} else {
 					getDriver().moveForward(Tile.SIZE, true);
-				}
+//				}
 				switch (getDirectionBody()) {
 					case NORTH:
 					case SOUTH:
-						vertical++;
+						horizontal++;
+//						vertical++;
 						break;
 					case EAST:
 					case WEST:
-						horizontal++;
+//						horizontal++;
+						vertical++;
 						break;
 					default:
 						throw new RuntimeException();
@@ -941,7 +944,7 @@ public class MazeActionV2 extends Action {
 		
 		private final boolean isRotated() {
 			// 1 turn equals 90°
-			return (turns >= 4);
+			return (turns >= 3);
 		}
 		
 		private final boolean isTranslated() {
@@ -949,10 +952,10 @@ public class MazeActionV2 extends Action {
 			switch (getDirectionBody()) {
 				case NORTH:
 				case SOUTH:
-					return (vertical >= 5);
+					return (vertical >= 3);
 				case EAST:
 				case WEST:
-					return (horizontal >= 5);
+					return (horizontal >= 3);
 				default:
 					throw new RuntimeException();
 			}

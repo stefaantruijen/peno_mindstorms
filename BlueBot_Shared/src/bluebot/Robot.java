@@ -1,7 +1,5 @@
 package bluebot;
 
-import java.io.File;
-
 
 
 /**
@@ -82,11 +80,5 @@ public interface Robot extends Mobile {
 	//TODO: getDistanceIncrement()? 
 
 	public float getArcLimit();
-
-	/**
-	 * plays the given wav file
-	 * @param file
-	 */
-	public void playSound(File file);
 	
 }

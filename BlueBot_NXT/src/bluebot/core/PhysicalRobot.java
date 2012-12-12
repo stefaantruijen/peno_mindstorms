@@ -1,12 +1,9 @@
 package bluebot.core;
 
 
-import java.io.File;
-
 import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
-import lejos.nxt.Sound;
 import lejos.nxt.SoundSensor;
 import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.localization.OdometryPoseProvider;
@@ -124,8 +121,8 @@ public class PhysicalRobot extends AbstractRobot {
 	}
 	
 	public void playSound() {
-		File file = new File("Bells9.wav");
-		Sound.playSample(file,100);
+//		File file = new File("Bells9.wav");
+//		Sound.playSample(file,100);
 	}
 	
 	public int readSensorLight() {
@@ -254,12 +251,5 @@ public class PhysicalRobot extends AbstractRobot {
 		}
 		
 	}
-
-	@Override
-	public void playSound(File file) {
-		Sound.playSample(file);
-	}
-
-	
 	
 }
