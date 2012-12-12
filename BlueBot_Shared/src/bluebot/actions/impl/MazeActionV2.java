@@ -8,7 +8,6 @@ import java.util.List;
 import algorithms.Dijkstra;
 import bluebot.BarcodeExecuter;
 import bluebot.DriverException;
-import bluebot.Robot;
 import bluebot.actions.Action;
 import bluebot.actions.ActionException;
 import bluebot.graph.Border;
@@ -16,7 +15,6 @@ import bluebot.graph.Graph;
 import bluebot.graph.Orientation;
 import bluebot.graph.Tile;
 import bluebot.maze.Maze;
-import bluebot.sensors.Brightness;
 import bluebot.util.Timer;
 import bluebot.util.Utils;
 
@@ -884,7 +882,7 @@ public class MazeActionV2 extends Action {
 		
 		public void moveForward()
 				throws ActionException, DriverException, InterruptedException {
-			if (isRotated()) {
+			if (isTranslated()) {
 				// The error on the rotation is too big
 				// Execute white-line to correct this
 				getDriver().moveForward(40F, true);
@@ -895,6 +893,7 @@ public class MazeActionV2 extends Action {
 //				}
 				getDriver().moveForward(200F, true);
 				reset(true);
+/*
 			} else if (isTranslated()) {
 				// The error on the translation (X/Y) is too big
 				// Find a white line, then use it to move back
@@ -914,6 +913,7 @@ public class MazeActionV2 extends Action {
 //				}
 				getDriver().moveForward(200F, true);
 				reset(false);
+*/
 			} else {
 //				if (scan) {
 //					getDriver().moveForward(Tile.SIZE, false);
@@ -924,6 +924,7 @@ public class MazeActionV2 extends Action {
 //				} else {
 					getDriver().moveForward(Tile.SIZE, true);
 //				}
+				/*
 				switch (getDirectionBody()) {
 					case NORTH:
 					case SOUTH:
@@ -938,13 +939,19 @@ public class MazeActionV2 extends Action {
 					default:
 						throw new RuntimeException();
 				}
+				*/
 			}
+			horizontal++;
+			vertical++;
 			getDriver().modifyOrientation();
 		}
 		
+		@SuppressWarnings("unused")
 		private final boolean isRotated() {
 			// 1 turn equals 90°
-			return (turns >= 3);
+			return ((turns >= 4)
+					|| (horizontal >= 3)
+					|| (vertical >= 3));
 		}
 		
 		private final boolean isTranslated() {
