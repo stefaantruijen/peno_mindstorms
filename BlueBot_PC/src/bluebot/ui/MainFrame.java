@@ -86,24 +86,24 @@ public class MainFrame extends JFrame {
 		showController(getControllerFactory().connectToSimulator(tiles));
 	}
 	
-	@SuppressWarnings("unused")
-	private final void connectToTestDummy() {
-		final List<Tile> tiles = loadMaze();
-		if (tiles == null) {
-			return;
-		}
-		if (tiles.isEmpty()) {
-			SwingUtils.showWarning("Invalid maze (no tiles)");
-			return;
-		}
-		
-		final Maze maze = new Maze();
-		for (final Tile tile : tiles) {
-			maze.addTile(tile.getX(), tile.getY()).copyBorders(tile);
-		}
-		
-		showController(getControllerFactory().connectToTestDummy(maze));
-	}
+//	@SuppressWarnings("unused")
+//	private final void connectToTestDummy() {
+//		final List<Tile> tiles = loadMaze();
+//		if (tiles == null) {
+//			return;
+//		}
+//		if (tiles.isEmpty()) {
+//			SwingUtils.showWarning("Invalid maze (no tiles)");
+//			return;
+//		}
+//		
+//		final Maze maze = new Maze();
+//		for (final Tile tile : tiles) {
+//			maze.addTile(tile.getX(), tile.getY()).copyBorders(tile);
+//		}
+//		
+//		showController(getControllerFactory().connectToTestDummy(maze));
+//	}
 	
 	private static final JButton createButton(final String text) {
 		final JButton button = new JButton(text);

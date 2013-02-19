@@ -7,6 +7,7 @@ import bluebot.io.protocol.impl.ConfigPacket;
 import bluebot.io.protocol.impl.DebugPacket;
 import bluebot.io.protocol.impl.DisconnectPacket;
 import bluebot.io.protocol.impl.ErrorPacket;
+import bluebot.io.protocol.impl.MQMessagePacket;
 import bluebot.io.protocol.impl.MazePacket;
 import bluebot.io.protocol.impl.MessagePacket;
 import bluebot.io.protocol.impl.MotionPacket;
@@ -134,6 +135,18 @@ public class PacketFactory {
 	public Packet createMessage(final String msg, final String title) {
 		return new MessagePacket(msg, title);
 	}
+	
+	/**
+	 * Creates an MQmessage packet
+	 * 
+	 * @param msg - the message
+	 * 
+	 * @return a {@link Packet} object
+	 */
+	public Packet createMQMessage(final String msg) {
+		return new MQMessagePacket(msg);
+	}
+	
 	
 	/**
 	 * Creates a motion (update) packet

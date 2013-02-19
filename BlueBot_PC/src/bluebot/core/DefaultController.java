@@ -3,6 +3,8 @@ package bluebot.core;
 
 import static bluebot.io.protocol.Packet.*;
 
+import RabbitMQCommunication.EventListener;
+import RabbitMQCommunication.EventPusher;
 import bluebot.io.ClientTranslator;
 import bluebot.io.Communicator;
 import bluebot.io.Connection;
@@ -12,6 +14,7 @@ import bluebot.io.protocol.PacketHandler;
 import bluebot.io.protocol.impl.ConfigPacket;
 import bluebot.io.protocol.impl.DebugPacket;
 import bluebot.io.protocol.impl.ErrorPacket;
+import bluebot.io.protocol.impl.MQMessagePacket;
 import bluebot.io.protocol.impl.MessagePacket;
 import bluebot.io.protocol.impl.MotionPacket;
 import bluebot.io.protocol.impl.SensorPacket;
@@ -27,12 +30,12 @@ public class DefaultController extends AbstractController {
 	
 	private Communicator communicator;
 	private ClientTranslator translator;
-	
+	private EventPusher eventPusher;
 	
 	public DefaultController(final Connection connection) {
 		this.communicator = new Communicator(connection, createPacketHandler());
 		this.translator = new ClientTranslator(connection);
-		
+		this.eventPusher = new EventPusher();
 		this.communicator.start();
 	}
 	
@@ -162,6 +165,10 @@ public class DefaultController extends AbstractController {
 					final MessagePacket p = (MessagePacket)packet;
 					fireMessage(p.getMessage(), p.getTitle());
 					break;
+				case OP_MQMESSAGE:
+					final MQMessagePacket mqp = (MQMessagePacket)packet;
+					handlePacketMQMessage(mqp);
+					break;
 				case OP_MOTION:
 					handlePacketMotion((MotionPacket)packet);
 					break;
@@ -180,6 +187,11 @@ public class DefaultController extends AbstractController {
 					fireSpeedChanged(packet.getValue().intValue());
 					break;
 			}
+		}
+		
+		private final void handlePacketMQMessage(final MQMessagePacket packet) {
+			String message = packet.getMessage();
+			eventPusher.sendMQMessage(message);
 		}
 		
 		private final void handlePacketMotion(final MotionPacket packet) {

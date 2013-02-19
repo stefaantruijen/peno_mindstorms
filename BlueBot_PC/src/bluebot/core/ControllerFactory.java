@@ -13,7 +13,6 @@ import bluebot.io.Communicator;
 import bluebot.io.Connection;
 import bluebot.io.VirtualConnection;
 import bluebot.maze.Maze;
-import bluebot.simulator.DummyRobot;
 import bluebot.simulator.VirtualRobot;
 
 
@@ -27,12 +26,9 @@ public class ControllerFactory {
 	
 	private static ControllerFactory singleton;
 	
-	
 	private ControllerFactory() {
 		// hidden
 	}
-	
-	
 	
 	/**
 	 * Creates a controller for an NXT brick
@@ -76,7 +72,7 @@ public class ControllerFactory {
 	 * @param maze - a {@link Maze} object representing the virtual maze
 	 * 
 	 * @return a {@link Controller} object
-	 */
+	 
 	public Controller connectToTestDummy(final Maze maze) {
 		return createController(new DummyRobot(maze));
 	}
