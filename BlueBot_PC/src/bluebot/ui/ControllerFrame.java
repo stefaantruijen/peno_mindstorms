@@ -66,7 +66,11 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 				} else if (cmd.equals("calibrate")) {
 					controller.doCalibrate();
 				} else if (cmd.equals("maze")) {
-					controller.doMaze(1);
+					try {
+						controller.doMaze(Integer.parseInt(command[1]));
+					} catch (final Exception e) {
+						cli.echo("Syntax:  maze <player-id>");
+					}
 				} else if (cmd.equals("move")) {
 					try {
 						final float distance;
@@ -112,6 +116,12 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 						}
 					} catch (final Exception e) {
 						cli.echo("Syntax:  set <setting> <value>");
+					}
+				} else if (cmd.equals("speed")) {
+					try {
+						controller.setSpeed(Integer.parseInt(command[1]));
+					} catch (final Exception e) {
+						cli.echo("Syntax:  speed <percentage>");
 					}
 				} else if (cmd.equals("stop")) {
 					controller.stop();
@@ -272,6 +282,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		final JTabbedPane tabs = new IconTabbedPane();
 		tabs.addTab("icon_cli", createModuleCLI());
 		tabs.addTab("icon_sensors", createModuleSensors());
+		tabs.addTab("icon_rabbitmq", null);
 		return tabs;
 	}
 	
