@@ -194,7 +194,7 @@ public class DefaultDriver implements Driver {
 	}
 	
 	public void sendMessageMQ(final String key, final String msg) {
-		sendDebug(String.format("MQ[%s]  %s", key, msg));
+		sendDebug("MQ[" + key + "]  " + msg);
 	}
 	
 	/**
