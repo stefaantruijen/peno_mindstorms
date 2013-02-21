@@ -38,6 +38,7 @@ public class EventPusher {
 	public void run() {
 		try {
 			setup();
+			sendMQMessage("Team Blauw connected");
 		} catch (IOException e) {
 			System.err.println("Unable to setup program and connect to AMQP server");
 			e.printStackTrace(System.err);
