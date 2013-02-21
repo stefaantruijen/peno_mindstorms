@@ -10,16 +10,21 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.ListModel;
 
 import bluebot.ConfigListener;
 import bluebot.core.Controller;
 import bluebot.core.ControllerListener;
 import bluebot.graph.Tile;
 import bluebot.ui.TerminalComponent.SuggestionProvider;
+import bluebot.ui.util.GenericListModel;
+import bluebot.ui.util.RabbitListCellRenderer;
+import bluebot.ui.util.RabbitMessage;
 
 
 
@@ -235,6 +240,19 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		
 		return panel;
 	}
+	
+	private final Component createModuleRabbitMQ() {
+		final ListModel<RabbitMessage> model = new GenericListModel<RabbitMessage>();
+		
+		final JList<RabbitMessage> list = new JList<RabbitMessage>(model);
+		list.setCellRenderer(new RabbitListCellRenderer());
+		
+		final JScrollPane scroll = new JScrollPane(list,
+				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scroll.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+		return scroll;
+	}
 
 	private final Component createModuleSensors() {
 		final SensorsComponent sensors = new SensorsComponent();
@@ -282,7 +300,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		final JTabbedPane tabs = new IconTabbedPane();
 		tabs.addTab("icon_cli", createModuleCLI());
 		tabs.addTab("icon_sensors", createModuleSensors());
-		tabs.addTab("icon_rabbitmq", null);
+		tabs.addTab("icon_rabbitmq", createModuleRabbitMQ());
 		return tabs;
 	}
 	

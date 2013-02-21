@@ -409,9 +409,10 @@ public class CodeUtilities implements OpCodeConstants, OpCodeInfo {
 			throws TinyVMException {
 		// TODO findMethod may return null, throw Exception in findMethod
 		MethodRecord pMethod = findMethod(aMethodIndex, aSpecial, aInterface);
-		// if (pMethod == null) {
-		// throw new TinyVMException("Method not available:  " + iFullName);
-		// }
+		if (pMethod == null) {
+			throw new TinyVMException("Method not available:  " + iFullName);
+		}
+
 		ClassRecord pTopClass = pMethod.getClassRecord();
 		if (aSpecial) {
 			int pClassIndex = iBinary.getClassIndex(pTopClass);
