@@ -52,15 +52,12 @@ public class PacketFactory {
 	/**
 	 * Creates a command packet for the maze algorithm
 	 * 
-	 * @param pathfinder an <code>int</code> representing the desired pathfinding algorithm
+	 * @param playerId - an <code>int</code> representing the player ID
 	 * 
 	 * @return a {@link Packet} object
-	 * 
-	 * @see PathFinder#ASTAR
-	 * @see PathFinder#DIJKSTRA
 	 */
-	public Packet createCommandMaze(final int pathfinder) {
-		return new MazePacket(pathfinder);
+	public Packet createCommandMaze(final int playerId) {
+		return new MazePacket(playerId);
 	}
 	
 	/**

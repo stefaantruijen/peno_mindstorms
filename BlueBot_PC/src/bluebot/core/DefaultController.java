@@ -56,8 +56,8 @@ public class DefaultController extends AbstractController {
 		getTranslator().doCalibrate();
 	}
 	
-	public void doMaze(final int pathfinder) {
-		getTranslator().doMaze(pathfinder);
+	public void doMaze(final int playerId) {
+		getTranslator().doMaze(playerId);
 	}
 	
 	public void doPolygon(final int corners, final float length) {

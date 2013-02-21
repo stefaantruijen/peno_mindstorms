@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import algorithms.Dijkstra;
-import bluebot.BarcodeExecuter;
 import bluebot.DriverException;
 import bluebot.actions.Action;
 import bluebot.actions.ActionException;
@@ -28,11 +27,41 @@ public class MazeActionV2 extends Action {
 	private Tile current;
 	private Maze maze;
 	private Movement moves;
+	private int playerId;
 //	private boolean scan;
 //	private BarcodeScanner scanner;
 	private int twist;
 	
 	
+	public MazeActionV2(final int playerId) {
+		this.playerId = playerId;
+	}
+	
+	
+	
+	private final Tile createItem(Tile tile, final Orientation dir, final int id) {
+		tile = maze.addTile(tile.getX(), tile.getY(), dir);
+		tile.setAllBordersOpen(false);
+		switch (dir) {
+			case NORTH:
+				tile.setBorderSouth(Border.OPEN);
+				break;
+			case EAST:
+				tile.setBorderWest(Border.OPEN);
+				break;
+			case SOUTH:
+				tile.setBorderNorth(Border.OPEN);
+				break;
+			case WEST:
+				tile.setBorderEast(Border.OPEN);
+				break;
+			default:
+				throw new IllegalArgumentException("Invalid direction:  " + dir);
+		}
+		tile.setItemId(id);
+		getDriver().sendTile(tile);
+		return tile;
+	}
 	
 	private final boolean detectWall() throws InterruptedException {
 		int distance = readSensorUltraSonic();
@@ -159,7 +188,7 @@ public class MazeActionV2 extends Action {
 		final Graph graph = new Graph();
 		graph.setRootTile(current);
 		
-		final BarcodeExecuter barcodes = new BarcodeExecuter(getDriver(), graph);
+//		final BarcodeExecuter barcodes = new BarcodeExecuter(getDriver(), graph);
 		
 		for (Tile[] path; (path = getPathToNextTile()) != null;) {
 			if (path.length == 1) {
@@ -178,9 +207,10 @@ public class MazeActionV2 extends Action {
 			moveTo(path[path.length - 1]);
 //			scan = false;
 			
-			final Tile tile = current;
+			Tile tile = current;
 			
 //			final int barcode = scanner.stopScanning();
+			checkAborted();
 			scanBorders(tile);
 			
 //			if (tile.canHaveBarcode()) {
@@ -196,11 +226,17 @@ public class MazeActionV2 extends Action {
 //				}
 //			}
 			
+			checkAborted();
 			if (tile.canHaveBarcode()) {
 				final int barcode = scanBarcode(tile);
+				checkAborted();
 				if (barcode > 0) {
+					tile = createItem(tile, getDirectionBody(), barcode);
 					checkAborted();
-					barcodes.executeBarcode(barcode, tile);
+					if (barcode == playerId) {
+						pickup();
+						return;
+					}
 				}
 			}
 		}
@@ -467,6 +503,21 @@ public class MazeActionV2 extends Action {
 			return (tile.getBarCode() < 0);
 		}
 		return false;
+	}
+	
+	/**
+	 * Performs the routine to pick up an object in the tile ahead
+	 * 
+	 * @throws ActionException 
+	 * @throws DriverException 
+	 * @throws InterruptedException 
+	 */
+	private final void pickup()
+			throws ActionException, DriverException, InterruptedException {
+		// TODO
+		moveForward();
+		getDriver().sendMessageMQ("peno.blauw", "Het mag gerust grappig zijn!");
+		getDriver().sendMessage("Het mag gerust grappig zijn.", "Eureka!");
 	}
 	
 	private final void resetHead() {

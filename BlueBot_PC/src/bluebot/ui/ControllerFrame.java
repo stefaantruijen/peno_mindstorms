@@ -66,7 +66,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 				} else if (cmd.equals("calibrate")) {
 					controller.doCalibrate();
 				} else if (cmd.equals("maze")) {
-					controller.doMaze(0);
+					controller.doMaze(1);
 				} else if (cmd.equals("move")) {
 					try {
 						final float distance;

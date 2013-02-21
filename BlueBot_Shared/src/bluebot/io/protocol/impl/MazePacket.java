@@ -15,14 +15,14 @@ import bluebot.io.protocol.Packet;
  */
 public class MazePacket extends Packet {
 	
-	private int pathfinder;
+	private int id;
 	
 	
 	public MazePacket(final DataInput input) throws IOException {
 		super(input);
 	}
-	public MazePacket(final int pathfinder) {
-		setPathFinder(pathfinder);
+	public MazePacket(final int playerId) {
+		setPlayerId(playerId);
 	}
 	
 	
@@ -31,20 +31,20 @@ public class MazePacket extends Packet {
 		return OP_MAZE;
 	}
 	
-	public int getPathFinder() {
-		return pathfinder;
+	public int getPlayerId() {
+		return id;
 	}
 	
 	protected void readPayload(final DataInput input) throws IOException {
-		setPathFinder(input.readInt());
+		setPlayerId(input.readInt());
 	}
 	
-	private final void setPathFinder(final int pathfinder) {
-		this.pathfinder = pathfinder;
+	private final void setPlayerId(final int id) {
+		this.id = id;
 	}
 	
 	protected void writePayload(final DataOutput output) throws IOException {
-		output.writeInt(getPathFinder());
+		output.writeInt(getPlayerId());
 	}
 	
 }

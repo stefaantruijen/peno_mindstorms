@@ -26,8 +26,8 @@ public class ClientTranslator extends Translator {
 		sendPacket(getPacketFactory().createCommandCalibrate());
 	}
 	
-	public void doMaze(final int pathfinder) {
-		sendPacket(getPacketFactory().createCommandMaze(pathfinder));
+	public void doMaze(final int playerId) {
+		sendPacket(getPacketFactory().createCommandMaze(playerId));
 	}
 	
 	public void doPolygon(final int corners, final float length) {

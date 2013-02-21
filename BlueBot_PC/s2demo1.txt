@@ -1,0 +1,11 @@
+1 4
+
+# Mini test doolhof
+#Corner.N	Straight.E		Corner.E
+#Straight.N	DeadEnd.N		Straight.N
+#Straight.N	Straight.N.1	Straight.N
+#Corner.W	T.S				Corner.S
+DeadEnd.N
+Straight.N.1
+Straight.N
+DeadEnd.S

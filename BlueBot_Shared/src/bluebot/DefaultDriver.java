@@ -193,6 +193,10 @@ public class DefaultDriver implements Driver {
 		getTranslator().sendMessage(msg, title);
 	}
 	
+	public void sendMessageMQ(final String key, final String msg) {
+		sendDebug(String.format("MQ[%s]  %s", key, msg));
+	}
+	
 	/**
 	 * Sends a motion update
 	 * 

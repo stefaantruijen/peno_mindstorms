@@ -7,6 +7,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import bluebot.graph.Border;
+import bluebot.graph.Orientation;
 import bluebot.graph.Tile;
 
 
@@ -37,6 +38,26 @@ public class Maze {
 			table.put(key(x, y), tile);
 		}
 		return tile;
+	}
+	
+	public Tile addTile(int x, int y, final Orientation dir) {
+		switch (dir) {
+			case NORTH:
+				y++;
+				break;
+			case EAST:
+				x++;
+				break;
+			case SOUTH:
+				y--;
+				break;
+			case WEST:
+				x--;
+				break;
+			default:
+				throw new IllegalArgumentException("Invalid direction:  " + dir);
+		}
+		return addTile(x, y);
 	}
 	
 	public List<Tile> getNeighbors(final Tile tile) {

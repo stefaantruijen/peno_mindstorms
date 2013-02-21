@@ -126,6 +126,14 @@ public interface Driver extends Mobile {
 	public void sendMessage(String msg, String title);
 	
 	/**
+	 * Sends an MQ message
+	 * 
+	 * @param key - the key
+	 * @param msg - the message
+	 */
+	public void sendMessageMQ(String key, String msg);
+	
+	/**
 	 * Sends a tile
 	 * 
 	 * @param tile - the (updated) {@link Tile}

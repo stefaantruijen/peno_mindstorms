@@ -20,9 +20,10 @@ public class Tile implements Comparable<Tile> {
 	/**    The size of a tile (in mm)    */
 	public static final float SIZE = 400F;
 	
+	private int barcode = -1;
 	private byte borders;
+	private int item;
 	private int x, y;
-	private int barCode = -1;
 
 	private double distanceFromStart;
 
@@ -111,6 +112,10 @@ public class Tile implements Comparable<Tile> {
 	
 	public Border getBorderWest() {
 		return getBorder(6);
+	}
+	
+	public int getItemId() {
+		return item;
 	}
 	
 	public int getX() {
@@ -236,6 +241,10 @@ public class Tile implements Comparable<Tile> {
 		}
 	}
 	
+	public void setItemId(final int id) {
+		this.item = id;
+	}
+	
 	public boolean isEastFrom(Tile other){
 		return(other.getX()==this.getX()-1 && this.getY()==other.getY());
 	}
@@ -256,6 +265,7 @@ public class Tile implements Comparable<Tile> {
 		final Tile tile = new Tile(input.readByte(), input.readByte());
 		tile.setBarCode(input.readByte());
 		tile.borders = input.readByte();
+		tile.item = (input.readBoolean() ? input.readInt() : 0);
 		return tile;
 	}
 	
@@ -274,6 +284,12 @@ public class Tile implements Comparable<Tile> {
 		output.writeByte(getY());
 		output.writeByte(getBarCode());
 		output.writeByte(borders);
+		if (item > 0) {
+			output.writeBoolean(true);
+			output.writeInt(item);
+		} else {
+			output.writeBoolean(false);
+		}
 	}
 	
 	/**
@@ -387,13 +403,13 @@ public class Tile implements Comparable<Tile> {
 	 * @return -1 if no barcode is available. 
 	 */
 	public int getBarCode() {
-		return barCode;
+		return barcode;
 	}
 
 
 
-	public void setBarCode(int barCode) {
-		this.barCode = barCode;
+	public void setBarCode(int barcode) {
+		this.barcode = barcode;
 	}
 
 
