@@ -94,6 +94,12 @@ public interface Driver extends Mobile {
 	public boolean readsWhite() throws CalibrationException;
 	
 	/**
+	 * Returns true if the touch sensor is pressed
+	 * @return
+	 */
+	public boolean isPressed();
+	
+	/**
 	 * Returns true if the light sensor reads a 'gray' brightness
 	 * 'gray' here means strictly not white and not black.
 	 * 

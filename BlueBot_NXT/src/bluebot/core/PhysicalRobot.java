@@ -5,6 +5,7 @@ import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
 import lejos.nxt.SoundSensor;
+import lejos.nxt.TouchSensor;
 import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.localization.OdometryPoseProvider;
 import lejos.robotics.navigation.DifferentialPilot;
@@ -39,19 +40,19 @@ public class PhysicalRobot extends AbstractRobot {
 	private DifferentialPilot pilot;
 	private LightSensor sensorLight;
 	private UltrasonicSensor sensorUltraSonic;
-	private SoundSensor sensorSound;
+	private TouchSensor touchSensor;
 	private Tracker tracker;
 	
 	
 	public PhysicalRobot() {
 		this(createPilot(), SensorPort.S1, SensorPort.S2, SensorPort.S3);
 	}
-	public PhysicalRobot(final DifferentialPilot pilot, final SensorPort light, final SensorPort ultraSonic, final SensorPort sound) {
+	public PhysicalRobot(final DifferentialPilot pilot, final SensorPort light, final SensorPort ultraSonic, final SensorPort touch) {
 		this.pilot = pilot;
 		this.sensorLight = new LightSensor(light);
 		this.sensorUltraSonic = createSensorUltraSonic(ultraSonic);
 		this.tracker = new Tracker(pilot, head);
-		this.sensorSound = new SoundSensor(sound);
+		this.touchSensor = new TouchSensor(touch);
 		
 		resetOrientation();
 	}
@@ -250,6 +251,11 @@ public class PhysicalRobot extends AbstractRobot {
 			return (accuracy * Math.round(value / accuracy));
 		}
 		
+	}
+
+	@Override
+	public boolean isPressed() {
+		return touchSensor.isPressed();
 	}
 	
 }
