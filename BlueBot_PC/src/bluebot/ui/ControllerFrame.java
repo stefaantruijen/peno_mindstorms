@@ -15,16 +15,15 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.ListModel;
 
 import bluebot.ConfigListener;
 import bluebot.core.Controller;
 import bluebot.core.ControllerListener;
 import bluebot.graph.Tile;
+import bluebot.io.RabbitMessage;
 import bluebot.ui.TerminalComponent.SuggestionProvider;
-import bluebot.ui.util.GenericListModel;
 import bluebot.ui.util.RabbitListCellRenderer;
-import bluebot.ui.util.RabbitMessage;
+import bluebot.ui.util.RabbitListModel;
 
 
 
@@ -242,7 +241,10 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 	}
 	
 	private final Component createModuleRabbitMQ() {
-		final ListModel<RabbitMessage> model = new GenericListModel<RabbitMessage>();
+		final RabbitListModel model = new RabbitListModel();
+		// TODO: remove debug entries
+		model.onMessageOutgoing(new RabbitMessage("Hello, world! mnqmerqeriqflqefqliefuhqlefiuhqeilfuhqlfiuqblfiuqbefliquebfliquebflqiuerbfqluhq"));
+		model.onMessageIncoming(new RabbitMessage("Go, BlueBot, Go", "race.launch"));
 		
 		final JList<RabbitMessage> list = new JList<RabbitMessage>(model);
 		list.setCellRenderer(new RabbitListCellRenderer());
@@ -251,6 +253,8 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scroll.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+		// The next line prevents the scroll pane from extending too far
+		scroll.setPreferredSize(new Dimension(1, 1));
 		return scroll;
 	}
 

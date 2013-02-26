@@ -1,4 +1,4 @@
-package bluebot.ui.util;
+package bluebot.io;
 
 
 
@@ -6,19 +6,19 @@ package bluebot.ui.util;
  * 
  * @author Ruben Feyen
  */
-public class RabbitMessage {
+public class RabbitMessage extends Message {
 	
 	public static final String DEFAULT_KEY = "BlueBot";
 	
-	private String key, msg;
+	private String key;
 	
 	
 	public RabbitMessage(final String msg) {
 		this(msg, DEFAULT_KEY);
 	}
 	public RabbitMessage(final String msg, final String key) {
+		super(msg);
 		this.key = key;
-		this.msg = msg;
 	}
 	
 	
@@ -27,8 +27,9 @@ public class RabbitMessage {
 		return key;
 	}
 	
-	public String getMessage() {
-		return msg;
+	@Override
+	public Type getType() {
+		return Type.RABBIT_MQ;
 	}
 	
 }
