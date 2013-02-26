@@ -48,5 +48,9 @@ public class ServerTranslator extends Translator {
 	public void sendTile(final Tile tile) {
 		sendPacket(getPacketFactory().createTile(tile));
 	}
+
+	public void sendMQMessage(String msg) {
+		sendPacket(getPacketFactory().createMQMessage(msg));
+	}
 	
 }

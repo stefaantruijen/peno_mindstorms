@@ -198,6 +198,15 @@ public class DefaultDriver implements Driver {
 	}
 	
 	/**
+	 * Sends an MQmessage to the rabbitMQ.
+	 * 
+	 * @param msg - the message
+	 */
+	public void sendMQMessage(final String msg) {
+		getTranslator().sendMQMessage(msg);
+	}
+	
+	/**
 	 * Sends a motion update
 	 * 
 	 * @param x - the position on the X axis

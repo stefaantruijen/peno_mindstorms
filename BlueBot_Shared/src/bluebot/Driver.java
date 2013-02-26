@@ -139,5 +139,12 @@ public interface Driver extends Mobile {
 	 * @param tile - the (updated) {@link Tile}
 	 */
 	public void sendTile(Tile tile);
+
+	/**
+	 * Sends an MQmessage
+	 * 
+	 * @param msg - the message
+	 */
+	public void sendMQMessage(String string);
 	
 }

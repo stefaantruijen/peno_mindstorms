@@ -806,8 +806,6 @@ public class VirtualRobot extends AbstractRobot {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		
-		
 	}
 
 	//PRIVATE HELP METHODS:
