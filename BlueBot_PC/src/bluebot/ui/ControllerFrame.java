@@ -246,7 +246,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		model.onMessageOutgoing(new RabbitMessage("Hello, world! mnqmerqeriqflqefqliefuhqlefiuhqeilfuhqlfiuqblfiuqbefliquebfliquebflqiuerbfqluhq"));
 		model.onMessageIncoming(new RabbitMessage("Go, BlueBot, Go", "race.launch"));
 		
-		final JList<RabbitMessage> list = new JList<RabbitMessage>(model);
+		final JList list = new JList(model);
 		list.setCellRenderer(new RabbitListCellRenderer());
 		
 		final JScrollPane scroll = new JScrollPane(list,

@@ -11,7 +11,7 @@ import javax.swing.AbstractListModel;
  * 
  * @author Ruben Feyen
  */
-public class GenericListModel<T> extends AbstractListModel<T> {
+public class GenericListModel<T> extends AbstractListModel {
 	private static final long serialVersionUID = 1L;
 	
 	private ArrayList<T> elements = new ArrayList<T>();

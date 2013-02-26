@@ -21,8 +21,7 @@ import bluebot.io.RabbitMessage;
  * 
  * @author Ruben Feyen
  */
-public class RabbitListCellRenderer extends JTextPane
-		implements ListCellRenderer<RabbitMessage> {
+public class RabbitListCellRenderer extends JTextPane implements ListCellRenderer {
 	private static final long serialVersionUID = 1L;
 	
 	
@@ -33,18 +32,19 @@ public class RabbitListCellRenderer extends JTextPane
 	
 	
 	public Component getListCellRendererComponent(
-			final JList<? extends RabbitMessage> list,
-			final RabbitMessage value,
+			final JList list,
+			final Object value,
 			final int index, final boolean selected, final boolean focus) {
+		final RabbitMessage msg = (RabbitMessage)value;
 		final StyledDocument doc = getStyledDocument();
 		try {
 			doc.remove(0, doc.getLength());
 			doc.insertString(0,
-					(value.getKey() + "\n"),
+					(msg.getKey() + "\n"),
 					doc.getStyle("rabbit_key"));
 			final int offset = doc.getLength();
 			doc.insertString(offset,
-					value.getMessage(),
+					msg.getMessage(),
 					doc.getStyle("rabbit_msg"));
 			doc.setParagraphAttributes(offset, (doc.getLength() - offset),
 					doc.getStyle("rabbit_msg"), true);
