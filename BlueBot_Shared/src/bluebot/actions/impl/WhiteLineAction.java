@@ -15,6 +15,7 @@ import bluebot.sensors.CalibrationException;
 public class WhiteLineAction extends Action {
 
 	protected void execute() throws ActionException, DriverException, InterruptedException {
+		System.out.println("started");
 		int speed = getDriver().getSpeed();
 		// exception if not calibrated
 		if (!getDriver().getCalibration().isCalibrated()) {
@@ -85,6 +86,7 @@ public class WhiteLineAction extends Action {
 			getDriver().turnRight();
 			while(!isAborted() && (Math.abs(getDriver().getAngleIncrement()) <= ((totalArc / 2) + 1)));
 			getDriver().stop();
+			
 		} else{
 			getDriver().turnLeft(90, true);
 			this.execute();

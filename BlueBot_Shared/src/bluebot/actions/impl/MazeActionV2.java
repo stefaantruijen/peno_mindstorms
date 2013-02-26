@@ -234,7 +234,8 @@ public class MazeActionV2 extends Action {
 					tile = createItem(tile, getDirectionBody(), barcode);
 					checkAborted();
 					if (barcode == playerId) {
-						pickup();
+						PickUpAction pickUpAction = new PickUpAction();
+						pickUpAction.execute(getDriver());
 						return;
 					}
 				}
@@ -503,21 +504,6 @@ public class MazeActionV2 extends Action {
 			return (tile.getBarCode() < 0);
 		}
 		return false;
-	}
-	
-	/**
-	 * Performs the routine to pick up an object in the tile ahead
-	 * 
-	 * @throws ActionException 
-	 * @throws DriverException 
-	 * @throws InterruptedException 
-	 */
-	private final void pickup()
-			throws ActionException, DriverException, InterruptedException {
-		// TODO
-		moveForward();
-		getDriver().sendMessageMQ("peno.blauw", "Het mag gerust grappig zijn!");
-		getDriver().sendMessage("Het mag gerust grappig zijn.", "Eureka!");
 	}
 	
 	private final void resetHead() {

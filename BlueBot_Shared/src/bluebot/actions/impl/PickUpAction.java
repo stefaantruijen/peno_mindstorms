@@ -11,18 +11,27 @@ public class PickUpAction extends Action{
 	@Override
 	protected void execute() throws ActionException, DriverException,
 			InterruptedException {
-		this.getDriver().moveForward(5F, true);
-		white.execute(getDriver());
-		this.getDriver().moveBackward(40F, true);
 		this.getDriver().turnRight(180, true);
+		this.getDriver().moveForward(50F, true);
+		white.execute(getDriver());
 		this.getDriver().moveBackward();
+		System.out.println("moving backwards");
+		boolean press = false;
 		while(this.getDriver().isMoving()){
-			if(this.getDriver().isPressed()){
+			System.out.println("I am moving");
+			press = this.getDriver().isPressed();
+			if(press){
+				System.out.println("I got pressed");
 				this.getDriver().stop();
-				this.getDriver().sendMessageMQ("peno.blauw","wc-rol");
+				System.out.println("I stopped");
+				//this.getDriver().sendMessageMQ("Object gevonden!");
 			}
 		}
-		
+		System.out.println("ended while, starting white line");
+		white.execute(getDriver());
+		System.out.println("ended white line");
+		this.getDriver().moveForward(200F, true);
+		System.out.println("done");
 	}
 
 }

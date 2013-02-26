@@ -1057,7 +1057,12 @@ public class VirtualRobot extends AbstractRobot {
 
 	@Override
 	public boolean isPressed() {
-		// TODO Auto-generated method stub
+		//TODO: fout?!
+		int back = this.checkBackClearDistance();
+		System.out.println("backspace= "+back);
+		if(back<15){
+			return true;
+		}
 		return false;
 	}
 }
