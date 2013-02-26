@@ -1,6 +1,8 @@
 package bluebot.core;
 
 
+import java.io.IOException;
+
 import lejos.pc.comm.NXTCommException;
 
 import bluebot.DefaultDriver;
@@ -37,9 +39,11 @@ public class ControllerFactory {
 	 * 
 	 * @return a {@link Controller} object
 	 * 
+	 * @throws IOException
 	 * @throws NXTCommException if the connection with the NXT brick fails
 	 */
-	public Controller connectToBrick(final String name) throws NXTCommException {
+	public Controller connectToBrick(final String name)
+			throws IOException, NXTCommException {
 		return createController(new ClientConnector().connectTo("BlueBot"));
 	}
 	
@@ -49,8 +53,10 @@ public class ControllerFactory {
 	 * @param tiles - an array of {@link Tile} objects representing the virtual maze
 	 * 
 	 * @return a {@link Controller} object
+	 * 
+	 * @throws IOException 
 	 */
-	public Controller connectToSimulator(final Tile[] tiles) {
+	public Controller connectToSimulator(final Tile[] tiles) throws IOException {
 		Tile start = null;
 		for (final Tile tile : tiles) {
 			if ((tile.getX() | tile.getY()) == 0) {
@@ -83,8 +89,11 @@ public class ControllerFactory {
 	 * @param connection - a {@link Connection} object
 	 * 
 	 * @return a {@link Controller} object
+	 * 
+	 * @throws IOException
 	 */
-	private final Controller createController(final Connection connection) {
+	private final Controller createController(final Connection connection)
+			throws IOException {
 		return new DefaultController(connection);
 	}
 	
@@ -95,8 +104,10 @@ public class ControllerFactory {
 	 * @param robot - a {@link Robot}
 	 * 
 	 * @return a {@link Controller} object
+	 * 
+	 * @throws IOException 
 	 */
-	private final Controller createController(final Robot robot) {
+	private final Controller createController(final Robot robot) throws IOException {
 		final VirtualConnection connection = new VirtualConnection();
 		
 		final Connection server = connection.createServer();

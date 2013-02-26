@@ -3,6 +3,7 @@ package bluebot.core;
 
 import bluebot.ConfigListener;
 import bluebot.io.ConnectionListener;
+import bluebot.io.MessageListener;
 import bluebot.maze.MazeListener;
 import bluebot.sensors.SensorListener;
 import bluebot.util.EventDispatcher;
@@ -22,6 +23,8 @@ public interface Controller extends EventDispatcher<ControllerListener> {
 	
 	public void addListener(MazeListener listener);
 	
+	public void addListener(MessageListener listener);
+	
 	public void addListener(SensorListener listener);
 	
 	public void dispose();
@@ -35,6 +38,8 @@ public interface Controller extends EventDispatcher<ControllerListener> {
 	public void doTile();
 	
 	public void doWhiteLineOrientation();
+	
+	public void init();
 	
 	/**
 	 * Moves backward
@@ -65,6 +70,8 @@ public interface Controller extends EventDispatcher<ControllerListener> {
 	public void removeListener(ConnectionListener listener);
 	
 	public void removeListener(MazeListener listener);
+	
+	public void removeListener(MessageListener listener);
 	
 	public void removeListener(SensorListener listener);
 	

@@ -3,6 +3,8 @@ package bluebot.core;
 
 import bluebot.ConfigListener;
 import bluebot.graph.Tile;
+import bluebot.io.Message;
+import bluebot.io.MessageListener;
 import bluebot.maze.MazeListener;
 import bluebot.sensors.SensorListener;
 import bluebot.util.AbstractEventDispatcher;
@@ -20,12 +22,14 @@ public abstract class AbstractController
 	
 	private ConfigDispatcher config;
 	private MazeDispatcher maze;
+	private MessageDispatcher messages;
 	private SensorDispatcher sensors;
 	
 	
 	public AbstractController() {
 		this.config = new ConfigDispatcher();
 		this.maze = new MazeDispatcher();
+		this.messages = new MessageDispatcher();
 		this.sensors = new SensorDispatcher();
 	}
 	
@@ -37,6 +41,10 @@ public abstract class AbstractController
 	
 	public void addListener(final MazeListener listener) {
 		maze.addListener(listener);
+	}
+	
+	public void addListener(final MessageListener listener) {
+		messages.addListener(listener);
 	}
 	
 	public void addListener(final SensorListener listener) {
@@ -57,6 +65,14 @@ public abstract class AbstractController
 		for (final ControllerListener listener : getListeners()) {
 			listener.onMessage(msg, title);
 		}
+	}
+	
+	protected void fireMessageIncoming(final Message msg) {
+		messages.fireMessageIncoming(msg);
+	}
+	
+	protected void fireMessageOutgoing(final Message msg) {
+		messages.fireMessageOutgoing(msg);
 	}
 	
 	protected void fireMotion(final float x, final float y,
@@ -86,6 +102,10 @@ public abstract class AbstractController
 	
 	public void removeListener(final MazeListener listener) {
 		maze.removeListener(listener);
+	}
+	
+	public void removeListener(final MessageListener listener) {
+		messages.removeListener(listener);
 	}
 	
 	public void removeListener(final SensorListener listener) {
@@ -135,6 +155,27 @@ public abstract class AbstractController
 		public void fireTileUpdated(final Tile tile) {
 			for (final MazeListener listener : getListeners()) {
 				listener.onTileUpdate(tile);
+			}
+		}
+		
+	}
+	
+	
+	
+	
+	
+	private static final class MessageDispatcher
+			extends AbstractEventDispatcher<MessageListener> {
+		
+		public void fireMessageIncoming(final Message msg) {
+			for (final MessageListener listener : getListeners()) {
+				listener.onMessageIncoming(msg);
+			}
+		}
+		
+		public void fireMessageOutgoing(final Message msg) {
+			for (final MessageListener listener : getListeners()) {
+				listener.onMessageOutgoing(msg);
 			}
 		}
 		

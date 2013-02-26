@@ -3,12 +3,17 @@ package bluebot.core;
 
 import static bluebot.io.protocol.Packet.*;
 
-import RabbitMQCommunication.EventListener;
-import RabbitMQCommunication.EventPusher;
+import java.io.IOException;
+import java.util.Date;
+
+import RabbitMQCommunication.Config;
+import RabbitMQCommunication.RabbitConnection;
+import RabbitMQCommunication.RabbitConnection.Listener;
 import bluebot.io.ClientTranslator;
 import bluebot.io.Communicator;
 import bluebot.io.Connection;
 import bluebot.io.ConnectionListener;
+import bluebot.io.RabbitMessage;
 import bluebot.io.protocol.Packet;
 import bluebot.io.protocol.PacketHandler;
 import bluebot.io.protocol.impl.ConfigPacket;
@@ -29,13 +34,22 @@ import bluebot.io.protocol.impl.TilePacket;
 public class DefaultController extends AbstractController {
 	
 	private Communicator communicator;
+	private RabbitConnection rabbit;
 	private ClientTranslator translator;
-	private EventPusher eventPusher;
 	
-	public DefaultController(final Connection connection) {
+	
+	public DefaultController(final Connection connection) throws IOException {
+		this.rabbit = new RabbitConnection();
+		rabbit.registerListener(Config.MONITOR_KEY, new Listener() {
+			public void onMessage(final Date time,
+					final String key, final String msg) {
+				fireMessageIncoming(new RabbitMessage(msg, key));
+			}
+		});
+		
 		this.communicator = new Communicator(connection, createPacketHandler());
 		this.translator = new ClientTranslator(connection);
-		this.eventPusher = new EventPusher();
+		
 		this.communicator.start();
 	}
 	
@@ -83,6 +97,11 @@ public class DefaultController extends AbstractController {
 		return translator;
 	}
 	
+	public void init() {
+		setSpeed(100);
+		sendMessageRabbitMQ("Team Blauw connected");
+	}
+	
 	public void moveBackward() {
 		getTranslator().moveBackward();
 	}
@@ -111,6 +130,16 @@ public class DefaultController extends AbstractController {
 	
 	public void reset() {
 		getTranslator().reset();
+	}
+	
+	private final void sendMessageRabbitMQ(final String msg) {
+		try {
+			rabbit.sendMessage(msg);
+		} catch (final IOException e) {
+			e.printStackTrace();
+//		} finally {
+//			fireMessageOutgoing(new RabbitMessage(msg));
+		}
 	}
 	
 	public void setSpeed(final int percentage) {
@@ -166,8 +195,7 @@ public class DefaultController extends AbstractController {
 					fireMessage(p.getMessage(), p.getTitle());
 					break;
 				case OP_MQMESSAGE:
-					final MQMessagePacket mqp = (MQMessagePacket)packet;
-					handlePacketMQMessage(mqp);
+					handlePacketMQMessage((MQMessagePacket)packet);
 					break;
 				case OP_MOTION:
 					handlePacketMotion((MotionPacket)packet);
@@ -190,8 +218,7 @@ public class DefaultController extends AbstractController {
 		}
 		
 		private final void handlePacketMQMessage(final MQMessagePacket packet) {
-			String message = packet.getMessage();
-			eventPusher.sendMQMessage(message);
+			sendMessageRabbitMQ(packet.getMessage());
 		}
 		
 		private final void handlePacketMotion(final MotionPacket packet) {

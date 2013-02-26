@@ -9,6 +9,7 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -23,7 +24,6 @@ import lejos.pc.comm.NXTCommException;
 import bluebot.core.Controller;
 import bluebot.graph.Graph;
 import bluebot.graph.Tile;
-import bluebot.maze.Maze;
 import bluebot.maze.MazeReader;
 
 
@@ -60,6 +60,13 @@ public class MainFrame extends JFrame {
 	private final void connectToBrick(final String name) {
 		try {
 			showController(getControllerFactory().connectToBrick(name));
+		} catch (final IOException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this,
+					e.getMessage(),
+					"Connection failed",
+					JOptionPane.ERROR_MESSAGE);
+			return;
 		} catch (final NXTCommException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this,
@@ -83,7 +90,16 @@ public class MainFrame extends JFrame {
 		final Tile[] tiles = new Tile[maze.size()];
 		maze.toArray(tiles);
 		
-		showController(getControllerFactory().connectToSimulator(tiles));
+		try {
+			showController(getControllerFactory().connectToSimulator(tiles));
+		} catch (final IOException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this,
+					e.getMessage(),
+					"Connection failed",
+					JOptionPane.ERROR_MESSAGE);
+			return;
+		}
 	}
 	
 //	@SuppressWarnings("unused")

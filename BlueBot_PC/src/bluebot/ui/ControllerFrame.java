@@ -20,7 +20,6 @@ import bluebot.ConfigListener;
 import bluebot.core.Controller;
 import bluebot.core.ControllerListener;
 import bluebot.graph.Tile;
-import bluebot.io.RabbitMessage;
 import bluebot.ui.TerminalComponent.SuggestionProvider;
 import bluebot.ui.util.RabbitListCellRenderer;
 import bluebot.ui.util.RabbitListModel;
@@ -37,7 +36,8 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 	private BarcodeComponent barcode;
 	private VisualizationComponent canvas;
 	private Controller controller;
-
+	
+	
 	public ControllerFrame(final Controller controller) {
 		super(MainFrame.TITLE);
 		this.controller = controller;
@@ -57,6 +57,8 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 				controller.dispose();
 			}
 		});
+		
+		controller.init();
 	}
 	
 	private final Component createModuleCLI() {
@@ -242,9 +244,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 	
 	private final Component createModuleRabbitMQ() {
 		final RabbitListModel model = new RabbitListModel();
-		// TODO: remove debug entries
-		model.onMessageOutgoing(new RabbitMessage("Hello, world!"));
-		model.onMessageIncoming(new RabbitMessage("Go, BlueBot, Go", "race.launch"));
+		controller.addListener(model);
 		
 		final JList list = new JList(model);
 		list.setCellRenderer(new RabbitListCellRenderer());
