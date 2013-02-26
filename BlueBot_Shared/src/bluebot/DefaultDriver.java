@@ -370,5 +370,11 @@ public class DefaultDriver implements Driver {
 		}
 		
 	}
+
+
+	@Override
+	public boolean isPressed() {
+		return getRobot().isPressed();
+	}
 	
 }

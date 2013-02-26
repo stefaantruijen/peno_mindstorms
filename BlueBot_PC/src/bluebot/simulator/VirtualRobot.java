@@ -1056,4 +1056,10 @@ public class VirtualRobot extends AbstractRobot {
 		double yOffset = offset * Math.cos(radialSonarHeading);
 		return (int)(getImgY() + yOffset);
 	}
+
+	@Override
+	public boolean isPressed() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

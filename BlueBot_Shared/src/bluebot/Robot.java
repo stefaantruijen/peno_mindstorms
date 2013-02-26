@@ -80,5 +80,11 @@ public interface Robot extends Mobile {
 	//TODO: getDistanceIncrement()? 
 
 	public float getArcLimit();
+
+	/**
+	 * True if touch sensor is pressed
+	 * @return
+	 */
+	public boolean isPressed();
 	
 }
