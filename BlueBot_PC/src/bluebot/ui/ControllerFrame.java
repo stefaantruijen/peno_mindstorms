@@ -243,7 +243,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 	private final Component createModuleRabbitMQ() {
 		final RabbitListModel model = new RabbitListModel();
 		// TODO: remove debug entries
-		model.onMessageOutgoing(new RabbitMessage("Hello, world! mnqmerqeriqflqefqliefuhqlefiuhqeilfuhqlfiuqblfiuqbefliquebfliquebflqiuerbfqluhq"));
+		model.onMessageOutgoing(new RabbitMessage("Hello, world!"));
 		model.onMessageIncoming(new RabbitMessage("Go, BlueBot, Go", "race.launch"));
 		
 		final JList list = new JList(model);
