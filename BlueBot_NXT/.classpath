@@ -6,7 +6,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="debug"/>
-	<classpathentry kind="lib" path="/Users/Lies/Desktop/3de bach/P&amp;O/project/leJOS_NXJ_0.9.1beta-3/lib/nxt/classes.jar"/>
+	<classpathentry kind="lib" path="lib/classes.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/BlueBot_Shared"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
