@@ -228,16 +228,25 @@ public class MazeActionV2 extends Action {
 			
 			checkAborted();
 			if (tile.canHaveBarcode()) {
+				//graph.addVertex(tile);
+				//getDriver().sendTile(tile);
 				final int barcode = scanBarcode(tile);
 				checkAborted();
 				if (barcode > 0) {
-					tile = createItem(tile, getDirectionBody(), barcode);
-					checkAborted();
-					if (barcode == playerId) {
-						PickUpAction pickUpAction = new PickUpAction();
-						pickUpAction.execute(getDriver());
-						return;
+					if(barcodeCanBePlayerId(barcode)){
+						tile = createItem(tile, getDirectionBody(), barcode);
+						//graph.addVertex(tile);
+						checkAborted();
+						//getDriver().sendTile(tile);
+						if (barcode == playerId) {
+							this.pickUp();
+							//this.current = tile;
+							return;
+						}
+					}else{
+						//TODO:Checkpoint logica
 					}
+					
 				}
 			}
 		}
@@ -276,6 +285,30 @@ public class MazeActionV2 extends Action {
 		getDriver().sendMessage(msg, "Finished");
 	}
 	
+	private boolean barcodeCanBePlayerId(int possiblePlayerId) {
+		
+		return (possiblePlayerId >= 7 && possiblePlayerId <= 10);
+	}
+
+
+
+	private void pickUp() throws ActionException, DriverException, InterruptedException {
+		this.resetHead();
+		this.executeWhiteLine();
+		this.turnAround();
+		this.getDriver().moveBackward();
+		while(!getDriver().isPressed()){
+			
+		}
+		this.getDriver().stop();
+		this.executeWhiteLine();
+		this.getDriver().moveForward(200F, true);
+		this.getDriver().sendMQMessage("Got the package, to the choppa!");
+		
+	}
+
+
+
 	private final List<Orientation> findBordersToScan(final Tile tile) {
 		final LinkedList<Orientation> borders = new LinkedList<Orientation>();
 		
@@ -549,6 +582,7 @@ public class MazeActionV2 extends Action {
 
 		tile.setBarCode(barcode);
 		getDriver().sendTile(tile);
+		
 		return barcode;
 	}
 	

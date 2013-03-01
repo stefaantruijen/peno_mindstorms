@@ -1,13 +1,17 @@
 package bluebot;
 
 
+import bluebot.actions.Action;
+import bluebot.actions.ActionException;
 import bluebot.actions.ActionQueue;
 import bluebot.actions.impl.CalibrationAction;
 import bluebot.actions.impl.CheckTileAction;
 import bluebot.actions.impl.MazeActionV2;
 import bluebot.actions.impl.MovementAction;
 import bluebot.actions.impl.PolygonAction;
+import bluebot.actions.impl.ReadBarcodeAction;
 import bluebot.actions.impl.WhiteLineAction;
+import bluebot.graph.Tile;
 import bluebot.io.protocol.Packet;
 import bluebot.io.protocol.PacketHandler;
 import bluebot.io.protocol.impl.CommandPacket;
@@ -72,8 +76,8 @@ public class DriverHandler implements PacketHandler {
 		} else if (command.equals(CommandPacket.CALIBRATE)) {
 			queue.queue(new CalibrationAction());
 		} else if (command.equals(CommandPacket.TILE)) {
-			queue.queue(new CheckTileAction());
-//			queue.queue(new ReadBarcodeAction(new Tile(0, 0)));
+//			queue.queue(new CheckTileAction());
+			queue.queue(new ReadBarcodeAction(new Tile(0, 0)));
 		} else if (command.equals(CommandPacket.WHITE_LINE_ORIENTATION)) {
 			queue.queue(new WhiteLineAction());
 		}

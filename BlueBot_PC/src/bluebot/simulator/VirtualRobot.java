@@ -1035,7 +1035,9 @@ public class VirtualRobot extends AbstractRobot {
 	}
 	
 	private int checkBackClearDistance() {
-		return readSensorUltraSonic(Utils.clampAngleDegrees(getHeading()+180));
+		int result = readSensorUltraSonic(Utils.clampAngleDegrees(getHeading()+180));
+		//System.out.println(result);
+		return result;
 	}
 	
 	private int readSensorUltraSonic(float heading){
@@ -1056,11 +1058,9 @@ public class VirtualRobot extends AbstractRobot {
 	}
 
 	@Override
-	public boolean isPressed() {
-		//TODO: fout?!
+	public synchronized boolean isPressed() {
 		int back = this.checkBackClearDistance();
-		System.out.println("backspace= "+back);
-		if(back<15){
+		if(back<10){
 			return true;
 		}
 		return false;

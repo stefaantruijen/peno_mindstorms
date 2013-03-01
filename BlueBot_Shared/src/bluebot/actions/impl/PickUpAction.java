@@ -17,16 +17,14 @@ public class PickUpAction extends Action{
 		this.getDriver().moveBackward();
 		System.out.println("moving backwards");
 		boolean press = false;
-		while(this.getDriver().isMoving()){
-			System.out.println("I am moving");
-			press = this.getDriver().isPressed();
-			if(press){
-				System.out.println("I got pressed");
-				this.getDriver().stop();
-				System.out.println("I stopped");
+		while(this.getDriver().isMoving() && !this.getDriver().isPressed()){
+			System.out.println("I am moving & not pressed");
 				//this.getDriver().sendMessageMQ("Object gevonden!");
-			}
 		}
+		System.out.println("I got pressed");
+		this.getDriver().stop();
+		System.out.println("I stopped");
+		
 		System.out.println("ended while, starting white line");
 		white.execute(getDriver());
 		System.out.println("ended white line");
