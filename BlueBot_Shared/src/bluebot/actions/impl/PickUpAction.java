@@ -16,7 +16,7 @@ public class PickUpAction extends Action{
 		white.execute(getDriver());
 		this.getDriver().moveBackward();
 		System.out.println("moving backwards");
-		boolean press = false;
+//		boolean press = false;
 		while(this.getDriver().isMoving() && !this.getDriver().isPressed()){
 			System.out.println("I am moving & not pressed");
 				//this.getDriver().sendMessageMQ("Object gevonden!");
