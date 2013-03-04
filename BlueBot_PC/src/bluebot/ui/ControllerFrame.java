@@ -19,6 +19,8 @@ import javax.swing.JTabbedPane;
 import bluebot.ConfigListener;
 import bluebot.core.Controller;
 import bluebot.core.ControllerListener;
+import bluebot.graph.Border;
+import bluebot.graph.Orientation;
 import bluebot.graph.Tile;
 import bluebot.simulator.GhostDriver;
 import bluebot.simulator.VirtualRobot;
@@ -320,6 +322,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 	private final void doMaze(final String[] args) throws NumberFormatException {
 		final int n = (args.length - 2);
 		if (n > 0) {
+			System.out.println("Adding " + n + " ghost drivers ...");
 			//	Ghost drivers will be added
 			final GhostDriver[] ghosts = new GhostDriver[n];
 			final Tile[] tiles = VirtualRobot.maze.clone();
@@ -369,6 +372,35 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 						throw new RuntimeException("Invalid index:  " + i);
 				}
 				robot = new VirtualRobot(tiles, start);
+				
+				final float x = (start.getX() * Tile.SIZE);
+				final float y = (start.getY() * Tile.SIZE);
+				
+				float body = 0F;
+				for (final Orientation dir : Orientation.values()) {
+					if (start.getBorder(dir) == Border.OPEN) {
+						switch (dir) {
+							case NORTH:
+								body = 0F;
+								break;
+							case EAST:
+								body = 90F;
+								break;
+							case SOUTH:
+								body = 180F;
+								break;
+							case WEST:
+								body = 270F;
+								break;
+							default:
+								throw new RuntimeException(
+										"Invalid direction:  " + dir);
+						}
+						break;
+					}
+				}
+				
+				robot.setOrientation(x, y, body);
 				ghosts[i] = new GhostDriver(robot, Integer.parseInt(args[2 + i]));
 			}
 			

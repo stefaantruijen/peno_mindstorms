@@ -18,6 +18,7 @@ import bluebot.graph.Tile;
  * @author Dieter
  *
  */
+@SuppressWarnings("unused")
 public class TestVirtualLightSensor {
 	private static double delta = 0;
 	//4x4 Tile list.
@@ -98,9 +99,9 @@ public class TestVirtualLightSensor {
 	@Test
 	public void getLightValue() {
 		int white = VirtualLightSensor.WHITE.getRGB();
-		int whiteLineLightValue = s.getLightSensor().calculateLightValuePercentage(white);
+		int whiteLineLightValue = VirtualLightSensor.calculateLightValuePercentage(white);
 		int other = VirtualLightSensor.LIGHT_BROWN.getRGB();
-		int emptySpaceLightValue = s.getLightSensor().calculateLightValuePercentage(other);
+		int emptySpaceLightValue = VirtualLightSensor.calculateLightValuePercentage(other);
 
 		//Check some white lines
 		assertEquals(whiteLineLightValue,s.getLightValuePercentage(0, 0));

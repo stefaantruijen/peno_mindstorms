@@ -960,6 +960,7 @@ public class VirtualRobot extends AbstractRobot {
 	 * Under assumption that there will be an Orientate() call setting it again to (0,0)
 	 * @param st
 	 */
+	@SuppressWarnings("unused")
 	private void setRandomXIn(Tile st) {
 		Random rand = new Random();
 		int randomFrom10To30 = rand.nextInt(TILE_SIZE_CM/2) +randomMaxOffset;
@@ -973,6 +974,7 @@ public class VirtualRobot extends AbstractRobot {
 	 * Under assumption that there will be an Orientate() call setting it again to (0,0)
 	 * @param st
 	 */
+	@SuppressWarnings("unused")
 	private void setRandomYIn(Tile st) {
 		Random rand = new Random();
 		int randomFrom10To30 = rand.nextInt(TILE_SIZE_CM/2) +randomMaxOffset;
@@ -1004,6 +1006,7 @@ public class VirtualRobot extends AbstractRobot {
 	 * Returns whether or not the sonar is looking in the direction of the current heading.
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	private boolean lookingForwards() {
 		if(Utils.clampAngleDegrees(getRelativeSonarDirection()) != 0){
 //			System.out.println("Not looking forward!");
@@ -1016,6 +1019,7 @@ public class VirtualRobot extends AbstractRobot {
 	 * Returns whether or not the sonar is looking in the opposite direction of the current heading.
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	private boolean lookingBackwards() {
 		if(Utils.clampAngleDegrees(getRelativeSonarDirection()) != 180){
 //			System.out.println("Not looking backwards!");
@@ -1025,6 +1029,7 @@ public class VirtualRobot extends AbstractRobot {
 	}
 	
 	
+	@SuppressWarnings("unused")
 	private float angleToPoseConvention(float angle){
 		if(angle >= 0 && angle <= 180){
 			return 90-angle;
@@ -1071,4 +1076,17 @@ public class VirtualRobot extends AbstractRobot {
 		}
 		return false;
 	}
+	
+	/**
+	 * Modifies the current orientation of the {@link VirtualRobot}
+	 * 
+	 * @param x - the position on the X axis (in mm)
+	 * @param y - the position on the Y axis (in mm)
+	 * @param body - the rotation of the robot (in degrees)
+	 */
+	public void setOrientation(final float x, final float y, final float body) {
+		//	TODO:	Implementation
+		throw new UnsupportedOperationException("Implementation required!");
+	}
+	
 }

@@ -13,6 +13,7 @@ import bluebot.actions.impl.CalibrationAction;
 import bluebot.actions.impl.MazeActionV2;
 import bluebot.io.AbstractConnection;
 import bluebot.io.protocol.Packet;
+import bluebot.sensors.Calibration;
 
 
 
@@ -22,20 +23,29 @@ import bluebot.io.protocol.Packet;
  */
 public class GhostDriver extends DefaultDriver implements Runnable {
 	
-	private GhostAction action;
+//	private GhostAction action;
 	private Thread host;
+	private int id;
 	
 	
 	public GhostDriver(final Robot robot, final int id) {
 		super(robot, new GhostConnection());
-		this.action = new GhostAction(id);
+//		this.action = new GhostAction(id);
+		this.id = id;
+		init();
 	}
 	
 	
 	
+	private final void init() {
+		final Calibration config = getCalibration();
+		config.setLightThresholdBlack(267);
+		config.setLightThresholdWhite(556);
+	}
+	
 	public void run() {
 		try {
-			action.execute(this);
+			new MazeActionV2(id).execute(this);
 		} catch (final InterruptedException e) {
 			e.printStackTrace();
 		} catch (final Exception e) {
@@ -68,6 +78,7 @@ public class GhostDriver extends DefaultDriver implements Runnable {
 	
 	
 	
+	@SuppressWarnings("unused")
 	private static final class GhostAction extends Action {
 		
 		private int id;

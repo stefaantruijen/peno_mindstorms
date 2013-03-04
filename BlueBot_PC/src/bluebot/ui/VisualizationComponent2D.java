@@ -413,6 +413,7 @@ public class VisualizationComponent2D extends VisualizationComponent
 	}
 	
 	private final BufferedImage getBarcodeImage(final int barcode) {
+		/*
 		switch (barcode) {
 			case 5:
 				return loadImageBarcode("turn_left");
@@ -433,6 +434,8 @@ public class VisualizationComponent2D extends VisualizationComponent
 			default:
 				return null;
 		}
+		*/
+		return null;
 	}
 	
 	private static final Color getBorderColor(final Border border) {
@@ -468,6 +471,7 @@ public class VisualizationComponent2D extends VisualizationComponent
 		}
 	}
 	
+	@SuppressWarnings("unused")
 	private static final BufferedImage loadImageBarcode(final String name) {
 		BufferedImage image = IMAGES.get(name);
 		if (image != null) {
@@ -600,6 +604,7 @@ public class VisualizationComponent2D extends VisualizationComponent
 	protected void render(final Graphics2D gfx, final int w, final int h) {
 		drawMaze(gfx, w, h);
 		drawRobot(gfx, w, h);
+		drawGhosts(gfx, w, h);
 	}
 	
 	public void reset() {
