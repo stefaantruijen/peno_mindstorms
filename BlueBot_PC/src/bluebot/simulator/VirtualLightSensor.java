@@ -4,13 +4,11 @@ package bluebot.simulator;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
 
 import bluebot.graph.Border;
 import bluebot.graph.Tile;
+
+
 
 /**
  * Repersents an VirtualLightSensor object. 
@@ -24,6 +22,7 @@ import bluebot.graph.Tile;
 public class VirtualLightSensor {
 	private static final String fileType = "png";
 //	private static final String originalPath = "src\\brown-bg-original."+ fileType;
+	@SuppressWarnings("unused")
 	private static final String destinationPath = "src\\simMap."+ fileType;
 	
 	//Public static Color objects. These can be used to experiment with the colors.

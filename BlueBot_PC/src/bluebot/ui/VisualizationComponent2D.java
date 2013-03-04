@@ -13,6 +13,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -26,6 +27,9 @@ import javax.swing.JPopupMenu;
 import bluebot.graph.Border;
 import bluebot.graph.Tile;
 import bluebot.maze.MazeListener;
+import bluebot.simulator.GhostDriver;
+import bluebot.util.Orientation;
+import bluebot.util.Utils;
 
 
 
@@ -172,6 +176,43 @@ public class VisualizationComponent2D extends VisualizationComponent
 		return new BufferedImage(TILE_RESOLUTION, TILE_RESOLUTION, BufferedImage.TYPE_INT_ARGB);
 	}
 	
+	protected void drawGhost(final Graphics2D gfx, final int w, final int h,
+			final float x, final float y, final float body) {
+		final AffineTransform transform = gfx.getTransform();
+		
+		int dx = Math.round(TILE_RESOLUTION * (x - this.x) / Tile.SIZE);
+		int dy = Math.round(TILE_RESOLUTION * (y - this.y) / Tile.SIZE);
+		gfx.translate(dx, -dy);
+		
+		BufferedImage img;
+		int[] size;
+		
+		//	BODY
+		gfx.rotate(Utils.degrees2radians(body));
+		
+		img = IMAGE_BRICK;
+		size = calculateScaledSize(img, IMAGE_BRICK_SCALE);
+		dx = size[0];
+		dy = size[1];
+		
+		gfx.drawImage(img, -(dx / 2), -(dy / 2), dx, dy, this);
+		
+		gfx.setTransform(transform);
+	}
+	
+	protected void drawGhosts(final Graphics2D gfx, final int w, final int h) {
+		final GhostDriver[] ghosts = this.ghosts;
+		if (ghosts == null) {
+			return;
+		}
+		
+		Orientation o;
+		for (final GhostDriver ghost : ghosts) {
+			o = ghost.getOrientation();
+			drawGhost(gfx, w, h, o.getX(), o.getY(), o.getHeadingBody());
+		}
+	}
+	
 	protected void drawMaze(final Graphics2D gfx, final int w, final int h) {
 		gfx.setBackground(Color.DARK_GRAY);
 		gfx.clearRect(0, 0, w, h);
@@ -240,6 +281,8 @@ public class VisualizationComponent2D extends VisualizationComponent
 	protected void drawRobot(final Graphics2D gfx, final int w, final int h) {
 		gfx.translate(((w / 2) + dx), ((h / 2) + dy));
 		
+		final AffineTransform transform = gfx.getTransform();
+		
 		int dx, dy;
 		BufferedImage img;
 		int[] size;
@@ -269,6 +312,8 @@ public class VisualizationComponent2D extends VisualizationComponent
 		dy = size[1];
 		
 		gfx.drawImage(img, -(dx / 2), -(offset + dy), dx, dy, this);
+		
+		gfx.setTransform(transform);
 	}
 	
 	protected void drawTile(final Graphics2D gfx,
@@ -368,6 +413,7 @@ public class VisualizationComponent2D extends VisualizationComponent
 	}
 	
 	private final BufferedImage getBarcodeImage(final int barcode) {
+		/*
 		switch (barcode) {
 			case 5:
 				return loadImageBarcode("turn_left");
@@ -388,6 +434,8 @@ public class VisualizationComponent2D extends VisualizationComponent
 			default:
 				return null;
 		}
+		*/
+		return null;
 	}
 	
 	private static final Color getBorderColor(final Border border) {
@@ -423,6 +471,7 @@ public class VisualizationComponent2D extends VisualizationComponent
 		}
 	}
 	
+	@SuppressWarnings("unused")
 	private static final BufferedImage loadImageBarcode(final String name) {
 		BufferedImage image = IMAGES.get(name);
 		if (image != null) {
@@ -555,6 +604,7 @@ public class VisualizationComponent2D extends VisualizationComponent
 	protected void render(final Graphics2D gfx, final int w, final int h) {
 		drawMaze(gfx, w, h);
 		drawRobot(gfx, w, h);
+		drawGhosts(gfx, w, h);
 	}
 	
 	public void reset() {

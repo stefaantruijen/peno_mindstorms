@@ -1,11 +1,12 @@
 package bluebot.simulator;
 
+
 import java.util.ArrayList;
-import java.util.Hashtable;
 
 import bluebot.graph.Border;
 import bluebot.graph.Tile;
-import bluebot.util.Utils;
+
+
 /**
  * 
  * @author Dieter

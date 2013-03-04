@@ -13,6 +13,7 @@ import bluebot.util.Utils;
  * @author Dieter
  *
  */
+@SuppressWarnings("unused")
 public class TestVirtualRobot {
 	private static double deltaZERO = 0;
 	private static double deltaNONZERO_SMALL = 1;

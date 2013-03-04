@@ -3,15 +3,6 @@
  */
 package bluebot.simulator;
 
-import static org.junit.Assert.*;
-
-import java.util.Random;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import org.junit.Test;
-
-
-import bluebot.simulator.Action;
 
 
 /**

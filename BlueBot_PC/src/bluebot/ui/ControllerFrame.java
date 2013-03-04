@@ -19,7 +19,11 @@ import javax.swing.JTabbedPane;
 import bluebot.ConfigListener;
 import bluebot.core.Controller;
 import bluebot.core.ControllerListener;
+import bluebot.graph.Border;
+import bluebot.graph.Orientation;
 import bluebot.graph.Tile;
+import bluebot.simulator.GhostDriver;
+import bluebot.simulator.VirtualRobot;
 import bluebot.ui.TerminalComponent.SuggestionProvider;
 import bluebot.ui.util.RabbitListCellRenderer;
 import bluebot.ui.util.RabbitListModel;
@@ -55,6 +59,13 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 			@Override
 			public void windowClosing(final WindowEvent event) {
 				controller.dispose();
+				
+				final GhostDriver[] ghosts = canvas.getGhosts();
+				if (ghosts != null) {
+					for (final GhostDriver ghost : ghosts) {
+						ghost.stopGhost();
+					}
+				}
 			}
 		});
 		
@@ -73,7 +84,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 					controller.doCalibrate();
 				} else if (cmd.equals("maze")) {
 					try {
-						controller.doMaze(Integer.parseInt(command[1]));
+						doMaze(command);
 					} catch (final Exception e) {
 						cli.echo("Syntax:  maze <player-id>");
 					}
@@ -306,6 +317,100 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		tabs.addTab("icon_sensors", createModuleSensors());
 		tabs.addTab("icon_rabbitmq", createModuleRabbitMQ());
 		return tabs;
+	}
+	
+	private final void doMaze(final String[] args) throws NumberFormatException {
+		final int n = (args.length - 2);
+		if (n > 0) {
+			System.out.println("Adding " + n + " ghost drivers ...");
+			//	Ghost drivers will be added
+			final GhostDriver[] ghosts = new GhostDriver[n];
+			final Tile[] tiles = VirtualRobot.maze.clone();
+			
+			int maxX, maxY;
+			VirtualRobot robot;
+			Tile start;
+			for (int i = 0; i < n; i++) {
+				start = null;
+				switch (i % 3) {
+					case 0:
+						//	(0, maxY)
+						maxY = -1;
+						for (final Tile tile : tiles) {
+							if (tile.getY() > maxY) {
+								maxY = tile.getY();
+								start = tile;
+							}
+						}
+						break;
+					case 1:
+						//	(maxX, maxY)
+						maxX = -1;
+						maxY = -1;
+						for (final Tile tile : tiles) {
+							if (tile.getX() > maxX) {
+								maxX = tile.getX();
+								start = tile;
+							}
+							if (tile.getY() > maxY) {
+								maxY = tile.getY();
+								start = tile;
+							}
+						}
+						break;
+					case 2:
+						//	(maxX, 0)
+						maxX = -1;
+						for (final Tile tile : tiles) {
+							if (tile.getX() > maxX) {
+								maxX = tile.getX();
+								start = tile;
+							}
+						}
+						break;
+					default:
+						throw new RuntimeException("Invalid index:  " + i);
+				}
+				robot = new VirtualRobot(tiles, start);
+				
+				final float x = (start.getX() * Tile.SIZE);
+				final float y = (start.getY() * Tile.SIZE);
+				
+				float body = 0F;
+				for (final Orientation dir : Orientation.values()) {
+					if (start.getBorder(dir) == Border.OPEN) {
+						switch (dir) {
+							case NORTH:
+								body = 0F;
+								break;
+							case EAST:
+								body = 90F;
+								break;
+							case SOUTH:
+								body = 180F;
+								break;
+							case WEST:
+								body = 270F;
+								break;
+							default:
+								throw new RuntimeException(
+										"Invalid direction:  " + dir);
+						}
+						break;
+					}
+				}
+				
+				robot.setOrientation(x, y, body);
+				ghosts[i] = new GhostDriver(robot, Integer.parseInt(args[2 + i]));
+			}
+			
+			canvas.setGhosts(ghosts);
+			for (final GhostDriver ghost : ghosts) {
+				ghost.startGhost();
+			}
+		}
+		
+		controller.doMaze(Integer.parseInt(args[1]));
 	}
 	
 	private final void initComponents() {

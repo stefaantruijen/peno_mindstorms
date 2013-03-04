@@ -1,11 +1,8 @@
 package bluebot;
 
 
-import bluebot.actions.Action;
-import bluebot.actions.ActionException;
 import bluebot.actions.ActionQueue;
 import bluebot.actions.impl.CalibrationAction;
-import bluebot.actions.impl.CheckTileAction;
 import bluebot.actions.impl.MazeActionV2;
 import bluebot.actions.impl.MovementAction;
 import bluebot.actions.impl.PolygonAction;
