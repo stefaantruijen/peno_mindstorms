@@ -2,6 +2,6 @@
 
 # 2012-13 - Semester 1 - Demo 3 - Doolhof voor Simulator
 DeadEnd.N
-Straight.N.10
+Straight.S.10
 DeadEnd.S
 
