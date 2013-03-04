@@ -26,11 +26,13 @@ public class RabbitConnection {
 	
 	
 	public RabbitConnection() throws IOException {
-		connect();
+		//	TODO:	Repair
+//		connect();
 	}
 	
 	
 	
+	@SuppressWarnings("unused")
 	private final void connect() throws IOException {
 		connection = MQConnector.createConnection();
 		channel = MQConnector.createChannel(connection);
@@ -72,7 +74,9 @@ public class RabbitConnection {
 	public void registerListener(final String key, final Listener listener)
 			throws IOException {
 		if (channel == null) {
-			throw new IOException("The connection has been closed");
+			// TODO:	Repair
+			return;
+//			throw new IOException("The connection has been closed");
 		}
 		
 		final String queue = channel.queueDeclare().getQueue();
@@ -96,7 +100,9 @@ public class RabbitConnection {
 	
 	public void sendMessage(final String msg, final String key) throws IOException {
 		if (channel == null) {
-			throw new IOException("The connection has been closed");
+			//	TODO:	Repair
+			return;
+//			throw new IOException("The connection has been closed");
 		}
 		
 		channel.basicPublish(Config.EXCHANGE_NAME,

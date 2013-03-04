@@ -17,6 +17,7 @@ import bluebot.ui.rendering.Texture;
  * 
  * @author Ruben Feyen
  */
+@SuppressWarnings("unused")
 public class VisualizationComponent3D extends VisualizationComponent {
 	private static final long serialVersionUID = 1L;
 	

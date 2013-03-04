@@ -65,6 +65,11 @@ public class VirtualRobot extends AbstractRobot {
 	
 	public static final int OBSTRUCTION_THRESHOLD_FRONT_CM = TOUCHSENSOR_FRONT_OFFSET_CM -SONAR_OFFSET_CM;
 	public static final int OBSTRUCTION_THRESHOLD_BACK_CM = TOUCHSENSOR_BACK_OFFSET_CM -SONAR_OFFSET_CM;
+	
+	//	TODO
+	//	This is a very ugly hack for the ghost drivers
+	//	and it should be removed ASAP
+	public static Tile[] maze;
 
 	/**
 	 * Variable holding the travel speed of the robot.
@@ -162,6 +167,7 @@ public class VirtualRobot extends AbstractRobot {
 	 */
 	public VirtualRobot(Tile[] tilesList,Tile startTile){
 		if(isValid(tilesList,startTile)){
+			VirtualRobot.maze = tilesList.clone();
 			this.tilesList= tilesList;
 			//Sets the robot random in the startTile
 			setRandomInStartTile(startTile);

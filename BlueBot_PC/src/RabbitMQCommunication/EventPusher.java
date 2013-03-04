@@ -21,6 +21,7 @@ public class EventPusher {
 	private Channel channel = null;
 	private String teamName = null;
 	private String routingKey = null;
+	@SuppressWarnings("unused")
 	private boolean racing = false;
 	
 //	public static void main(String[] args) {
