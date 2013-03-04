@@ -295,12 +295,17 @@ public class MazeActionV2 extends Action {
 	private void pickUp() throws ActionException, DriverException, InterruptedException {
 		this.resetHead();
 		this.executeWhiteLine();
+		this.getDriver().modifyOrientation();
+		
 		this.turnAround();
+		int speed = this.getDriver().getSpeed();
+		this.getDriver().setSpeed(30);
 		this.getDriver().moveBackward();
 		while(!getDriver().isPressed()){
 			
 		}
 		this.getDriver().stop();
+		this.getDriver().setSpeed(speed);
 		this.executeWhiteLine();
 		this.getDriver().moveForward(200F, true);
 		this.getDriver().sendMQMessage("Got the package, to the choppa!");
@@ -647,7 +652,7 @@ public class MazeActionV2 extends Action {
 	}
 	
 	private final int readSensorUltraSonic() throws InterruptedException {
-		Thread.sleep(200);
+//		Thread.sleep(200);
 		return getDriver().readSensorUltraSonic();
 	}
 	

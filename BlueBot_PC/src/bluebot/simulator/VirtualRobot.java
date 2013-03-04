@@ -957,7 +957,7 @@ public class VirtualRobot extends AbstractRobot {
 	/**
 	 * Sets the x coordinate of the robot random in the first tile (where (0,0) is the middle of the tile).
 	 * 
-	 * Under assumption that there will be an Orientate() call setting it again to (0,0)
+	 * Under assumption that there will be an () call setting it again to (0,0)
 	 * @param st
 	 */
 	@SuppressWarnings("unused")
@@ -1055,6 +1055,8 @@ public class VirtualRobot extends AbstractRobot {
 		double radialHeading = Math.toRadians(heading);
 		int x = calculateOffsettedXByRadialHeading(radialHeading,SONAR_OFFSET_CM);
 		int y = calculateOffsettedYByRadialHeading(radialHeading,SONAR_OFFSET_CM);
+		System.out.println("### x:" + x + ", y:"+y + " , heading:" +heading);
+		System.out.println("VALUE:" + sonar.getSonarValue(x, y, heading));
 		return sonar.getSonarValue(x, y, heading);
 	}
 	
