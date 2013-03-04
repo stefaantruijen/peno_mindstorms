@@ -1,4 +1,4 @@
-8 8
+8 8 
 
 # 2012-13 - Semester 1 - Demo 3 - Doolhof voor Simulator
 DeadEnd.W	T.N		Straight.E.55	T.N		Straight.W.23	T.N		Straight.E.00	Corner.E
