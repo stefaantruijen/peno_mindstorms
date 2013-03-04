@@ -294,7 +294,7 @@ public class VirtualRobot extends AbstractRobot {
 	 * To be used when finishing a move.
 	 * @param absoluteHeading
 	 */
-	private void setInitAbsoluteHeading(float absoluteHeading) {
+	public void setInitAbsoluteHeading(float absoluteHeading) {
 		this.initAbsoluteHeading = absoluteHeading;
 	}
 
