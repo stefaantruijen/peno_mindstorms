@@ -7,6 +7,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
@@ -417,7 +418,12 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 					}
 				}
 				*/
-				ghosts[i] = new GhostDriver(robot, Integer.parseInt(args[2 + i]));
+				try {
+					ghosts[i] = new GhostDriver(robot, Integer.parseInt(args[2 + i]));
+				} catch (final IOException e) {
+					SwingUtils.showWarning(e.getMessage());
+					return;
+				}
 			}
 			
 			canvas.setGhosts(ghosts);
