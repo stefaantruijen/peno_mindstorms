@@ -99,8 +99,8 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 					try {
 						doMaze(command);
 					} catch (final Exception e) {
-						cli.echo("Syntax:  maze <player-id>");
-						e.printStackTrace();
+						cli.echo("Syntax:  maze <player-id,id1,id2,...> <ghost-id>*");
+						e.printStackTrace();	
 					}
 				} else if (cmd.equals("move")) {
 					try {
@@ -334,6 +334,12 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 	}
 	
 	private final void doMaze(final String[] args) throws NumberFormatException {
+		final String[] ids_ = args[1].split(",");
+		final int[] ids = new int[ids_.length];
+		for (int i = 0; i < ids.length; i++) {
+			ids[i] = Integer.parseInt(ids_[i]);
+		}
+		
 		final int n = (args.length - 2);
 		if (n > 0) {
 			System.out.println("Adding " + n + " ghost drivers ...");
@@ -419,7 +425,8 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 				}
 				*/
 				try {
-					ghosts[i] = new GhostDriver(robot, Integer.parseInt(args[2 + i]));
+					ghosts[i] = new GhostDriver(robot, ids,
+							Integer.parseInt(args[2 + i]));
 				} catch (final IOException e) {
 					SwingUtils.showWarning(e.getMessage());
 					return;
@@ -432,7 +439,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 			}
 		}
 		
-		controller.doMaze(Integer.parseInt(args[1]));
+		controller.doMaze(ids, ids[0]);
 	}
 	
 	private final void initComponents() {

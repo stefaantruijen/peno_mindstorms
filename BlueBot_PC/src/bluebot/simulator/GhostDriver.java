@@ -19,16 +19,17 @@ import bluebot.sensors.Calibration;
  */
 public class GhostDriver extends DefaultDriver implements Runnable {
 	
-//	private GhostAction action;
 	private Thread host;
 	private int id;
+	private int[] ids;
 	private RabbitConnection rabbit;
 	
 	
-	public GhostDriver(final Robot robot, final int id) throws IOException {
+	public GhostDriver(final Robot robot, final int[] ids, final int id)
+			throws IOException {
 		super(robot, new GhostConnection());
-//		this.action = new GhostAction(id);
 		this.id = id;
+		this.ids = ids.clone();
 		this.rabbit = new RabbitConnection();
 		init();
 	}
@@ -60,7 +61,7 @@ public class GhostDriver extends DefaultDriver implements Runnable {
 	
 	public void run() {
 		try {
-			new MazeActionV2(id).execute(this);
+			new MazeActionV2(ids, id).execute(this);
 		} catch (final InterruptedException e) {
 			e.printStackTrace();
 		} catch (final Exception e) {
