@@ -62,7 +62,7 @@ public class DefaultDriver implements Driver {
 	 * 
 	 * @return a {@link Robot} object
 	 */
-	private final Robot getRobot() {
+	protected Robot getRobot() {
 		return robot;
 	}
 	

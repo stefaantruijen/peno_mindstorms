@@ -71,6 +71,12 @@ public abstract class VisualizationComponent
 	public abstract void reset();
 	
 	public void setGhosts(final GhostDriver[] ghosts) {
+		final GhostDriver[] old = this.ghosts;
+		if (old != null) {
+			for (final GhostDriver ghost : old) {
+				ghost.stopGhost();
+			}
+		}
 		this.ghosts = ((ghosts == null) ? null : ghosts.clone());
 	}
 	

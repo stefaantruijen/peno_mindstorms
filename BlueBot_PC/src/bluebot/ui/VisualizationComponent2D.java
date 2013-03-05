@@ -28,7 +28,6 @@ import bluebot.graph.Border;
 import bluebot.graph.Tile;
 import bluebot.maze.MazeListener;
 import bluebot.simulator.GhostDriver;
-import bluebot.util.Orientation;
 import bluebot.util.Utils;
 
 
@@ -178,10 +177,12 @@ public class VisualizationComponent2D extends VisualizationComponent
 	
 	protected void drawGhost(final Graphics2D gfx, final int w, final int h,
 			final float x, final float y, final float body) {
+//		System.out.println("Ghost at (" + x + ", " + y + ") # " + body);
 		final AffineTransform transform = gfx.getTransform();
 		
-		int dx = Math.round(TILE_RESOLUTION * (x - this.x) / Tile.SIZE);
-		int dy = Math.round(TILE_RESOLUTION * (y - this.y) / Tile.SIZE);
+		final int resolution = getTileResolution();
+		int dx = Math.round(resolution * (x - this.x) / Tile.SIZE);
+		int dy = Math.round(resolution * (y - this.y) / Tile.SIZE);
 		gfx.translate(dx, -dy);
 		
 		BufferedImage img;
@@ -197,19 +198,19 @@ public class VisualizationComponent2D extends VisualizationComponent
 		
 		gfx.drawImage(img, -(dx / 2), -(dy / 2), dx, dy, this);
 		
+		gfx.setColor(new Color(0x33FF0000, true));
+		gfx.fillRect((1 - (dx / 2)), (1 - (dy / 2)), (dx - 2), (dy - 2));
+		
 		gfx.setTransform(transform);
 	}
 	
 	protected void drawGhosts(final Graphics2D gfx, final int w, final int h) {
 		final GhostDriver[] ghosts = this.ghosts;
-		if (ghosts == null) {
-			return;
-		}
-		
-		Orientation o;
-		for (final GhostDriver ghost : ghosts) {
-			o = ghost.getOrientation();
-			drawGhost(gfx, w, h, o.getX(), o.getY(), o.getHeadingBody());
+		if (ghosts != null) {
+			for (final GhostDriver ghost : ghosts) {
+				drawGhost(gfx, w, h,
+						ghost.getX(), ghost.getY(), ghost.getHeading());
+			}
 		}
 	}
 	
@@ -276,11 +277,12 @@ public class VisualizationComponent2D extends VisualizationComponent
 					((h / 2) - ay + this.dy),
 					dx, dy, this);
 		}
+		
+		gfx.translate(((w / 2) + dx), ((h / 2) + dy));
 	}
 	
 	protected void drawRobot(final Graphics2D gfx, final int w, final int h) {
-		gfx.translate(((w / 2) + dx), ((h / 2) + dy));
-		
+//		System.out.println("Player at (" + x + ", " + y + ") # " + body);
 		final AffineTransform transform = gfx.getTransform();
 		
 		int dx, dy;
@@ -296,6 +298,9 @@ public class VisualizationComponent2D extends VisualizationComponent
 		dy = size[1];
 		
 		gfx.drawImage(img, -(dx / 2), -(dy / 2), dx, dy, this);
+		
+		gfx.setColor(new Color(0x330000FF, true));
+		gfx.fillRect((1 - (dx / 2)), (1 - (dy / 2)), (dx - 2), (dy - 2));
 		
 		//	HEAD
 		gfx.rotate(head);
@@ -603,12 +608,13 @@ public class VisualizationComponent2D extends VisualizationComponent
 	
 	protected void render(final Graphics2D gfx, final int w, final int h) {
 		drawMaze(gfx, w, h);
-		drawRobot(gfx, w, h);
 		drawGhosts(gfx, w, h);
+		drawRobot(gfx, w, h);
 	}
 	
 	public void reset() {
 		synchronized (lock) {
+			setGhosts(null);
 			maze = null;
 		}
 	}

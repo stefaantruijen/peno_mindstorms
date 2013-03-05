@@ -37,6 +37,23 @@ public class GhostDriver extends DefaultDriver implements Runnable {
 	
 	
 	
+	public float getHeading() {
+		return getRobot().getHeading();
+	}
+	
+	@Override
+	protected VirtualRobot getRobot() {
+		return (VirtualRobot)super.getRobot();
+	}
+	
+	public float getX() {
+		return (10F * (getRobot().getImgX() - 20));
+	}
+	
+	public float getY() {
+		return (10F * (getRobot().getImgY() - 20));
+	}
+	
 	private final void init() {
 		final Calibration config = getCalibration();
 		config.setLightThresholdBlack(267);
@@ -45,7 +62,9 @@ public class GhostDriver extends DefaultDriver implements Runnable {
 	
 	public void run() {
 		try {
+			System.out.println("Ghost starting maze action ...");
 			new MazeActionV2(id).execute(this);
+			System.out.println("Ghost finished maze action!");
 		} catch (final InterruptedException e) {
 			e.printStackTrace();
 		} catch (final Exception e) {

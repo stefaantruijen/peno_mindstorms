@@ -19,8 +19,6 @@ import javax.swing.JTabbedPane;
 import bluebot.ConfigListener;
 import bluebot.core.Controller;
 import bluebot.core.ControllerListener;
-import bluebot.graph.Border;
-import bluebot.graph.Orientation;
 import bluebot.graph.Tile;
 import bluebot.simulator.GhostDriver;
 import bluebot.simulator.VirtualRobot;
@@ -87,6 +85,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 						doMaze(command);
 					} catch (final Exception e) {
 						cli.echo("Syntax:  maze <player-id>");
+						e.printStackTrace();
 					}
 				} else if (cmd.equals("move")) {
 					try {
@@ -332,12 +331,13 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 			Tile start;
 			for (int i = 0; i < n; i++) {
 				start = null;
+				System.out.printf("%d %% 3 = %d%n", i, (i % 3));
 				switch (i % 3) {
 					case 0:
 						//	(0, maxY)
 						maxY = -1;
 						for (final Tile tile : tiles) {
-							if (tile.getY() > maxY) {
+							if ((tile.getX() == 0) && (tile.getY() > maxY)) {
 								maxY = tile.getY();
 								start = tile;
 							}
@@ -362,7 +362,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 						//	(maxX, 0)
 						maxX = -1;
 						for (final Tile tile : tiles) {
-							if (tile.getX() > maxX) {
+							if ((tile.getY() == 0) && (tile.getX() > maxX)) {
 								maxX = tile.getX();
 								start = tile;
 							}
@@ -371,8 +371,11 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 					default:
 						throw new RuntimeException("Invalid index:  " + i);
 				}
+				System.out.println("Creating ghost on " + start);
 				robot = new VirtualRobot(tiles, start);
+				robot.setSpeed(100);
 				
+				/*
 				final float x = (start.getX() * Tile.SIZE);
 				final float y = (start.getY() * Tile.SIZE);
 				
@@ -399,8 +402,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 						break;
 					}
 				}
-				
-				robot.setOrientation(x, y, body);
+				*/
 				ghosts[i] = new GhostDriver(robot, Integer.parseInt(args[2 + i]));
 			}
 			
