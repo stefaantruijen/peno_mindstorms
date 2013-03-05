@@ -43,6 +43,7 @@ public class MazeActionV2 extends Action {
 	
 	private final Tile createItem(Tile tile, final Orientation dir, final int id) {
 		tile = maze.addTile(tile.getX(), tile.getY(), dir);
+		
 		tile.setAllBordersOpen(false);
 		switch (dir) {
 			case NORTH:
@@ -60,8 +61,32 @@ public class MazeActionV2 extends Action {
 			default:
 				throw new IllegalArgumentException("Invalid direction:  " + dir);
 		}
+		
 		tile.setItemId(id);
 		getDriver().sendTile(tile);
+		
+		final int x = tile.getX();
+		final int y = tile.getY();
+		if (dir != Orientation.NORTH) {
+			final Tile neighbor = maze.addTile(x, y - 1);
+			neighbor.setBorderNorth(Border.CLOSED);
+			getDriver().sendTile(neighbor);
+		}
+		if (dir != Orientation.EAST) {
+			final Tile neighbor = maze.addTile(x - 1, y);
+			neighbor.setBorderEast(Border.CLOSED);
+			getDriver().sendTile(neighbor);
+		}
+		if (dir != Orientation.SOUTH) {
+			final Tile neighbor = maze.addTile(x, y + 1);
+			neighbor.setBorderSouth(Border.CLOSED);
+			getDriver().sendTile(neighbor);
+		}
+		if (dir != Orientation.WEST) {
+			final Tile neighbor = maze.addTile(x + 1, y);
+			neighbor.setBorderWest(Border.CLOSED);
+			getDriver().sendTile(neighbor);
+		}
 		return tile;
 	}
 	
