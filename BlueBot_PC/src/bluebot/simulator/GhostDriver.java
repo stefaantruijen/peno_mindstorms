@@ -4,12 +4,7 @@ package bluebot.simulator;
 import java.io.IOException;
 
 import bluebot.DefaultDriver;
-import bluebot.Driver;
-import bluebot.DriverException;
 import bluebot.Robot;
-import bluebot.actions.Action;
-import bluebot.actions.ActionException;
-import bluebot.actions.impl.CalibrationAction;
 import bluebot.actions.impl.MazeActionV2;
 import bluebot.io.AbstractConnection;
 import bluebot.io.protocol.Packet;
@@ -62,14 +57,20 @@ public class GhostDriver extends DefaultDriver implements Runnable {
 	
 	public void run() {
 		try {
-			System.out.println("Ghost starting maze action ...");
 			new MazeActionV2(id).execute(this);
-			System.out.println("Ghost finished maze action!");
 		} catch (final InterruptedException e) {
 			e.printStackTrace();
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	@Override
+	public void sendMQMessage(final String msg) {
+		//	TODO:
+		//	Send the message somehow?
+		//	Otherwise ghost robots are unable to provide
+		//	any RabbitMQ communication
 	}
 	
 	public synchronized void startGhost() {
@@ -92,34 +93,6 @@ public class GhostDriver extends DefaultDriver implements Runnable {
 	
 	
 	
-	
-	
-	
-	
-	
-	@SuppressWarnings("unused")
-	private static final class GhostAction extends Action {
-		
-		private int id;
-		
-		
-		public GhostAction(final int id) {
-			this.id = id;
-		}
-		
-		
-		
-		protected void execute()
-				throws ActionException, DriverException, InterruptedException {
-			final Driver driver = getDriver();
-			new CalibrationAction().execute(driver);
-			driver.moveBackward(400F, true);
-			executeWhiteLine();
-			driver.moveBackward(200F, true);
-			new MazeActionV2(id).execute(driver);
-		}
-		
-	}
 	
 	
 	

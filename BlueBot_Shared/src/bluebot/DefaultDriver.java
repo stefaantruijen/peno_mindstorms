@@ -193,10 +193,6 @@ public class DefaultDriver implements Driver {
 		getTranslator().sendMessage(msg, title);
 	}
 	
-	public void sendMessageMQ(final String key, final String msg) {
-		sendDebug("MQ[" + key + "]  " + msg);
-	}
-	
 	/**
 	 * Sends an MQmessage to the rabbitMQ.
 	 * 

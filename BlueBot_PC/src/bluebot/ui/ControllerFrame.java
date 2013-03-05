@@ -38,6 +38,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 	private BarcodeComponent barcode;
 	private VisualizationComponent canvas;
 	private Controller controller;
+	private Renderer renderer;
 	
 	
 	public ControllerFrame(final Controller controller) {
@@ -64,6 +65,19 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 						ghost.stopGhost();
 					}
 				}
+				
+				if (renderer != null) {
+					renderer.kill();
+					renderer = null;
+				}
+			}
+			
+			@Override
+			public void windowOpened(final WindowEvent event) {
+				renderer = new Renderer();
+				final Thread thread = new Thread(renderer);
+				thread.setDaemon(true);
+				thread.start();
 			}
 		});
 		
@@ -454,6 +468,40 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 			JOptionPane.showMessageDialog(this, msg, title,
 					JOptionPane.INFORMATION_MESSAGE);
 		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	private final class Renderer implements Runnable {
+		
+		private boolean rendering = true;
+		
+		
+		
+		public void kill() {
+			rendering = false;
+		}
+		
+		public void run() {
+			while (rendering) {
+				try {
+					Thread.sleep(80);
+					if (isVisible()) {
+						canvas.repaint(0L);
+					}
+				} catch (final InterruptedException e) {
+					kill();
+				}
+			}
+		}
+		
 	}
 	
 }
