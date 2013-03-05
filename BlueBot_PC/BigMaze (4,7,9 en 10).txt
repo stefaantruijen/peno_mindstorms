@@ -1,0 +1,14 @@
+10 12
+
+DeadEnd.N	Corner.N	Straight.E	T.N		Straight.E	Corner.E	Corner.N	Straight.E	T.N		Corner.E     
+Straight.N	DeadEnd.S	DeadEnd.W	Corner.S	DeadEnd.W	T.S		Corner.S	DeadEnd.N	Corner.W	T.E          
+T.W		Straight.E.09	DeadEnd.E	DeadEnd.N	Corner.N	Straight.E	T.N		T.S		Corner.E	Straight.N   
+T.W		Straight.E	Straight.E	T.S		T.S		Straight.E	Cross		T.N		T.S		Corner.S     
+DeadEnd.S	DeadEnd.N	Corner.N	Straight.E	Straight.E	Corner.E	Straight.N	Corner.W	T.N		Corner.E     
+DeadEnd.N	Straight.N.04	DeadEnd.S	Corner.N	Corner.E	DeadEnd.S	T.W		T.N		Cross		Corner.S     
+Corner.W	T.S		Straight.E	T.E		Corner.W	T.N		T.E		Corner.W	Corner.S	DeadEnd.N    
+Corner.N	Corner.E	Corner.N	Cross		DeadEnd.E	Corner.W	T.S		Straight.E	Straight.E	Corner.S     
+Straight.N	Straight.N	Straight.N	Corner.W	Corner.E	Corner.N	Corner.E	Corner.N	Corner.E	DeadEnd.N    
+T.W		Corner.S	T.W		Corner.E	T.W		T.E		Corner.W	T.S		T.E		Straight.N.07
+Straight.N	Corner.N	T.S		Corner.S	T.W		T.S		T.N		Corner.E	DeadEnd.S	Straight.N   
+Corner.W	T.S		Straight.E.10	DeadEnd.E	Corner.W	Straight.E	Corner.S	Corner.W	Straight.E	Corner.S     
