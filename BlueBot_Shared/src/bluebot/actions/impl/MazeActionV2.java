@@ -28,13 +28,15 @@ public class MazeActionV2 extends Action {
 	private Maze maze;
 	private Movement moves;
 	private int playerId;
+	private int[] playerIds;
 //	private boolean scan;
 //	private BarcodeScanner scanner;
 	private int twist;
 	
 	
-	public MazeActionV2(final int playerId) {
+	public MazeActionV2(final int[] playerIds, final int playerId) {
 		this.playerId = playerId;
+		this.playerIds = playerIds.clone();
 	}
 	
 	
@@ -286,8 +288,13 @@ public class MazeActionV2 extends Action {
 	}
 	
 	private boolean barcodeCanBePlayerId(int possiblePlayerId) {
-		
-		return (possiblePlayerId >= 7 && possiblePlayerId <= 10);
+		for (final int playerId : playerIds) {
+			if (possiblePlayerId == playerId) {
+				return true;
+			}
+		}
+		return false;
+//		return (possiblePlayerId >= 7 && possiblePlayerId <= 10);
 	}
 
 

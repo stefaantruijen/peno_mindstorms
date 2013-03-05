@@ -31,7 +31,7 @@ public interface Controller extends EventDispatcher<ControllerListener> {
 	
 	public void doCalibrate();
 	
-	public void doMaze(int pathfinder);
+	public void doMaze(int[] playerIds, int playerId);
 	
 	public void doPolygon(int corners, float length);
 	

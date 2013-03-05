@@ -53,12 +53,13 @@ public class PacketFactory {
 	/**
 	 * Creates a command packet for the maze algorithm
 	 * 
+	 * @param playerIds - an array containing all possible player IDs
 	 * @param playerId - an <code>int</code> representing the player ID
 	 * 
 	 * @return a {@link Packet} object
 	 */
-	public Packet createCommandMaze(final int playerId) {
-		return new MazePacket(playerId);
+	public Packet createCommandMaze(final int[] playerIds, final int playerId) {
+		return new MazePacket(playerIds, playerId);
 	}
 	
 	/**

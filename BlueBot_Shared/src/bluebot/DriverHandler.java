@@ -99,7 +99,7 @@ public class DriverHandler implements PacketHandler {
 	
 	private final void handlePacketMaze(final MazePacket packet) {
 //		queue.queue(new MazeAction());
-		queue.queue(new MazeActionV2(packet.getPlayerId()));
+		queue.queue(new MazeActionV2(packet.getPlayerIds(), packet.getPlayerId()));
 //		queue.queue(new TestAction());
 	}
 	
