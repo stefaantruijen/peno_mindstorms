@@ -90,7 +90,7 @@ public class VisualizationComponent2D extends VisualizationComponent
 			final int zoom = Integer.parseInt(command.substring(5));
 			this.zoom = ((zoom - 100) / 25);
 		}
-		repaint(0L);
+//		repaint(0L);
 	}
 	
 	private static final int calculatePreferredSize() {
@@ -587,7 +587,7 @@ public class VisualizationComponent2D extends VisualizationComponent
 		drawTile(gfx, x, y, tile);
 		gfx.dispose();
 		
-		repaint(0L);
+//		repaint(0L);
 	}
 	
 	@Override

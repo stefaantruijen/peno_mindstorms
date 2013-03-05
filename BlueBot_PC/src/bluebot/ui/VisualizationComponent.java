@@ -58,7 +58,7 @@ public abstract class VisualizationComponent
 		}
 		
 		if (repaint) {
-			repaint(0L);
+//			repaint(0L);
 		}
 	}
 	
