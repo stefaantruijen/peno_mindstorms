@@ -1055,8 +1055,8 @@ public class VirtualRobot extends AbstractRobot {
 		double radialHeading = Math.toRadians(heading);
 		int x = calculateOffsettedXByRadialHeading(radialHeading,SONAR_OFFSET_CM);
 		int y = calculateOffsettedYByRadialHeading(radialHeading,SONAR_OFFSET_CM);
-		System.out.println("### x:" + x + ", y:"+y + " , heading:" +heading);
-		System.out.println("VALUE:" + sonar.getSonarValue(x, y, heading));
+//		System.out.println("### x:" + x + ", y:"+y + " , heading:" +heading);
+//		System.out.println("VALUE:" + sonar.getSonarValue(x, y, heading));
 		return sonar.getSonarValue(x, y, heading);
 	}
 	
