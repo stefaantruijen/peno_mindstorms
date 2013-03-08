@@ -326,21 +326,28 @@ public class MazeActionV2 extends Action {
 
 	private void pickUp() throws ActionException, DriverException, InterruptedException {
 		this.resetHead();
-		this.executeWhiteLine();
-		this.getDriver().modifyOrientation();
+		this.executePickUp();
+		//because the robot is turned aroud, the moves.turns added with 2
+		moves.turns += 2;
 		
-		this.turnAround();
-		int speed = this.getDriver().getSpeed();
-		this.getDriver().setSpeed(30);
-		this.getDriver().moveBackward();
-		while(!getDriver().isPressed()){
-			
-		}
-		this.getDriver().stop();
-		this.getDriver().setSpeed(speed);
-		this.executeWhiteLine();
-		this.getDriver().moveForward(200F, true);
-		this.getDriver().sendMQMessage("Got the package, to the choppa!");
+//		this.executeWhiteLine();
+//		this.getDriver().modifyOrientation();
+//		
+//		
+//		int speed = this.getDriver().getSpeed();
+//		this.getDriver().setSpeed(30);
+//		this.getDriver().moveForward();
+//		while(!getDriver().isPressed()){
+//			
+//		}
+//		this.getDriver().stop();
+//		//robot rijdt naar achter zodat hij vrij 180 graden kan draaien
+//		this.getDriver().moveBackward(100F,true);
+//		this.turnAround();
+//		this.executeWhiteLine();
+//		this.getDriver().setSpeed(speed);
+//		this.getDriver().moveForward(200F, true);
+//		this.getDriver().sendMQMessage("Got the package, to the choppa!");
 		
 	}
 

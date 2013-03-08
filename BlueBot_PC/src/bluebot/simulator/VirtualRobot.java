@@ -1072,7 +1072,7 @@ public class VirtualRobot extends AbstractRobot {
 
 	@Override
 	public synchronized boolean isPressed() {
-		int back = this.checkBackClearDistance();
+		int back = this.checkFrontClearDistance();
 		if(back<10){
 			return true;
 		}

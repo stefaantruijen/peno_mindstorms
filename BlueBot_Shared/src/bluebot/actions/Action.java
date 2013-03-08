@@ -3,6 +3,7 @@ package bluebot.actions;
 
 import bluebot.Driver;
 import bluebot.DriverException;
+import bluebot.actions.impl.PickUpAction;
 import bluebot.actions.impl.WhiteLineAction;
 import bluebot.sensors.Brightness;
 import bluebot.sensors.CalibrationException;
@@ -68,6 +69,16 @@ public abstract class Action {
 	protected void executeWhiteLine()
 			throws ActionException, DriverException, InterruptedException {
 		new WhiteLineAction().execute(getDriver());
+	}
+	
+	/**
+	 * Executes the PickUp algorithm
+	 * After the PickUp algorithm, the robot is turned around and ends on the place where
+	 * he started.
+	 */
+	protected void executePickUp()
+			throws ActionException, DriverException, InterruptedException {
+		new PickUpAction().execute(getDriver());
 	}
 	
 	/**

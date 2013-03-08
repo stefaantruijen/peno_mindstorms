@@ -11,25 +11,25 @@ public class PickUpAction extends Action{
 	@Override
 	protected void execute() throws ActionException, DriverException,
 			InterruptedException {
-		this.getDriver().turnRight(180, true);
-		this.getDriver().moveForward(50F, true);
-		white.execute(getDriver());
-		this.getDriver().moveBackward();
-		System.out.println("moving backwards");
-//		boolean press = false;
-		while(this.getDriver().isMoving() && !this.getDriver().isPressed()){
-			System.out.println("I am moving & not pressed");
-				//this.getDriver().sendMessageMQ("Object gevonden!");
-		}
-		System.out.println("I got pressed");
-		this.getDriver().stop();
-		System.out.println("I stopped");
+		//this.resetHead();
+		this.executeWhiteLine();
+		this.getDriver().modifyOrientation();
 		
-		System.out.println("ended while, starting white line");
-		white.execute(getDriver());
-		System.out.println("ended white line");
+		
+		int speed = this.getDriver().getSpeed();
+		this.getDriver().setSpeed(30);
+		this.getDriver().moveForward();
+		while(!getDriver().isPressed()){
+			
+		}
+		this.getDriver().stop();
+		//robot rijdt naar achter zodat hij vrij 180 graden kan draaien
+		this.getDriver().moveBackward(100F,true);
+		this.getDriver().turnLeft(180, true);
+		this.executeWhiteLine();
+		this.getDriver().setSpeed(speed);
 		this.getDriver().moveForward(200F, true);
-		System.out.println("done");
+		this.getDriver().sendMQMessage("Got the package, to the choppa!");
 	}
 
 }
