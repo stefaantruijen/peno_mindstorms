@@ -45,7 +45,7 @@ public class WhiteLineAction extends Action {
 			
 			// 7 cm (sensor to wheels) forward
 			getDriver().setSpeed(100);
-			getDriver().moveForward(70, true);
+			getDriver().moveForward(42, true);
 			
 			if (isAborted()) {
 				return;
@@ -84,7 +84,8 @@ public class WhiteLineAction extends Action {
 			
 			// turn right until half of totalArc 
 			getDriver().turnRight();
-			while(!isAborted() && (Math.abs(getDriver().getAngleIncrement()) <= ((totalArc / 2) + 1)));
+			//while(!isAborted() && (Math.abs(getDriver().getAngleIncrement()) <= ((totalArc / 2) + 1)));
+			while(!isAborted() && (Math.abs(getDriver().getAngleIncrement()) <= ((totalArc / 2))));
 			getDriver().stop();
 			
 		} else{
