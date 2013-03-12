@@ -115,7 +115,7 @@ public class ReadBarcodeAction extends Action {
 		getDriver().moveBackward();
 		waitForLightSensor(Brightness.GRAY, true);
 		getDriver().stop();
-		getDriver().moveForward(8 + Robot.OFFSET_SENSOR_LIGHT, true);
+		getDriver().moveForward(80 + Robot.OFFSET_SENSOR_LIGHT, true);
 	}
 
 	private float getPosition() {
