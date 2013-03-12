@@ -1000,7 +1000,7 @@ public class MazeActionV2 extends Action {
 			if (isTranslated()) {
 				// The error on the rotation is too big
 				// Execute white-line to correct this
-				getDriver().moveForward(40F, true);
+				getDriver().moveForward(70F, true);
 				resetHead();
 				executeWhiteLine();
 //				if (scan) {
