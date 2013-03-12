@@ -86,5 +86,11 @@ public interface Robot extends Mobile {
 	 * @return
 	 */
 	public boolean isPressed();
+
+	/**
+	 * True if infrared signal
+	 * @return
+	 */
+	public boolean seeInfrared();
 	
 }

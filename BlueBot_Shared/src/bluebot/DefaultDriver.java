@@ -381,5 +381,10 @@ public class DefaultDriver implements Driver {
 	public boolean isPressed() {
 		return getRobot().isPressed();
 	}
+	@Override
+	public boolean seeInfrared() {
+		
+		return getRobot().seeInfrared();
+	}
 	
 }

@@ -144,5 +144,11 @@ public interface Driver extends Mobile {
 	 * @param msg - the message
 	 */
 	public void sendMQMessage(String string);
+
+	/**
+	 * true if infrared object in range
+	 * @return
+	 */
+	public boolean seeInfrared();
 	
 }

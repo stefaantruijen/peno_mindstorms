@@ -1,11 +1,13 @@
 package bluebot.core;
 
 
+import lejos.nxt.I2CSensor;
 import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
 import lejos.nxt.TouchSensor;
 import lejos.nxt.UltrasonicSensor;
+import lejos.nxt.addon.IRSeeker;
 import lejos.robotics.localization.OdometryPoseProvider;
 import lejos.robotics.navigation.DifferentialPilot;
 import lejos.robotics.navigation.MoveProvider;
@@ -42,17 +44,19 @@ public class PhysicalRobot extends AbstractRobot {
 	private UltrasonicSensor sensorUltraSonic;
 	private TouchSensor touchSensor;
 	private Tracker tracker;
+	private IRSeeker infraredSensor;
 	
 	
 	public PhysicalRobot() {
-		this(createPilot(), SensorPort.S1, SensorPort.S2, SensorPort.S3);
+		this(createPilot(), SensorPort.S1, SensorPort.S2, SensorPort.S3, SensorPort.S4);
 	}
-	public PhysicalRobot(final DifferentialPilot pilot, final SensorPort light, final SensorPort ultraSonic, final SensorPort touch) {
+	public PhysicalRobot(final DifferentialPilot pilot, final SensorPort light, final SensorPort ultraSonic, final SensorPort touch, final SensorPort infra) {
 		this.pilot = pilot;
 		this.sensorLight = new LightSensor(light);
 		this.sensorUltraSonic = createSensorUltraSonic(ultraSonic);
 		this.tracker = new Tracker(pilot, head);
 		this.touchSensor = new TouchSensor(touch);
+		this.infraredSensor = new IRSeeker(infra);
 		
 		resetOrientation();
 	}
@@ -256,6 +260,13 @@ public class PhysicalRobot extends AbstractRobot {
 	@Override
 	public boolean isPressed() {
 		return touchSensor.isPressed();
+	}
+	@Override
+	public boolean seeInfrared() {
+		if(this.infraredSensor.getDirection() > 2 && this.infraredSensor.getDirection() <8){
+			return true;
+		}
+		return false;
 	}
 	
 }

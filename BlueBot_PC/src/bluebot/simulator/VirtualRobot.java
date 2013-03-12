@@ -1090,5 +1090,11 @@ public class VirtualRobot extends AbstractRobot {
 		//	TODO:	Implementation
 		throw new UnsupportedOperationException("Implementation required!");
 	}
+
+	@Override
+	public boolean seeInfrared() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 }
