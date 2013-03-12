@@ -80,6 +80,10 @@ public abstract class AbstractController
 		maze.fireMotion(x, y, body, head);
 	}
 	
+	protected void fireSensorInfrared(final int value) {
+		sensors.fireInfrared(value);
+	}
+	
 	protected void fireSensorLight(final int value) {
 		sensors.fireLight(value);
 	}
@@ -186,6 +190,12 @@ public abstract class AbstractController
 	
 	
 	private static final class SensorDispatcher extends AbstractEventDispatcher<SensorListener> {
+		
+		public void fireInfrared(final int value) {
+			for (final SensorListener listener : getListeners()) {
+				listener.onSensorValueInfrared(value);
+			}
+		}
 		
 		public void fireLight(final int value) {
 			for (final SensorListener listener : getListeners()) {

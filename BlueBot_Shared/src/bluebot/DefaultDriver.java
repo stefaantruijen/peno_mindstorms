@@ -220,6 +220,15 @@ public class DefaultDriver implements Driver {
 	}
 	
 	/**
+	 * Sends a value from the infrared sensor
+	 * 
+	 * @param value - a sensor value
+	 */
+	protected void sendSensorInfrared(final int value) {
+		sendSensor(value, SensorType.INFRARED);
+	}
+	
+	/**
 	 * Sends the current value of the light sensor
 	 */
 	protected void sendSensorLight() {
@@ -367,6 +376,7 @@ public class DefaultDriver implements Driver {
 			}
 			
 			try {
+				sendSensorInfrared(getInfraredDirection());
 				sendSensorLight(readSensorLightValue());
 				sendSensorUltraSonic(readSensorUltraSonic());
 			} catch (final RuntimeException e) {

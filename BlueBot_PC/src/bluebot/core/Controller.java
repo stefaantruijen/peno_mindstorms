@@ -1,6 +1,8 @@
 package bluebot.core;
 
 
+import java.io.IOException;
+
 import bluebot.ConfigListener;
 import bluebot.io.ConnectionListener;
 import bluebot.io.MessageListener;
@@ -30,6 +32,9 @@ public interface Controller extends EventDispatcher<ControllerListener> {
 	public void dispose();
 	
 	public void doCalibrate();
+	
+	public void doGame(String gameId, String playerId)
+			throws GameException, IOException;
 	
 	public void doMaze(int[] playerIds, int playerId);
 	

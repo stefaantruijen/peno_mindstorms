@@ -21,6 +21,7 @@ import bluebot.ConfigListener;
 import bluebot.core.Controller;
 import bluebot.core.ControllerListener;
 import bluebot.graph.Tile;
+import bluebot.sensors.SensorListener;
 import bluebot.simulator.GhostDriver;
 import bluebot.simulator.VirtualRobot;
 import bluebot.ui.TerminalComponent.SuggestionProvider;
@@ -95,6 +96,13 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 					// ignored
 				} else if (cmd.equals("calibrate")) {
 					controller.doCalibrate();
+				} else if (cmd.equals("game")) {
+					try {
+						doGame(command);
+					} catch (final Exception e) {
+						cli.echo("Syntax:  game <game-id> <player-id>");
+						e.printStackTrace();
+					}
 				} else if (cmd.equals("maze")) {
 					try {
 						doMaze(command);
@@ -259,6 +267,20 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 				speed.setValue(percentage);
 			}
 		});
+		controller.addListener(new SensorListener() {
+			public void onSensorValueInfrared(final int value) {
+				System.out.println("INFRARED:  " + value);
+				speed.setInfrared(value);
+			}
+			
+			public void onSensorValueLight(final int value) {
+				//	ignored
+			}
+			
+			public void onSensorValueUltraSonic(final int value) {
+				//	ignored
+			}
+		});
 		
 		joystick.requestFocusInWindow();
 		ControllerFrame.this.setFocusTraversalPolicy(
@@ -331,6 +353,10 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		tabs.addTab("icon_sensors", createModuleSensors());
 		tabs.addTab("icon_rabbitmq", createModuleRabbitMQ());
 		return tabs;
+	}
+	
+	private final void doGame(final String[] args) {
+		
 	}
 	
 	private final void doMaze(final String[] args) throws NumberFormatException {

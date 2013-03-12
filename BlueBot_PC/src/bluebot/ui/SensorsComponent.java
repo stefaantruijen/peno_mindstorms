@@ -86,6 +86,10 @@ public class SensorsComponent extends JPanel
 		add(labelLight, gbc);
 	}
 	
+	public void onSensorValueInfrared(final int value) {
+		//	ignored
+	}
+	
 	public void onSensorValueLight(final int value) {
 		graphLight.addData(value);
 		

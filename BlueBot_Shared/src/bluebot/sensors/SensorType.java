@@ -8,6 +8,7 @@ package bluebot.sensors;
  * @author Ruben Feyen
  */
 public enum SensorType {
+	INFRARED,
 	LIGHT,
 	ULTRA_SONIC;
 }

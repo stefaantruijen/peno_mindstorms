@@ -15,6 +15,15 @@ import bluebot.Robot;
 public interface SensorListener extends EventListener {
 	
 	/**
+	 * This method is called whenever an infrared sensor value is received
+	 * 
+	 * @param value - the value of the infrared sensor
+	 * 
+	 * @see Robot#getInfraredDirection()
+	 */
+	public void onSensorValueInfrared(int value);
+	
+	/**
 	 * This method is called whenever a light sensor value is received
 	 * 
 	 * @param value - the value of the light sensor

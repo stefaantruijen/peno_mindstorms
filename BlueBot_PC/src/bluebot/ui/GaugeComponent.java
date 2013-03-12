@@ -8,6 +8,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -34,7 +35,7 @@ public class GaugeComponent extends RenderingComponent {
 	}
 	
 	private Controller controller;
-	private int value;
+	private int infrared, value;
 	
 	
 	public GaugeComponent(final Controller controller) {
@@ -122,6 +123,8 @@ public class GaugeComponent extends RenderingComponent {
 		
 		gfx.translate((getWidth() / 2) + 1, (getHeight() / 2));
 		
+		final AffineTransform transform = gfx.getTransform();
+		
 		/*
 		final double theta;
 		if (value == 50) {
@@ -151,6 +154,28 @@ public class GaugeComponent extends RenderingComponent {
 		
 		gfx.setColor(Color.GRAY);
 		gfx.fillOval(-10, -10, 20, 20);
+		
+		gfx.setTransform(transform);
+		
+		//	INFRARED
+		{
+			if (this.infrared > 0) {
+				if (this.infrared != 8) {
+					gfx.rotate((this.infrared - 8) * Math.PI / 6D);
+				}
+//				gfx.translate(100, 100);
+				gfx.setColor(Color.RED);
+				gfx.fillOval(88, -4, 10, 10);
+//				gfx.drawString(Integer.toString(this.infrared), 50, 0);
+			}
+		}
+	}
+	
+	public void setInfrared(final int value) {
+		if (value != this.infrared) {
+			this.infrared = value;
+			repaint(0L);
+		}
 	}
 	
 	public void setValue(int value) {

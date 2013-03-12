@@ -6,6 +6,8 @@ import static bluebot.io.protocol.Packet.*;
 import java.io.IOException;
 import java.util.Date;
 
+import peno.htttp.Callback;
+
 import RabbitMQCommunication.Config;
 import RabbitMQCommunication.RabbitConnection;
 import RabbitMQCommunication.RabbitConnection.Listener;
@@ -73,6 +75,24 @@ public class DefaultController extends AbstractController {
 		getTranslator().doCalibrate();
 	}
 	
+	public void doGame(final String gameId, final String playerId)
+			throws GameException, IOException {
+		final Game game = new Game(gameId, playerId);
+		game.getClient().join(new Callback<Void>() {
+			public void onFailure(final Throwable error) {
+				error.printStackTrace();
+			}
+			
+			public void onSuccess(final Void result) {
+				try {
+					game.getClient().setReady(true);
+				} catch (final IOException e) {
+					//	ignored
+				}
+			}
+		});
+	}
+	
 	public void doMaze(final int[] playerIds, final int playerId) {
 		getTranslator().doMaze(playerIds, playerId);
 	}
@@ -91,6 +111,10 @@ public class DefaultController extends AbstractController {
 	
 	private final Communicator getCommunicator() {
 		return communicator;
+	}
+	
+	private final RabbitConnection getRabbit() {
+		return rabbit;
 	}
 	
 	private final ClientTranslator getTranslator() {
@@ -134,7 +158,7 @@ public class DefaultController extends AbstractController {
 	
 	private final void sendMessageRabbitMQ(final String msg) {
 		try {
-			rabbit.sendMessage(msg);
+			getRabbit().sendMessage(msg);
 		} catch (final IOException e) {
 			e.printStackTrace();
 //		} finally {
@@ -229,6 +253,9 @@ public class DefaultController extends AbstractController {
 		
 		private final void handlePacketSensor(final SensorPacket packet) {
 			switch (packet.getSensorType()) {
+				case INFRARED:
+					fireSensorInfrared(packet.getSensorValue());
+					break;
 				case LIGHT:
 					fireSensorLight(packet.getSensorValue());
 					break;
