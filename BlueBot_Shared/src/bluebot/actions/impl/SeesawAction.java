@@ -21,9 +21,10 @@ public class SeesawAction extends Action{
 		int speed = this.getDriver().getSpeed();
 		this.getDriver().setSpeed(20);
 		this.getDriver().moveForward();
+		while(this.getDriver().isMoving() && !this.getDriver().readsGray());
 		while(this.getDriver().isMoving() && !this.getDriver().readsBlack());
+		while(this.getDriver().isMoving() && !this.getDriver().readsGray());
 		this.getDriver().stop();
-		this.getDriver().moveForward(20, true);
 		white.execute(this.getDriver());
 		this.getDriver().moveBackward(20, true);
 		this.getDriver().setSpeed(speed);

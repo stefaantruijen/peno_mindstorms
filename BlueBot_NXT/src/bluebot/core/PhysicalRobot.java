@@ -8,6 +8,8 @@ import lejos.nxt.SensorPort;
 import lejos.nxt.TouchSensor;
 import lejos.nxt.UltrasonicSensor;
 import lejos.nxt.addon.IRSeeker;
+import lejos.nxt.addon.IRSeekerV2;
+import lejos.nxt.addon.IRSeekerV2.Mode;
 import lejos.robotics.localization.OdometryPoseProvider;
 import lejos.robotics.navigation.DifferentialPilot;
 import lejos.robotics.navigation.MoveProvider;
@@ -44,7 +46,7 @@ public class PhysicalRobot extends AbstractRobot {
 	private UltrasonicSensor sensorUltraSonic;
 	private TouchSensor touchSensor;
 	private Tracker tracker;
-	private IRSeeker infraredSensor;
+	private IRSeekerV2 infraredSensor;
 	
 	
 	public PhysicalRobot() {
@@ -56,7 +58,7 @@ public class PhysicalRobot extends AbstractRobot {
 		this.sensorUltraSonic = createSensorUltraSonic(ultraSonic);
 		this.tracker = new Tracker(pilot, head);
 		this.touchSensor = new TouchSensor(touch);
-		this.infraredSensor = new IRSeeker(infra);
+		this.infraredSensor = new IRSeekerV2(infra, Mode.AC);
 		
 		resetOrientation();
 	}
