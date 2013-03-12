@@ -150,5 +150,10 @@ public interface Driver extends Mobile {
 	 * @return
 	 */
 	public boolean seeInfrared();
+	/**
+	 * the direction of the infrered, 0 if no direction
+	 * @return
+	 */
+	public int getInfraredDirection();
 	
 }

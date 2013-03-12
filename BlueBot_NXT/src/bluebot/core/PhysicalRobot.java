@@ -263,10 +263,16 @@ public class PhysicalRobot extends AbstractRobot {
 	}
 	@Override
 	public boolean seeInfrared() {
-		if(this.infraredSensor.getDirection() > 2 && this.infraredSensor.getDirection() <8){
+		int direction = this.getInfraredDirection();
+		if(direction > 2 && direction <8){
 			return true;
 		}
 		return false;
+	}
+	
+	@Override
+	public int getInfraredDirection() {
+		return this.infraredSensor.getDirection();
 	}
 	
 }

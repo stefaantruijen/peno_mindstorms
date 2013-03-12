@@ -1096,5 +1096,11 @@ public class VirtualRobot extends AbstractRobot {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public int getInfraredDirection() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 	
 }

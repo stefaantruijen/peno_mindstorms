@@ -386,5 +386,9 @@ public class DefaultDriver implements Driver {
 		
 		return getRobot().seeInfrared();
 	}
+	@Override
+	public int getInfraredDirection() {
+		return getRobot().getInfraredDirection();
+	}
 	
 }

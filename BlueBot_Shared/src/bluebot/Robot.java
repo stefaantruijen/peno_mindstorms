@@ -92,5 +92,11 @@ public interface Robot extends Mobile {
 	 * @return
 	 */
 	public boolean seeInfrared();
+
+	/**
+	 * the direction of the infrared, 0 if no direction
+	 * @return
+	 */
+	public int getInfraredDirection();
 	
 }
