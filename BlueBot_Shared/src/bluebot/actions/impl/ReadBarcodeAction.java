@@ -93,16 +93,29 @@ public class ReadBarcodeAction extends Action {
 			getDriver().sendDebug("Barcode found:  " + barcode);
 		}
 		
+//		// Return to the middle of the tile.
+//		//	There's no need to adjust/correct our heading,
+//		//      since this algorithm never turns the robot.
+//		//      We could simply drive backwards
+//		//      until we discover the white line,
+//		//      and then move forward (200 + |sensor-center|) mm
+//		getDriver().moveBackward();
+//		waitForLightSensor(Brightness.WHITE, true);
+//		getDriver().stop();
+//		getDriver().moveForward(200 + Robot.OFFSET_SENSOR_LIGHT, true);
+		
 		// Return to the middle of the tile.
 		//	There's no need to adjust/correct our heading,
 		//      since this algorithm never turns the robot.
 		//      We could simply drive backwards
-		//      until we discover the white line,
-		//      and then move forward (200 + |sensor-center|) mm
+		//      until we discover grey ground and then
+		//		move forward equal to the barcode length/2
+		//		+ distance between lightsensor and wheelaxis.
+		//		= 8 + 4.2 cm = 12.2cm
 		getDriver().moveBackward();
-		waitForLightSensor(Brightness.WHITE, true);
+		waitForLightSensor(Brightness.GRAY, true);
 		getDriver().stop();
-		getDriver().moveForward(200 + Robot.OFFSET_SENSOR_LIGHT, true);
+		getDriver().moveForward(8 + Robot.OFFSET_SENSOR_LIGHT, true);
 	}
 
 	private float getPosition() {
