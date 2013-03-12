@@ -1,11 +1,13 @@
 package RabbitMQCommunication;
 
+
 import java.io.IOException;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.ConnectionParameters;
+
+
 
 /**
  * Standard class to connect to the AMQP server described in the Config class.
@@ -21,18 +23,15 @@ public class MQConnector {
 	 * @return An active connection
 	 * @throws IOException
 	 */
-	
 	public static Connection createConnection() throws IOException {
-		ConnectionParameters params = new ConnectionParameters();
-		params.setUsername(Config.USER_NAME);
-		params.setPassword(Config.PASSWORD);
-		params.setVirtualHost(Config.VIRTUAL_HOST);
-		params.setRequestedHeartbeat(0);
-		ConnectionFactory factory = new ConnectionFactory(params);
-
-		Connection conn = factory.newConnection(Config.HOST_NAME, Config.PORT);
-
-		return conn;
+		final ConnectionFactory factory = new ConnectionFactory();
+		factory.setHost(Config.HOST_NAME);
+		factory.setPassword(Config.PASSWORD);
+		factory.setPort(Config.PORT);
+		factory.setRequestedHeartbeat(0);
+		factory.setUsername(Config.USER_NAME);
+		factory.setVirtualHost(Config.VIRTUAL_HOST);
+		return factory.newConnection();
 	}
 
 	/**
