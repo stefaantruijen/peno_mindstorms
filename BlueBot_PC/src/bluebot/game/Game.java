@@ -1,11 +1,13 @@
-package bluebot.core;
+package bluebot.game;
 
 
 import java.io.IOException;
 
-import com.rabbitmq.client.Connection;
+import bluebot.io.rabbitmq.RabbitConfig;
 
-import RabbitMQCommunication.MQConnector;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+
 import peno.htttp.Client;
 import peno.htttp.Handler;
 
@@ -27,7 +29,14 @@ public class Game {
 	
 	
 	private static final Connection connect() throws IOException {
-		return MQConnector.createConnection();
+		final ConnectionFactory factory = new ConnectionFactory();
+		factory.setHost(RabbitConfig.HOST_NAME);
+		factory.setPassword(RabbitConfig.PASSWORD);
+		factory.setPort(RabbitConfig.PORT);
+		factory.setRequestedHeartbeat(0);
+		factory.setUsername(RabbitConfig.USER_NAME);
+		factory.setVirtualHost(RabbitConfig.VIRTUAL_HOST);
+		return factory.newConnection();
 	}
 	
 	private final Client createClient(final String gameId, final String playerId)

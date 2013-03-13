@@ -1100,7 +1100,7 @@ public class VirtualRobot extends AbstractRobot {
 	@Override
 	public int getInfraredDirection() {
 		// TODO Auto-generated method stub
-		return 0;
+		return ((int)(System.currentTimeMillis() / 1000) % 10);
 	}
 	
 }

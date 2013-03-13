@@ -4,6 +4,7 @@ package bluebot.core;
 import java.io.IOException;
 
 import bluebot.ConfigListener;
+import bluebot.game.GameException;
 import bluebot.io.ConnectionListener;
 import bluebot.io.MessageListener;
 import bluebot.maze.MazeListener;

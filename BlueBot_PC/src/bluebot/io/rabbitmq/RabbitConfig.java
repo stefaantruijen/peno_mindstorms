@@ -1,11 +1,11 @@
-package RabbitMQCommunication;
+package bluebot.io.rabbitmq;
 
 /**
  * An interface that contains the configuration data.
  * 
  * @author Ine & Michiel
  */
-public interface Config {
+public interface RabbitConfig {
 	public static final String USER_NAME = "guest";
 	public static final String PASSWORD = "guest";
 	public static final String VIRTUAL_HOST = "/";

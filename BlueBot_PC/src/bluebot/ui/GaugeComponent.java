@@ -76,7 +76,7 @@ public class GaugeComponent extends RenderingComponent {
 	}
 	
 	public final int getPreferredHeight() {
-		return IMAGE_GAUGE.getHeight();
+		return (IMAGE_GAUGE.getHeight() + 10);
 	}
 	
 	@Override
@@ -85,7 +85,7 @@ public class GaugeComponent extends RenderingComponent {
 	}
 	
 	public final int getPreferredWidth() {
-		return IMAGE_GAUGE.getWidth();
+		return (IMAGE_GAUGE.getWidth() + 10);
 	}
 	
 	private static final BufferedImage loadImage(final String name) {
@@ -102,7 +102,21 @@ public class GaugeComponent extends RenderingComponent {
 	}
 	
 	protected void render(final Graphics2D gfx) {
-		gfx.drawImage(IMAGE_GAUGE, 0, 0, this);
+		//	INFRARED
+		{
+			if (this.infrared > 0) {
+//				if (this.infrared != 8) {
+//					gfx.rotate((this.infrared - 8) * Math.PI / 6D);
+//				}
+//				gfx.translate(100, 100);
+				gfx.setColor(Color.RED);
+//				gfx.fillOval(88, -4, 10, 10);
+//				gfx.drawString(Integer.toString(this.infrared), 50, 0);
+				gfx.fillArc(0, 0, 210, 210, (((9 - this.infrared) * 30) - 45), 30);
+			}
+		}
+		
+		gfx.drawImage(IMAGE_GAUGE, 5, 5, this);
 		
 		gfx.setFont(getFont());
 		final FontMetrics fm = gfx.getFontMetrics();
@@ -110,14 +124,14 @@ public class GaugeComponent extends RenderingComponent {
 		final int h = (fm.getHeight() + 5);
 		
 		gfx.setColor(Color.BLACK);
-		gfx.fillRect(60, (165 - h), 80, h);
+		gfx.fillRect(65, (170 - h), 80, h);
 		
 		gfx.setColor(Color.WHITE);
 		
 		final String display = (Integer.toString(getValue()) + " % ");
 		gfx.drawString(display,
-				(140 - gfx.getFontMetrics().stringWidth(display)),
-				160);
+				(145 - gfx.getFontMetrics().stringWidth(display)),
+				165);
 		
 		final int value = getValue();
 		
@@ -156,19 +170,6 @@ public class GaugeComponent extends RenderingComponent {
 		gfx.fillOval(-10, -10, 20, 20);
 		
 		gfx.setTransform(transform);
-		
-		//	INFRARED
-		{
-			if (this.infrared > 0) {
-				if (this.infrared != 8) {
-					gfx.rotate((this.infrared - 8) * Math.PI / 6D);
-				}
-//				gfx.translate(100, 100);
-				gfx.setColor(Color.RED);
-				gfx.fillOval(88, -4, 10, 10);
-//				gfx.drawString(Integer.toString(this.infrared), 50, 0);
-			}
-		}
 	}
 	
 	public void setInfrared(final int value) {

@@ -3,7 +3,6 @@ package bluebot.simulator;
 
 import java.io.IOException;
 
-import RabbitMQCommunication.RabbitConnection;
 import bluebot.DefaultDriver;
 import bluebot.Robot;
 import bluebot.actions.impl.MazeActionV2;
@@ -22,7 +21,7 @@ public class GhostDriver extends DefaultDriver implements Runnable {
 	private Thread host;
 	private int id;
 	private int[] ids;
-	private RabbitConnection rabbit;
+//	private RabbitConnection rabbit;
 	
 	
 	public GhostDriver(final Robot robot, final int[] ids, final int id)
@@ -30,7 +29,7 @@ public class GhostDriver extends DefaultDriver implements Runnable {
 		super(robot, new GhostConnection());
 		this.id = id;
 		this.ids = ids.clone();
-		this.rabbit = new RabbitConnection();
+//		this.rabbit = new RabbitConnection();
 		init();
 	}
 	
@@ -71,11 +70,11 @@ public class GhostDriver extends DefaultDriver implements Runnable {
 	
 	@Override
 	public void sendMQMessage(final String msg) {
-		try {
-			rabbit.sendMessage(msg, ("race.ghost" + id));
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			rabbit.sendMessage(msg, ("race.ghost" + id));
+//		} catch (final IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 	
 	public synchronized void startGhost() {
@@ -92,10 +91,10 @@ public class GhostDriver extends DefaultDriver implements Runnable {
 			host.stop();
 			host = null;
 		}
-		if (rabbit != null) {
-			rabbit.disconnect();
-			rabbit = null;
-		}
+//		if (rabbit != null) {
+//			rabbit.disconnect();
+//			rabbit = null;
+//		}
 	}
 	
 	

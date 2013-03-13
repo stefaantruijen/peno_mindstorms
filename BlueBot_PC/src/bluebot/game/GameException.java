@@ -1,4 +1,4 @@
-package bluebot.core;
+package bluebot.game;
 
 
 

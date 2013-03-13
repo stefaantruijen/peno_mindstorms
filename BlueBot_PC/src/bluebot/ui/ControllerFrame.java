@@ -40,6 +40,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 	private BarcodeComponent barcode;
 	private VisualizationComponent canvas;
 	private Controller controller;
+	private RabbitListModel rabbit;
 	private Renderer renderer;
 	
 	
@@ -269,7 +270,6 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		});
 		controller.addListener(new SensorListener() {
 			public void onSensorValueInfrared(final int value) {
-				System.out.println("INFRARED:  " + value);
 				speed.setInfrared(value);
 			}
 			
@@ -290,10 +290,9 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 	}
 	
 	private final Component createModuleRabbitMQ() {
-		final RabbitListModel model = new RabbitListModel();
-		controller.addListener(model);
+		rabbit = new RabbitListModel();
 		
-		final JList list = new JList(model);
+		final JList list = new JList(rabbit);
 		list.setCellRenderer(new RabbitListCellRenderer());
 		
 		final JScrollPane scroll = new JScrollPane(list,
