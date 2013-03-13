@@ -2,14 +2,14 @@ package bluebot.game;
 
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
-import bluebot.io.rabbitmq.RabbitConfig;
+import com.rabbitmq.client.Channel;
 
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
+import bluebot.io.rabbitmq.RabbitMQ;
 
 import peno.htttp.Client;
 import peno.htttp.Handler;
@@ -23,33 +23,47 @@ import peno.htttp.Handler;
 public class GameClient extends Client {
 	
 	public GameClient(final String gameId, final String playerId) throws IOException {
-		super(connect(), new HandlerDispatcher(), gameId, playerId);
+		super(RabbitMQ.connect(), new HandlerDispatcher(), gameId, playerId);
 	}
 	
 	
 	
 	public void addHandler(final Handler handler) {
-		getHandler().addHandler(handler);
+		getHandlerDispatcher().addHandler(handler);
 	}
 	
-	private static final Connection connect() throws IOException {
-		final ConnectionFactory factory = new ConnectionFactory();
-		factory.setHost(RabbitConfig.HOST_NAME);
-		factory.setPassword(RabbitConfig.PASSWORD);
-		factory.setPort(RabbitConfig.PORT);
-		factory.setRequestedHeartbeat(0);
-		factory.setUsername(RabbitConfig.USER_NAME);
-		factory.setVirtualHost(RabbitConfig.VIRTUAL_HOST);
-		return factory.newConnection();
+	protected Channel getChannel() {
+		return getField("channel", Channel.class);
 	}
 	
-	@Override
-	protected HandlerDispatcher getHandler() {
-		return (HandlerDispatcher)super.getHandler();
+	private final <T> T getField(final String name, final Class<T> type) {
+		try {
+			final Field field = Client.class.getDeclaredField(name);
+			if (field.isAccessible()) {
+				return type.cast(field.get(this));
+			} else {
+				field.setAccessible(true);
+				try {
+					return type.cast(field.get(this));
+				} finally {
+					field.setAccessible(false);
+				}
+			}
+		} catch (final Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	protected Handler getHandler() {
+		return getField("handler", Handler.class);
+	}
+	
+	protected HandlerDispatcher getHandlerDispatcher() {
+		return (HandlerDispatcher)getHandler();
 	}
 	
 	public void removeHandler(final Handler handler) {
-		getHandler().removeHandler(handler);
+		getHandlerDispatcher().removeHandler(handler);
 	}
 	
 	
