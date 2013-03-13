@@ -70,22 +70,19 @@ public class DefaultController extends AbstractController {
 		getTranslator().doCalibrate();
 	}
 	
-	public void doGame(final String gameId, final String playerId)
+	public Game doGame(final String gameId, final String playerId)
 			throws GameException, IOException {
-		final Game game = new Game(gameId, playerId);
-		game.getClient().join(new Callback<Void>() {
+		final Game game = new Game(this, gameId, playerId);
+		game.init(new Callback<Void>() {
 			public void onFailure(final Throwable error) {
-				error.printStackTrace();
+				fireError(error.getMessage());
 			}
 			
 			public void onSuccess(final Void result) {
-				try {
-					game.getClient().setReady(true);
-				} catch (final IOException e) {
-					//	ignored
-				}
+				//	ignored
 			}
 		});
+		return game;
 	}
 	
 	public void doMaze(final int[] playerIds, final int playerId) {

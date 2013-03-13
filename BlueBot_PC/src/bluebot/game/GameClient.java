@@ -75,7 +75,7 @@ public class GameClient extends Client {
 	
 	
 	
-	private static class HandlerDispatcher implements Handler {
+	private static final class HandlerDispatcher implements Handler {
 		
 		private Handler[] handlers;
 		
