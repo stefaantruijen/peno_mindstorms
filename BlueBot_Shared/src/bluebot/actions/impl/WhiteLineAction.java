@@ -43,7 +43,7 @@ public class WhiteLineAction extends Action {
 				return;
 			}
 			
-			// 7 cm (sensor to wheels) forward
+			// 4,2 cm (sensor to wheels) forward
 			getDriver().setSpeed(100);
 			getDriver().moveForward(42, true);
 			
@@ -70,16 +70,6 @@ public class WhiteLineAction extends Action {
 			
 			if (isAborted()) {
 				return;
-			}
-			
-	//		float totalArc = Math.abs(arc) + Math.abs(arc1);
-			// 150 
-			if(totalArc<=getDriver().getArcLimit()){
-				getDriver().turnLeft();
-				this.waitForLightSensor(Brightness.WHITE, false);
-				this.waitForLightSensor(Brightness.WHITE, true);
-				totalArc = totalArc + Math.abs(getDriver().getAngleIncrement());
-				getDriver().stop();
 			}
 			
 			// turn right until half of totalArc 
