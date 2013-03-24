@@ -1,5 +1,6 @@
 package bluebot.simulator;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 import bluebot.graph.Tile;
@@ -29,6 +30,10 @@ public class Sensors {
 	 * The sonar of this Sensors object.
 	 */
 	private VirtualSonar sonar;
+	/**
+	 * The infrared sensor of this Sensors object.
+	 */
+	private VirtualInfraredSensor irsenor;
 	/**
 	 * The list of tiles for this Sensors object.
 	 */
@@ -61,6 +66,7 @@ public class Sensors {
 		makeTileMap();
 		light = new VirtualLightSensor(this);
 		sonar = new VirtualSonar(this);
+		irsenor = new  VirtualInfraredSensor(this);
 	}
 	
 	/**
@@ -90,7 +96,7 @@ public class Sensors {
 	 * @param heading
 	 * @return
 	 */
-	public int getSonarValue(int X, int Y, int heading){
+	public int getSonarValue(int X, int Y, float heading){
 		return sonar.getSonarValue(X, X, heading);
 	}
 	
@@ -247,6 +253,14 @@ public class Sensors {
 	 */
 	public VirtualLightSensor getLightSensor(){
 		return light;
+	}
+	
+	/**
+	 * Returns the VirtualInfraredSensor object of this Sensors.
+	 * @return
+	 */
+	public VirtualInfraredSensor getIRSensor(){
+		return irsenor;
 	}
 	
 	/**
@@ -418,5 +432,93 @@ public class Sensors {
 			result = false;
 		}
 		return result;
+	}
+
+	/**
+	 * Sorts a given list of intersections by the (euclidean) distance to the given point.
+	 * 
+	 * @param intersections 
+	 * 		must be of type: ArrayList<int[]>
+	 * @param x
+	 * 		The x-coordinate of the point.
+	 * @param y
+	 * 		The y-coordinate of the point.
+	 * @return ArrayList<int[]>
+	 * 		A list that contains the same elements but sorted by distance to the given point.
+	 */
+	protected static ArrayList<int[]> sortByDistanceTo(ArrayList<int[]> intersections, int x, int y) {
+		int size = intersections.size();
+		ArrayList<int[]> result = new ArrayList<int[]>();
+		for(int i =0; i<size; i++){
+			int[] nextMin = getMinimumWithRespectTo(intersections, x,y);
+			result.add(nextMin);
+			intersections.remove(nextMin);
+		}
+		return result;
+	}
+
+	/**
+	 * Calculates the element that is closest to the given point 
+	 * 
+	 * @param intercepts
+	 * 			must be of type: ArrayList<int[]>
+	 * @param x
+	 * @param y
+	 * @return int[]
+	 * 		The element of the list that is closest to (x,y).
+	 */
+	protected static int[] getMinimumWithRespectTo(ArrayList<int[]> intercepts,int x, int y) {
+		int[] min = intercepts.get(0);
+		for(int i =1; i<intercepts.size(); i++){
+			if(compareWithRespectTo(min,intercepts.get(i), x,y) > 0){
+				min = intercepts.get(i);
+			}
+		}
+		return min;
+	}
+
+	/**
+	 * Compares two positions by distance with respect to the given point (x,y).
+	 * 
+	 * @param c1
+	 * @param c2
+	 * @param x
+	 * @param y 
+	 * @return -1
+	 * 		If c1 is closer to (x,y) then c2.
+	 * @return 1
+	 * 		If c2 is closer to (x,y) then c1.
+	 * @return 0
+	 * 		If c1 and c2 are equally close to (x,y).
+	 */
+	protected static int compareWithRespectTo(int[] c1, int[] c2, int x, int y){
+		double d1 = getDistanceFromTo(x,y,c1[0],c1[1]);
+		double d2 = getDistanceFromTo(x,y,c2[0],c2[1]);
+		int result;
+		if(d1 == d2){
+			result = 0;
+		} else if( d1 < d2 ){
+			result = -1;
+		} else {
+			result = 1;
+		}
+		return result;		
+	}
+
+	/**
+	 * Calculates the euclidean distance between two coordinates.
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @return double
+	 * 		The euclidean distance between (x1,y1) and (x2,y2).
+	 */
+	protected static double getDistanceFromTo(int x1, int y1, int x2, int y2){
+		int xDiff = x1-x2;
+		int yDiff = y1-y2;
+		int squaredSumDistance = xDiff*xDiff + yDiff*yDiff;
+		double distance = Math.sqrt(squaredSumDistance);
+		return distance;
 	}
 }

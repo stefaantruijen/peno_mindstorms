@@ -62,15 +62,20 @@ public class VirtualLightSensor {
 	/**
 	 * The Sensors object of this VirtualLightSensor. Holds all informations regarding tiles.
 	 */
-	private Sensors sensors;
+	private final Sensors sensors;
+	
 	/**
-	 * 
+	 * Length in pixels of a barcode.
+	 * 		Length is the direction in which the robot crosses the barcode normally.
 	 */
-	private static final int barcodeLength = 16; //Pixels, lengte is in de richting dat de robot er over rijdt
+	private static final int barcodeLength = 16;
+	
 	/**
-	 * 
+	 * Width in pixels of a barcode.
+	 * 		Width is the direction perpendicular to the direction in which
+	 * 	 	the robot crosses the barcode normally.
 	 */
-	private static final int barcodeWidth = Sensors.TILE_SIZE-4; // Pixels
+	private static final int barcodeWidth = Sensors.TILE_SIZE-4;
 	
 	private static final int bitWidthResolution =  Sensors.TILE_SIZE/20;
 	
@@ -660,8 +665,4 @@ public class VirtualLightSensor {
 	public void drawVerticalBarcode(int x, int y, int numberOfBarcode){
 		drawBarcode(x, y, numberOfBarcode , 0);
 	}
-
-	
-	
-	
 }

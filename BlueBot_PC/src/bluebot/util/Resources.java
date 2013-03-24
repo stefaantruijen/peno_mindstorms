@@ -1,6 +1,9 @@
 package bluebot.util;
 
 
+import java.awt.Paint;
+import java.awt.TexturePaint;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -36,6 +39,16 @@ public final class Resources {
 		} catch (final IOException e) {
 			return null;
 		}
+	}
+	
+	public static final Paint loadTexture(final Class<?> owner,
+			final String path) {
+		final BufferedImage img = loadImage(owner, path);
+		if (img == null) {
+			return null;
+		}
+		return new TexturePaint(img,
+				new Rectangle2D.Double(0, 0, img.getWidth(), img.getHeight()));
 	}
 	
 }

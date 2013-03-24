@@ -17,6 +17,8 @@ import bluebot.util.Barcode;
  */
 public class Tile implements Comparable<Tile> {
 	
+	/**    The resolution of a tile (in pixels)    */
+	public static final int RESOLUTION = 64;
 	/**    The size of a tile (in mm)    */
 	public static final float SIZE = 400F;
 	
@@ -290,6 +292,10 @@ public class Tile implements Comparable<Tile> {
 	
 	public boolean matches(final int x, final int y) {
 		return ((this.x == x) && (this.y == y));
+	}
+	
+	public static final double ratioPixelsPerDistance() {
+		return ((double)RESOLUTION / (double)SIZE);
 	}
 	
 	private final void setBorder(final int shift, final Border border) {

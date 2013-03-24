@@ -30,6 +30,9 @@ import bluebot.util.Utils;
  * 
  */
 public class VirtualRobot extends AbstractRobot {
+	/**
+	 * Place of music for playing jingle bells.
+	 */
 	private static final String AUDIO_FILE_PATH = "data/Bells.wav";
 	/**
  	 *Static that holds the maximum travel speed in degrees/s.
@@ -150,6 +153,10 @@ public class VirtualRobot extends AbstractRobot {
 	 * VirtualSonar object that holds the sonar of the VirtualRobot.
 	 */
 	private VirtualSonar sonar;
+	/**
+	 * VirtualInfraredSensor that holds the infrared sensor of the VirtualRobot.
+	 */
+	private VirtualInfraredSensor irsensor;
 	/**
 	 * Minimal offset of the borders of a tile for placing the VirtualRobot randomly in one.
 	 */
@@ -1080,27 +1087,56 @@ public class VirtualRobot extends AbstractRobot {
 	}
 	
 	/**
-	 * Modifies the current orientation of the {@link VirtualRobot}
-	 * 
-	 * @param x - the position on the X axis (in mm)
-	 * @param y - the position on the Y axis (in mm)
-	 * @param body - the rotation of the robot (in degrees)
-	 */
+	* Modifies the current position and orientation of the {@link VirtualRobot}.
+	* This method will stop and clear any current action.
+	*
+	* @param x - the position on the X axis (in mm)
+	* @param y - the position on the Y axis (in mm)
+	* @param body - the rotation of the robot (in degrees)
+	*/
 	public void setOrientation(final float x, final float y, final float body) {
-		//	TODO:	Implementation
-		throw new UnsupportedOperationException("Implementation required!");
+	        //      TODO:   Implementation, in progress
+	        /*
+	         * Clear all existing variables in case the robot has a currentAction.
+	         * The init values are ofcourse set to the desired values.
+	         */
+	        clearAction();                          // Clears currentAction, currentArgument and currentETA
+	        setInitAbsoluteX(x);                    // self explanatory
+	        setInitAbsoluteY(y);                    // self explanatory
+	        setInitAbsoluteHeading(body);           // self explanatory
+	        setInitSonarDirection(body);            // self explanatory
 	}
 
-	@Override
-	public boolean seeInfrared() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    /**
+     * Returns true if the robot detects an infrared signal.
+     * BEWARE: Only directions [3..7] are considered valid signals!
+     * directions: 0,1,2,8,9 are not considered signals.
+     */
+    @Override
+    public boolean seeInfrared() {
+    /*
+    *       Normaalgezien zou je hier gewoon alle IR ballen kunnen aflopen en kijken of ze binnen bereik liggen
+    *       en of er geen muur tussen staat, maar blijkbaar worden bij de echte robot signalen in de richtingen
+    *       1,2,8 en 9 niet als juiste signalen beschouwt en dus moeten we hier toch de richting berekenen om
+    *       die uit te kunnen sluiten.
+    */
+            int direction = getInfraredDirection();
+            if(direction == 0){
+            	return false;
+            } else {
+            	if(VirtualInfraredSensor.isValidDirection(direction)){
+                     return true;
+            	} 
+             }
+            return false;
+    }
 
+    /**
+     * Returns the direction of the infrared source.
+     */
 	@Override
 	public int getInfraredDirection() {
-		// TODO Auto-generated method stub
-		return ((int)(System.currentTimeMillis() / 1000) % 10);
+		return irsensor.getInfraredDirection(getImgX(), getImgY(), getHeading());
 	}
 	
 }

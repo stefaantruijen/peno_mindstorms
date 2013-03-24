@@ -3,52 +3,65 @@ package bluebot.game;
 
 
 /**
- * Represents a player of the game
  * 
  * @author Ruben Feyen
  */
-public class Player {
+public class Player extends Entity {
 	
+	private float angle;
 	private String id;
-	private float x, y, z;
+	private boolean item;
+	private int number;
 	
 	
-	public Player(final String id) throws GameException {
+	public Player(final String id) {
 		setId(id);
 	}
 	
 	
 	
-	public float getHeading() {
-		return z;
+	public float getAngle() {
+		return angle;
 	}
 	
 	public String getId() {
 		return id;
 	}
 	
-	public float getX() {
-		return x;
+	public int getNumber() {
+		return number;
 	}
 	
-	public float getY() {
-		return y;
+	public boolean hasItem() {
+		return item;
 	}
 	
-	protected boolean isValidId(final String id) {
-		return ((id != null) && !id.isEmpty());
+	private final void setAngle(final float angle) {
+		this.angle = angle;
 	}
 	
-	private final void setId(final String id) throws GameException {
-		if (!isValidId(id)) {
-			throw new GameException("Invalid player ID:  " + id);
-		}
+	private final void setId(final String id) {
 		this.id = id;
 	}
 	
-	@Override
-	public String toString() {
-		return String.format("Player[%s]", getId());
+	private final void setItem(final boolean item) {
+		this.item = item;
+	}
+	
+	private final void setNumber(final int number) {
+		this.number = number;
+	}
+	
+	private final void setPosition(final float x, final float y, final float angle) {
+		setPosition(x, y);
+		setAngle(angle);
+	}
+	
+	public void update(final float x, final float y, final float angle,
+			final int number, final boolean item) {
+		setNumber(number);
+		setPosition(x, y, angle);
+		setItem(item);
 	}
 	
 }
