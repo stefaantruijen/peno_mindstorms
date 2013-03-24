@@ -5,8 +5,6 @@ import static bluebot.io.protocol.Packet.*;
 
 import java.io.IOException;
 
-import peno.htttp.Callback;
-
 import bluebot.game.Game;
 import bluebot.game.GameException;
 import bluebot.io.ClientTranslator;
@@ -72,17 +70,19 @@ public class DefaultController extends AbstractController {
 	
 	public Game doGame(final String gameId, final String playerId)
 			throws GameException, IOException {
-		final Game game = new Game(this, gameId, playerId);
-		game.init(new Callback<Void>() {
-			public void onFailure(final Throwable error) {
-				fireError(error.getMessage());
-			}
-			
-			public void onSuccess(final Void result) {
-				//	ignored
-			}
-		});
-		return game;
+//		final Game game = new Game(this, gameId, playerId);
+//		game.init(new Callback<Void>() {
+//			public void onFailure(final Throwable error) {
+//				fireError(error.getMessage());
+//			}
+//			
+//			public void onSuccess(final Void result) {
+//				//	ignored
+//			}
+//		});
+//		return game;
+		//	TODO
+		return null;
 	}
 	
 	public void doMaze(final int[] playerIds, final int playerId) {
