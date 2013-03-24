@@ -7,7 +7,7 @@ package bluebot.maze;
  */
 public enum TileType {
 	
-	STRAIGHT("Straight"),CORNER("Corner"),TSPLIT("T"),DEADEND("DeadEnd"),CROSS("Cross");
+	STRAIGHT("Straight"),CORNER("Corner"),TSPLIT("T"),DEADEND("DeadEnd"),CROSS("Cross"),CLOSED("Closed"),SEESAW("Seesaw");
 	
 	private final String source;
 	

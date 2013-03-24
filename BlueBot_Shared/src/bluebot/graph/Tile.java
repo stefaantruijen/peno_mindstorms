@@ -24,6 +24,11 @@ public class Tile implements Comparable<Tile> {
 	private byte borders;
 	private int item;
 	private int x, y;
+	private boolean hasItem = false;
+	private boolean isSeesaw = false;
+	private boolean startPosition = false;
+	private int startOrientation = -1;
+	private int startPlayerId = -1;
 
 	private double distanceFromStart;
 
@@ -39,9 +44,117 @@ public class Tile implements Comparable<Tile> {
 		this.distanceFromStart = Double.MAX_VALUE;
 		
 	}
+
+	public boolean hasItem() {
+		return hasItem;
+	}
+
+	/**
+	 * Set that this tile has an item on it.
+	 * 
+	 * @param hasItem
+	 * @throws IllegalStateException if this tile is already a seesaw. A tile can't be located on a seesaw tile.
+	 */
+	public void setHasItem(boolean hasItem) {
+		if(this.isSeesaw()){
+			throw new IllegalStateException("Tile is already a seesaw. Can not have an item too.");
+		}
+		this.hasItem = hasItem;
+	}
+
+	/**
+	 * Check if this tile is a seesaw tile.
+	 * 
+	 * @return
+	 */
+	public boolean isSeesaw() {
+		return isSeesaw;
+	}
 	
+	/**
+	 * Check if this tile is a startposition.
+	 * @return
+	 */
+	public boolean isStartPosition() {
+		return startPosition;
+	}
+	/**
+	 * Set this tile as a startPosition.
+	 * 
+	 * @param startPosition
+	 */
+	public void setStartPosition(boolean startPosition) {
+		
+		this.startPosition = startPosition;
+	}
+	/**
+	 * Get the start orientation for a player on this tile.
+	 * 
+	 * @return NULL if this tile has not a valid starting orientation
+	 * 			Orientation otherwise
+	 * 
+	 */
+	public Orientation getStartOrientation() {
+		if(this.startOrientation==-1){
+			return null;
+		}else{
+			String orient = "N";
+			if(startOrientation == 1){
+				orient = "E";
+			}else if(startOrientation == 2){
+				orient = "S";
+			}else if(startOrientation == 3){
+				orient = "W";
+			}
+			try{
+				return Orientation.getOrientation(orient);
+			}catch(Exception e){
+				return null;
+			}
+		}
+		
+	}
+
+	public void setStartOrientation(int startOrientation) {
+		this.startOrientation = startOrientation;
+	}
+	/**
+	 * If this tile has not a valid playerId it returns -1. Else it will return a playerId between 1-4.
+	 * @return
+	 */
+	public int getStartPlayerId() {
+		return startPlayerId;
+	}
+	/**
+	 * Set a valid playerId between 1-4.
+	 * 
+	 * @param startPlayerId
+	 * @throws IllegalArgumentException if the given playerId is not a valid id.
+	 */
+	public void setStartPlayerId(int startPlayerId) {
+		if(startPlayerId < 1 || startPlayerId > 4){
+			throw new IllegalArgumentException("Wrong playerId, needs to be between 1-4");
+		}else{
+			this.startPlayerId = startPlayerId;
+		}
+		
+	}
 	
-	
+	/**
+	 * Set this tile as seesaw.
+	 * 
+	 * @param isSeesaw
+	 * @throws IllegalStateException if this tile already has an item
+	 */
+	public void setSeesaw(boolean isSeesaw) {
+		if(this.hasItem()){
+			throw new IllegalStateException("Tile already has an item. Can not be a seesaw too.");
+		}
+		this.isSeesaw = isSeesaw;
+	}
+
+
+
 	public void copyBorders(final Tile other) {
 		this.borders = other.borders;
 	}
@@ -264,6 +377,12 @@ public class Tile implements Comparable<Tile> {
 	public static Tile read(final DataInput input) throws IOException {
 		final Tile tile = new Tile(input.readByte(), input.readByte());
 		tile.setBarCode(input.readByte());
+		tile.setSeesaw(input.readBoolean());
+		
+		tile.setStartPosition(input.readBoolean());
+		tile.setStartPlayerId(input.readInt());
+		tile.setStartOrientation(input.readInt());
+		tile.setHasItem(input.readBoolean());
 		tile.borders = input.readByte();
 		tile.item = (input.readBoolean() ? input.readInt() : 0);
 		return tile;
@@ -283,6 +402,12 @@ public class Tile implements Comparable<Tile> {
 		output.writeByte(getX());
 		output.writeByte(getY());
 		output.writeByte(getBarCode());
+		output.writeBoolean(isSeesaw());
+		output.writeBoolean(this.startPosition);
+		output.writeInt(this.startPlayerId);
+		output.writeInt(this.startOrientation);
+		output.writeBoolean(hasItem());
+		
 		output.writeByte(borders);
 		if (item > 0) {
 			output.writeBoolean(true);

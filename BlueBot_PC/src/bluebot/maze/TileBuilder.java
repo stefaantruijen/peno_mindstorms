@@ -16,18 +16,49 @@ public class TileBuilder {
 	public static Tile getTile(String source,int x, int y){
 		String[] tileElements = source.split("\\.");
 		TileType tt = TileType.getType(tileElements[0]);
-		if(tt != TileType.CROSS){
-			Tile tile = new Tile(x,y);
-			if(tileElements.length == 3 && tt == TileType.STRAIGHT){
-				tile.setBarCode(Integer.parseInt(tileElements[2]));
-			}
-			return setUpTile(tile,tt,Orientation.getOrientation(tileElements[1]));
-		}else{
-			Tile tile = new Tile(x,y);
+		Tile tile = new Tile(x,y);
+		if( tt == TileType.CLOSED){
+			tile.setAllBordersOpen(false);
+		}
+		else if(tt == TileType.CROSS){
 			tile.setAllBordersOpen(true);
-			return tile;
+			
+		}else{
+			if( tt == TileType.STRAIGHT){
+				if(tileElements.length > 2){
+					tile.setBarCode(Integer.parseInt(tileElements[2]));
+				}else{
+					tile.setBarCode(-1); //if a straight tile has no barcode the 3th element in the source string is not given
+				}
+				
+			}else if( tt == TileType.DEADEND && tileElements.length>2){
+				//tile is deadend and has object on it
+				tile.setHasItem(true);
+			}
+			tile = setUpTile(tile,tt,Orientation.getOrientation(tileElements[1]));
+		}
+		String possibleStartPosition = tileElements[tileElements.length-1];
+		if(possibleStartPosition.length()==3){
+			if(tt != TileType.STRAIGHT && tt!= TileType.CLOSED && tt != TileType.SEESAW ){
+				tile.setStartPlayerId(Integer.parseInt(new String(new char[]{possibleStartPosition.charAt(1)})));
+				char orient = possibleStartPosition.charAt(2);
+				if(orient == 'N'){
+					tile.setStartOrientation(0);
+				}else if(orient == 'E'){
+					tile.setStartOrientation(1);
+				}else if(orient == 'S'){
+					tile.setStartOrientation(2);
+				}else if(orient == 'W'){
+					tile.setStartOrientation(3);
+				}else{
+					throw new IllegalStateException("Parse error : wrong orientation or orientation not given on a start position.");
+				}
+			}else{
+				throw new IllegalStateException("Parse error : starting position is on a straigh/closed/seesaw tile.");
+			}
 		}
 		
+		return tile;
 		
 	}
 	/**
@@ -61,8 +92,16 @@ public class TileBuilder {
 			tile.setAllBordersOpen(true);
 			tile.setBorder(o, false);
 			break;
+		case CLOSED:
+			tile.setAllBordersOpen(false);
+			break;
+		case SEESAW:
+			tile.setAllBordersOpen(false);
+			tile.setBorder(o, true);
+			tile.setBorder(o, true);
+			break;
 		default:
-			throw new IllegalArgumentException("Tiletype not supported");
+			throw new IllegalArgumentException("TileBuilder error : Tiletype not supported");
 		
 		}
 		

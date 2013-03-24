@@ -33,7 +33,7 @@ public class MazeReader {
 		BufferedReader in;
 		try {
 			in = new BufferedReader(new FileReader(path));
-			String[] size = in.readLine().split(" ");
+			String[] size = in.readLine().split("\\s+");
 			int xLimit = Integer.valueOf(size[0]);
 			int yLimit = Integer.valueOf(size[1])-1;
 			String str;
