@@ -28,7 +28,7 @@ public class VirtualInfraredBall implements InfraRedSource {
 	 * @param	y
 	 * 			The y coordinate of the new IRball.
 	 */
-	public VirtualInfraredBall(float x, float y) {
+	public VirtualInfraredBall(int x, int y) {
 		setX(x);
 		setY(y);
 		addToModel();
@@ -44,7 +44,7 @@ public class VirtualInfraredBall implements InfraRedSource {
 	 *			If the given argument is not a valid x.
 	 *			| !isValidX(x)
 	 */
-	public void setX(float x)
+	public void setX(int x)
 			throws IllegalArgumentException {
 		if (!isValidX(x)) {
 			throw new IllegalArgumentException(
@@ -61,7 +61,7 @@ public class VirtualInfraredBall implements InfraRedSource {
 	 *			The x to check.
 	 * @return	True if and only if the given value is not null, has the correct type, ...
 	 */
-	public static boolean isValidX(float x) {
+	public static boolean isValidX(int x) {
 		//TODO: specific constraints for this field?
 		return true;
 	}
@@ -76,7 +76,7 @@ public class VirtualInfraredBall implements InfraRedSource {
 	 *			If the given argument is not a valid y.
 	 *			| !isValidY(y)
 	 */
-	public void setY(float y)
+	public void setY(int y)
 			throws IllegalArgumentException {
 		if (!isValidY(y)) {
 			throw new IllegalArgumentException(
@@ -93,7 +93,7 @@ public class VirtualInfraredBall implements InfraRedSource {
 	 *			The y to check.
 	 * @return	True if and only if the given value is not null, has the correct type, ...
 	 */
-	public static boolean isValidY(float y) {
+	public static boolean isValidY(int y) {
 		//TODO: specific constraints for this field?
 		return true;
 	}
