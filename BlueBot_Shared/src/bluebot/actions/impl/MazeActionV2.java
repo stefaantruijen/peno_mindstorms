@@ -24,43 +24,53 @@ import bluebot.util.Utils;
  */
 public class MazeActionV2 extends Action {
 	
-	private Tile current;
+	private Tile current,rendez_vous=null;
 	private Maze maze;
 	private Movement moves;
-	private int playerId;
-	private int[] playerIds;
-//	private boolean scan;
-//	private BarcodeScanner scanner;
+	private final int playerNumber,objectNumber;
+	private final Graph graph = new Graph();
 	private int twist;
 	private final static int[] seesawBarcodes = new int[]{11,13,15,17,19,21};
+	private final static int[] itemBarcodes = new int[]{0,1,2,3,4,5,6,7};
+	private int teamNumber = -1;
 	
-	
-	public MazeActionV2(final int[] playerIds, final int playerId) {
-		this.playerId = playerId;
-		this.playerIds = playerIds.clone();
+	public MazeActionV2(final int playerNumber,final int objectNumber) {
+		this.playerNumber = playerNumber;
+		this.objectNumber = objectNumber;
+		getDriver().setStartLocation(this.playerNumber);
+		
 	}
 	/**
-	 * TODO: afmaken 
+	 * Create a seesaw tile. 
+	 * 
 	 * @param tile
 	 * @param dir
 	 * @return
 	 */
-	private final Tile createSeesawTile(Tile tile,final Orientation dir){
+	private final Tile createSeesawTile(Tile tile,final Orientation dir,int seesawBarcode){
 		Tile seesawTile = null;
+		int x = tile.getX();
+		int y = tile.getY();
 		switch(dir){
 			case EAST:
-				
+				seesawTile = maze.addTile(x+1, y);
 				break;
 			case NORTH:
+				seesawTile = maze.addTile(x, y+1);
 				break;
 			case SOUTH:
+				seesawTile = maze.addTile(x, y-1);
 				break;
 			case WEST:
+				seesawTile = maze.addTile(x-1, y);
 				break;
 			default:
 				break;
 		
 		}
+		tile.setSeesaw(true);
+		tile.setBarCode(seesawBarcode);
+		return seesawTile;
 	}
 	
 	private final Tile createItem(Tile tile, final Orientation dir, final int id) {
@@ -227,17 +237,15 @@ public class MazeActionV2 extends Action {
 		
 		moves = new Movement();
 		maze = new Maze();
-//		scanner = new BarcodeScanner();
 		twist = 0;
 		
-//		scanner.start();
+
 		
 		scanBorders(current = maze.addTile(0, 0));
 		
-		final Graph graph = new Graph();
+		
 		graph.setRootTile(current);
 		
-//		final BarcodeExecuter barcodes = new BarcodeExecuter(getDriver(), graph);
 		
 		for (Tile[] path; (path = getPathToNextTile(false)) != null;) {
 			if (path.length == 1) {
@@ -245,60 +253,54 @@ public class MazeActionV2 extends Action {
 				continue;
 			}
 			
-//			scan = false;
 			for (int i = 1; i < (path.length - 1); i++) {
 				checkAborted();
-				//TODO:checken op seesaw 
-				moveTo(path[i]);
+				Tile next = path[i];
+				if(barcodeCanBeSeesaw(next.getBarCode())){
+					new SeesawAction().execute();
+					i = i+3;
+					this.current = path[i];
+				}else{
+					moveTo(path[i]);
+				}
 			}
 			
 			checkAborted();
-//			scan = true;
 			moveTo(path[path.length - 1]);
-//			scan = false;
-			
+
 			Tile tile = current;
 			
-//			final int barcode = scanner.stopScanning();
+
 			checkAborted();
 			scanBorders(tile);
 			
-//			if (tile.canHaveBarcode()) {
-//				if (barcode > 0) {
-//					if (tile.getBarCode() != barcode) {
-//						tile.setBarCode(barcode);
-//						getDriver().sendTile(tile);
-//					}
-//					checkAborted();
-//					barcodes.executeBarcode(barcode, tile);
-//				} else {
-//					tile.setBarCode(0);
-//				}
-//			}
 			
 			checkAborted();
 			if (tile.canHaveBarcode()) {
 				final int barcode = scanBarcode(tile);
 				checkAborted();
 				if (barcode > 0) {
-					if(barcodeCanBePlayerId(barcode)){
+					if(barcodeCanBeItemBarcode(barcode)){
 						tile = createItem(tile, getDirectionBody(), barcode);
 						
 						checkAborted();
 						
-						if (barcode == playerId) {
+						if (isOurItem(barcode)) {
 							this.pickUp();
+							getDriver().sendItemFound(this.teamNumber);
 						}
 					}else if(barcodeCanBeSeesaw(barcode)){
 						
 						checkAborted();
-						Tile tile1 = createSeesawTile(tile, dir);
+						Tile tile1 = createSeesawTile(tile, getDirectionBody(),barcode);
 						tile1.setSeesaw(true);
 						getDriver().sendTile(tile1);
-						Tile tile2 = createSeesawTile(tile1, dir);
+						Tile tile2 = createSeesawTile(tile1, getDirectionBody(),barcode);
 						tile2.setSeesaw(true);
 						getDriver().sendTile(tile2);
+						Tile tile3 = createEndSeesawTile(tile2,getDirectionBody(),barcode);
 						checkAborted();
+						getDriver().sendTile(tile3);
 						
 						
 					}else{
@@ -308,14 +310,11 @@ public class MazeActionV2 extends Action {
 				}
 			}
 		}
+		moveToRendezVous();
+		/**final long timeExploration = timer.read();
 		
-		final long timeExploration = timer.read();
 		
-//		scanner.alive = false;
-		resetHead();
 		
-		graph.addVerticies(maze.getTiles());
-		final Dijkstra pathfinder = new Dijkstra(graph);
 		
 		Tile a = graph.getCheckpointVertex();
 		if (a == null) {
@@ -341,8 +340,172 @@ public class MazeActionV2 extends Action {
 				.append(Utils.formatDuration(timeShortestPath))
 				.append(" to reach the finish.").toString();
 		getDriver().sendMessage(msg, "Finished");
+		**/
+	}
+	/**
+	 * Move to a specified rendez-vous tile.
+	 * 
+	 * @throws InterruptedException
+	 * @throws ActionException
+	 * @throws DriverException
+	 * @throws IllegalStateException thrown when no path was found to the specified rendez-vous tile.
+	 */
+	private void moveToRendezVous()
+			throws InterruptedException, ActionException, DriverException {
+		resetHead();
+		
+		graph.addVerticies(maze.getTiles());
+		final Dijkstra pathfinder = new Dijkstra(graph);
+		while(rendez_vous == null){
+			Thread.sleep(1000);
+			System.out.println("Waiting for rendez vous tile");
+		}
+		
+		List<Tile> path = pathfinder.findShortestPath(current, rendez_vous);
+		if(path == null){
+			throw new IllegalStateException("Path to rendez-vous tile was not found, graph incomplete or rendez-vous == null ?");
+		}
+		
+		for (int i = 1; i < (path.size() - 1); i++) {
+			checkAborted();
+			Tile next = path.get(i);
+			if(barcodeCanBeSeesaw(next.getBarCode())){
+				new SeesawAction().execute();
+				i = i+3;
+				this.current = path.get(i);
+			}else{
+				moveTo(path.get(i));
+			}
+		}
+		//TODO: at this point if everything went correctly we should have reached the rendez-vous tile and the game is finished.
 	}
 	
+	/**
+	 * Specify a rendez-vous tile.
+	 * 
+	 * @param t
+	 */
+	public synchronized void setRendezVousTile(Tile t){
+		this.rendez_vous = t;
+	}
+	/**
+	 * Interrupt this mazeaction and move to an earlier specified rendez-vous tile. see setRendezVousTile()
+	 * @throws InterruptedException
+	 * @throws ActionException
+	 * @throws DriverException
+	 * @throws IllegalStateException if a rendez-vous tile is not set. i.e. rendez-vous == null or if the rendez-vous tile is not in the graph.
+	 */
+	public synchronized void interruptExplorerMoveToRendezVous() throws InterruptedException, ActionException, DriverException{
+		if(this.rendez_vous == null){
+			throw new IllegalStateException("No rendez-vous tile was specified");
+		}
+		this.abort();
+		this.moveToRendezVous();
+	}
+	
+	/**
+	 * Create the tile after the seesaw.
+	 * 
+	 * @param tile2
+	 * @param directionBody
+	 * @param barcode
+	 * @return
+	 */
+	private Tile createEndSeesawTile(Tile tile2, Orientation directionBody,
+			int barcode) {
+		Tile endTile = maze.addTile(tile2.getX(), tile2.getY(), directionBody);
+		endTile.setAllBordersOpen(true);
+		switch(directionBody){
+			case EAST:
+				endTile.setBorderNorth(Border.CLOSED);
+				endTile.setBorderSouth(Border.CLOSED);
+				break;
+			case NORTH:
+				endTile.setBorderEast(Border.CLOSED);
+				endTile.setBorderWest(Border.CLOSED);
+				break;
+			case SOUTH:
+				endTile.setBorderEast(Border.CLOSED);
+				endTile.setBorderWest(Border.CLOSED);
+				break;
+			case WEST:
+				endTile.setBorderNorth(Border.CLOSED);
+				endTile.setBorderSouth(Border.CLOSED);
+				break;
+			default:
+				break;
+		
+		}
+		
+		
+	    getDriver().sendTile(endTile);
+		
+		if(barcode==11||barcode == 13 ||barcode ==15){
+			endTile.setBarCode(barcode+2);
+		}else{
+			endTile.setBarCode(barcode-2);
+		}
+		
+		return endTile;
+	}
+	/**
+	 * Check if this barcode points to our item.
+	 * 
+	 * @param barcode
+	 * @return
+	 */
+	private boolean isOurItem(int barcode) {
+		int ballnumber=-1;
+		int teamNumber=-1;
+		switch(barcode){
+			case 0:
+				ballnumber = 0;
+				teamNumber = 0;
+				break;
+			case 1:
+				ballnumber = 1;
+				teamNumber = 0;
+				break;
+			case 2:
+				ballnumber = 2;
+				teamNumber = 0;
+				break;
+			case 3:
+				ballnumber = 3;
+				teamNumber = 0;
+				break;
+			case 4:
+				ballnumber = 0;
+				teamNumber = 1;
+				break;
+			case 5:
+				ballnumber = 1;
+				teamNumber = 1;
+				break;
+			case 6:
+				ballnumber = 2;
+				teamNumber = 1;
+				break;
+			case 7:
+				ballnumber = 3;
+				teamNumber = 1;
+				break;
+		}
+		
+		if(ballnumber == this.objectNumber){
+			this.teamNumber=teamNumber;
+			return true;
+		}else{
+			return false;
+		}
+		
+	}
+	/**
+	 * Check if this barcode is a possible seesaw barcode, regardin the specified barcodes.
+	 * 
+	 * @param barcode
+	 * @return
+	 */
 	private boolean barcodeCanBeSeesaw(int barcode) {
 		for(int i : seesawBarcodes){
 			if(i == barcode){
@@ -353,10 +516,15 @@ public class MazeActionV2 extends Action {
 	}
 
 
-
-	private boolean barcodeCanBePlayerId(int possiblePlayerId) {
-		for (final int playerId : playerIds) {
-			if (possiblePlayerId == playerId) {
+	/**
+	 * Check if this barcode can point to an item.
+	 * 
+	 * @param itemBarcode
+	 * @return
+	 */
+	private boolean barcodeCanBeItemBarcode(int itemBarcode) {
+		for (final int code : itemBarcodes) {
+			if (code == itemBarcode) {
 				return true;
 			}
 		}
@@ -417,7 +585,7 @@ public class MazeActionV2 extends Action {
 		
 		return borders;
 	}
-	
+	@Deprecated
 	private void followPath(final List<Tile> path)
 			throws ActionException, DriverException, InterruptedException {
 		getDriver().setSpeed(100);
