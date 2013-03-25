@@ -239,7 +239,7 @@ public class MazeActionV2 extends Action {
 		
 //		final BarcodeExecuter barcodes = new BarcodeExecuter(getDriver(), graph);
 		
-		for (Tile[] path; (path = getPathToNextTile()) != null;) {
+		for (Tile[] path; (path = getPathToNextTile(false)) != null;) {
 			if (path.length == 1) {
 				scanBorders(current);
 				continue;
@@ -508,7 +508,8 @@ public class MazeActionV2 extends Action {
 		return null;
 	}
 	
-	private final Tile[] getPathToNextTile() {
+	private final Tile[] getPathToNextTile(boolean canGoOverSeesaw) {
+		boolean wantsToGoOverSeesaw = false;
 		Tile tile = current;
 		if (needsExploration(tile)) {
 			return new Tile[] { tile };
@@ -531,10 +532,21 @@ public class MazeActionV2 extends Action {
 		for (final Orientation d : dirs) {
 			final Tile t = getNeighbor(tile, d);
 			if (t != null) {
-				nodes.add(new Node(t, d, node));
-				tiles.add(t);
+				if(canGoOverSeesaw){
+					nodes.add(new Node(t, d, node));
+					tiles.add(t);
+				} else if (!canGoOverSeesaw){
+					if(t.isSeesaw()){
+						wantsToGoOverSeesaw = true;
+					} else if (!t.isSeesaw()){
+						nodes.add(new Node(t, d, node));
+						tiles.add(t);
+					}
+				}
 			}
 		}
+		
+		
 		
 		while (!nodes.isEmpty()) {
 			node = nodes.remove(0);
@@ -553,6 +565,10 @@ public class MazeActionV2 extends Action {
 					tiles.add(t);
 				}
 			}
+		}
+		
+		if(!canGoOverSeesaw && wantsToGoOverSeesaw){
+			return this.getPathToNextTile(true);
 		}
 		
 		return null;
