@@ -41,6 +41,10 @@ public class ServerTranslator extends Translator {
 		sendPacket(getPacketFactory().createMotion(x, y, body, head));
 	}
 	
+	public void sendSeesaw(final int barcode, final boolean locked) {
+		sendPacket(getPacketFactory().createSeesaw(barcode, locked));
+	}
+	
 	public void sendSensorValue(final SensorType type, final int value) {
 		sendPacket(getPacketFactory().createSensorResponse(type, value));
 	}

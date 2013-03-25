@@ -14,6 +14,7 @@ import bluebot.io.protocol.impl.MotionPacket;
 import bluebot.io.protocol.impl.MovePacket;
 import bluebot.io.protocol.impl.PolygonPacket;
 import bluebot.io.protocol.impl.ResetPacket;
+import bluebot.io.protocol.impl.SeesawPacket;
 import bluebot.io.protocol.impl.SensorPacket;
 import bluebot.io.protocol.impl.StopPacket;
 import bluebot.io.protocol.impl.TilePacket;
@@ -236,6 +237,18 @@ public class PacketFactory {
 	 */
 	public Packet createReset() {
 		return ResetPacket.SINGLETON;
+	}
+	
+	/**
+	 * Creates a seesaw packet
+	 * 
+	 * @param barcode - the barcode of the seesaw (open side)
+	 * @param locked - determines whether we drive on or off the seesaw
+	 * 
+	 * @return a {@link Packet} object
+	 */
+	public Packet createSeesaw(final int barcode, final boolean locked) {
+		return new SeesawPacket(barcode, locked);
 	}
 	
 	/**
