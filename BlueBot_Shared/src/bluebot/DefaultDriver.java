@@ -180,6 +180,10 @@ public class DefaultDriver implements Driver {
 		getTranslator().sendError(msg);
 	}
 	
+	public void sendItemFound(final int teamId) {
+		getTranslator().sendItemFound(teamId);
+	}
+	
 	/**
 	 * Sends a message (with title "Info")
 	 * 

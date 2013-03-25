@@ -32,6 +32,10 @@ public class ServerTranslator extends Translator {
 		sendPacket(getPacketFactory().createError(msg));
 	}
 	
+	public void sendItemFound(final int teamId) {
+		sendPacket(getPacketFactory().createItem(teamId));
+	}
+	
 	public void sendMessage(final String msg, final String title) {
 		sendPacket(getPacketFactory().createMessage(msg, title));
 	}

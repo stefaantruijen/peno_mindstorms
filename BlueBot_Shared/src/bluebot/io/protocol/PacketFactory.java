@@ -7,6 +7,7 @@ import bluebot.io.protocol.impl.ConfigPacket;
 import bluebot.io.protocol.impl.DebugPacket;
 import bluebot.io.protocol.impl.DisconnectPacket;
 import bluebot.io.protocol.impl.ErrorPacket;
+import bluebot.io.protocol.impl.ItemPacket;
 import bluebot.io.protocol.impl.MQMessagePacket;
 import bluebot.io.protocol.impl.MazePacket;
 import bluebot.io.protocol.impl.MessagePacket;
@@ -121,6 +122,17 @@ public class PacketFactory {
 	 */
 	public Packet createError(final String msg) {
 		return new ErrorPacket(msg);
+	}
+	
+	/**
+	 * Creates an item packet
+	 * 
+	 * @param team - the ID of your team
+	 * 
+	 * @return a {@link Packet} object
+	 */
+	public Packet createItem(final int team) {
+		return new ItemPacket(team);
 	}
 	
 	/**

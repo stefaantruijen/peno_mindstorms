@@ -26,6 +26,7 @@ public abstract class Packet {
 	public static final int OP_CONFIG     = 0x40;
 	public static final int OP_TILE       = 0x50;
 	public static final int OP_SEESAW     = 0x61;
+	public static final int OP_ITEM       = 0x62;
 	public static final int OP_ERROR      = 0xE0;
 	public static final int OP_MESSAGE    = 0xE1;
 	public static final int OP_DEBUG      = 0xE2;

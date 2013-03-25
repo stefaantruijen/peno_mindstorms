@@ -124,6 +124,13 @@ public interface Driver extends Mobile {
 	public void sendError(String msg);
 	
 	/**
+	 * Sends a notification about finding your item
+	 * 
+	 * @param teamId - the ID of your team
+	 */
+	public void sendItemFound(int teamId);
+	
+	/**
 	 * Sends a message
 	 * 
 	 * @param msg - the message

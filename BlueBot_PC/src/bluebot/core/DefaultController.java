@@ -18,6 +18,7 @@ import bluebot.io.protocol.PacketHandler;
 import bluebot.io.protocol.impl.ConfigPacket;
 import bluebot.io.protocol.impl.DebugPacket;
 import bluebot.io.protocol.impl.ErrorPacket;
+import bluebot.io.protocol.impl.ItemPacket;
 import bluebot.io.protocol.impl.MQMessagePacket;
 import bluebot.io.protocol.impl.MessagePacket;
 import bluebot.io.protocol.impl.MotionPacket;
@@ -213,6 +214,9 @@ public class DefaultController extends AbstractController {
 				case OP_ERROR:
 					fireError(((ErrorPacket)packet).getMessage());
 					break;
+				case OP_ITEM:
+					handlePacketItem((ItemPacket)packet);
+					break;
 				case OP_MESSAGE:
 					final MessagePacket p = (MessagePacket)packet;
 					fireMessage(p.getMessage(), p.getTitle());
@@ -240,6 +244,27 @@ public class DefaultController extends AbstractController {
 				case ConfigPacket.ID_SPEED:
 					fireSpeedChanged(packet.getValue().intValue());
 					break;
+			}
+		}
+		
+		private final void handlePacketItem(final ItemPacket packet) {
+			//	TODO
+			final PlayerClient client = getGameClient();
+			if (client == null) {
+				return;
+			}
+			
+			try {
+				if (!client.hasTeamNumber()) {
+					client.joinTeam(packet.getTeamId());
+				}
+				if (!client.hasFoundObject()) {
+					client.foundObject();
+				}
+			} catch (final IllegalStateException e) {
+				e.printStackTrace();
+			} catch (final IOException e) {
+				e.printStackTrace();
 			}
 		}
 		
