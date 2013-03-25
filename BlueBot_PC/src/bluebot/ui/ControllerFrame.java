@@ -20,6 +20,7 @@ import javax.swing.JTabbedPane;
 import bluebot.ConfigListener;
 import bluebot.core.Controller;
 import bluebot.core.ControllerListener;
+import bluebot.game.World;
 import bluebot.graph.Tile;
 import bluebot.sensors.SensorListener;
 import bluebot.simulator.GhostDriver;
@@ -418,7 +419,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 						throw new RuntimeException("Invalid index:  " + i);
 				}
 				System.out.println("Creating ghost on " + start);
-				robot = new VirtualRobot(tiles, start);
+				robot = new VirtualRobot(new World(tiles));
 				robot.setSpeed(100);
 				
 				/*

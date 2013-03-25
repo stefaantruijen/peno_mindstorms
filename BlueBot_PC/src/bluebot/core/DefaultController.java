@@ -5,6 +5,8 @@ import static bluebot.io.protocol.Packet.*;
 
 import java.io.IOException;
 
+import peno.htttp.PlayerClient;
+
 import bluebot.game.Game;
 import bluebot.game.GameException;
 import bluebot.io.ClientTranslator;
@@ -19,6 +21,7 @@ import bluebot.io.protocol.impl.ErrorPacket;
 import bluebot.io.protocol.impl.MQMessagePacket;
 import bluebot.io.protocol.impl.MessagePacket;
 import bluebot.io.protocol.impl.MotionPacket;
+import bluebot.io.protocol.impl.SeesawPacket;
 import bluebot.io.protocol.impl.SensorPacket;
 import bluebot.io.protocol.impl.TilePacket;
 
@@ -31,6 +34,7 @@ import bluebot.io.protocol.impl.TilePacket;
 public class DefaultController extends AbstractController {
 	
 	private Communicator communicator;
+	private Game game;
 	private ClientTranslator translator;
 	
 	
@@ -105,6 +109,19 @@ public class DefaultController extends AbstractController {
 		return communicator;
 	}
 	
+	private final Game getGame() {
+		return game;
+	}
+	
+	private final PlayerClient getGameClient() {
+		try {
+			return getGame().getClient();
+		} catch (final NullPointerException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	private final ClientTranslator getTranslator() {
 		return translator;
 	}
@@ -149,9 +166,14 @@ public class DefaultController extends AbstractController {
 	
 	public void stop() {
 		getTranslator().stop();
+		
+		final Game game = this.game;
+		if (game != null) {
+			this.game = null;
+			game.terminate();
+		}
 	}
-
-	@Override
+	
 	public void turnLeft() {
 		getTranslator().turnLeft();
 	}
@@ -201,6 +223,9 @@ public class DefaultController extends AbstractController {
 				case OP_MOTION:
 					handlePacketMotion((MotionPacket)packet);
 					break;
+				case OP_SEESAW:
+					handlePacketSeesaw((SeesawPacket)packet);
+					break;
 				case OP_SENSOR:
 					handlePacketSensor((SensorPacket)packet);
 					break;
@@ -227,6 +252,29 @@ public class DefaultController extends AbstractController {
 			fireMotion(packet.getX(), packet.getY(),
 					packet.getHeadingBody(),
 					packet.getHeadingHead());
+		}
+		
+		private final void handlePacketSeesaw(final SeesawPacket packet) {
+			final PlayerClient client = getGameClient();
+			if (client == null) {
+				return;
+			}
+			
+			try {
+				final int barcode = packet.getBarcode();
+				if (packet.isLocked()) {
+					if (!client.hasLockOnSeesaw()) {
+						client.lockSeesaw(barcode);
+					}
+				} else if (client.hasLockOnSeesaw(barcode)) {
+					client.unlockSeesaw();
+				}
+			} catch (final IllegalStateException e) {
+				//	This should not be possible!
+				e.printStackTrace();
+			} catch (final IOException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		private final void handlePacketSensor(final SensorPacket packet) {

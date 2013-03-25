@@ -9,7 +9,7 @@ import bluebot.DefaultDriver;
 import bluebot.Driver;
 import bluebot.DriverHandler;
 import bluebot.Robot;
-import bluebot.graph.Tile;
+import bluebot.game.World;
 import bluebot.io.ClientConnector;
 import bluebot.io.Communicator;
 import bluebot.io.Connection;
@@ -50,26 +50,26 @@ public class ControllerFactory {
 	/**
 	 * Creates a controller for a simulator
 	 * 
-	 * @param tiles - an array of {@link Tile} objects representing the virtual maze
+	 * @param world - the {@link World} object representing the virtual world
 	 * 
 	 * @return a {@link Controller} object
 	 * 
 	 * @throws IOException 
 	 */
-	public Controller connectToSimulator(final Tile[] tiles) throws IOException {
-		Tile start = null;
-		for (final Tile tile : tiles) {
-			if ((tile.getX() | tile.getY()) == 0) {
-				start = tile;
-				break;
-			}
-		}
+	public Controller connectToSimulator(final World world) throws IOException {
+//		Tile start = null;
+//		for (final Tile tile : tiles) {
+//			if ((tile.getX() | tile.getY()) == 0) {
+//				start = tile;
+//				break;
+//			}
+//		}
+//		
+//		if (start == null) {
+//			start = tiles[0];
+//		}
 		
-		if (start == null) {
-			start = tiles[0];
-		}
-		
-		return createController(new VirtualRobot(tiles, start));
+		return createController(new VirtualRobot(world));
 	}
 	
 	/**
