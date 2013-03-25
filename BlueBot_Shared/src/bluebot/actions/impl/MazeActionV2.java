@@ -32,14 +32,36 @@ public class MazeActionV2 extends Action {
 //	private boolean scan;
 //	private BarcodeScanner scanner;
 	private int twist;
+	private final static int[] seesawBarcodes = new int[]{11,13,15,17,19,21};
 	
 	
 	public MazeActionV2(final int[] playerIds, final int playerId) {
 		this.playerId = playerId;
 		this.playerIds = playerIds.clone();
 	}
-	
-	
+	/**
+	 * TODO: afmaken 
+	 * @param tile
+	 * @param dir
+	 * @return
+	 */
+	private final Tile createSeesawTile(Tile tile,final Orientation dir){
+		Tile seesawTile = null;
+		switch(dir){
+			case EAST:
+				
+				break;
+			case NORTH:
+				break;
+			case SOUTH:
+				break;
+			case WEST:
+				break;
+			default:
+				break;
+		
+		}
+	}
 	
 	private final Tile createItem(Tile tile, final Orientation dir, final int id) {
 		tile = maze.addTile(tile.getX(), tile.getY(), dir);
@@ -226,6 +248,7 @@ public class MazeActionV2 extends Action {
 //			scan = false;
 			for (int i = 1; i < (path.length - 1); i++) {
 				checkAborted();
+				//TODO:checken op seesaw 
 				moveTo(path[i]);
 			}
 			
@@ -255,23 +278,31 @@ public class MazeActionV2 extends Action {
 			
 			checkAborted();
 			if (tile.canHaveBarcode()) {
-				//graph.addVertex(tile);
-				//getDriver().sendTile(tile);
 				final int barcode = scanBarcode(tile);
 				checkAborted();
 				if (barcode > 0) {
 					if(barcodeCanBePlayerId(barcode)){
 						tile = createItem(tile, getDirectionBody(), barcode);
-						//graph.addVertex(tile);
+						
 						checkAborted();
-						//getDriver().sendTile(tile);
+						
 						if (barcode == playerId) {
 							this.pickUp();
-							//this.current = tile;
-							return;
 						}
+					}else if(barcodeCanBeSeesaw(barcode)){
+						
+						checkAborted();
+						Tile tile1 = createSeesawTile(tile, dir);
+						tile1.setSeesaw(true);
+						getDriver().sendTile(tile1);
+						Tile tile2 = createSeesawTile(tile1, dir);
+						tile2.setSeesaw(true);
+						getDriver().sendTile(tile2);
+						checkAborted();
+						
+						
 					}else{
-						//TODO:Checkpoint logica
+						//TODO:Checkpoint logica ?
 					}
 					
 				}
@@ -312,6 +343,17 @@ public class MazeActionV2 extends Action {
 		getDriver().sendMessage(msg, "Finished");
 	}
 	
+	private boolean barcodeCanBeSeesaw(int barcode) {
+		for(int i : seesawBarcodes){
+			if(i == barcode){
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+
 	private boolean barcodeCanBePlayerId(int possiblePlayerId) {
 		for (final int playerId : playerIds) {
 			if (possiblePlayerId == playerId) {

@@ -215,6 +215,10 @@ public class DefaultDriver implements Driver {
 		getTranslator().sendMotion(x, y, body, head);
 	}
 	
+	public void sendSeesaw(final int barcode, final boolean locked) {
+		getTranslator().sendSeesaw(barcode, locked);
+	}
+	
 	private final void sendSensor(final int value, final SensorType type) {
 		getTranslator().sendSensorValue(type, value);
 	}

@@ -53,6 +53,7 @@ public class TileBuilder {
 				}else{
 					throw new IllegalStateException("Parse error : wrong orientation or orientation not given on a start position.");
 				}
+				tile.setStartPosition(true);
 			}else{
 				throw new IllegalStateException("Parse error : starting position is on a straigh/closed/seesaw tile.");
 			}
