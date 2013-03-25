@@ -99,4 +99,11 @@ public interface Robot extends Mobile {
 	 */
 	public int getInfraredDirection();
 	
+	/**
+	 * 
+	 * sets start location
+	 * @param playerID
+	 */
+	public void setStartLocation(int playerID);
+	
 }

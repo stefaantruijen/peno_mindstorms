@@ -1132,5 +1132,18 @@ public class VirtualRobot extends AbstractRobot {
 	public int getInfraredDirection() {
 		return irsensor.getInfraredDirection(getImgX(), getImgY(), getHeading());
 	}
+
+	@Override
+	public void setStartLocation(int playerID) {
+		for(Tile t : tilesList){
+			if(t.isStartPosition()){
+				if(t.getStartPlayerId()==playerID){
+					this.setStartTile(t);
+					break;
+				}
+			}
+		}
+		
+	}
 	
 }

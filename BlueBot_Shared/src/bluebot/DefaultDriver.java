@@ -408,5 +408,10 @@ public class DefaultDriver implements Driver {
 	public int getInfraredDirection() {
 		return getRobot().getInfraredDirection();
 	}
+	@Override
+	public void setStartLocation(int playerID) {
+		this.getRobot().setStartLocation(playerID);
+		
+	}
 	
 }
