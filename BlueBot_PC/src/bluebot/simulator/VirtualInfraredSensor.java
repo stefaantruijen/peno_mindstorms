@@ -90,7 +90,8 @@ public class VirtualInfraredSensor {
                              * Bovendien kan ze ook checken of de wip gesloten is, en dit dan beschouwen als een muur.
                              * Deze moet nog geïmplementeerd worden en gebruik maken van GameState?.
                              */
-                            if(noWallBetween(x, y, heading, distBetween)){
+                    		//TODO: where do we have access to the World object?
+                            if(noWallBetween(x, y, heading, distBetween) && !sensors.getWorld().isSeesawLocked(sensors.getTileAt(x,y).getBarCode())){
                                     return irSource;
                             }
                      }
@@ -149,7 +150,7 @@ public class VirtualInfraredSensor {
      * @return	An integer representing a IR signal direction.
      */
     //TODO: Exact Angles still unknown.
-    private int determineDirectionOfIRSignal(float angleBetweenIRBallAndHeading) {
+    public static int determineDirectionOfIRSignal(float angleBetweenIRBallAndHeading) {
     	if(angleBetweenIRBallAndHeading > 350 || angleBetweenIRBallAndHeading <10){
 			return IR_12_O_CLOCK;
 		} else if (angleBetweenIRBallAndHeading > 340 && angleBetweenIRBallAndHeading<= 350){

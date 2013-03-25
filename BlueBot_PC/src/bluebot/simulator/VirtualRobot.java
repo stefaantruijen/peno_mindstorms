@@ -11,6 +11,7 @@ import javax.sound.sampled.DataLine;
 
 import bluebot.AbstractRobot;
 import bluebot.Robot;
+import bluebot.game.World;
 import bluebot.graph.Tile;
 import bluebot.util.Orientation;
 import bluebot.util.Utils;
@@ -37,17 +38,17 @@ public class VirtualRobot extends AbstractRobot {
 	/**
  	 *Static that holds the maximum travel speed in degrees/s.
 	 */
-	private static final float MaxRotateSpeed = 500; //TODO: see what this is IRL?
+	private static final float MaxRotateSpeed = 500;
 	/**
  	 *Static that holds the maximum travel speed in mm/s.
 	 */
-	private static final float MaxTravelSpeed = 500; //TODO: see what this is IRL?
+	private static final float MaxTravelSpeed = 500;
 	/**
-	 * The size of the tiles in cm on which the VirtualRobot will be driving. //TODO: get this from a higher lvl.
+	 * The size of the tiles in cm on which the VirtualRobot will be driving.
 	 */
 	public static int TILE_SIZE_CM = 40;
 	
-	public static double STANDARD_SONAR_ROTATE_SPEED = 400; //Probably get this value from other class.//TODO: see what this is irl
+	public static double STANDARD_SONAR_ROTATE_SPEED = 400;
 	
 	/**
 	 * Distance from the center of the VirtualRobot to the position of the lightSensor in centimeters.
@@ -72,6 +73,7 @@ public class VirtualRobot extends AbstractRobot {
 	//	TODO
 	//	This is a very ugly hack for the ghost drivers
 	//	and it should be removed ASAP
+	//	DEFINE ASAP?
 	public static Tile[] maze;
 
 	/**
@@ -158,6 +160,10 @@ public class VirtualRobot extends AbstractRobot {
 	 */
 	private VirtualInfraredSensor irsensor;
 	/**
+	 * The world in which the VirtualRobot is driving.
+	 */
+	private World world;
+	/**
 	 * Minimal offset of the borders of a tile for placing the VirtualRobot randomly in one.
 	 */
 	protected static int randomMaxOffset = 10;
@@ -172,17 +178,15 @@ public class VirtualRobot extends AbstractRobot {
 	 * @param startTile
 	 * 			Tile at which the robot will start.
 	 */
-	public VirtualRobot(Tile[] tilesList,Tile startTile){
+	public VirtualRobot(World world){
+		this.world = world;
+		tilesList = world.getMaze();
+		Tile startTile = findInitialStartTile();
 		if(isValid(tilesList,startTile)){
 			VirtualRobot.maze = tilesList.clone();
-			this.tilesList= tilesList;
 			//Sets the robot random in the startTile
-			setRandomInStartTile(startTile);
-			int tileImgStartX_CM = (int) Math.round(startTile.getX()*TILE_SIZE_CM + TILE_SIZE_CM/2);
-			int tileImgStartY_CM = (int) Math.round(startTile.getY()*TILE_SIZE_CM + TILE_SIZE_CM/2);
-			setImgStartX(tileImgStartX_CM);
-			setImgStartY(tileImgStartY_CM);
-			this.sensors = new Sensors(this.tilesList);
+			setStartTile(startTile);
+			this.sensors = new Sensors(world);
 			lightSensor = sensors.getLightSensor();
 			sonar = sensors.getSonar();
 			setTravelSpeed(DEFAULT_SPEED_TRAVEL);
@@ -192,6 +196,27 @@ public class VirtualRobot extends AbstractRobot {
 		} else {
 			throw new IllegalArgumentException();
 		}
+	}
+
+	public void setStartTile(Tile startTile) {
+		clearAction();
+		int tileImgStartX_CM = (int) Math.round(startTile.getX()*TILE_SIZE_CM + TILE_SIZE_CM/2);
+		int tileImgStartY_CM = (int) Math.round(startTile.getY()*TILE_SIZE_CM + TILE_SIZE_CM/2);
+		setOrientation(tileImgStartX_CM, tileImgStartY_CM, 0);
+	}
+	
+	private Tile findInitialStartTile() {
+		int i= 0;
+		Tile tileToCheck = tilesList[i];
+		while(!isValidStartTile(tileToCheck) && i<tilesList.length){
+			tileToCheck = tilesList[++i];
+		}
+		return tileToCheck;
+	}
+	
+	
+	private boolean isValidStartTile(Tile tileToCheck){
+		return !tileToCheck.isSeesaw();
 	}
 	
 	//GETTERS AND SETTERS
@@ -358,7 +383,6 @@ public class VirtualRobot extends AbstractRobot {
 	 * 
 	 * @param speed
 	 */
-	//TODO:@Override?
 	public void setTravelSpeed(double speed) {
 		this.travelSpeed = speed;
 	}
@@ -368,7 +392,6 @@ public class VirtualRobot extends AbstractRobot {
 	 * 
 	 * @return
 	 */
-	//TODO:@Override?
 	public double getTravelSpeed() {
 		return travelSpeed;
 	}
@@ -377,7 +400,6 @@ public class VirtualRobot extends AbstractRobot {
 	 * Sets the rotate speed to the given speed.
 	 * @param speed
 	 */
-	//TODO:@Override?
 	public void setRotateSpeed(double speed) {
 		this.rotateSpeed = speed;
 	}
@@ -386,7 +408,6 @@ public class VirtualRobot extends AbstractRobot {
 	 * The rotate speed of this VirtualRobot.
 	 * @return
 	 */
-	//TODO:@Override?
 	public double getRotateSpeed() {
 		return rotateSpeed;
 	}
@@ -396,7 +417,6 @@ public class VirtualRobot extends AbstractRobot {
 	 * Gets the rotate speed of the sonar
 	 * @return
 	 */
-	//TODO:@Override?
 	public double getSonarRotateSpeed() {
 		return sonarRotateSpeed;
 	}
@@ -405,7 +425,6 @@ public class VirtualRobot extends AbstractRobot {
 	 * Sets the rotate speed of the sonar
 	 * @return
 	 */
-	//TODO:@Override?
 	public void setSonarRotateSpeed(double speed) {
 		 sonarRotateSpeed = speed;
 	}
@@ -416,7 +435,6 @@ public class VirtualRobot extends AbstractRobot {
 	 * @return
 	 * 		Can either be negative or positive.
 	 */
-	//TODO:@Override?
 	public float getRelativeSonarDirection(){
 		float result = getInitSonarDirection();
 		if(getCurrentAction() == Action.SONAR){
@@ -442,7 +460,6 @@ public class VirtualRobot extends AbstractRobot {
 	 * @return
 	 * 		A float in the range of [0, 360)
 	 */
-	//TODO:@Override?
 	public float getAbsoluteSonarDirection(){
 		return Utils.clampAngleDegrees(getHeading() + getRelativeSonarDirection());
 	}
@@ -578,7 +595,6 @@ public class VirtualRobot extends AbstractRobot {
 	 * 
 	 * @return A number between
 	 */
-//	@Override <= TODO u this
 	public int readSensorLightValue() {
 		double radialHeading = Math.toRadians(getHeading());
 		int sensorX = calculateOffsettedXByRadialHeading(radialHeading, LIGHT_SENSOR_OFFSET_CM);
@@ -600,7 +616,7 @@ public class VirtualRobot extends AbstractRobot {
 	 * 
 	 * @return A number between
 	 */
-//	@Override TODO
+//	@Override
 	public boolean readSensorTouch() {
 		return checkFrontClearDistance()<=OBSTRUCTION_THRESHOLD_FRONT_CM;
 	}
@@ -710,10 +726,7 @@ public class VirtualRobot extends AbstractRobot {
 	 */
 	@Override
 	public Orientation getOrientation() {
-		/*
-		 * TODO:	Provide information about the rotation of the US sensor
-		 * 
-		 * The 4th value of the Orientation constructor
+		/* The 4th value of the Orientation constructor
 		 * represents the heading of the US sensor.
 		 * 
 		 * This value is expressed in degrees,
@@ -735,7 +748,6 @@ public class VirtualRobot extends AbstractRobot {
 	 *  
 	 * WARNING: This is a blocking action right now!
 	 */
-	//TODO decide true or false for waiting?
 	@Override
 	public void turnHeadClockWise(int offset) {
 		commitPreviousAction();
@@ -750,7 +762,6 @@ public class VirtualRobot extends AbstractRobot {
 	 * 
 	 * WARNING: This is a blocking action right now!
 	 */
-	//TODO decide true or false for waiting?
 	@Override
 	public void turnHeadCounterClockWise(int offset) {
 		commitPreviousAction();
@@ -776,7 +787,7 @@ public class VirtualRobot extends AbstractRobot {
 		setTravelSpeed(speed);
 	}
 	
-	@Override//TODO: make pulic in superclass and STATIC?
+	@Override
 	public float getMaximumSpeedRotate() {
 		return MaxRotateSpeed;
 	}
@@ -941,25 +952,6 @@ public class VirtualRobot extends AbstractRobot {
 		}
 		return false;
 	}
-	
-	/**
-	 * Places the VirtualRobot randomly in the given tile.
-	 * 
-	 *TODO: currently there is no randomness implemented. 
-	 *		If the Orientate (and resetOrientation method) is working properly then this can be used again.
-	 *
-	 * @param st
-	 */
-	private void setRandomInStartTile(Tile st) {
-//		setRandomXIn(st);
-//		setRandomYIn(st);
-		setInitAbsoluteX(0);
-		setInitAbsoluteY(0);
-		//TODO: see for a solution for the heading.
-		setInitAbsoluteHeading(0);
-		//Sonar will always be at 0
-		setInitSonarDirection(0);
-	}
 
 	/**
 	 * Sets the x coordinate of the robot random in the first tile (where (0,0) is the middle of the tile).
@@ -1089,20 +1081,22 @@ public class VirtualRobot extends AbstractRobot {
 	/**
 	* Modifies the current position and orientation of the {@link VirtualRobot}.
 	* This method will stop and clear any current action.
+	* Unit of x and y are CENTIMETER!
 	*
-	* @param x - the position on the X axis (in mm)
-	* @param y - the position on the Y axis (in mm)
+	* @param x - the position on the X axis (in cm!!!)
+	* @param y - the position on the Y axis (in cm!!!)
 	* @param body - the rotation of the robot (in degrees)
 	*/
-	public void setOrientation(final float x, final float y, final float body) {
-	        //      TODO:   Implementation, in progress
+	public void setOrientation(final int x, final int y, final float body) {
 	        /*
 	         * Clear all existing variables in case the robot has a currentAction.
 	         * The init values are ofcourse set to the desired values.
 	         */
 	        clearAction();                          // Clears currentAction, currentArgument and currentETA
-	        setInitAbsoluteX(x);                    // self explanatory
-	        setInitAbsoluteY(y);                    // self explanatory
+	        setImgStartX(x);						// self explanatory
+	        setImgStartY(y);						// self explanatory
+	        setInitAbsoluteX(0);                    // self explanatory
+	        setInitAbsoluteY(0);                    // self explanatory
 	        setInitAbsoluteHeading(body);           // self explanatory
 	        setInitSonarDirection(body);            // self explanatory
 	}

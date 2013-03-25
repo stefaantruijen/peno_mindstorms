@@ -3,6 +3,7 @@ package bluebot.simulator;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import bluebot.game.World;
 import bluebot.graph.Tile;
 
 /**
@@ -51,22 +52,33 @@ public class Sensors {
 	 */
 	private int maxYOfGrid;
 	/**
+	 * The world of this sensors.
+	 */
+	private World world;
+	/**
 	 * The tile size.
 	 */
 	public static final int TILE_SIZE = VirtualRobot.TILE_SIZE_CM;
+	
+	
 
 	/**
 	 * Default constructor uses the Tile objects in tilesList for making the virtual sensor data.
 	 * 
 	 * @param tilesList
 	 */
-	public Sensors(Tile[] tilesList) {
-		this.tilesList = tilesList;
+	public Sensors(World world) {
+		this.world = world;
+		this.tilesList = world.getMaze();
 		findGridBorders();
 		makeTileMap();
 		light = new VirtualLightSensor(this);
 		sonar = new VirtualSonar(this);
 		irsenor = new  VirtualInfraredSensor(this);
+	}
+	
+	public World getWorld(){
+		return world;
 	}
 	
 	/**
