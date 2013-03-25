@@ -69,10 +69,10 @@ public class World {
 			
 			//	TODO:	X & Y conversion
 			
-			float heading = (450F - (float)angle);
-			for (; heading >= 360F; heading -= 360F);
-			
-			player.update((float)x, (float)y, heading, playerNumber, foundObject);
+			player.update((float)x, (float)y,
+					Protocol.angleExternalToInternal(angle),
+					playerNumber,
+					foundObject);
 		}
 		
 		public void unlockedSeesaw(final String playerId,
