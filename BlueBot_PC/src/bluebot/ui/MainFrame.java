@@ -22,6 +22,7 @@ import javax.swing.filechooser.FileFilter;
 import lejos.pc.comm.NXTCommException;
 
 import bluebot.core.Controller;
+import bluebot.game.World;
 import bluebot.graph.Graph;
 import bluebot.graph.Tile;
 import bluebot.maze.MazeReader;
@@ -91,7 +92,7 @@ public class MainFrame extends JFrame {
 		maze.toArray(tiles);
 		
 		try {
-			showController(getControllerFactory().connectToSimulator(tiles));
+			showController(getControllerFactory().connectToSimulator(new World(tiles)));
 		} catch (final IOException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this,
