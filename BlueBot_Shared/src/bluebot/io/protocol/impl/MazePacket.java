@@ -15,58 +15,47 @@ import bluebot.io.protocol.Packet;
  */
 public class MazePacket extends Packet {
 	
-	private int id;
-	private int[] ids;
+	private int itemNumber, playerNumber;
 	
 	
 	public MazePacket(final DataInput input) throws IOException {
 		super(input);
 	}
-	public MazePacket(final int[] playerIds, final int playerId) {
-		setPlayerId(playerId);
-		setPlayerIds(playerIds);
+	public MazePacket(final int playerNumber, final int itemNumber) {
+		setPlayerNumber(playerNumber);
+		setItemNumber(itemNumber);
 	}
 	
 	
+	
+	public int getItemNumber() {
+		return itemNumber;
+	}
 	
 	public int getOpcode() {
 		return OP_MAZE;
 	}
 	
-	public int getPlayerId() {
-		return id;
-	}
-	
-	public int[] getPlayerIds() {
-		return ids.clone();
+	public int getPlayerNumber() {
+		return playerNumber;
 	}
 	
 	protected void readPayload(final DataInput input) throws IOException {
-		setPlayerId(input.readInt());
-		
-		final int[] ids = new int[input.readUnsignedShort()];
-		for (int i = 0; i < ids.length; i++) {
-			ids[i] = input.readInt();
-		}
-		setPlayerIds(ids);
+		setPlayerNumber(input.readUnsignedByte());
+		setItemNumber(input.readUnsignedByte());
 	}
 	
-	private final void setPlayerId(final int id) {
-		this.id = id;
+	private final void setItemNumber(final int itemNumber) {
+		this.itemNumber = itemNumber;
 	}
 	
-	private final void setPlayerIds(final int[] ids) {
-		this.ids = ids.clone();
+	private final void setPlayerNumber(final int playerNumber) {
+		this.playerNumber = playerNumber;
 	}
 	
 	protected void writePayload(final DataOutput output) throws IOException {
-		output.writeInt(getPlayerId());
-		
-		final int[] ids = getPlayerIds();
-		output.writeShort(ids.length);
-		for (final int id : ids) {
-			output.writeInt(id);
-		}
+		output.writeByte(getPlayerNumber());
+		output.writeByte(getItemNumber());
 	}
 	
 }

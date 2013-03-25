@@ -3,9 +3,12 @@ package bluebot.core;
 
 import java.io.IOException;
 
+import peno.htttp.PlayerHandler;
+
 import bluebot.ConfigListener;
 import bluebot.game.Game;
 import bluebot.game.GameException;
+import bluebot.game.World;
 import bluebot.io.ConnectionListener;
 import bluebot.io.MessageListener;
 import bluebot.maze.MazeListener;
@@ -35,16 +38,23 @@ public interface Controller extends EventDispatcher<ControllerListener> {
 	
 	public void doCalibrate();
 	
-	public Game doGame(String gameId, String playerId)
+	public Game doGame(String gameId, String playerId, PlayerHandler handler)
 			throws GameException, IOException;
 	
-	public void doMaze(int[] playerIds, int playerId);
+	public void doMaze(int playerNumber, int itemNumber);
 	
 	public void doPolygon(int corners, float length);
 	
 	public void doTile();
 	
 	public void doWhiteLineOrientation();
+	
+	/**
+	 * Returns the world reference
+	 * 
+	 * @return a {@link World} object
+	 */
+	public World getWorld();
 	
 	public void init();
 	

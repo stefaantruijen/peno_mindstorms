@@ -7,7 +7,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
@@ -20,11 +19,11 @@ import javax.swing.JTabbedPane;
 import bluebot.ConfigListener;
 import bluebot.core.Controller;
 import bluebot.core.ControllerListener;
-import bluebot.game.World;
+import bluebot.game.Game;
+import bluebot.game.PlayerAdapter;
 import bluebot.graph.Tile;
 import bluebot.sensors.SensorListener;
 import bluebot.simulator.GhostDriver;
-import bluebot.simulator.VirtualRobot;
 import bluebot.ui.TerminalComponent.SuggestionProvider;
 import bluebot.ui.util.RabbitListCellRenderer;
 import bluebot.ui.util.RabbitListModel;
@@ -356,116 +355,33 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 	}
 	
 	private final void doGame(final String[] args) {
+		final Game game;
+		try {
+			game = controller.doGame(args[1], args[2], new PlayerAdapter() {
+				@Override
+				public void gameRolled(final int playerNumber, final int objectNumber) {
+					final Tile start = controller.getWorld().getStart(playerNumber);
+					if (start == null) {
+						onError("Unable to determine start location");
+						throw new IllegalArgumentException("INTERRUPT");
+					}
+					
+					final String msg = String.format("Place the robot on %s facing %s",
+							start, start.getStartOrientation());
+					onMessage(msg, "The game has been rolled");
+				}
+			});
+		} catch (final Exception e) {
+			e.printStackTrace();
+			onError(e.getMessage());
+			return;
+		}
 		
+		//	TODO
 	}
 	
 	private final void doMaze(final String[] args) throws NumberFormatException {
-		final String[] ids_ = args[1].split(",");
-		final int[] ids = new int[ids_.length];
-		for (int i = 0; i < ids.length; i++) {
-			ids[i] = Integer.parseInt(ids_[i]);
-		}
-		
-		final int n = (args.length - 2);
-		if (n > 0) {
-			System.out.println("Adding " + n + " ghost drivers ...");
-			//	Ghost drivers will be added
-			final GhostDriver[] ghosts = new GhostDriver[n];
-			final Tile[] tiles = VirtualRobot.maze.clone();
-			
-			int maxX, maxY;
-			VirtualRobot robot;
-			Tile start;
-			for (int i = 0; i < n; i++) {
-				start = null;
-				System.out.printf("%d %% 3 = %d%n", i, (i % 3));
-				switch (i % 3) {
-					case 0:
-						//	(0, maxY)
-						maxY = -1;
-						for (final Tile tile : tiles) {
-							if ((tile.getX() == 0) && (tile.getY() > maxY)) {
-								maxY = tile.getY();
-								start = tile;
-							}
-						}
-						break;
-					case 1:
-						//	(maxX, maxY)
-						maxX = -1;
-						maxY = -1;
-						for (final Tile tile : tiles) {
-							if (tile.getX() > maxX) {
-								maxX = tile.getX();
-								start = tile;
-							}
-							if (tile.getY() > maxY) {
-								maxY = tile.getY();
-								start = tile;
-							}
-						}
-						break;
-					case 2:
-						//	(maxX, 0)
-						maxX = -1;
-						for (final Tile tile : tiles) {
-							if ((tile.getY() == 0) && (tile.getX() > maxX)) {
-								maxX = tile.getX();
-								start = tile;
-							}
-						}
-						break;
-					default:
-						throw new RuntimeException("Invalid index:  " + i);
-				}
-				System.out.println("Creating ghost on " + start);
-				robot = new VirtualRobot(new World(tiles));
-				robot.setSpeed(100);
-				
-				/*
-				final float x = (start.getX() * Tile.SIZE);
-				final float y = (start.getY() * Tile.SIZE);
-				
-				float body = 0F;
-				for (final Orientation dir : Orientation.values()) {
-					if (start.getBorder(dir) == Border.OPEN) {
-						switch (dir) {
-							case NORTH:
-								body = 0F;
-								break;
-							case EAST:
-								body = 90F;
-								break;
-							case SOUTH:
-								body = 180F;
-								break;
-							case WEST:
-								body = 270F;
-								break;
-							default:
-								throw new RuntimeException(
-										"Invalid direction:  " + dir);
-						}
-						break;
-					}
-				}
-				*/
-				try {
-					ghosts[i] = new GhostDriver(robot, ids,
-							Integer.parseInt(args[2 + i]));
-				} catch (final IOException e) {
-					SwingUtils.showWarning(e.getMessage());
-					return;
-				}
-			}
-			
-			canvas.setGhosts(ghosts);
-			for (final GhostDriver ghost : ghosts) {
-				ghost.startGhost();
-			}
-		}
-		
-		controller.doMaze(ids, ids[0]);
+		controller.doMaze(Integer.parseInt(args[1]), Integer.parseInt(args[2]));
 	}
 	
 	private final void initComponents() {

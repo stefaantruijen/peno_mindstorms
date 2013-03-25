@@ -4,11 +4,17 @@ package bluebot.core;
 import static bluebot.io.protocol.Packet.*;
 
 import java.io.IOException;
+import java.util.List;
 
+import peno.htttp.Callback;
 import peno.htttp.PlayerClient;
+import peno.htttp.PlayerHandler;
 
 import bluebot.game.Game;
+import bluebot.game.GameAdapter;
 import bluebot.game.GameException;
+import bluebot.game.World;
+import bluebot.graph.Tile;
 import bluebot.io.ClientTranslator;
 import bluebot.io.Communicator;
 import bluebot.io.Connection;
@@ -37,16 +43,10 @@ public class DefaultController extends AbstractController {
 	private Communicator communicator;
 	private Game game;
 	private ClientTranslator translator;
+	private World world;
 	
 	
 	public DefaultController(final Connection connection) throws IOException {
-//		rabbit.registerListener(RabbitConfig.MONITOR_KEY, new Listener() {
-//			public void onMessage(final Date time,
-//					final String key, final String msg) {
-//				fireMessageIncoming(new RabbitMessage(msg, key));
-//			}
-//		});
-		
 		this.communicator = new Communicator(connection, createPacketHandler());
 		this.translator = new ClientTranslator(connection);
 		
@@ -73,25 +73,26 @@ public class DefaultController extends AbstractController {
 		getTranslator().doCalibrate();
 	}
 	
-	public Game doGame(final String gameId, final String playerId)
-			throws GameException, IOException {
-//		final Game game = new Game(this, gameId, playerId);
-//		game.init(new Callback<Void>() {
-//			public void onFailure(final Throwable error) {
-//				fireError(error.getMessage());
-//			}
-//			
-//			public void onSuccess(final Void result) {
-//				//	ignored
-//			}
-//		});
-//		return game;
-		//	TODO
-		return null;
+	public Game doGame(final String gameId, final String playerId,
+			final PlayerHandler handler) throws GameException, IOException {
+		final Game game = new Game(gameId,
+				playerId,
+				new PlayerMonitor(handler),
+				getWorld());
+		game.init(new Callback<Void>() {
+			public void onFailure(final Throwable error) {
+				fireError(error.getMessage());
+			}
+			
+			public void onSuccess(final Void result) {
+				DefaultController.this.game = game;
+			}
+		});
+		return game;
 	}
 	
-	public void doMaze(final int[] playerIds, final int playerId) {
-		getTranslator().doMaze(playerIds, playerId);
+	public void doMaze(final int playerNumber, final int itemNumber) {
+		getTranslator().doMaze(playerNumber, itemNumber);
 	}
 	
 	public void doPolygon(final int corners, final float length) {
@@ -125,6 +126,10 @@ public class DefaultController extends AbstractController {
 	
 	private final ClientTranslator getTranslator() {
 		return translator;
+	}
+	
+	public World getWorld() {
+		return world;
 	}
 	
 	public void init() {
@@ -317,7 +322,80 @@ public class DefaultController extends AbstractController {
 		}
 		
 		private final void handlePacketTile(final TilePacket packet) {
-			fireTileUpdated(packet.getTile());
+			final Tile tile = packet.getTile();
+			fireTileUpdated(tile);
+			
+			if (!tile.isExplored()) {
+				return;
+			}
+			
+			final PlayerClient client = getGameClient();
+			if (client == null) {
+				return;
+			}
+			
+			//	TODO
+			try {
+				client.sendTiles(new peno.htttp.Tile(tile.getX(), tile.getY(),
+						null));
+			} catch (final IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	
+	
+	
+	
+	
+	private final class PlayerMonitor extends GameAdapter implements PlayerHandler {
+		
+		private PlayerHandler delegate;
+		private int objectNumber;
+		private int playerNumber;
+		
+		
+		public PlayerMonitor(final PlayerHandler delegate) {
+			this.delegate = delegate;
+		}
+		
+		
+		
+		public void gameRolled(final int playerNumber, final int objectNumber) {
+			boolean ready;
+			try {
+				delegate.gameRolled(playerNumber, objectNumber);
+				ready = true;
+			} catch (final Exception e) {
+				ready = false;
+			}
+			
+			try {
+				getGameClient().setReady(ready);
+			} catch (final IOException e) {
+				e.printStackTrace();
+			}
+			
+			this.objectNumber = objectNumber;
+			this.playerNumber = playerNumber;
+		}
+		
+		@Override
+		public void gameStarted() {
+			doMaze(playerNumber, objectNumber);
+		}
+		
+		public void teamConnected(final String partnerId) {
+			//	TODO
+		}
+		
+		public void teamPosition(final double x, final double y, final double angle) {
+			//	TODO
+		}
+		
+		public void teamTilesReceived(final List<peno.htttp.Tile> tiles) {
+			//	TODO
 		}
 		
 	}

@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import bluebot.io.rabbitmq.RabbitMQ;
 
+import peno.htttp.Callback;
 import peno.htttp.PlayerClient;
 import peno.htttp.PlayerHandler;
 import peno.htttp.SpectatorClient;
@@ -50,6 +51,19 @@ public class Game {
 	
 	public World getWorld() {
 		return world;
+	}
+	
+	public void init(final Callback<Void> callback) throws IOException {
+		final PlayerClient client = getClient();
+		if (client.isConnected()) {
+			return;
+		}
+		
+		try {
+			client.join(callback);
+		} catch (final IllegalStateException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private final void leaveGame() {
