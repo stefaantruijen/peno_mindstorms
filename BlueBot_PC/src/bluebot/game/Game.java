@@ -24,10 +24,6 @@ public class Game {
 	
 	
 	public Game(final String gameId, final String playerId,
-			final PlayerHandler handler) throws IOException {
-		this(gameId, playerId, handler, new World());
-	}
-	public Game(final String gameId, final String playerId,
 			final PlayerHandler handler, final World world) throws IOException {
 		this.client = createClient(gameId, playerId, handler);
 		this.spectator = createSpectator(gameId, world);
