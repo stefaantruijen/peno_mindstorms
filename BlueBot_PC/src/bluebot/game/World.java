@@ -48,7 +48,7 @@ public class World {
 	
 	private static final Tile[] createStarts(final Tile[] maze)
 			throws IllegalArgumentException {
-		final Tile[] starts = new Tile[0];
+		final Tile[] starts = new Tile[4];
 		for (final Tile tile : maze) {
 			if (tile.isStartPosition()) {
 				starts[tile.getStartPlayerId() - 1] = tile;
