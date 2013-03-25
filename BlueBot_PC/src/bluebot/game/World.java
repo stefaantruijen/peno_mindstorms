@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import bluebot.graph.Tile;
+import bluebot.simulator.VirtualInfraredBall;
 
 import peno.htttp.SpectatorHandler;
 
@@ -18,10 +19,31 @@ import peno.htttp.SpectatorHandler;
  * @author Ruben Feyen
  */
 public class World {
+	public static final int BARCODE_SEESAW_1A = 11;
+	public static final int BARCODE_SEESAW_1B = 13;
+	public static final int BARCODE_SEESAW_2A = 15;
+	public static final int BARCOD_SEESAW_2B = 17;
+	public static final int BARCODE_SEESAW_3A = 19;
+	public static final int BARCODE_SEESAW_3B = 21;
 	
+	public static final HashSet<Integer> seesawBarcodes = new HashSet<Integer>() {{ 
+		this.add(BARCODE_SEESAW_1A);
+		this.add(BARCODE_SEESAW_1B);
+		this.add(BARCODE_SEESAW_2A);
+		this.add(BARCOD_SEESAW_2B);
+		this.add(BARCODE_SEESAW_3A); 
+		this.add(BARCODE_SEESAW_3B);
+		}};
+		
+	public static final int[][] barcodeCouples = new int[][]{
+			new int[]{BARCODE_SEESAW_1A, BARCODE_SEESAW_1B},  
+			new int[]{BARCODE_SEESAW_2A, BARCOD_SEESAW_2B},  
+			new int[]{BARCODE_SEESAW_3A, BARCODE_SEESAW_3B}};
+		
 	private Tile[] maze;
 	private HashMap<String, Player> players;
 	private HashSet<Integer> seesaws;
+	private HashMap<Integer, int[]> seesawLocations;
 	private Tile[] starts;
 	
 	
@@ -30,15 +52,36 @@ public class World {
 		this.players = new HashMap<String, Player>();
 		this.seesaws = createSeesaws();
 		this.starts = createStarts(maze);
+		this.seesawLocations = createSeesawLocations(maze);
+		placeIRBalls();
 	}
 	
-	
+	private void placeIRBalls(){
+		int TILE_SIZE_CM = (int) (Tile.SIZE/10);
+		int x0,x1,y0,y1,ballX,ballY;
+		for(int[] couple: barcodeCouples){
+			x0 = seesawLocations.get(couple[0])[0];
+			x1 = seesawLocations.get(couple[1])[0];
+			y0 = seesawLocations.get(couple[0])[1];
+			y1 = seesawLocations.get(couple[1])[1];
+			if(x0 == x1){
+				//Same x coordinate
+				ballX = Math.round(x0*TILE_SIZE_CM + TILE_SIZE_CM/2);
+				ballY = Math.min(y0,y1)*TILE_SIZE_CM + 2*TILE_SIZE_CM;
+			} else {
+				//Same x coordinate
+				ballX = Math.min(x0,x1)*TILE_SIZE_CM + 2*TILE_SIZE_CM;
+				ballY = Math.round(y0*TILE_SIZE_CM + TILE_SIZE_CM/2);
+			}
+			new VirtualInfraredBall(ballX, ballY);
+		}
+	}
 	
 	private static final HashSet<Integer> createSeesaws() {
 		final HashSet<Integer> seesaws = new HashSet<Integer>();
-		seesaws.add(Integer.valueOf(13));
-		seesaws.add(Integer.valueOf(17));
-		seesaws.add(Integer.valueOf(21));
+		seesaws.add(Integer.valueOf(BARCODE_SEESAW_1B));
+		seesaws.add(Integer.valueOf(BARCOD_SEESAW_2B));
+		seesaws.add(Integer.valueOf(BARCODE_SEESAW_3B));
 		return seesaws;
 	}
 	
@@ -61,6 +104,19 @@ public class World {
 			}
 		}
 		return starts;
+	}
+	
+	
+	private static final HashMap<Integer, int[]> createSeesawLocations(final Tile[] maze){
+		HashMap<Integer, int[]> result = new HashMap<Integer, int[]>();
+		int barcode;
+		for (final Tile tile : maze) {
+			barcode = tile.getBarCode();
+			if(seesawBarcodes.contains(barcode)){
+				result.put(barcode, new int[]{tile.getX(), tile.getY()});
+			}
+		}
+		return result;
 	}
 	
 	public Tile[] getMaze() {
@@ -97,7 +153,8 @@ public class World {
 	
 	
 	private final class WorldHandler extends GameAdapter implements SpectatorHandler {
-		
+
+
 		public void lockedSeesaw(final String playerId,
 				final int playerNumber, final int barcode) {
 			//	ignored
@@ -130,23 +187,23 @@ public class World {
 				final int playerNumber, final int barcode) {
 			final int end;
 			switch (barcode) {
-				case 11:
-					end = 13;
+				case BARCODE_SEESAW_1A:
+					end = BARCODE_SEESAW_1B;
 					break;
-				case 13:
-					end = 11;
+				case BARCODE_SEESAW_1B:
+					end = BARCODE_SEESAW_1A;
 					break;
-				case 15:
-					end = 17;
+				case BARCODE_SEESAW_2A:
+					end = BARCOD_SEESAW_2B;
 					break;
-				case 17:
-					end = 15;
+				case BARCOD_SEESAW_2B:
+					end = BARCODE_SEESAW_2A;
 					break;
-				case 19:
-					end = 21;
+				case BARCODE_SEESAW_3A:
+					end = BARCODE_SEESAW_3B;
 					break;
-				case 21:
-					end = 19;
+				case BARCODE_SEESAW_3B:
+					end = BARCODE_SEESAW_3A;
 					break;
 				default:
 					//	ignored

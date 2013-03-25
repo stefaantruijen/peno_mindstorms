@@ -90,7 +90,7 @@ public class VirtualInfraredSensor {
                              * Bovendien kan ze ook checken of de wip gesloten is, en dit dan beschouwen als een muur.
                              * Deze moet nog geïmplementeerd worden en gebruik maken van GameState?.
                              */
-                    		//TODO: where do we have access to the World object?
+                    	//TODO: implement seeing further then one tile? 
                             if(noWallBetween(x, y, heading, distBetween) && !sensors.getWorld().isSeesawLocked(sensors.getTileAt(x,y).getBarCode())){
                                     return irSource;
                             }
