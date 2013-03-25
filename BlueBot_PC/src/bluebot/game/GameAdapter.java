@@ -28,6 +28,10 @@ public abstract class GameAdapter implements GameHandler {
 		//	ignored
 	}
 	
+	public void gameWon(final int teamNumber) {
+		//	ignored
+	}
+	
 	public void playerDisconnected(final String playerId,
 			final DisconnectReason reason) {
 		//	ignored
