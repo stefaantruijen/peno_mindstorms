@@ -16,8 +16,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
-import peno.htttp.Callback;
-
 import bluebot.ConfigListener;
 import bluebot.core.Controller;
 import bluebot.core.ControllerListener;
@@ -104,7 +102,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 					try {
 						doMaze(command);
 					} catch (final Exception e) {
-						cli.echo("Syntax:  maze <player-id,id1,id2,...> <ghost-id>*");
+						cli.echo("Syntax:  maze <playerNumber> <objectNumber>");
 						e.printStackTrace();	
 					}
 				} else if (cmd.equals("move")) {
@@ -196,6 +194,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 				final String[] commands = {
 						"calibrate",
 						"clear",
+						"game",
 						"maze",
 						"move",
 						"orientate",

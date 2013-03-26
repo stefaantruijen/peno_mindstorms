@@ -50,6 +50,7 @@ public class DefaultController extends AbstractController {
 			throws IOException {
 		this.communicator = new Communicator(connection, createPacketHandler());
 		this.translator = new ClientTranslator(connection);
+		this.world = world;
 		
 		this.communicator.start();
 	}
@@ -87,12 +88,15 @@ public class DefaultController extends AbstractController {
 				playerId,
 				new PlayerMonitor(handler),
 				getWorld());
+		System.out.println("JOIN");
 		game.init(new Callback<Void>() {
 			public void onFailure(final Throwable error) {
+				System.out.println("FAILURE");
 				fireError(error.getMessage());
 			}
 			
 			public void onSuccess(final Void result) {
+				System.out.println("SUCCESS");
 				DefaultController.this.game = game;
 				game.start();
 			}
@@ -304,6 +308,15 @@ public class DefaultController extends AbstractController {
 				if (packet.isLocked()) {
 					if (!client.hasLockOnSeesaw()) {
 						client.lockSeesaw(barcode);
+//						client.requestSeesawLock(barcode, new Callback<Boolean>() {
+//							public void onFailure(final Throwable error) {
+//								error.printStackTrace();
+//							}
+//							
+//							public void onSuccess(final Boolean result) {
+//								System.out.println("Seesaw lock:  " + result);
+//							}
+//						});
 					}
 				} else if (client.hasLockOnSeesaw(barcode)) {
 					client.unlockSeesaw();

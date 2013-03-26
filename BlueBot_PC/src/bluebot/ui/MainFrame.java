@@ -39,6 +39,8 @@ public class MainFrame extends JFrame {
 	public static final String DEFAULT_BRICK_NAME = "BlueBot";
 	public static final String TITLE = "P&O BlueBot";
 	
+	private Tile[] maze;
+	
 	
 	public MainFrame() {
 		super(TITLE);
@@ -59,20 +61,17 @@ public class MainFrame extends JFrame {
 	}
 	
 	private final void connectToBrick(final String name) {
-		final List<Tile> maze = loadMaze();
+		final Tile[] maze = getMaze();
 		if (maze == null) {
 			return;
 		}
-		if (maze.isEmpty()) {
+		if (maze.length == 0) {
 			SwingUtils.showWarning("Invalid maze (no tiles)");
 			return;
 		}
 		
-		final Tile[] tiles = new Tile[maze.size()];
-		maze.toArray(tiles);
-		
 		try {
-			showController(getControllerFactory().connectToBrick(new World(tiles), name));
+			showController(getControllerFactory().connectToBrick(new World(maze), name));
 		} catch (final IOException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this,
@@ -98,20 +97,18 @@ public class MainFrame extends JFrame {
 	}
 	
 	private final void connectToSimulator() {
-		final List<Tile> maze = loadMaze();
+		final Tile[] maze = getMaze();
 		if (maze == null) {
 			return;
 		}
-		if (maze.isEmpty()) {
+		if (maze.length == 0) {
+			this.maze = null;
 			SwingUtils.showWarning("Invalid maze (no tiles)");
 			return;
 		}
 		
-		final Tile[] tiles = new Tile[maze.size()];
-		maze.toArray(tiles);
-		
 		try {
-			showController(getControllerFactory().connectToSimulator(new World(tiles)));
+			showController(getControllerFactory().connectToSimulator(new World(maze)));
 		} catch (final IOException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this,
@@ -152,6 +149,20 @@ public class MainFrame extends JFrame {
 		final JButton button = new JButton(text);
 		button.setMinimumSize(new Dimension(1, 64));
 		return button;
+	}
+	
+	protected World createWorld() {
+		if (maze == null) {
+			maze = loadMaze();
+		}
+		return ((maze == null) ? null : new World(maze));
+	}
+	
+	private final Tile[] getMaze() {
+		if (maze == null) {
+			maze = loadMaze();
+		}
+		return maze;
 	}
 	
 	private final void initComponents() {
@@ -198,7 +209,7 @@ public class MainFrame extends JFrame {
 //		add(btnTestDummy, gbc);
 	}
 	
-	private final List<Tile> loadMaze() {
+	private final Tile[] loadMaze() {
 		final JFileChooser fc = new JFileChooser(new File("."));
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		for (final FileFilter filter : fc.getChoosableFileFilters()) {
@@ -234,7 +245,10 @@ public class MainFrame extends JFrame {
 			return null;
 		}
 		
-		return graph.getVerticies();
+		final List<Tile> maze = graph.getVerticies();
+		final Tile[] tiles = new Tile[maze.size()];
+		maze.toArray(tiles);
+		return tiles;
 	}
 	
 	private final void showController(final Controller controller) {

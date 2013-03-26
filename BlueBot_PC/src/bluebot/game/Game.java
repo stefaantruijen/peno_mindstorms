@@ -297,6 +297,8 @@ public class Game {
 			client.leave();
 		} catch (final IOException e) {
 			e.printStackTrace();
+		} catch (final NullPointerException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -318,6 +320,9 @@ public class Game {
 		final AffineTransform transform = gfx.getTransform();
 		
 		final Player player = getWorld().getPlayer(getClient().getPlayerID());
+		if (player == null) {
+			return;
+		}
 		
 		final float px = player.getX();
 		final float py = player.getY();
@@ -387,7 +392,11 @@ public class Game {
 	}
 	
 	private final void stopSpectator() {
-		spectator.stop();
+//		try {
+			spectator.stop();
+//		} catch (final IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 	
 	public void updateTile(final Tile tile) {
