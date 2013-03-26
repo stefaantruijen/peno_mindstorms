@@ -60,20 +60,25 @@ public class World {
 		int TILE_SIZE_CM = (int) (Tile.SIZE/10);
 		int x0,x1,y0,y1,ballX,ballY;
 		for(int[] couple: barcodeCouples){
-			x0 = seesawLocations.get(couple[0])[0];
-			x1 = seesawLocations.get(couple[1])[0];
-			y0 = seesawLocations.get(couple[0])[1];
-			y1 = seesawLocations.get(couple[1])[1];
-			if(x0 == x1){
-				//Same x coordinate
-				ballX = Math.round(x0*TILE_SIZE_CM + TILE_SIZE_CM/2);
-				ballY = Math.min(y0,y1)*TILE_SIZE_CM + 2*TILE_SIZE_CM;
-			} else {
-				//Same x coordinate
-				ballX = Math.min(x0,x1)*TILE_SIZE_CM + 2*TILE_SIZE_CM;
-				ballY = Math.round(y0*TILE_SIZE_CM + TILE_SIZE_CM/2);
+			try{
+				x0 = seesawLocations.get(couple[0])[0];
+				x1 = seesawLocations.get(couple[1])[0];
+				y0 = seesawLocations.get(couple[0])[1];
+				y1 = seesawLocations.get(couple[1])[1];
+				if(x0 == x1){
+					//Same x coordinate
+					ballX = Math.round(x0*TILE_SIZE_CM + TILE_SIZE_CM/2);
+					ballY = Math.min(y0,y1)*TILE_SIZE_CM + 2*TILE_SIZE_CM;
+				} else {
+					//Same x coordinate
+					ballX = Math.min(x0,x1)*TILE_SIZE_CM + 2*TILE_SIZE_CM;
+					ballY = Math.round(y0*TILE_SIZE_CM + TILE_SIZE_CM/2);
+				}
+				new VirtualInfraredBall(ballX, ballY);
+			}catch(NullPointerException e){
+				return;
 			}
-			new VirtualInfraredBall(ballX, ballY);
+			
 		}
 	}
 	
