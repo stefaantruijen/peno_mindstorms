@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import bluebot.maze.MazeListener;
-import bluebot.simulator.GhostDriver;
 import bluebot.util.Utils;
 
 
@@ -25,15 +24,10 @@ public abstract class VisualizationComponent
 	}
 	
 	protected float body;
-	protected GhostDriver[] ghosts;
 	protected float head;
 	protected float x, y;
 	
 	
-	
-	public GhostDriver[] getGhosts() {
-		return ((ghosts == null) ? null : ghosts.clone());
-	}
 	
 	public void onMotion(final float x, final float y,
 			float body, float head) {
@@ -69,15 +63,5 @@ public abstract class VisualizationComponent
 	protected abstract void render(Graphics2D gfx, int w, int h);
 	
 	public abstract void reset();
-	
-	public void setGhosts(final GhostDriver[] ghosts) {
-		final GhostDriver[] old = this.ghosts;
-		if (old != null) {
-			for (final GhostDriver ghost : old) {
-				ghost.stopGhost();
-			}
-		}
-		this.ghosts = ((ghosts == null) ? null : ghosts.clone());
-	}
 	
 }

@@ -27,7 +27,6 @@ import javax.swing.JPopupMenu;
 import bluebot.graph.Border;
 import bluebot.graph.Tile;
 import bluebot.maze.MazeListener;
-import bluebot.simulator.GhostDriver;
 import bluebot.util.Utils;
 
 
@@ -202,16 +201,6 @@ public class VisualizationComponent2D extends VisualizationComponent
 		gfx.fillRect((1 - (dx / 2)), (1 - (dy / 2)), (dx - 2), (dy - 2));
 		
 		gfx.setTransform(transform);
-	}
-	
-	protected void drawGhosts(final Graphics2D gfx, final int w, final int h) {
-		final GhostDriver[] ghosts = this.ghosts;
-		if (ghosts != null) {
-			for (final GhostDriver ghost : ghosts) {
-				drawGhost(gfx, w, h,
-						ghost.getX(), ghost.getY(), ghost.getHeading());
-			}
-		}
 	}
 	
 	protected void drawMaze(final Graphics2D gfx, final int w, final int h) {
@@ -608,13 +597,11 @@ public class VisualizationComponent2D extends VisualizationComponent
 	
 	protected void render(final Graphics2D gfx, final int w, final int h) {
 		drawMaze(gfx, w, h);
-		drawGhosts(gfx, w, h);
 		drawRobot(gfx, w, h);
 	}
 	
 	public void reset() {
 		synchronized (lock) {
-			setGhosts(null);
 			maze = null;
 		}
 	}

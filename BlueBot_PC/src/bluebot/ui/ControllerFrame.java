@@ -23,7 +23,6 @@ import bluebot.game.Game;
 import bluebot.game.PlayerAdapter;
 import bluebot.graph.Tile;
 import bluebot.sensors.SensorListener;
-import bluebot.simulator.GhostDriver;
 import bluebot.ui.TerminalComponent.SuggestionProvider;
 import bluebot.ui.util.RabbitListCellRenderer;
 import bluebot.ui.util.RabbitListModel;
@@ -61,13 +60,6 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 			@Override
 			public void windowClosing(final WindowEvent event) {
 				controller.dispose();
-				
-				final GhostDriver[] ghosts = canvas.getGhosts();
-				if (ghosts != null) {
-					for (final GhostDriver ghost : ghosts) {
-						ghost.stopGhost();
-					}
-				}
 				
 				if (renderer != null) {
 					renderer.kill();

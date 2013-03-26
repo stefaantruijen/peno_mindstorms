@@ -75,6 +75,13 @@ public class MainFrame extends JFrame {
 					"Connection failed",
 					JOptionPane.ERROR_MESSAGE);
 			return;
+		} catch (final Exception e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this,
+					e.getMessage(),
+					"Error",
+					JOptionPane.ERROR_MESSAGE);
+			return;
 		}
 	}
 	
@@ -98,6 +105,13 @@ public class MainFrame extends JFrame {
 			JOptionPane.showMessageDialog(this,
 					e.getMessage(),
 					"Connection failed",
+					JOptionPane.ERROR_MESSAGE);
+			return;
+		} catch (final Exception e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this,
+					e.getMessage(),
+					"Error",
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
