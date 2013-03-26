@@ -66,6 +66,13 @@ public class DefaultController extends AbstractController {
 	@Override
 	public void dispose() {
 		super.dispose();
+		
+		final Game game = this.game;
+		if (game != null) {
+			this.game = null;
+			game.terminate();
+		}
+		
 		getTranslator().disconnect();
 	}
 	
@@ -325,22 +332,35 @@ public class DefaultController extends AbstractController {
 			final Tile tile = packet.getTile();
 			fireTileUpdated(tile);
 			
+			final Game game = getGame();
+			if (game == null) {
+				return;
+			}
+			
+			game.updateTile(tile);
+			
 			if (!tile.isExplored()) {
 				return;
 			}
 			
-			final PlayerClient client = getGameClient();
+			final PlayerClient client = game.getClient();
 			if (client == null) {
 				return;
 			}
 			
+			if (!client.hasTeamPartner()) {
+				return;
+			}
+			
 			//	TODO
+			/*
 			try {
 				client.sendTiles(new peno.htttp.Tile(tile.getX(), tile.getY(),
 						null));
 			} catch (final IOException e) {
 				e.printStackTrace();
 			}
+			*/
 		}
 		
 	}

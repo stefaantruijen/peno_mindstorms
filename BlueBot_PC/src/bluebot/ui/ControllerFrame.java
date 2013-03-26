@@ -37,7 +37,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 	private static final long serialVersionUID = 1L;
 	
 	private BarcodeComponent barcode;
-	private VisualizationComponent canvas;
+	private DefaultVisualizationComponent canvas;
 	private Controller controller;
 	private RabbitListModel rabbit;
 	private Renderer renderer;
@@ -303,7 +303,8 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 	}
 	
 	private final Component createModuleVisualization() {
-		canvas = new VisualizationComponent2D();
+		canvas = new DefaultVisualizationComponent();
+//		canvas = new VisualizationComponent2D();
 //		canvas = new VisualizationComponent3D();
 		controller.addListener(canvas);
 		
@@ -368,8 +369,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 			onError(e.getMessage());
 			return;
 		}
-		
-		//	TODO
+		canvas.setGame(game);
 	}
 	
 	private final void doMaze(final String[] args) throws NumberFormatException {

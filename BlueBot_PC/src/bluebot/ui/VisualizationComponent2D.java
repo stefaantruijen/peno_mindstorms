@@ -8,11 +8,9 @@ import java.awt.Paint;
 import java.awt.TexturePaint;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -579,22 +577,6 @@ public class VisualizationComponent2D extends VisualizationComponent
 //		repaint(0L);
 	}
 	
-	@Override
-	protected void processMouseEvent(final MouseEvent event) {
-		super.processMouseEvent(event);
-//		if (event.getID() == MouseEvent.MOUSE_CLICKED) {
-//			final Graph graph = new MazeReader().parseMaze(new File("maze.txt").getAbsolutePath());
-//			graph.getVerticies();
-//			
-//			for (final Tile tile : graph.getVerticies()) {
-//				if (tile.getBarCode() != -1) {
-//					System.out.println(tile + ":  " + tile.getBarCode());
-//				}
-//				onTileUpdate(tile);
-//			}
-//		}
-	}
-	
 	protected void render(final Graphics2D gfx, final int w, final int h) {
 		drawMaze(gfx, w, h);
 		drawRobot(gfx, w, h);
@@ -627,35 +609,20 @@ public class VisualizationComponent2D extends VisualizationComponent
 	
 	
 	
-	private final class MouseMonitor implements MouseListener,
-			MouseMotionListener, MouseWheelListener {
+	private final class MouseMonitor extends MouseAdapter {
 		
 		private int dx, dy, x0, y0;
 		
 		
 		
-		public void mouseClicked(final MouseEvent event) {
-			// ignored
-		}
-		
-		public void mouseEntered(final MouseEvent event) {
-			// ignored
-		}
-		
-		public void mouseExited(final MouseEvent event) {
-			// ignored
-		}
-		
+		@Override
 		public void mouseDragged(final MouseEvent event) {
 			VisualizationComponent2D.this.dx = (dx + event.getX() - x0);
 			VisualizationComponent2D.this.dy = (dy + event.getY() - y0);
 			repaint(0L);
 		}
 		
-		public void mouseMoved(final MouseEvent event) {
-			// ignored
-		}
-		
+		@Override
 		public void mousePressed(final MouseEvent event) {
 			switch (event.getButton()) {
 				case MouseEvent.BUTTON1:
@@ -673,10 +640,7 @@ public class VisualizationComponent2D extends VisualizationComponent
 			}
 		}
 		
-		public void mouseReleased(final MouseEvent event) {
-			// ignored
-		}
-		
+		@Override
 		public void mouseWheelMoved(final MouseWheelEvent event) {
 			int scroll = -event.getWheelRotation();
 			if (scroll == 0) {

@@ -39,7 +39,8 @@ public class World {
 			new int[]{BARCODE_SEESAW_1A, BARCODE_SEESAW_1B},  
 			new int[]{BARCODE_SEESAW_2A, BARCOD_SEESAW_2B},  
 			new int[]{BARCODE_SEESAW_3A, BARCODE_SEESAW_3B}};
-		
+	
+	private int[] dim;
 	private Tile[] maze;
 	private HashMap<String, Player> players;
 	private HashSet<Integer> seesaws;
@@ -54,6 +55,14 @@ public class World {
 		this.starts = createStarts(maze);
 		this.seesawLocations = createSeesawLocations(maze);
 		placeIRBalls();
+		
+		int maxX = 0;
+		int maxY = 0;
+		for (final Tile tile : maze) {
+			maxX = Math.max(maxX, tile.getX());
+			maxY = Math.max(maxY, tile.getY());
+		}
+		this.dim = new int[] { (maxX + 1), (maxY + 1) };
 	}
 	
 	private void placeIRBalls(){
@@ -125,6 +134,10 @@ public class World {
 		return result;
 	}
 	
+	public int getHeight() {
+		return dim[1];
+	}
+	
 	public Tile[] getMaze() {
 		return maze.clone();
 	}
@@ -143,6 +156,10 @@ public class World {
 					"Invalid player number:  " + playerNumber);
 		}
 		return starts[playerNumber - 1];
+	}
+	
+	public int getWidth() {
+		return dim[0];
 	}
 	
 	public boolean isSeesawLocked(final int barcode) {
