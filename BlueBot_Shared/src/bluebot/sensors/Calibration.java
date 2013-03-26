@@ -9,8 +9,8 @@ package bluebot.sensors;
  */
 public class Calibration {
 	
-	private int lightThresholdWhite = -1;
-	private int lightThresholdBlack = -1;
+	private int lightThresholdWhite = 556;
+	private int lightThresholdBlack = 522;
 	
 	
 	
