@@ -369,13 +369,25 @@ public class Game {
 		this.head = radians;
 	}
 	
-	private final void stopSpectator() {
-		spectator.stop();
+	public void start() {
+		startSpectator();
 	}
 	
-	public void terminate() {
+	private final void startSpectator() {
+		try {
+			spectator.start();
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void stop() {
 		leaveGame();
 		stopSpectator();
+	}
+	
+	private final void stopSpectator() {
+		spectator.stop();
 	}
 	
 	public void updateTile(final Tile tile) {

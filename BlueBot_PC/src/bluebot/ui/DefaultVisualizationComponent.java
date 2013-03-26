@@ -51,6 +51,11 @@ public class DefaultVisualizationComponent extends VisualizationComponent {
 	}
 	
 	public void setGame(final Game game) {
+		final Game old = this.game;
+		if (old != null) {
+			old.stop();
+		}
+		
 		this.game = game;
 		repaint(0L);
 	}

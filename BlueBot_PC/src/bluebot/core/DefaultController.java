@@ -46,7 +46,8 @@ public class DefaultController extends AbstractController {
 	private World world;
 	
 	
-	public DefaultController(final Connection connection) throws IOException {
+	public DefaultController(final World world, final Connection connection)
+			throws IOException {
 		this.communicator = new Communicator(connection, createPacketHandler());
 		this.translator = new ClientTranslator(connection);
 		
@@ -70,7 +71,7 @@ public class DefaultController extends AbstractController {
 		final Game game = this.game;
 		if (game != null) {
 			this.game = null;
-			game.terminate();
+			game.stop();
 		}
 		
 		getTranslator().disconnect();
@@ -93,6 +94,7 @@ public class DefaultController extends AbstractController {
 			
 			public void onSuccess(final Void result) {
 				DefaultController.this.game = game;
+				game.start();
 			}
 		});
 		return game;
@@ -183,7 +185,7 @@ public class DefaultController extends AbstractController {
 		final Game game = this.game;
 		if (game != null) {
 			this.game = null;
-			game.terminate();
+			game.stop();
 		}
 	}
 	

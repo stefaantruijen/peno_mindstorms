@@ -42,9 +42,9 @@ public class ControllerFactory {
 	 * @throws IOException
 	 * @throws NXTCommException if the connection with the NXT brick fails
 	 */
-	public Controller connectToBrick(final String name)
+	public Controller connectToBrick(final World world, final String name)
 			throws IOException, NXTCommException {
-		return createController(new ClientConnector().connectTo("BlueBot"));
+		return createController(world, new ClientConnector().connectTo("BlueBot"));
 	}
 	
 	/**
@@ -69,7 +69,7 @@ public class ControllerFactory {
 //			start = tiles[0];
 //		}
 		
-		return createController(new VirtualRobot(world));
+		return createController(world, new VirtualRobot(world));
 	}
 	
 	/**
@@ -86,15 +86,16 @@ public class ControllerFactory {
 	/**
 	 * Creates a controller for the given connection
 	 * 
+	 * @param world - the {@link World} reference
 	 * @param connection - a {@link Connection} object
 	 * 
 	 * @return a {@link Controller} object
 	 * 
 	 * @throws IOException
 	 */
-	private final Controller createController(final Connection connection)
-			throws IOException {
-		return new DefaultController(connection);
+	private final Controller createController(final World world,
+			final Connection connection) throws IOException {
+		return new DefaultController(world, connection);
 	}
 	
 	/**
@@ -107,7 +108,8 @@ public class ControllerFactory {
 	 * 
 	 * @throws IOException 
 	 */
-	private final Controller createController(final Robot robot) throws IOException {
+	private final Controller createController(final World world, final Robot robot)
+			throws IOException {
 		final VirtualConnection connection = new VirtualConnection();
 		
 		final Connection server = connection.createServer();
@@ -121,7 +123,7 @@ public class ControllerFactory {
 		communicator.start();
 		
 		final Controller controller =
-				createController(connection.createClient());
+				createController(world, connection.createClient());
 		// TODO: Listen for disconnect to terminate threads
 		return controller;
 	}

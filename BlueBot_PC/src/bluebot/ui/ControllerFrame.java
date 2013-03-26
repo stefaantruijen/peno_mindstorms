@@ -16,6 +16,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
+import peno.htttp.Callback;
+
 import bluebot.ConfigListener;
 import bluebot.core.Controller;
 import bluebot.core.ControllerListener;
@@ -65,6 +67,8 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 					renderer.kill();
 					renderer = null;
 				}
+				
+				canvas.reset();
 			}
 			
 			@Override
@@ -369,6 +373,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 			onError(e.getMessage());
 			return;
 		}
+		
 		canvas.setGame(game);
 	}
 	

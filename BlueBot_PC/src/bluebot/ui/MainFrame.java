@@ -59,8 +59,20 @@ public class MainFrame extends JFrame {
 	}
 	
 	private final void connectToBrick(final String name) {
+		final List<Tile> maze = loadMaze();
+		if (maze == null) {
+			return;
+		}
+		if (maze.isEmpty()) {
+			SwingUtils.showWarning("Invalid maze (no tiles)");
+			return;
+		}
+		
+		final Tile[] tiles = new Tile[maze.size()];
+		maze.toArray(tiles);
+		
 		try {
-			showController(getControllerFactory().connectToBrick(name));
+			showController(getControllerFactory().connectToBrick(new World(tiles), name));
 		} catch (final IOException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this,
