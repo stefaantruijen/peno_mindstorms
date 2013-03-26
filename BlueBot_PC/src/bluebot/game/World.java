@@ -76,6 +76,7 @@ public class World {
 				}
 				new VirtualInfraredBall(ballX, ballY);
 			}catch(NullPointerException e){
+				//No more seesaws if less than 3 are used in the maze.txt
 				return;
 			}
 			
