@@ -3,6 +3,7 @@ package bluebot;
 
 import bluebot.actions.ActionQueue;
 import bluebot.actions.impl.CalibrationAction;
+import bluebot.actions.impl.MazeActionV2;
 import bluebot.actions.impl.MovementAction;
 import bluebot.actions.impl.PolygonAction;
 import bluebot.actions.impl.ReadBarcodeAction;
@@ -97,7 +98,7 @@ public class DriverHandler implements PacketHandler {
 	}
 	
 	private final void handlePacketMaze(final MazePacket packet) {
-		//	TODO
+		queue.queue(new MazeActionV2(packet.getPlayerNumber(), packet.getItemNumber()));
 //		queue.queue(new MazeAction());
 //		queue.queue(new MazeActionV2(packet.getPlayerIds(), packet.getPlayerId()));
 //		queue.queue(new TestAction());

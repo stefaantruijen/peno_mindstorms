@@ -105,6 +105,7 @@ public class DefaultController extends AbstractController {
 	}
 	
 	public void doMaze(final int playerNumber, final int itemNumber) {
+		System.out.printf("doing maze with player #%d and item #%d%n", playerNumber, itemNumber);
 		getTranslator().doMaze(playerNumber, itemNumber);
 	}
 	
@@ -398,27 +399,38 @@ public class DefaultController extends AbstractController {
 		
 		
 		public void gameRolled(final int playerNumber, final int objectNumber) {
-			boolean ready;
-			try {
-				delegate.gameRolled(playerNumber, objectNumber);
-				ready = true;
-			} catch (final Exception e) {
-				ready = false;
-			}
-			
-			try {
-				getGameClient().setReady(ready);
-			} catch (final IOException e) {
-				e.printStackTrace();
-			}
-			
-			this.objectNumber = objectNumber;
-			this.playerNumber = playerNumber;
+			final Thread thread = new Thread(new Runnable() {
+				public void run() {
+					boolean ready;
+					try {
+						delegate.gameRolled(playerNumber, objectNumber);
+						ready = true;
+					} catch (final Exception e) {
+						e.printStackTrace();
+						ready = false;
+					}
+					
+					try {
+						getGameClient().setReady(ready);
+					} catch (final IOException e) {
+						e.printStackTrace();
+					}
+					
+					PlayerMonitor.this.objectNumber = objectNumber;
+					PlayerMonitor.this.playerNumber = playerNumber;
+				}
+			});
+			thread.setDaemon(true);
+			thread.start();
 		}
 		
 		@Override
 		public void gameStarted() {
 			doMaze(playerNumber, objectNumber);
+		}
+		
+		public void playerJoined(final String playerId) {
+			System.out.println("Player joined:  " + playerId);
 		}
 		
 		public void teamConnected(final String partnerId) {
