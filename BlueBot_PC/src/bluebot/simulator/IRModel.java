@@ -4,36 +4,22 @@ import java.util.ArrayList;
 
 
 /**
- * A singleton class that temporairly functions as InfraRed model to hold all IR sources.
+ * A singleton class that temporarily functions as InfraRed model to hold all IR sources.
  * 
  * This can (an should) be implemented in the WorldModel.
  * @author Dieter
  *
  */
 public class IRModel {
-
+	
 	private static IRModel model = new IRModel();
 	private ArrayList<InfraRedSource> sources;
 	
 	/**
 	 * Makes a new IRModel.
-	 * 
-	 * @throws 	IllegalStateException
-	 * 			If there is already an IRModel. 
-	 * 			(since this class is implemented as a singleton)
 	 */
-	public IRModel() throws IllegalStateException{
-		if(getInstance() != null){
-			throw new IllegalStateException("The IRModel should only be created once!");
-		}
+	public IRModel(){
 		this.sources = new ArrayList<InfraRedSource>();
-	}
-	
-	/**
-	 * Returns the single existing instance of the IRModel.
-	 */
-	public static IRModel getInstance(){
-		return model;
 	}
 	
 	/**

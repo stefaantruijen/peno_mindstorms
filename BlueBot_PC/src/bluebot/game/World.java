@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import bluebot.graph.Tile;
+import bluebot.simulator.IRModel;
 import bluebot.simulator.VirtualInfraredBall;
 
 import peno.htttp.SpectatorHandler;
@@ -46,6 +47,7 @@ public class World {
 	private HashSet<Integer> seesaws;
 	private HashMap<Integer, int[]> seesawLocations;
 	private Tile[] starts;
+	private IRModel irModel;
 	
 	
 	public World(final Tile[] maze) throws IllegalArgumentException {
@@ -54,6 +56,7 @@ public class World {
 		this.seesaws = createSeesaws();
 		this.starts = createStarts(maze);
 		this.seesawLocations = createSeesawLocations(maze);
+		irModel = new IRModel();
 		placeIRBalls();
 		
 		int maxX = 0;
@@ -83,7 +86,7 @@ public class World {
 					ballX = Math.min(x0,x1)*TILE_SIZE_CM + 2*TILE_SIZE_CM;
 					ballY = Math.round(y0*TILE_SIZE_CM + TILE_SIZE_CM/2);
 				}
-				new VirtualInfraredBall(ballX, ballY);
+				new VirtualInfraredBall(ballX, ballY, irModel);
 			}catch(NullPointerException e){
 				//No more seesaws if less than 3 are used in the maze.txt
 				return;
@@ -98,6 +101,10 @@ public class World {
 		seesaws.add(Integer.valueOf(BARCOD_SEESAW_2B));
 		seesaws.add(Integer.valueOf(BARCODE_SEESAW_3B));
 		return seesaws;
+	}
+	
+	public IRModel getIRModel(){
+		return irModel;
 	}
 	
 	public SpectatorHandler createSpectatorHandler() {

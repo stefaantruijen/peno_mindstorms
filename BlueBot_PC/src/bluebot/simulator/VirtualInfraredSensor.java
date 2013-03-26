@@ -81,7 +81,7 @@ public class VirtualInfraredSensor {
     * If no infrared ball is withing detection range, null is returned.
     */     
     private InfraRedSource getInfraredBall(int x, int y, float heading){
-             for(InfraRedSource irSource : IRModel.getInstance().getAllIRSoucres()){
+             for(InfraRedSource irSource : sensors.getWorld().getIRModel().getAllIRSoucres()){
             	 	double distBetween = Sensors.getDistanceFromTo(x, y, irSource.getIRSourceX(), irSource.getIRSourceY());
                     if(distBetween < distanceIRSensorCanSee_CM){
                             /*
