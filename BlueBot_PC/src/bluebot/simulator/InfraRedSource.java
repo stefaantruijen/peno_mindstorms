@@ -18,19 +18,20 @@ public interface InfraRedSource {
 	/**
 	 * Should be called only once to add itself to the specified model. 
 	 * 
-	 * @throws 	NoSuchElementException
+	 * @throws 	IllegalArgumentException
 	 * 			If there is no proper model specified.
 	 */
-	public void addToModel() throws NoSuchElementException;
+	public void addToModel(IRModel model) throws IllegalArgumentException;
 	
 	/**
 	 * Should be called only once to remove itself from the specified model 
 	 * 	if the IR source no longer exists.
 	 * 
-	 * @throws 	NoSuchElementException
+	 * @throws 	IllegalArgumentException
 	 * 			If there is no proper model specified.
 	 */
-	public void removeFromModel() throws NoSuchElementException;
+	public void removeFromModel(IRModel model) throws IllegalArgumentException;
+
 	
 	/**
 	 * Returns the x coordinate of this infrared source.
@@ -41,4 +42,5 @@ public interface InfraRedSource {
 	 * Returns the y coordinate of this infrared source.
 	 */
 	public int getIRSourceY();
+
 }

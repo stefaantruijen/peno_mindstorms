@@ -28,10 +28,10 @@ public class VirtualInfraredBall implements InfraRedSource {
 	 * @param	y
 	 * 			The y coordinate of the new IRball.
 	 */
-	public VirtualInfraredBall(int x, int y) {
+	public VirtualInfraredBall(int x, int y, IRModel model) {
 		setX(x);
 		setY(y);
-		addToModel();
+		addToModel(model);
 	}
 
 	/**
@@ -99,20 +99,19 @@ public class VirtualInfraredBall implements InfraRedSource {
 	}
 	
 	@Override
-	public void addToModel() throws NoSuchElementException {
-		IRModel model = IRModel.getInstance();
+	public void addToModel(IRModel model) throws IllegalArgumentException {
 		if(model == null){
-			throw new NoSuchElementException("There is no model to add myself to!");
+			throw new IllegalArgumentException("There is no model to add myself to!");
 		}
 		model.addSource(this);
 	}
 
 	@Override
-	public void removeFromModel() throws NoSuchElementException {
-		IRModel model = IRModel.getInstance();
-		if(model == null){
-			throw new NoSuchElementException("There is no model to remove myself from!");
-		}
+	public void removeFromModel(IRModel model) throws IllegalArgumentException {
+		if(model == null || 
+				!model.getAllIRSoucres().contains(this)){
+			throw new IllegalArgumentException("There is no valid model to remove myself from!");
+		};
 		model.removeSource(this);
 	}
 
