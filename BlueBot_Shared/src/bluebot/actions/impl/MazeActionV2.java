@@ -24,7 +24,7 @@ import bluebot.util.Utils;
  */
 public class MazeActionV2 extends Action {
 	
-	private Tile current,rendez_vous=null;
+	private Tile current=null;
 	private Maze maze;
 	private Movement moves;
 	private final int playerNumber,objectNumber;
@@ -256,9 +256,14 @@ public class MazeActionV2 extends Action {
 			for (int i = 1; i < (path.length - 1); i++) {
 				checkAborted();
 				Tile next = path[i];
-				if(barcodeCanBeSeesaw(next.getBarCode())){
+				if(next.isSeesaw()){
+					while(this.getDriver().seeInfrared()){
+						this.getDriver().sendDebug("Waiting...");
+						this.wait(1000);
+						checkAborted();
+					}
 					new SeesawAction().execute();
-					i = i+3;
+					i = i+2;
 					this.current = path[i];
 				}else{
 					moveTo(path[i]);
@@ -309,8 +314,13 @@ public class MazeActionV2 extends Action {
 					
 				}
 			}
+			if(this.teamMateKnown && this.found){
+				if(this.canGoToTeammate()){
+					break;
+				}
+			}
 		}
-		moveToRendezVous();
+		this.GoToRobot();
 		/**final long timeExploration = timer.read();
 		
 		
@@ -342,66 +352,37 @@ public class MazeActionV2 extends Action {
 		getDriver().sendMessage(msg, "Finished");
 		**/
 	}
-	/**
-	 * Move to a specified rendez-vous tile.
-	 * 
-	 * @throws InterruptedException
-	 * @throws ActionException
-	 * @throws DriverException
-	 * @throws IllegalStateException thrown when no path was found to the specified rendez-vous tile.
-	 */
-	private void moveToRendezVous()
-			throws InterruptedException, ActionException, DriverException {
-		resetHead();
-		
-		graph.addVerticies(maze.getTiles());
-		final Dijkstra pathfinder = new Dijkstra(graph);
-		while(rendez_vous == null){
-			Thread.sleep(1000);
-			System.out.println("Waiting for rendez vous tile");
-		}
-		
-		List<Tile> path = pathfinder.findShortestPath(current, rendez_vous);
-		if(path == null){
-			throw new IllegalStateException("Path to rendez-vous tile was not found, graph incomplete or rendez-vous == null ?");
-		}
-		
-		for (int i = 1; i < (path.size() - 1); i++) {
-			checkAborted();
-			Tile next = path.get(i);
-			if(barcodeCanBeSeesaw(next.getBarCode())){
-				new SeesawAction().execute();
-				i = i+3;
-				this.current = path.get(i);
-			}else{
-				moveTo(path.get(i));
-			}
-		}
-		//TODO: at this point if everything went correctly we should have reached the rendez-vous tile and the game is finished.
+	
+	
+	private boolean found = false;
+	private boolean teamMateKnown = false;
+	
+	private void setTeamMateKnown(){
+		this.teamMateKnown = true;
 	}
 	
-	/**
-	 * Specify a rendez-vous tile.
-	 * 
-	 * @param t
-	 */
-	public synchronized void setRendezVousTile(Tile t){
-		this.rendez_vous = t;
+	private void setFound(){
+		this.found=true;
 	}
-	/**
-	 * Interrupt this mazeaction and move to an earlier specified rendez-vous tile. see setRendezVousTile()
-	 * @throws InterruptedException
-	 * @throws ActionException
-	 * @throws DriverException
-	 * @throws IllegalStateException if a rendez-vous tile is not set. i.e. rendez-vous == null or if the rendez-vous tile is not in the graph.
-	 */
-	public synchronized void interruptExplorerMoveToRendezVous() throws InterruptedException, ActionException, DriverException{
-		if(this.rendez_vous == null){
-			throw new IllegalStateException("No rendez-vous tile was specified");
+	
+	public void setTeammatePosition(Tile tile){
+		this.setOtherRobotTile(tile);
+		if(!teamMateKnown){
+			for(Tile t : this.maze.getTiles()){
+				this.getDriver().sendTile(t);
+			}
 		}
-		this.abort();
-		this.moveToRendezVous();
+		this.setTeamMateKnown();
 	}
+	
+	public void newTile(Tile tile){
+		this.maze.addTile(tile.getX(), tile.getY()).copyBorders(tile);
+		this.maze.getTile(tile.getX(), tile.getY()).setSeesaw(tile.isSeesaw());
+		if(tile.canHaveBarcode()){
+			this.maze.getTile(tile.getX(), tile.getY()).setBarCode(tile.getBarCode());
+		}
+	}
+	
 	
 	/**
 	 * Create the tile after the seesaw.
@@ -537,6 +518,7 @@ public class MazeActionV2 extends Action {
 	private void pickUp() throws ActionException, DriverException, InterruptedException {
 		this.resetHead();
 		this.executePickUp();
+		this.setFound();
 		//because the robot is turned aroud, the moves.turns added with 2
 		moves.turns += 2;
 		
@@ -1208,6 +1190,68 @@ public class MazeActionV2 extends Action {
 		
 	}
 	*/
+	
+	private boolean canGoToTeammate(){
+		graph.addVerticies(maze.getTiles());
+		final Dijkstra pathfinder = new Dijkstra(graph);
+		List<Tile> path = pathfinder.findShortestPath(current, otherRobotTile);
+		if(path==null){
+			return false;
+		}
+		return true;
+	}
+	
+	private Tile otherRobotTile; 
+	
+	/**
+	 * sets the tile of the other robot to tile
+	 * @param tile
+	 */
+	private void setOtherRobotTile(Tile tile){
+		this.otherRobotTile = tile;
+	}
+	
+	private void GoToRobot() throws ActionException, DriverException, InterruptedException{
+		
+		while(true){
+			checkAborted();
+			graph.addVerticies(maze.getTiles());
+			final Dijkstra pathfinder = new Dijkstra(graph);
+			while(otherRobotTile == null){
+				checkAborted();
+				Thread.sleep(1000);
+				System.out.println("Waiting for tile from other robot");
+			}
+			
+
+			List<Tile> path = pathfinder.findShortestPath(current, otherRobotTile);
+			if(path == null){
+				throw new IllegalStateException("Path to otherRobotTile tile was not found, graph incomplete or otherRobotTile == null ?");
+			}
+			checkAborted();
+			
+			if(path.get(0).equals(otherRobotTile)){
+				this.getDriver().sendMessage("Teammate found", "Done");
+				break;
+			}
+			checkAborted();
+			
+			if(path.get(0).isSeesaw()){
+				while(this.getDriver().seeInfrared()){
+					this.getDriver().sendDebug("Waiting...");
+					this.wait(1000);
+					checkAborted();
+				}
+				new SeesawAction().execute();
+				this.current = path.get(2);
+
+			}
+			else{
+				this.moveTo(path.get(0));
+			}
+			checkAborted();
+		}
+	}
 	
 	
 	
