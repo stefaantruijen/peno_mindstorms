@@ -101,12 +101,114 @@ public class TileTest {
 		assertEquals(Border.CLOSED, tile1.getBorderWest());
 	}
 	
+	//TODO: THIS HAS BEEN CHANGED, MAY CAUSE BUGS?
+//	@Test
+//	public void testOnceUnknownTest(){
+//		Tile t1 = new Tile(0,0);
+//		t1.setBorderNorth(Border.OPEN);
+//		t1.setBorderNorth(Border.UNKNOWN);
+//		assertFalse(t1.getBorderNorth() == Border.UNKNOWN);
+//	}
+	
 	@Test
-	public void testOnceUnknownTest(){
-		Tile t1 = new Tile(0,0);
-		t1.setBorderNorth(Border.OPEN);
-		t1.setBorderNorth(Border.UNKNOWN);
-		assertFalse(t1.getBorderNorth() == Border.UNKNOWN);
-	}
+    public void testRotate(){
+        Tile t1 = new Tile(4,1);
+        t1.setBorderNorth(Border.OPEN);
+        t1.setBorderEast(Border.UNKNOWN);
+        t1.setBorderSouth(Border.CLOSED);
+        t1.setBorderWest(Border.CLOSED);
+        Tile goal = new Tile(-1,4);
+        goal.setBorderNorth(Border.UNKNOWN);
+        goal.setBorderEast(Border.CLOSED);
+        goal.setBorderSouth(Border.CLOSED);
+        goal.setBorderWest(Border.OPEN);
+       
+       
+        t1.rotate(Direction.LEFT);
+       
+        assertEquals(t1.getX(), goal.getX());
+        assertEquals(t1.getY(), goal.getY());
+        assertEquals(goal.getBorderNorth(), t1.getBorderNorth());
+        assertEquals(goal.getBorderEast(), t1.getBorderEast());
+        assertEquals(goal.getBorderWest(), t1.getBorderWest());
+        assertEquals(goal.getBorderSouth(), t1.getBorderSouth());
+    }
+   
+    @Test
+    public void testRotate2(){
+        Tile t1 = new Tile(5,-4);
+        t1.setBorderNorth(Border.OPEN);
+        t1.setBorderEast(Border.UNKNOWN);
+        t1.setBorderSouth(Border.CLOSED);
+        t1.setBorderWest(Border.CLOSED);
+       
+        Tile t2 = new Tile(5,-4);
+        t2.setBorderNorth(Border.OPEN);
+        t2.setBorderEast(Border.UNKNOWN);
+        t2.setBorderSouth(Border.CLOSED);
+        t2.setBorderWest(Border.CLOSED);
+       
+        t1.rotate(Direction.LEFT);
+       
+        t2.rotate(Direction.DOWN);
+        t2.rotate(Direction.RIGHT);
+       
+        assertEquals(t1.getX(), t2.getX());
+        assertEquals(t1.getY(), t2.getY());
+        assertEquals(t1.getBorderNorth(), t2.getBorderNorth());
+        assertEquals(t1.getBorderEast(), t2.getBorderEast());
+        assertEquals(t1.getBorderWest(), t2.getBorderWest());
+        assertEquals(t1.getBorderSouth(), t2.getBorderSouth());
+    }
+   
+    @Test
+    public void testRotate3(){
+        Tile t1 = new Tile(4,1);
+        t1.setBorderNorth(Border.OPEN);
+        t1.setBorderEast(Border.UNKNOWN);
+        t1.setBorderSouth(Border.CLOSED);
+        t1.setBorderWest(Border.CLOSED);
+        Tile goal = new Tile(-4,-1);
+        goal.setBorderNorth(Border.CLOSED);
+        goal.setBorderEast(Border.CLOSED);
+        goal.setBorderSouth(Border.OPEN);
+        goal.setBorderWest(Border.UNKNOWN);
+       
+       
+        t1.rotate(Direction.DOWN);
+       
+        assertEquals(t1.getX(), goal.getX());
+        assertEquals(t1.getY(), goal.getY());
+        assertEquals(t1.getBorderNorth(), goal.getBorderNorth());
+        assertEquals(t1.getBorderEast(), goal.getBorderEast());
+        assertEquals(t1.getBorderWest(), goal.getBorderWest());
+        assertEquals(t1.getBorderSouth(), goal.getBorderSouth());
+    }
+   
+   
+    @Test
+    public void testRotate4(){
+        Tile t1 = new Tile(-1,4);
+        t1.setBorderNorth(Border.OPEN);
+        t1.setBorderEast(Border.UNKNOWN);
+        t1.setBorderSouth(Border.CLOSED);
+        t1.setBorderWest(Border.CLOSED);
+        Tile goal = new Tile(4,1);
+        goal.setBorderNorth(Border.CLOSED);
+        goal.setBorderEast(Border.OPEN);
+        goal.setBorderSouth(Border.UNKNOWN);
+        goal.setBorderWest(Border.CLOSED);
+       
+       
+        t1.rotate(Direction.RIGHT);
+       
+        assertEquals(t1.getX(), goal.getX());
+        assertEquals(t1.getY(), goal.getY());
+        assertEquals(t1.getBorderNorth(), goal.getBorderNorth());
+        assertEquals(t1.getBorderEast(), goal.getBorderEast());
+        assertEquals(t1.getBorderWest(), goal.getBorderWest());
+        assertEquals(t1.getBorderSouth(), goal.getBorderSouth());
+    }
+	
 
 }
