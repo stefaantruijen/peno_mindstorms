@@ -686,5 +686,7 @@ public class Tile implements Comparable<Tile> {
         }
     }
 
-	
+	public Byte getByteRepresentation(){
+		return this.borders;
+	}
 }
