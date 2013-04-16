@@ -98,8 +98,8 @@ public class TileBuilder {
 			break;
 		case SEESAW:
 			tile.setAllBordersOpen(false);
-			tile.setBorder(o, true);
-			tile.setBorder(o, true);
+			tile.setBorder(o,true);
+			tile.setBorder(o.getOpposite(),true);
 			break;
 		default:
 			throw new IllegalArgumentException("TileBuilder error : Tiletype not supported");
