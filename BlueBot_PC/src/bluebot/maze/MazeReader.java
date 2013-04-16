@@ -5,15 +5,17 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import bluebot.graph.Graph;
 import bluebot.graph.Tile;
 
 public class MazeReader {
 	
-	@SuppressWarnings("unused")
-	private Graph maze;
+	
+	private Map<Byte,String> tileDb;
 	
 	public static void main(String ... arg0){
 		MazeReader mr = new MazeReader();
@@ -29,7 +31,7 @@ public class MazeReader {
 	public Graph parseMaze(String path){
 		
 		Graph maze = new Graph();
-		
+		tileDb = new HashMap<Byte,String>();
 		BufferedReader in;
 		try {
 			in = new BufferedReader(new FileReader(path));
@@ -76,6 +78,7 @@ public class MazeReader {
 			if(!tilesources[i].equals("")){
 				Tile tile = TileBuilder.getTile(tilesources[i], x, y);
 				rowList.add(tile);
+				tileDb.put(tile.getByteRepresentation(),tilesources[i]);
 				x++;
 			}
 			
@@ -86,4 +89,12 @@ public class MazeReader {
 //		}
 		return rowList;
 	}
+	public Map<Byte, String> getTileDb() {
+		return tileDb;
+	}
+	public void setTileDb(Map<Byte, String> tileDb) {
+		this.tileDb = tileDb;
+	}
+	
+	
 }

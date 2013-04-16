@@ -1,9 +1,15 @@
 package bluebot.maze;
 
+import java.util.HashMap;
+
 import bluebot.graph.Orientation;
 import bluebot.graph.Tile;
 
+import java.util.Map;
+
 public class TileBuilder {
+	
+	private static Map<Byte,String> tileDb = null;
 	/**
 	 * Build a tile for a given source string, x value and y value.
 	 * 
@@ -107,6 +113,18 @@ public class TileBuilder {
 		}
 		
 		return tile;
+	}
+	
+	public static String fromTileToString(Tile t){
+		if(tileDb == null){
+			MazeReader reader = new MazeReader();
+			reader.parseMaze("allTiles.txt");
+			tileDb = reader.getTileDb();
+		}
+		
+		return tileDb.get(t.getByteRepresentation());
+		
+		
 	}
 
 }
