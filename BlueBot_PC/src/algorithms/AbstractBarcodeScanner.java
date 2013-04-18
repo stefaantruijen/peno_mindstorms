@@ -3,7 +3,6 @@ package algorithms;
 
 import java.util.LinkedList;
 
-import bluebot.BarcodeExecuter;
 import bluebot.graph.Tile;
 import bluebot.sensors.Brightness;
 import bluebot.util.Barcode;
@@ -81,13 +80,46 @@ public abstract class AbstractBarcodeScanner extends Threaded {
 			final int value = barcode.getValue();
 			print("value = " + value);
 			if (value > 0) {
-				print("Found code!  " + BarcodeExecuter.convertIntToBinary(value));
+				print("Found code!  " + this.convertIntToBinary(value));
 				getTile().setBarCode(value);
 				return true;
 			}
 			barcode.reset();
 		}
 		return false;
+	}
+	
+	/**
+	 * Example: convertIntToBinary(19) returns "10011". Notice that all our
+	 * barcodes consist of 6 bits and thus we need to add leading zeros after
+	 * this conversion, where needed! This happens in the {@link addLeadingZeros()}
+	 * method.
+	 */
+	public String convertIntToBinary(int number) {
+		return addLeadingZeros(Integer.toBinaryString(number));
+	}
+
+	/**
+	 * Adds leading zeros to a barcode that is less that 6 bits long. ("101" =>
+	 * "000101")
+	 */
+	private String addLeadingZeros(String binaryCode) {
+		int length = binaryCode.length();
+		if (length < 6) {
+			int nbOfLeadingZeros = 6 - length;
+			while (nbOfLeadingZeros > 0) {
+				binaryCode = "0" + binaryCode;
+				nbOfLeadingZeros--;
+			}
+		}
+		return binaryCode;
+	}
+	
+	/**
+	 * Obvious
+	 */
+	public int convertBinaryToInt(String binaryString){
+		return Integer.parseInt(binaryString, 2);
 	}
 	
 	protected abstract Orientation getOrientation();

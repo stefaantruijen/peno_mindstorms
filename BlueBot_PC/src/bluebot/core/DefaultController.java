@@ -106,11 +106,7 @@ public class DefaultController extends AbstractController {
 		});
 		return game;
 	}
-	
-	public void doMaze(final int playerNumber, final int itemNumber) {
-		System.out.printf("doing maze with player #%d and item #%d%n", playerNumber, itemNumber);
-		getTranslator().doMaze(playerNumber, itemNumber);
-	}
+
 	
 	public void doPolygon(final int corners, final float length) {
 		getTranslator().doPolygon(corners, length);

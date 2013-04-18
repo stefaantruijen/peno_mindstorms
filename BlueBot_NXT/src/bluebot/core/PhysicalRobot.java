@@ -279,7 +279,6 @@ public class PhysicalRobot extends AbstractRobot {
 	@Override
 	public void setStartLocation(int playerID) {
 		//nix doen
-		
 	}
 	
 }

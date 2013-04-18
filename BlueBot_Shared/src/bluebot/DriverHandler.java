@@ -7,7 +7,6 @@ import bluebot.actions.impl.MovementAction;
 import bluebot.actions.impl.PolygonAction;
 import bluebot.actions.impl.ReadBarcodeAction;
 import bluebot.actions.impl.WhiteLineAction;
-import bluebot.graph.Tile;
 import bluebot.io.protocol.Packet;
 import bluebot.io.protocol.PacketHandler;
 import bluebot.io.protocol.impl.CommandPacket;
@@ -67,9 +66,6 @@ public class DriverHandler implements PacketHandler {
 			// ignored
 		} else if (command.equals(CommandPacket.CALIBRATE)) {
 			queue.queue(new CalibrationAction());
-		} else if (command.equals(CommandPacket.TILE)) {
-//			queue.queue(new CheckTileAction());
-			queue.queue(new ReadBarcodeAction(new Tile(0, 0)));
 		} else if (command.equals(CommandPacket.WHITE_LINE_ORIENTATION)) {
 			queue.queue(new WhiteLineAction());
 		}

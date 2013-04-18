@@ -1,7 +1,8 @@
 package bluebot.io.protocol;
 
 
-import bluebot.graph.Tile;
+import java.io.IOException;
+
 import bluebot.io.protocol.impl.BarcodePacket;
 import bluebot.io.protocol.impl.CommandPacket;
 import bluebot.io.protocol.impl.ConfigPacket;
@@ -18,7 +19,6 @@ import bluebot.io.protocol.impl.ResetPacket;
 import bluebot.io.protocol.impl.SeesawPacket;
 import bluebot.io.protocol.impl.SensorPacket;
 import bluebot.io.protocol.impl.StopPacket;
-import bluebot.io.protocol.impl.TilePacket;
 import bluebot.sensors.SensorType;
 
 
@@ -284,17 +284,6 @@ public class PacketFactory {
 	}
 	
 	/**
-	 * Creates a tile (update) packet
-	 * 
-	 * @param tile - the updated {@link Tile}
-	 * 
-	 * @return a {@link Packet} object
-	 */
-	public Packet createTile(final Tile tile) {
-		return new TilePacket(tile);
-	}
-	
-	/**
 	 * Creates a packet to turn left (continuously)
 	 * 
 	 * @return a {@link Packet} object
@@ -335,9 +324,10 @@ public class PacketFactory {
 	}
 	
 	/**
+	 * @throws IOException 
 	 * 
 	 */
-	public Packet createBarcode(final int barcode) {
+	public Packet createBarcode(final int barcode) throws IOException {
 		return new BarcodePacket(barcode);
 	}
 	

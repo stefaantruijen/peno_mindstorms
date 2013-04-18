@@ -1,7 +1,6 @@
 package bluebot;
 
 
-import bluebot.graph.Tile;
 import bluebot.sensors.Brightness;
 import bluebot.sensors.Calibration;
 import bluebot.sensors.CalibrationException;
@@ -147,12 +146,6 @@ public interface Driver extends Mobile {
 	 */
 	public void sendSeesaw(int barcode, boolean locked);
 	
-	/**
-	 * Sends a tile
-	 * 
-	 * @param tile - the (updated) {@link Tile}
-	 */
-	public void sendTile(Tile tile);
 
 	/**
 	 * Sends an MQmessage

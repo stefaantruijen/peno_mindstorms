@@ -41,9 +41,7 @@ public interface Controller extends EventDispatcher<ControllerListener> {
 	
 	public Game doGame(String gameId, String playerId, PlayerHandler handler)
 			throws GameException, IOException;
-	
-	public void doMaze(int playerNumber, int itemNumber);
-	
+		
 	public void doPolygon(int corners, float length);
 	
 	public void doTile();

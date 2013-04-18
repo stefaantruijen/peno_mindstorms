@@ -1,7 +1,5 @@
 package bluebot;
 
-
-import bluebot.graph.Tile;
 import bluebot.io.Connection;
 import bluebot.io.ServerTranslator;
 import bluebot.sensors.Brightness;
@@ -261,9 +259,6 @@ public class DefaultDriver implements Driver {
 		sendSensor(value, SensorType.ULTRA_SONIC);
 	}
 	
-	public void sendTile(final Tile tile) {
-		getTranslator().sendTile(tile);
-	}
 	
 	private final void setRobot(final Robot robot) {
 		if (robot == null) {
