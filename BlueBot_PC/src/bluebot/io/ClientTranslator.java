@@ -25,10 +25,7 @@ public class ClientTranslator extends Translator {
 	public void doCalibrate() {
 		sendPacket(getPacketFactory().createCommandCalibrate());
 	}
-	
-	public void doMaze(final int playerNumber, final int itemNumber) {
-		sendPacket(getPacketFactory().createCommandMaze(playerNumber, itemNumber));
-	}
+
 	
 	public void doPolygon(final int corners, final float length) {
 		sendPacket(getPacketFactory().createPolygon(corners, length));
@@ -96,6 +93,10 @@ public class ClientTranslator extends Translator {
 	
 	public void turnRight(final float angle) {
 		sendPacket(getPacketFactory().createTurnRight(angle));
+	}
+	
+	public void readBarcode(){
+		//sendPacket(getPacketFactory().cr)
 	}
 	
 }

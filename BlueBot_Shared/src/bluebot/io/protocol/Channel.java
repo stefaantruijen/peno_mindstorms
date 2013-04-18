@@ -9,13 +9,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import bluebot.io.protocol.impl.BarcodePacket;
 import bluebot.io.protocol.impl.CommandPacket;
 import bluebot.io.protocol.impl.ConfigPacket;
 import bluebot.io.protocol.impl.DebugPacket;
 import bluebot.io.protocol.impl.ErrorPacket;
 import bluebot.io.protocol.impl.ItemPacket;
 import bluebot.io.protocol.impl.MQMessagePacket;
-import bluebot.io.protocol.impl.MazePacket;
 import bluebot.io.protocol.impl.MessagePacket;
 import bluebot.io.protocol.impl.MotionPacket;
 import bluebot.io.protocol.impl.MovePacket;
@@ -68,8 +68,6 @@ public class Channel {
 					return new ErrorPacket(input);
 				case OP_ITEM:
 					return new ItemPacket(input);
-				case OP_MAZE:
-					return new MazePacket(input);
 				case OP_MESSAGE:
 					return new MessagePacket(input);
 				case OP_MOTION:
@@ -86,6 +84,8 @@ public class Channel {
 					return StopPacket.SINGLETON;
 				case OP_TILE:
 					return new TilePacket(input);
+				case OP_BARCODE:
+					return new BarcodePacket(input);
 				default:
 					throw new ProtocolException("Invalid packet opcode:  " + opcode);
 			}

@@ -2,6 +2,7 @@ package bluebot.io.protocol;
 
 
 import bluebot.graph.Tile;
+import bluebot.io.protocol.impl.BarcodePacket;
 import bluebot.io.protocol.impl.CommandPacket;
 import bluebot.io.protocol.impl.ConfigPacket;
 import bluebot.io.protocol.impl.DebugPacket;
@@ -9,7 +10,6 @@ import bluebot.io.protocol.impl.DisconnectPacket;
 import bluebot.io.protocol.impl.ErrorPacket;
 import bluebot.io.protocol.impl.ItemPacket;
 import bluebot.io.protocol.impl.MQMessagePacket;
-import bluebot.io.protocol.impl.MazePacket;
 import bluebot.io.protocol.impl.MessagePacket;
 import bluebot.io.protocol.impl.MotionPacket;
 import bluebot.io.protocol.impl.MovePacket;
@@ -50,18 +50,6 @@ public class PacketFactory {
 	 */
 	public Packet createCommandCalibrate() {
 		return createCommand(CommandPacket.CALIBRATE);
-	}
-	
-	/**
-	 * Creates a command packet for the maze algorithm
-	 * 
-	 * @param playerNumber - the player number
-	 * @param itemNumber - the number of the item to be picked up
-	 * 
-	 * @return a {@link Packet} object
-	 */
-	public Packet createCommandMaze(final int playerNumber, final int itemNumber) {
-		return new MazePacket(playerNumber, itemNumber);
 	}
 	
 	/**
@@ -345,6 +333,14 @@ public class PacketFactory {
 	public Packet createTurnRight(final float degrees) {
 		return new MovePacket(MovePacket.TURN_RIGHT, degrees);
 	}
+	
+	/**
+	 * 
+	 */
+	public Packet createBarcode(final int barcode) {
+		return new BarcodePacket(barcode);
+	}
+	
 	
 	/**
 	 * Returns the (current) {@link PacketFactory} instance

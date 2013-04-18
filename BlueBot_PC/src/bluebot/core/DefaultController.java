@@ -21,6 +21,7 @@ import bluebot.io.Connection;
 import bluebot.io.ConnectionListener;
 import bluebot.io.protocol.Packet;
 import bluebot.io.protocol.PacketHandler;
+import bluebot.io.protocol.impl.BarcodePacket;
 import bluebot.io.protocol.impl.ConfigPacket;
 import bluebot.io.protocol.impl.DebugPacket;
 import bluebot.io.protocol.impl.ErrorPacket;
@@ -30,7 +31,7 @@ import bluebot.io.protocol.impl.MessagePacket;
 import bluebot.io.protocol.impl.MotionPacket;
 import bluebot.io.protocol.impl.SeesawPacket;
 import bluebot.io.protocol.impl.SensorPacket;
-import bluebot.io.protocol.impl.TilePacket;
+import bluebot.util.Barcode;
 
 
 
@@ -44,6 +45,7 @@ public class DefaultController extends AbstractController {
 	private Game game;
 	private ClientTranslator translator;
 	private World world;
+	private int receivedBarcode;
 	
 	
 	public DefaultController(final World world, final Connection connection)
@@ -51,6 +53,7 @@ public class DefaultController extends AbstractController {
 		this.communicator = new Communicator(connection, createPacketHandler());
 		this.translator = new ClientTranslator(connection);
 		this.world = world;
+		this.receivedBarcode = Integer.MIN_VALUE;
 		
 		this.communicator.start();
 	}
@@ -210,7 +213,18 @@ public class DefaultController extends AbstractController {
 		getTranslator().turnRight(angle);
 	}
 	
+	public int getReceivedBarcode(){
+		int result = Integer.MIN_VALUE;
+		if(receivedBarcode!=Integer.MIN_VALUE){
+			result=receivedBarcode;
+			receivedBarcode = Integer.MIN_VALUE;
+		}
+		return result;
+	}
 	
+	public void setReceivedBarcode(int barcode) {
+		this.receivedBarcode = barcode;
+	}
 	
 	
 	
@@ -252,8 +266,8 @@ public class DefaultController extends AbstractController {
 				case OP_SENSOR:
 					handlePacketSensor((SensorPacket)packet);
 					break;
-				case OP_TILE:
-					handlePacketTile((TilePacket)packet);
+				case OP_BARCODE:
+					handleBarcode((BarcodePacket)packet);
 					break;
 			}
 		}
@@ -344,39 +358,9 @@ public class DefaultController extends AbstractController {
 			}
 		}
 		
-		private final void handlePacketTile(final TilePacket packet) {
-			final Tile tile = packet.getTile();
-			fireTileUpdated(tile);
-			
-			final Game game = getGame();
-			if (game == null) {
-				return;
-			}
-			
-			game.updateTile(tile);
-			
-			if (!tile.isExplored()) {
-				return;
-			}
-			
-			final PlayerClient client = game.getClient();
-			if (client == null) {
-				return;
-			}
-			
-			if (!client.hasTeamPartner()) {
-				return;
-			}
-			
-			//	TODO
-			/*
-			try {
-				client.sendTiles(new peno.htttp.Tile(tile.getX(), tile.getY(),
-						null));
-			} catch (final IOException e) {
-				e.printStackTrace();
-			}
-			*/
+		
+		private final void handleBarcode(BarcodePacket barcode){			
+			setReceivedBarcode(barcode.getBarcode());
 		}
 		
 	}
@@ -444,6 +428,32 @@ public class DefaultController extends AbstractController {
 		public void teamTilesReceived(final List<peno.htttp.Tile> tiles) {
 			//	TODO
 		}
+		
+	}
+
+
+
+
+
+	@Override
+	public void doSeesaw() {
+		//TODO
+		
+	}
+
+
+
+	@Override
+	public void doReadBarcode(Tile tile) {
+		//TODO
+		
+	}
+
+
+
+	@Override
+	public void setStartLocation(int playerNumber) {
+		// TODO Auto-generated method stub
 		
 	}
 	

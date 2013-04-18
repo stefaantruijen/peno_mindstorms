@@ -9,6 +9,7 @@ import bluebot.ConfigListener;
 import bluebot.game.Game;
 import bluebot.game.GameException;
 import bluebot.game.World;
+import bluebot.graph.Tile;
 import bluebot.io.ConnectionListener;
 import bluebot.io.MessageListener;
 import bluebot.maze.MazeListener;
@@ -48,6 +49,12 @@ public interface Controller extends EventDispatcher<ControllerListener> {
 	public void doTile();
 	
 	public void doWhiteLineOrientation();
+	
+	public void doSeesaw();
+	
+	public void doReadBarcode(Tile tile);
+	
+	public void setStartLocation(int playerNumber);
 	
 	/**
 	 * Returns the world reference
@@ -95,6 +102,8 @@ public interface Controller extends EventDispatcher<ControllerListener> {
 	public void reset();
 	
 	public void setSpeed(int percentage);
+	
+	public int getReceivedBarcode();
 	
 	/**
 	 * Stops moving/turning
