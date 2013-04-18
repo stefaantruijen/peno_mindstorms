@@ -237,8 +237,16 @@ public class Tile implements Comparable<Tile> {
 		return x;
 	}
 	
+	private void setX(int x){
+		this.x = x;
+	}
+	
 	public int getY() {
 		return y;
+	}
+	
+	private void setY(int y){
+		this.y = y;
 	}
 	
 	@Override
@@ -325,39 +333,43 @@ public class Tile implements Comparable<Tile> {
 	}
 	
 	public void setBorderEast(final Border border) {
-		if(this.getBorderEast()!= Border.UNKNOWN && border == Border.UNKNOWN){
-			//do nothing, once explored remains.
-			return;
-		}else{
+		//TODO: MAY CAUSE BUGS
+//		if(this.getBorderEast()!= Border.UNKNOWN && border == Border.UNKNOWN){
+//			//do nothing, once explored remains.
+//			return;
+//		}else{
 			setBorder(2, border);
-		}
+//		}
 	}
 	
 	public void setBorderNorth(final Border border) {
-		if(this.getBorderNorth()!= Border.UNKNOWN && border == Border.UNKNOWN){
-			//do nothing, once explored remains.
-			return;
-		}else{
+		//TODO: MAY CAUSE BUGS
+//		if(this.getBorderNorth()!= Border.UNKNOWN && border == Border.UNKNOWN){
+//			//do nothing, once explored remains.
+//			return;
+//		}else{
 			setBorder(0, border);
-		}
+//		}
 	}
 	
 	public void setBorderSouth(final Border border) {
-		if(this.getBorderSouth()!= Border.UNKNOWN && border == Border.UNKNOWN){
-			//do nothing, once explored remains.
-			return;
-		}else{
+		//TODO: MAY CAUSE BUGS
+//		if(this.getBorderSouth()!= Border.UNKNOWN && border == Border.UNKNOWN){
+//			//do nothing, once explored remains.
+//			return;
+//		}else{
 			setBorder(4, border);
-		}
+//		}
 	}
 	
 	public void setBorderWest(final Border border) {
-		if(this.getBorderWest()!= Border.UNKNOWN && border == Border.UNKNOWN){
-			//do nothing, once explored remains.
-			return;
-		}else{
+		//TODO: MAY CAUSE BUGS
+//		if(this.getBorderWest()!= Border.UNKNOWN && border == Border.UNKNOWN){
+//			//do nothing, once explored remains.
+//			return;
+//		}else{
 			setBorder(6, border);
-		}
+//		}
 	}
 	
 	public void setItemId(final int id) {
@@ -442,7 +454,7 @@ public class Tile implements Comparable<Tile> {
 		
 	}
 	/**
-	 * Set a certain border open (=true) or closed (=false) given a certain ori�ntation.
+	 * Set a certain border open (=true) or closed (=false) given a certain ori���ntation.
 	 * @param o
 	 * @param flag
 	 */
@@ -624,6 +636,57 @@ public class Tile implements Comparable<Tile> {
 	}
 
 
+    /**
+     * Turns the borders and coordinates of the Tile according to the given direction.
+     *
+     * Direction.LEFT means a -90 degrees turn.
+     * Direction.RIGHT means a +90 degrees turn.
+     * Direction.DOWN means a -+180 degrees turn.
+     * Direction.UP means a -+0 degrees turn. (and is ignored)
+     *
+     * @param direction
+     */
+    public void rotate(Direction direction){
+        Border oldNorth = getBorderNorth();
+        Border oldEast = getBorderEast();
+        Border oldSouth = getBorderSouth();
+        Border oldWest = getBorderWest();
+        int oldX = getX();
+        int oldY = getY();
+        switch (direction) {
+        case LEFT:
+            //-90 degrees
+            setBorderNorth(oldEast);
+            setBorderEast(oldSouth);
+            setBorderSouth(oldWest);
+            setBorderWest(oldNorth);
+            setX(-oldY);
+            setY(oldX);
+            break;
+        case RIGHT:
+            //+90 degrees
+            setBorderNorth(oldWest);
+            setBorderEast(oldNorth);
+            setBorderSouth(oldEast);
+            setBorderWest(oldSouth);
+            setX(oldY);
+            setY(-oldX);
+            break;
+        case DOWN:
+            //-+180 degrees
+            setBorderNorth(oldSouth);
+            setBorderEast(oldWest);
+            setBorderSouth(oldNorth);
+            setBorderWest(oldEast);
+            setX(-oldX);
+            setY(-oldY);
+            break;
+        default:
+            break;
+        }
+    }
 
-	
+	public Byte getByteRepresentation(){
+		return this.borders;
+	}
 }
