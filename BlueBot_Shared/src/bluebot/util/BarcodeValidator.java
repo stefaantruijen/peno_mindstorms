@@ -1,4 +1,4 @@
-package bluebot.maze;
+package bluebot.util;
 
 
 

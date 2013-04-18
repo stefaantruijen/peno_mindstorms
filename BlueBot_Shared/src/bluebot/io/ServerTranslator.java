@@ -1,7 +1,6 @@
 package bluebot.io;
 
 
-import bluebot.graph.Tile;
 import bluebot.sensors.SensorType;
 
 
@@ -46,16 +45,13 @@ public class ServerTranslator extends Translator {
 	}
 	
 	public void sendSeesaw(final int barcode, final boolean locked) {
-		sendPacket(getPacketFactory().createSeesaw(barcode, locked));
+		sendPacket(getPacketFactory().createSeesaw());
 	}
 	
 	public void sendSensorValue(final SensorType type, final int value) {
 		sendPacket(getPacketFactory().createSensorResponse(type, value));
 	}
 	
-	public void sendTile(final Tile tile) {
-		sendPacket(getPacketFactory().createTile(tile));
-	}
 
 	public void sendMQMessage(String msg) {
 		sendPacket(getPacketFactory().createMQMessage(msg));

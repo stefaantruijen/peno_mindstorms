@@ -3,18 +3,15 @@ package bluebot;
 
 import bluebot.actions.ActionQueue;
 import bluebot.actions.impl.CalibrationAction;
-import bluebot.actions.impl.MazeActionV2;
 import bluebot.actions.impl.MovementAction;
 import bluebot.actions.impl.PolygonAction;
 import bluebot.actions.impl.ReadBarcodeAction;
 import bluebot.actions.impl.SeesawAction;
 import bluebot.actions.impl.WhiteLineAction;
-import bluebot.graph.Tile;
 import bluebot.io.protocol.Packet;
 import bluebot.io.protocol.PacketHandler;
 import bluebot.io.protocol.impl.CommandPacket;
 import bluebot.io.protocol.impl.ConfigPacket;
-import bluebot.io.protocol.impl.MazePacket;
 import bluebot.io.protocol.impl.MovePacket;
 import bluebot.io.protocol.impl.PolygonPacket;
 import bluebot.io.protocol.impl.SeesawPacket;
@@ -50,9 +47,6 @@ public class DriverHandler implements PacketHandler {
 			case Packet.OP_DISCONNECT:
 				handlePacketDisconnect();
 				break;
-			case Packet.OP_MAZE:
-				handlePacketMaze((MazePacket)packet);
-				break;
 			case Packet.OP_SEESAW:
 				handlePacketSeeSaw((SeesawPacket)packet);
 				break;
@@ -77,9 +71,6 @@ public class DriverHandler implements PacketHandler {
 			// ignored
 		} else if (command.equals(CommandPacket.CALIBRATE)) {
 			queue.queue(new CalibrationAction());
-		} else if (command.equals(CommandPacket.TILE)) {
-//			queue.queue(new CheckTileAction());
-			queue.queue(new ReadBarcodeAction(new Tile(0, 0)));
 		} else if (command.equals(CommandPacket.WHITE_LINE_ORIENTATION)) {
 			queue.queue(new WhiteLineAction());
 		}
@@ -100,13 +91,6 @@ public class DriverHandler implements PacketHandler {
 	private final void handlePacketDisconnect() {
 		stop();
 		driver.dispose();
-	}
-	
-	private final void handlePacketMaze(final MazePacket packet) {
-		queue.queue(new MazeActionV2(packet.getPlayerNumber(), packet.getItemNumber()));
-//		queue.queue(new MazeAction());
-//		queue.queue(new MazeActionV2(packet.getPlayerIds(), packet.getPlayerId()));
-//		queue.queue(new TestAction());
 	}
 	
 	private final void handlePacketSeeSaw(final SeesawPacket packet) {

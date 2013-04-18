@@ -1,4 +1,4 @@
-package bluebot.actions.impl;
+package bluebot.actionsimpl;
 
 
 import java.util.ArrayList;
@@ -9,11 +9,13 @@ import algorithms.Dijkstra;
 import bluebot.DriverException;
 import bluebot.actions.Action;
 import bluebot.actions.ActionException;
+import bluebot.core.Controller;
 import bluebot.graph.Border;
 import bluebot.graph.Graph;
 import bluebot.graph.Orientation;
 import bluebot.graph.Tile;
 import bluebot.maze.Maze;
+import bluebot.maze.MazeListener;
 import bluebot.util.Timer;
 import bluebot.util.Utils;
 
@@ -33,11 +35,17 @@ public class MazeActionV2 extends Action {
 	private final static int[] seesawBarcodes = new int[]{11,13,15,17,19,21};
 	private final static int[] itemBarcodes = new int[]{0,1,2,3,4,5,6,7};
 	private int teamNumber = -1;
+	private Controller controller;
+	//TODO
+	private MazeListener mazeListener;
 	
-	public MazeActionV2(final int playerNumber,final int objectNumber) {
+	public MazeActionV2(final Controller contoller, final int playerNumber,final int objectNumber, final MazeListener mazeListener) {
 		this.playerNumber = playerNumber;
 		this.objectNumber = objectNumber;
-		getDriver().setStartLocation(this.playerNumber);
+		this.controller = controller;
+		//TODO
+		this.mazeListener = mazeListener;
+		controller.setStartLocation(this.playerNumber);
 		
 	}
 	/**
@@ -95,29 +103,29 @@ public class MazeActionV2 extends Action {
 		}
 		
 		tile.setItemId(id);
-		getDriver().sendTile(tile);
+		mazeListener.onTileUpdate(tile);
 		
 		final int x = tile.getX();
 		final int y = tile.getY();
 		if (dir != Orientation.NORTH) {
 			final Tile neighbor = maze.addTile(x, y - 1);
 			neighbor.setBorderNorth(Border.CLOSED);
-			getDriver().sendTile(neighbor);
+			mazeListener.onTileUpdate(neighbor);
 		}
 		if (dir != Orientation.EAST) {
 			final Tile neighbor = maze.addTile(x - 1, y);
 			neighbor.setBorderEast(Border.CLOSED);
-			getDriver().sendTile(neighbor);
+			mazeListener.onTileUpdate(neighbor);
 		}
 		if (dir != Orientation.SOUTH) {
 			final Tile neighbor = maze.addTile(x, y + 1);
 			neighbor.setBorderSouth(Border.CLOSED);
-			getDriver().sendTile(neighbor);
+			mazeListener.onTileUpdate(neighbor);
 		}
 		if (dir != Orientation.WEST) {
 			final Tile neighbor = maze.addTile(x + 1, y);
 			neighbor.setBorderWest(Border.CLOSED);
-			getDriver().sendTile(neighbor);
+			mazeListener.onTileUpdate(neighbor);
 		}
 		return tile;
 	}
@@ -228,7 +236,7 @@ public class MazeActionV2 extends Action {
 		return detectWall();
 	}
 	
-	protected void execute()
+	public void execute()
 			throws ActionException, DriverException, InterruptedException {
 		final Timer timer = new Timer();
 		timer.reset();
@@ -262,7 +270,7 @@ public class MazeActionV2 extends Action {
 						this.wait(1000);
 						checkAborted();
 					}
-					new SeesawAction().execute();
+					controller.doSeesaw();
 					i = i+2;
 					this.current = path[i];
 				}else{
@@ -299,13 +307,13 @@ public class MazeActionV2 extends Action {
 						checkAborted();
 						Tile tile1 = createSeesawTile(tile, getDirectionBody(),barcode);
 						tile1.setSeesaw(true);
-						getDriver().sendTile(tile1);
+						mazeListener.onTileUpdate(tile1);
 						Tile tile2 = createSeesawTile(tile1, getDirectionBody(),barcode);
 						tile2.setSeesaw(true);
-						getDriver().sendTile(tile2);
+						mazeListener.onTileUpdate(tile2);
 						Tile tile3 = createEndSeesawTile(tile2,getDirectionBody(),barcode);
 						checkAborted();
-						getDriver().sendTile(tile3);
+						mazeListener.onTileUpdate(tile3);
 						
 						
 					}else{
@@ -369,7 +377,7 @@ public class MazeActionV2 extends Action {
 		this.setOtherRobotTile(tile);
 		if(!teamMateKnown){
 			for(Tile t : this.maze.getTiles()){
-				this.getDriver().sendTile(t);
+				mazeListener.onTileUpdate(t);
 			}
 		}
 		this.setTeamMateKnown();
@@ -419,7 +427,7 @@ public class MazeActionV2 extends Action {
 		}
 		
 		
-	    getDriver().sendTile(endTile);
+	    mazeListener.onTileUpdate(endTile);
 		
 		if(barcode==11||barcode == 13 ||barcode ==15){
 			endTile.setBarCode(barcode+2);
@@ -818,22 +826,28 @@ public class MazeActionV2 extends Action {
 			// and it has a valid barcode
 			return barcode;
 		}
-
-		final ReadBarcodeAction reader = new ReadBarcodeAction(tile);
-
 		final int speed = getDriver().getSpeed();
-		reader.execute(getDriver());
-		getDriver().setSpeed(speed);
 
-		barcode = reader.getBarcode();
-		if (barcode <= 0) {
+		controller.doReadBarcode(tile);
+		getDriver().setSpeed(speed);
+		
+		int bar =Integer.MIN_VALUE;
+		while(true){
+			bar = controller.getReceivedBarcode();
+			if(bar!=Integer.MIN_VALUE){
+				break;
+			}
+		}
+		
+
+		if (bar == -1) {
 			// Remember to not check this tile again
 			tile.setBarCode(0);
 			return -1;
 		}
 
 		tile.setBarCode(barcode);
-		getDriver().sendTile(tile);
+		mazeListener.onTileUpdate(tile);
 		
 		return barcode;
 	}
@@ -1008,7 +1022,7 @@ public class MazeActionV2 extends Action {
 	
 	private final void updateTiles(final Tile... tiles) {
 		for (final Tile tile : tiles) {
-			getDriver().sendTile(tile);
+			mazeListener.onTileUpdate(tile);
 		}
 	}
 	
@@ -1242,7 +1256,7 @@ public class MazeActionV2 extends Action {
 					this.wait(1000);
 					checkAborted();
 				}
-				new SeesawAction().execute();
+				controller.doSeesaw();
 				this.current = path.get(2);
 
 			}

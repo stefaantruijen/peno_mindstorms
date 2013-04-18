@@ -1,7 +1,7 @@
 package bluebot.util;
 
 
-import bluebot.maze.BarcodeValidator;
+import bluebot.util.BarcodeValidator;
 
 
 
