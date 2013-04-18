@@ -15,6 +15,7 @@ import bluebot.io.protocol.impl.MessagePacket;
 import bluebot.io.protocol.impl.MotionPacket;
 import bluebot.io.protocol.impl.MovePacket;
 import bluebot.io.protocol.impl.PolygonPacket;
+import bluebot.io.protocol.impl.ReadBarcodePacket;
 import bluebot.io.protocol.impl.ResetPacket;
 import bluebot.io.protocol.impl.SeesawPacket;
 import bluebot.io.protocol.impl.SensorPacket;
@@ -324,13 +325,20 @@ public class PacketFactory {
 	}
 	
 	
+	/**
+	 * @throws IOException 
+	 * 
+	 */
+	public Packet createBarcode(final int barcode) {
+		return new BarcodePacket(barcode);
+	}
 	
 	/**
 	 * @throws IOException 
 	 * 
 	 */
-	public Packet createBarcode(final int barcode) throws IOException {
-		return new BarcodePacket(barcode);
+	public Packet createReadBarcode() {
+		return new ReadBarcodePacket();
 	}
 	
 	

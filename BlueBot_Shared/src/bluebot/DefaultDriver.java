@@ -217,10 +217,6 @@ public class DefaultDriver implements Driver {
 		getTranslator().sendMotion(x, y, body, head);
 	}
 	
-	public void sendSeesaw(final int barcode, final boolean locked) {
-		getTranslator().sendSeesaw(barcode, locked);
-	}
-	
 	private final void sendSensor(final int value, final SensorType type) {
 		getTranslator().sendSensorValue(type, value);
 	}
@@ -407,6 +403,10 @@ public class DefaultDriver implements Driver {
 	public void setStartLocation(int playerID) {
 		this.getRobot().setStartLocation(playerID);
 		
+	}
+	@Override
+	public void sendBarcode(int barcode) {
+		getTranslator().sendBarcode(barcode);
 	}
 	
 }
