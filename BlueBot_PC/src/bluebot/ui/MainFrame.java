@@ -8,24 +8,17 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import javax.swing.filechooser.FileFilter;
 
 import lejos.pc.comm.NXTCommException;
 
 import bluebot.core.Controller;
 import bluebot.game.World;
-import bluebot.graph.Graph;
-import bluebot.graph.Tile;
-import bluebot.maze.MazeReader;
 
 
 
@@ -33,19 +26,22 @@ import bluebot.maze.MazeReader;
  * 
  * @author Ruben Feyen
  */
-public class MainFrame extends JFrame {
+public class MainFrame extends RenderingFrame {
 	private static final long serialVersionUID = 1L;
 	
 	public static final String DEFAULT_BRICK_NAME = "BlueBot";
 	public static final String TITLE = "P&O BlueBot";
 	
-	private Tile[] maze;
+	private World world;
 	
 	
-	public MainFrame() {
+	public MainFrame(final World world) {
 		super(TITLE);
+		this.world = world;
+		
 		initComponents();
 		pack();
+		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setResizable(false);
 		setLocationRelativeTo(null);
@@ -54,24 +50,21 @@ public class MainFrame extends JFrame {
 	
 	
 	private final void connectToBrick() {
-		final String name = JOptionPane.showInputDialog("What is the name of the NXT brick?", DEFAULT_BRICK_NAME);
+		final String name = JOptionPane.showInputDialog(
+				"What is the name of the NXT brick?", DEFAULT_BRICK_NAME);
 		if ((name != null) && !name.isEmpty()) {
 			connectToBrick(name);
 		}
 	}
 	
 	private final void connectToBrick(final String name) {
-		final Tile[] maze = getMaze();
-		if (maze == null) {
-			return;
-		}
-		if (maze.length == 0) {
-			SwingUtils.showWarning("Invalid maze (no tiles)");
+		final World world = getWorld();
+		if (world == null) {
 			return;
 		}
 		
 		try {
-			showController(getControllerFactory().connectToBrick(new World(maze), name));
+			showController(getControllerFactory().connectToBrick(world, name));
 		} catch (final IOException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this,
@@ -97,18 +90,13 @@ public class MainFrame extends JFrame {
 	}
 	
 	private final void connectToSimulator() {
-		final Tile[] maze = getMaze();
-		if (maze == null) {
-			return;
-		}
-		if (maze.length == 0) {
-			this.maze = null;
-			SwingUtils.showWarning("Invalid maze (no tiles)");
+		final World world = getWorld();
+		if (world == null) {
 			return;
 		}
 		
 		try {
-			showController(getControllerFactory().connectToSimulator(new World(maze)));
+			showController(getControllerFactory().connectToSimulator(world));
 		} catch (final IOException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this,
@@ -151,18 +139,8 @@ public class MainFrame extends JFrame {
 		return button;
 	}
 	
-	protected World createWorld() {
-		if (maze == null) {
-			maze = loadMaze();
-		}
-		return ((maze == null) ? null : new World(maze));
-	}
-	
-	private final Tile[] getMaze() {
-		if (maze == null) {
-			maze = loadMaze();
-		}
-		return maze;
+	private final World getWorld() {
+		return world;
 	}
 	
 	private final void initComponents() {
@@ -209,48 +187,6 @@ public class MainFrame extends JFrame {
 //		add(btnTestDummy, gbc);
 	}
 	
-	private final Tile[] loadMaze() {
-		final JFileChooser fc = new JFileChooser(new File("."));
-		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		for (final FileFilter filter : fc.getChoosableFileFilters()) {
-			fc.removeChoosableFileFilter(filter);
-		}
-		fc.addChoosableFileFilter(new FileFilter() {
-			public boolean accept(final File file) {
-				return (file.isDirectory() || file.getName().endsWith(".txt"));
-			}
-			
-			public String getDescription() {
-				return "Maze files (.txt)";
-			}
-		});
-		
-		fc.setApproveButtonText("Load");
-		fc.setDialogTitle("Load a maze file");
-		
-		if (fc.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
-			return null;
-		}
-		
-		final File file = fc.getSelectedFile();
-		
-		final Graph graph;
-		try {
-			graph = new MazeReader().parseMaze(file.getAbsolutePath());
-		} catch (final Throwable e) {
-			return null;
-		}
-		
-		if (graph == null) {
-			return null;
-		}
-		
-		final List<Tile> maze = graph.getVerticies();
-		final Tile[] tiles = new Tile[maze.size()];
-		maze.toArray(tiles);
-		return tiles;
-	}
-	
 	private final void showController(final Controller controller) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -260,6 +196,14 @@ public class MainFrame extends JFrame {
 				frame.setVisible(true);
 			}
 		});
+	}
+	
+	protected void startRendering() {
+		//	TODO
+	}
+	
+	protected void stopRendering() {
+		//	TODO
 	}
 	
 }

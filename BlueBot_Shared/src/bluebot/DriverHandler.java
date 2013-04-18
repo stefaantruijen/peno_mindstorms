@@ -6,6 +6,7 @@ import bluebot.actions.impl.CalibrationAction;
 import bluebot.actions.impl.MovementAction;
 import bluebot.actions.impl.PolygonAction;
 import bluebot.actions.impl.ReadBarcodeAction;
+import bluebot.actions.impl.SeesawAction;
 import bluebot.actions.impl.WhiteLineAction;
 import bluebot.io.protocol.Packet;
 import bluebot.io.protocol.PacketHandler;
@@ -13,6 +14,8 @@ import bluebot.io.protocol.impl.CommandPacket;
 import bluebot.io.protocol.impl.ConfigPacket;
 import bluebot.io.protocol.impl.MovePacket;
 import bluebot.io.protocol.impl.PolygonPacket;
+import bluebot.io.protocol.impl.ReadBarcodePacket;
+import bluebot.io.protocol.impl.SeesawPacket;
 
 
 
@@ -45,6 +48,12 @@ public class DriverHandler implements PacketHandler {
 			case Packet.OP_DISCONNECT:
 				handlePacketDisconnect();
 				break;
+			case Packet.OP_SEESAW:
+				handlePacketSeeSaw((SeesawPacket)packet);
+				break;
+			case Packet.OP_READBARCODE:
+				handlePacketReadBarcode((ReadBarcodePacket)packet);
+				break;
 			case Packet.OP_MOVE:
 				handlePacketMove((MovePacket)packet);
 				break;
@@ -60,6 +69,8 @@ public class DriverHandler implements PacketHandler {
 		}
 	}
 	
+
+
 	private final void handlePacketCommand(final CommandPacket packet) {
 		final String command = packet.getCommand();
 		if ((command == null) || command.isEmpty()) {
@@ -87,6 +98,16 @@ public class DriverHandler implements PacketHandler {
 		stop();
 		driver.dispose();
 	}
+	
+	private final void handlePacketSeeSaw(final SeesawPacket packet) {
+		queue.queue(new SeesawAction());
+	}
+	
+
+	private void handlePacketReadBarcode(final ReadBarcodePacket packet) {
+		queue.queue(new ReadBarcodeAction());
+	}
+
 	
 	private final void handlePacketMove(final MovePacket packet) {
 		if (packet.isQuantified()) {

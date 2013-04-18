@@ -22,9 +22,8 @@ public class BarcodePacket extends Packet {
 	/**
 	 * Creates a new barcodePacket with the given input as barcode.
 	 * @param input		The barcode
-	 * @throws IOException
 	 */
-	public BarcodePacket(int barcode) throws IOException {
+	public BarcodePacket(int barcode) {
 		setBarcode(barcode);
 	}
 

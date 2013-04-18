@@ -44,10 +44,6 @@ public class ServerTranslator extends Translator {
 		sendPacket(getPacketFactory().createMotion(x, y, body, head));
 	}
 	
-	public void sendSeesaw(final int barcode, final boolean locked) {
-		sendPacket(getPacketFactory().createSeesaw(barcode, locked));
-	}
-	
 	public void sendSensorValue(final SensorType type, final int value) {
 		sendPacket(getPacketFactory().createSensorResponse(type, value));
 	}
@@ -55,6 +51,10 @@ public class ServerTranslator extends Translator {
 
 	public void sendMQMessage(String msg) {
 		sendPacket(getPacketFactory().createMQMessage(msg));
+	}
+	
+	public void sendBarcode(int barcode){
+		sendPacket(getPacketFactory().createBarcode(barcode));
 	}
 	
 }

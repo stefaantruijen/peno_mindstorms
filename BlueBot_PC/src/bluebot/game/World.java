@@ -1,14 +1,22 @@
 package bluebot.game;
 
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import bluebot.graph.Orientation;
 import bluebot.graph.Tile;
 import bluebot.simulator.IRModel;
 import bluebot.simulator.VirtualInfraredBall;
+import bluebot.ui.rendering.RenderingUtils;
 
 import peno.htttp.SpectatorHandler;
 
@@ -26,7 +34,9 @@ public class World {
 	public static final int BARCOD_SEESAW_2B = 17;
 	public static final int BARCODE_SEESAW_3A = 19;
 	public static final int BARCODE_SEESAW_3B = 21;
+	private static final Font FONT = new Font(Font.SANS_SERIF, Font.BOLD, 16);
 	
+	@SuppressWarnings("serial")
 	public static final HashSet<Integer> seesawBarcodes = new HashSet<Integer>() {{ 
 		this.add(BARCODE_SEESAW_1A);
 		this.add(BARCODE_SEESAW_1B);
@@ -42,12 +52,15 @@ public class World {
 			new int[]{BARCODE_SEESAW_3A, BARCODE_SEESAW_3B}};
 	
 	private int[] dim;
+	private IRModel irModel;
 	private Tile[] maze;
 	private HashMap<String, Player> players;
+	private BufferedImage renderBuffer;
+	private int renderTileResolution = -1;
 	private HashSet<Integer> seesaws;
 	private HashMap<Integer, int[]> seesawLocations;
+	private SeesawTile[] seesawTiles;
 	private Tile[] starts;
-	private IRModel irModel;
 	
 	
 	public World(final Tile[] maze) throws IllegalArgumentException {
@@ -56,6 +69,7 @@ public class World {
 		this.seesaws = createSeesaws();
 		this.starts = createStarts(maze);
 		this.seesawLocations = createSeesawLocations(maze);
+		this.seesawTiles = createSeesawTiles(maze);
 		irModel = new IRModel();
 		placeIRBalls();
 		
@@ -141,6 +155,88 @@ public class World {
 		return result;
 	}
 	
+	private static final SeesawTile[] createSeesawTiles(final Tile[] maze) {
+		final HashMap<Integer, Tile> tiles = new HashMap<Integer, Tile>();
+		for (final Tile tile : maze) {
+			final Integer barcode = Integer.valueOf(tile.getBarCode());
+			if ((barcode > 0) && seesawBarcodes.contains(barcode)) {
+				tiles.put(barcode, tile);
+			}
+		}
+		
+		final ArrayList<SeesawTile> list = new ArrayList<World.SeesawTile>();
+		
+		final int[] seesaws = {
+				BARCODE_SEESAW_1A,
+				BARCODE_SEESAW_2A,
+				BARCODE_SEESAW_3A
+		};
+		for (final int seesaw : seesaws) {
+			final Tile a = tiles.get(Integer.valueOf(seesaw));
+			if (a == null) {
+				continue;
+			}
+			
+			final Tile b = tiles.get(Integer.valueOf(seesaw + 2));
+			if (b == null) {
+				continue;
+			}
+			
+			final int ax = a.getX();
+			final int ay = a.getY();
+			final int bx = b.getX();
+			final int by = b.getY();
+			
+			if (ay == by) {
+				//	Horizontal
+				if (ax < bx) {
+					//	left-to-right
+					list.add(new SeesawTile(getTile(maze, (ax + 1), ay),
+							seesaw,
+							Orientation.WEST));
+					list.add(new SeesawTile(getTile(maze, (bx - 1), by),
+							(seesaw + 2),
+							Orientation.EAST));
+				} else {
+					//	right-to-left
+					list.add(new SeesawTile(getTile(maze, (bx + 1), by),
+							(seesaw + 2),
+							Orientation.WEST));
+					list.add(new SeesawTile(getTile(maze, (ax - 1), ay),
+							seesaw,
+							Orientation.EAST));
+				}
+			} else {
+				//	Vertical
+				if (ay > by) {
+					//	top-to-bottom
+					list.add(new SeesawTile(getTile(maze, ax, (ay - 1)),
+							seesaw,
+							Orientation.NORTH));
+					list.add(new SeesawTile(getTile(maze, bx, (by + 1)),
+							(seesaw + 2),
+							Orientation.SOUTH));
+				} else {
+					//	bottom-to-top
+					list.add(new SeesawTile(getTile(maze, bx, (by - 1)),
+							(seesaw + 2),
+							Orientation.NORTH));
+					list.add(new SeesawTile(getTile(maze, ax, (ay + 1)),
+							seesaw,
+							Orientation.SOUTH));
+				}
+			}
+		}
+		
+		if (list.isEmpty()) {
+			return new SeesawTile[0];
+		}
+		
+		final SeesawTile[] array = new SeesawTile[list.size()];
+		list.toArray(array);
+		return array;
+	}
+	
 	public int getHeight() {
 		return dim[1];
 	}
@@ -165,6 +261,15 @@ public class World {
 		return starts[playerNumber - 1];
 	}
 	
+	private static final Tile getTile(final Tile[] maze, final int x, final int y) {
+		for (final Tile tile : maze) {
+			if ((tile.getX() == x) && (tile.getY() == y)) {
+				return tile;
+			}
+		}
+		throw new RuntimeException("No such tile!");
+	}
+	
 	public int getWidth() {
 		return dim[0];
 	}
@@ -173,18 +278,112 @@ public class World {
 		return seesaws.contains(barcode);
 	}
 	
+	public void render(final Graphics2D gfx, final int tileResolution) {
+		final int w = (tileResolution * getWidth());
+		final int h = (tileResolution * getHeight());
+		
+		AffineTransform origin;
+		
+		BufferedImage buffer = renderBuffer;
+		if ((buffer == null) || (tileResolution != renderTileResolution)) {
+			buffer = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+			
+			final Graphics2D g = buffer.createGraphics();
+			
+			origin = g.getTransform();
+			for (final Tile tile : maze) {
+				final int dx = (tile.getX() * tileResolution);
+				final int dy = (h - tileResolution - (tile.getY() * tileResolution));
+				g.translate(dx, dy);
+				RenderingUtils.renderTile(g, tile, tileResolution);
+				g.setTransform(origin);
+			}
+			
+			g.dispose();
+			this.renderBuffer = buffer;
+			this.renderTileResolution = tileResolution;
+		}
+		gfx.drawImage(buffer, 0, 0, null);
+		
+		origin = gfx.getTransform();
+		
+		for (final SeesawTile seesaw : seesawTiles) {
+			final Tile tile = seesaw.tile;
+			final int dx = (tile.getX() * tileResolution);
+			final int dy = (h - tileResolution - (tile.getY() * tileResolution));
+			gfx.translate(dx, dy);
+			RenderingUtils.renderSeesaw(gfx,
+					seesaw.dir,
+					isSeesawLocked(seesaw.barcode),
+					tileResolution);
+			gfx.setTransform(origin);
+		}
+		
+		gfx.setFont(FONT);
+		final FontMetrics fm = gfx.getFontMetrics(FONT);
+		for (final Player player : getPlayers()) {
+			final int number = player.getNumber();
+			
+			//	TODO:	players
+			final Tile start = getStart(number);
+			if (start == null) {
+				continue;
+			}
+			
+			final int x = (start.getX()
+					+ (int)(((Tile.SIZE / 2) + player.getX()) / Tile.SIZE));
+			final int y = (start.getY()
+					+ (int)(((Tile.SIZE / 2) + player.getY()) / Tile.SIZE));
+			
+			gfx.translate(
+					((x * tileResolution) + (tileResolution / 2)),
+					(h - (tileResolution / 2) - (y * tileResolution)));
+			
+			final int off = -(tileResolution / 5);
+			final int size = (tileResolution * 3 / 5);
+			gfx.setColor(Color.YELLOW);
+			gfx.fillOval(off, off, size, size);
+			
+			final String id = ((number < 0) ? "?" : Integer.toString(player.getNumber()));
+			gfx.setColor(Color.BLUE);
+			gfx.drawString(id, -(fm.stringWidth(id) / 2), -(fm.getHeight() / 2));
+			
+			gfx.setTransform(origin);
+		}
+		
+		gfx.setTransform(origin);
+	}
 	
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	private static final class SeesawTile {
+		
+		private final int barcode;
+		private final Orientation dir;
+		private final Tile tile;
+		
+		
+		public SeesawTile(final Tile tile, final int barcode, final Orientation dir) {
+			this.barcode = barcode;
+			this.dir = dir;
+			this.tile = tile;
+		}
+		
+	}
 	
 	
 	
 	
 	
 	private final class WorldHandler extends GameAdapter implements SpectatorHandler {
-
-
+		
 		public void lockedSeesaw(final String playerId,
 				final int playerNumber, final int barcode) {
 			//	ignored
@@ -192,7 +391,12 @@ public class World {
 		
 		@Override
 		public void playerJoined(final String playerId) {
+			System.out.printf("'%s' joined %s%n", playerId, this);
 			players.put(playerId, new Player(playerId));
+		}
+		
+		public void playerRolled(final String playerId, final int number) {
+			//	TODO
 		}
 		
 		public void playerUpdate(final String playerId,

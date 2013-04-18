@@ -32,6 +32,8 @@ public abstract class Packet {
 	public static final int OP_DEBUG      = 0xE2;
 	public static final int OP_MQMESSAGE  = 0xE3;
 	public static final int OP_BARCODE	  = 0xE4;
+	public static final int OP_READBARCODE= 0xE5;
+
 	
 	
 	protected Packet() {}

@@ -17,6 +17,8 @@ import javax.swing.JComponent;
 public abstract class RenderingComponent extends JComponent {
 	private static final long serialVersionUID = 1L;
 	
+	private RenderTask renderer;
+	
 	
 	public RenderingComponent() {
 		setFocusable(false);
@@ -47,5 +49,55 @@ public abstract class RenderingComponent extends JComponent {
 	}
 	
 	protected abstract void render(Graphics2D gfx);
+	
+	public synchronized void startRendering() {
+		if (renderer == null) {
+			renderer = new RenderTask();
+			final Thread host = new Thread(renderer);
+			host.setDaemon(true);
+			host.start();
+		}
+	}
+	
+	public synchronized void stopRendering() {
+		if (renderer != null) {
+			renderer.kill();
+			renderer = null;
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	private final class RenderTask implements Runnable {
+		
+		private boolean rendering = true;
+		
+		
+		
+		public void kill() {
+			rendering = false;
+		}
+		
+		public void run() {
+			while (rendering) {
+				try {
+					Thread.sleep(80);
+					if (isVisible()) {
+						repaint(0L);
+					}
+				} catch (final InterruptedException e) {
+					kill();
+				}
+			}
+		}
+		
+	}
 	
 }

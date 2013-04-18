@@ -138,14 +138,11 @@ public interface Driver extends Mobile {
 	public void sendMessage(String msg, String title);
 	
 	/**
-	 * Sends a notification about the use of a seesaw
+	 * Sends a barcode.
 	 * 
-	 * @param barcode - the barcode that was read before driving onto the seesaw
-	 * @param locked - <code>TRUE</code> if we are driving onto the seesaw,
-	 * 					<code>FALSE</code> otherwise
+	 * @param barcode - the barcode
 	 */
-	public void sendSeesaw(int barcode, boolean locked);
-	
+	public void sendBarcode(int barcode);
 
 	/**
 	 * Sends an MQmessage

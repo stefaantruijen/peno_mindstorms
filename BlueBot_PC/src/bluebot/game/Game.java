@@ -1,10 +1,8 @@
 package bluebot.game;
 
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Paint;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -12,11 +10,10 @@ import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
-import bluebot.graph.Border;
 import bluebot.graph.Tile;
 import bluebot.io.rabbitmq.RabbitMQ;
 import bluebot.ui.VisualizationComponent;
-import bluebot.util.Resources;
+import bluebot.ui.rendering.RenderingUtils;
 
 import peno.htttp.Callback;
 import peno.htttp.PlayerClient;
@@ -32,12 +29,10 @@ import peno.htttp.SpectatorClient;
  */
 public class Game {
 	
-	private static final Color COLOR_WALL = new Color(0xFF593E1A, true);
 	private static final BufferedImage IMAGE_BRICK;
 	private static final double IMAGE_BRICK_SCALE = 0.5D;
 	private static final BufferedImage IMAGE_SENSOR;
 	private static final double IMAGE_SENSOR_SCALE = 0.2D;
-	private static final Paint TEXTURE_TILE = loadTexture();
 	static {
 		IMAGE_BRICK  = loadImage("nxt_brick.png");
 		IMAGE_SENSOR = loadImage("nxt_sensor.png");
@@ -46,7 +41,6 @@ public class Game {
 	private PlayerClient client;
 	private double head;
 	private HashMap<Long, Tile> map;
-	private SpectatorClient spectator;
 	private World world;
 	
 	
@@ -54,7 +48,6 @@ public class Game {
 			final PlayerHandler handler, final World world) throws IOException {
 		this.client = createClient(gameId, playerId, handler);
 		this.map = new HashMap<Long, Tile>();
-		this.spectator = createSpectator(gameId, world);
 		this.world = world;
 	}
 	
@@ -168,101 +161,6 @@ public class Game {
 		}
 	}
 	
-	protected void drawTile(final Graphics2D gfx,
-			final Border[] borders, final int barcode) {
-		final int resolution = Tile.RESOLUTION;
-		
-		gfx.setPaint(TEXTURE_TILE);
-		gfx.fillRect(0, 0, resolution, resolution);
-		
-		int thickness = (resolution >> 4);
-		
-		final Border[] order = {
-			Border.OPEN,
-			Border.UNKNOWN,
-			Border.CLOSED
-		};
-		final int[][] params = {
-			{ 0, 0, resolution, thickness },
-			{ (resolution - thickness), 0, thickness, resolution },
-			{ 0, (resolution - thickness), resolution, thickness },
-			{ 0, 0, thickness, resolution }
-		};
-		
-		if (barcode > 0) {
-			thickness = Math.max(1, (resolution / 20));
-			
-			final Color[] colors = {
-				Color.BLACK,
-				(((barcode & 0x20) == 0) ? Color.BLACK : Color.WHITE),
-				(((barcode & 0x10) == 0) ? Color.BLACK : Color.WHITE),
-				(((barcode & 0x08) == 0) ? Color.BLACK : Color.WHITE),
-				(((barcode & 0x04) == 0) ? Color.BLACK : Color.WHITE),
-				(((barcode & 0x02) == 0) ? Color.BLACK : Color.WHITE),
-				(((barcode & 0x01) == 0) ? Color.BLACK : Color.WHITE),
-				Color.BLACK
-			};
-			if (borders[0] == Border.CLOSED) {
-				// Horizontal
-				int xx = ((resolution >>> 1) - (thickness << 2));
-				for (int i = 0; i < 8; i++) {
-					gfx.setColor(colors[i]);
-					gfx.fillRect(xx, 0, thickness, resolution);
-					xx += thickness;
-				}
-			} else {
-				// Vertical
-				int yy = ((resolution >>> 1) - (thickness << 2));
-				for (int i = 0; i < 8; i++) {
-					gfx.setColor(colors[i]);
-					gfx.fillRect(0, yy, resolution, thickness);
-					yy += thickness;
-				}
-			}
-		}
-		
-		int[] bounds;
-		for (final Border border : order) {
-			gfx.setColor(getBorderColor(border));
-			for (int i = 0; i < 4; i++) {
-				if (borders[i] == border) {
-					bounds = params[i];
-					gfx.fillRect(bounds[0], bounds[1], bounds[2], bounds[3]);
-				}
-			}
-		}
-	}
-	
-	private final void drawTile(final Graphics2D gfx, final Tile tile) {
-		drawTile(gfx, new Border[] {
-				tile.getBorderNorth(),
-				tile.getBorderEast(),
-				tile.getBorderSouth(),
-				tile.getBorderWest()
-		}, tile.getBarCode());
-		if (!tile.isSeesaw()) {
-			return;
-		}
-		
-		//	TODO
-		gfx.setColor(new Color(0x66FF9900, true));
-		gfx.fillRect(0, 0, Tile.RESOLUTION, Tile.RESOLUTION);
-	}
-	
-	private static final Color getBorderColor(final Border border) {
-		switch (border) {
-			case CLOSED:
-				return COLOR_WALL;
-			case OPEN:
-				return Color.WHITE;
-			case UNKNOWN:
-				return Color.ORANGE;
-			default:
-				// Indicates an invalid value
-				return Color.CYAN;
-		}
-	}
-	
 	public PlayerClient getClient() {
 		return client;
 	}
@@ -298,7 +196,7 @@ public class Game {
 		} catch (final IOException e) {
 			e.printStackTrace();
 		} catch (final NullPointerException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 	}
 	
@@ -310,17 +208,14 @@ public class Game {
 		}
 	}
 	
-	private static final Paint loadTexture() {
-		final Paint texture = Resources.loadTexture(VisualizationComponent.class,
-				"rendering/hardboard.jpg");
-		return ((texture == null) ? Color.YELLOW : texture);
-	}
-	
 	public void render(final Graphics2D gfx) {
 		final AffineTransform transform = gfx.getTransform();
 		
 		final Player player = getWorld().getPlayer(getClient().getPlayerID());
 		if (player == null) {
+//			System.out.println("player == null");
+			gfx.setColor(Color.RED);
+			gfx.drawString("#players = " + getWorld().getPlayers().size(), 25, 25);
 			return;
 		}
 		
@@ -338,36 +233,26 @@ public class Game {
 		gfx.translate(-dx, -dy);
 		final AffineTransform origin = gfx.getTransform();
 		
-		for (Tile tile : getWorld().getMaze()) {
-			final float alpha;
-			
+		final int h = getWorld().getHeight();
+		for (final Tile tile : getWorld().getMaze()) {
 			final int x = tile.getX();
 			final int y = tile.getY();
-			
-			final Tile own = getTile(x, y);
-			if (own == null) {
-				alpha = 0.33F;
-			} else {
-				alpha = 1F;
-				tile = own;
-			}
-			
-			gfx.translate((x * Tile.RESOLUTION), (y * Tile.RESOLUTION));
-			gfx.setComposite(AlphaComposite.getInstance(
-					AlphaComposite.SRC_OVER, alpha));
-			drawTile(gfx, tile);
+			gfx.translate((x * Tile.RESOLUTION), ((h - 1 - y) * Tile.RESOLUTION));
+			RenderingUtils.renderTile(gfx, tile, Tile.RESOLUTION);
 			gfx.setTransform(origin);
 		}
 		
 		gfx.setTransform(transform);
 		
+		/*
 		for (final Player p : getWorld().getPlayers()) {
 			dx = (int)Math.round(ratio * (p.getX() - px));
 			dy = (int)Math.round(ratio * (py - p.getY()));
 			gfx.translate(dx, dy);
-			
+			//	TODO
 			gfx.setTransform(transform);
 		}
+		*/
 	}
 	
 	public void setPlayerHeadingHead(final double radians) {
@@ -375,28 +260,11 @@ public class Game {
 	}
 	
 	public void start() {
-		startSpectator();
-	}
-	
-	private final void startSpectator() {
-		try {
-			spectator.start();
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
+		//	TODO
 	}
 	
 	public void stop() {
 		leaveGame();
-		stopSpectator();
-	}
-	
-	private final void stopSpectator() {
-//		try {
-			spectator.stop();
-//		} catch (final IOException e) {
-//			e.printStackTrace();
-//		}
 	}
 	
 	public void updateTile(final Tile tile) {

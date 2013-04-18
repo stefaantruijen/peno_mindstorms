@@ -5,9 +5,8 @@ import bluebot.DriverException;
 import bluebot.Robot;
 import bluebot.actions.Action;
 import bluebot.actions.ActionException;
+import bluebot.util.BarcodeValidator;
 import bluebot.graph.Orientation;
-import bluebot.graph.Tile;
-import bluebot.maze.BarcodeValidator;
 import bluebot.sensors.Brightness;
 
 
@@ -27,11 +26,10 @@ public class ReadBarcodeAction extends Action {
 	
 	private int slow = 16;
 	private int barcode =0;
-	private Tile currentTile;
 	
 	
-	public ReadBarcodeAction(Tile currentTile) {
-		this.currentTile = currentTile;  
+	public ReadBarcodeAction() {
+		
 	}
 	
 	
@@ -88,8 +86,7 @@ public class ReadBarcodeAction extends Action {
 		//Now validate the read barcode and update the tile.
 		barcode = BarcodeValidator.validate(barcode);
 		if(barcode != -1){
-			currentTile.setBarCode(barcode);
-			getDriver().sendTile(currentTile);
+			getDriver().sendBarcode(barcode);
 			getDriver().sendDebug("Barcode found:  " + barcode);
 		}
 		

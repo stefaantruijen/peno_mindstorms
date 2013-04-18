@@ -15,6 +15,7 @@ import bluebot.io.protocol.impl.MessagePacket;
 import bluebot.io.protocol.impl.MotionPacket;
 import bluebot.io.protocol.impl.MovePacket;
 import bluebot.io.protocol.impl.PolygonPacket;
+import bluebot.io.protocol.impl.ReadBarcodePacket;
 import bluebot.io.protocol.impl.ResetPacket;
 import bluebot.io.protocol.impl.SeesawPacket;
 import bluebot.io.protocol.impl.SensorPacket;
@@ -247,8 +248,8 @@ public class PacketFactory {
 	 * 
 	 * @return a {@link Packet} object
 	 */
-	public Packet createSeesaw(final int barcode, final boolean locked) {
-		return new SeesawPacket(barcode, locked);
+	public Packet createSeesaw() {
+		return new SeesawPacket();
 	}
 	
 	/**
@@ -323,12 +324,21 @@ public class PacketFactory {
 		return new MovePacket(MovePacket.TURN_RIGHT, degrees);
 	}
 	
+	
 	/**
 	 * @throws IOException 
 	 * 
 	 */
-	public Packet createBarcode(final int barcode) throws IOException {
+	public Packet createBarcode(final int barcode) {
 		return new BarcodePacket(barcode);
+	}
+	
+	/**
+	 * @throws IOException 
+	 * 
+	 */
+	public Packet createReadBarcode() {
+		return new ReadBarcodePacket();
 	}
 	
 	

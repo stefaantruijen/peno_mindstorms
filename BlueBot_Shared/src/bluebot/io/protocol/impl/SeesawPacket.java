@@ -22,41 +22,29 @@ public class SeesawPacket extends Packet {
 	public SeesawPacket(final DataInput input) throws IOException {
 		super(input);
 	}
-	public SeesawPacket(final int barcode, final boolean locked) {
-		setBarcode(barcode);
-		setLocked(locked);
+	public SeesawPacket() {
+		
 	}
 	
-	
-	
-	public int getBarcode() {
-		return barcode;
+	@Override
+	public boolean isVerbose() {
+		return true;
 	}
 	
 	public int getOpcode() {
 		return OP_SEESAW;
 	}
 	
-	public boolean isLocked() {
-		return locked;
-	}
-	
 	protected void readPayload(final DataInput input) throws IOException {
-		setBarcode(input.readUnsignedByte());
-		setLocked(input.readBoolean());
-	}
-	
-	private final void setBarcode(final int barcode) {
-		this.barcode = barcode;
-	}
-	
-	private final void setLocked(final boolean locked) {
-		this.locked = locked;
+		//ignored
 	}
 	
 	protected void writePayload(final DataOutput output) throws IOException {
-		output.writeByte(getBarcode());
-		output.writeBoolean(isLocked());
+		//ignored
 	}
 	
+	@Override
+	public String toString() {
+		return "SeeSaw";
+	}
 }
