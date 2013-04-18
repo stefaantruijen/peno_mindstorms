@@ -40,7 +40,6 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 	private DefaultVisualizationComponent canvas;
 	private Controller controller;
 	private RabbitListModel rabbit;
-	private Renderer renderer;
 	
 	
 	public ControllerFrame(final Controller controller) {
@@ -61,20 +60,13 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 			public void windowClosing(final WindowEvent event) {
 				controller.dispose();
 				
-				if (renderer != null) {
-					renderer.kill();
-					renderer = null;
-				}
-				
+				canvas.stopRendering();
 				canvas.reset();
 			}
 			
 			@Override
 			public void windowOpened(final WindowEvent event) {
-				renderer = new Renderer();
-				final Thread thread = new Thread(renderer);
-				thread.setDaemon(true);
-				thread.start();
+				canvas.startRendering();
 			}
 		});
 		
@@ -97,13 +89,6 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 					} catch (final Exception e) {
 						cli.echo("Syntax:  game <game-id> <player-id>");
 						e.printStackTrace();
-					}
-				} else if (cmd.equals("maze")) {
-					try {
-						doMaze(command);
-					} catch (final Exception e) {
-						cli.echo("Syntax:  maze <playerNumber> <objectNumber>");
-						e.printStackTrace();	
 					}
 				} else if (cmd.equals("move")) {
 					try {
@@ -195,7 +180,6 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 						"calibrate",
 						"clear",
 						"game",
-						"maze",
 						"move",
 						"orientate",
 						"polygon",
@@ -376,10 +360,6 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		canvas.setGame(game);
 	}
 	
-	private final void doMaze(final String[] args) throws NumberFormatException {
-		controller.doMaze(Integer.parseInt(args[1]), Integer.parseInt(args[2]));
-	}
-	
 	private final void initComponents() {
 		final GridBagLayout layout = new GridBagLayout();
 		layout.columnWeights = new double[] { 1D, 0D };
@@ -419,40 +399,6 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 			JOptionPane.showMessageDialog(this, msg, title,
 					JOptionPane.INFORMATION_MESSAGE);
 		}
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	private final class Renderer implements Runnable {
-		
-		private boolean rendering = true;
-		
-		
-		
-		public void kill() {
-			rendering = false;
-		}
-		
-		public void run() {
-			while (rendering) {
-				try {
-					Thread.sleep(80);
-					if (isVisible()) {
-						canvas.repaint(0L);
-					}
-				} catch (final InterruptedException e) {
-					kill();
-				}
-			}
-		}
-		
 	}
 	
 }

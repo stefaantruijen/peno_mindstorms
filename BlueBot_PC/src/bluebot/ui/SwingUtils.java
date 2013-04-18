@@ -51,6 +51,11 @@ public final class SwingUtils {
 		return group(components, BoxLayout.PAGE_AXIS);
 	}
 	
+	public static final void showError(final String msg) {
+		JOptionPane.showMessageDialog(null,
+				msg, "Error", JOptionPane.ERROR_MESSAGE);
+	}
+	
 	public static final void showWarning(final String msg) {
 		JOptionPane.showMessageDialog(null,
 				msg, "Warning", JOptionPane.WARNING_MESSAGE);
