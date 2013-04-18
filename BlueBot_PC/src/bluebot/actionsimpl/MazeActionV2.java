@@ -16,6 +16,7 @@ import bluebot.graph.Orientation;
 import bluebot.graph.Tile;
 import bluebot.maze.Maze;
 import bluebot.maze.MazeListener;
+import bluebot.maze.MazeMerger;
 import bluebot.util.Timer;
 import bluebot.util.Utils;
 
@@ -36,17 +37,30 @@ public class MazeActionV2 extends Action {
 	private final static int[] itemBarcodes = new int[]{0,1,2,3,4,5,6,7};
 	private int teamNumber = -1;
 	private Controller controller;
+	private MazeMerger mazeMerger;
+	private boolean mergeSuccess = false;
+	
+	
 	//TODO
 	private MazeListener mazeListener;
 	
-	public MazeActionV2(final Controller contoller, final int playerNumber,final int objectNumber, final MazeListener mazeListener) {
+	public MazeActionV2(final Controller controller, final int playerNumber,final int objectNumber, final MazeListener mazeListener) {
 		this.playerNumber = playerNumber;
 		this.objectNumber = objectNumber;
 		this.controller = controller;
+		this.mazeMerger = new MazeMerger();
 		//TODO
 		this.mazeListener = mazeListener;
 		controller.setStartLocation(this.playerNumber);
 		
+	}
+	
+	/**
+	 * Get this mazeMerger
+	 * Used to add tiles from teammate.
+	 */
+	public MazeMerger getMazeMerger() {
+		return this.mazeMerger;
 	}
 	/**
 	 * Create a seesaw tile. 
@@ -55,7 +69,8 @@ public class MazeActionV2 extends Action {
 	 * @param dir
 	 * @return
 	 */
-	private final Tile createSeesawTile(Tile tile,final Orientation dir,int seesawBarcode){
+	private final Tile createSeesawTile(Tile tile,final Orientation dir){
+		//TODO CHECK IF CORRECT?
 		Tile seesawTile = null;
 		int x = tile.getX();
 		int y = tile.getY();
@@ -77,7 +92,7 @@ public class MazeActionV2 extends Action {
 		
 		}
 		tile.setSeesaw(true);
-		tile.setBarCode(seesawBarcode);
+		//tile.setBarCode(seesawBarcode);
 		return seesawTile;
 	}
 	
@@ -295,7 +310,8 @@ public class MazeActionV2 extends Action {
 				if (barcode > 0) {
 					if(barcodeCanBeItemBarcode(barcode)){
 						tile = createItem(tile, getDirectionBody(), barcode);
-						
+						//send barcode to merger
+						mazeMerger.addTileFromSelf(tile);
 						checkAborted();
 						
 						if (isOurItem(barcode)) {
@@ -305,15 +321,18 @@ public class MazeActionV2 extends Action {
 					}else if(barcodeCanBeSeesaw(barcode)){
 						
 						checkAborted();
-						Tile tile1 = createSeesawTile(tile, getDirectionBody(),barcode);
+						Tile tile1 = createSeesawTile(tile, getDirectionBody());
 						tile1.setSeesaw(true);
 						mazeListener.onTileUpdate(tile1);
-						Tile tile2 = createSeesawTile(tile1, getDirectionBody(),barcode);
+						Tile tile2 = createSeesawTile(tile1, getDirectionBody());
 						tile2.setSeesaw(true);
 						mazeListener.onTileUpdate(tile2);
 						Tile tile3 = createEndSeesawTile(tile2,getDirectionBody(),barcode);
 						checkAborted();
 						mazeListener.onTileUpdate(tile3);
+						
+						//send barcode to merger
+						mazeMerger.addTileFromSelf(tile3);
 						
 						
 					}else{
@@ -322,9 +341,14 @@ public class MazeActionV2 extends Action {
 					
 				}
 			}
-			if(this.teamMateKnown && this.found){
-				if(this.canGoToTeammate()){
-					break;
+			
+			if(this.found && this.teamMateKnown){
+				//Try merge
+				if(mazeMerger.hasReceivedNewTileSinceLastCheck()){
+					mergeSuccess = mazeMerger.tryToMerge();
+					if(mergeSuccess && this.canGoToTeammate()){
+						break;
+					}
 				}
 			}
 		}

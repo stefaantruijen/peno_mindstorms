@@ -16,6 +16,7 @@ public class MazeMerger {
 	private int nbOfMatchesFound;
 	private double mergeRotationAngle;
 	private Vector<Integer> mergeTranslationVector;
+	private boolean receivedNewTileSinceLastCheck;
 	
 	public MazeMerger(){
 		this.tilesFromTeammate = new ArrayList<Tile>();
@@ -24,16 +25,7 @@ public class MazeMerger {
 		this.matchesFromSelf = new ArrayList<Tile>();
 		this.nbOfMatchesFound = 0;
 		mergeTranslationVector = new Vector<Integer>();
-	}
-	
-	public boolean addTileFromTeammate(Tile tile){
-		if(!isValidTile(tile)){
-			return false;
-		}
-		else{
-			tilesFromTeammate.add(tile);
-			return true;
-		}
+		this.receivedNewTileSinceLastCheck = false;
 	}
 	
 	public ArrayList<Tile> getTilesFromTeammate() {
@@ -69,11 +61,36 @@ public class MazeMerger {
 			return false;
 		}
 		else{
+			receivedNewTileSinceLastCheck = true;
 			tilesFromSelf.add(tile);
 			return true;
 		}
 	}
 	
+	public boolean addTileFromTeammate(Tile tile){
+		if(!isValidTile(tile)){
+			return false;
+		}
+		else{
+			receivedNewTileSinceLastCheck = true;
+			tilesFromTeammate.add(tile);
+			return true;
+		}
+	}
+	
+	public boolean hasReceivedNewTileSinceLastCheck(){
+		return receivedNewTileSinceLastCheck;
+	}
+	
+	public boolean tryToMerge() {
+		boolean result = false;
+		searchForMatches();
+		if(this.getNbOfMatchesFound()==2){
+			result = calculateRotationAndTranslation();
+		}
+		receivedNewTileSinceLastCheck = false;
+		return result;
+	}
 	/**
 	 * This method will search the known tiles in tilesFromTeammate && tilesFromSelf
 	 * for barcodes that are the same and will call addFoundMatch() when it finds a match.
@@ -81,7 +98,7 @@ public class MazeMerger {
 	 * for possible matches.
 	 * note: the method will skip tiles that have already been matched.
 	 */
-	public void searchForMatches(){
+	private void searchForMatches(){
 		int size1 = tilesFromTeammate.size();
 		int size2 = tilesFromSelf.size();
 		if((size1+size2)>4){
@@ -135,8 +152,8 @@ public class MazeMerger {
 	private boolean isValidTile(Tile tile){
 		return tile.getBarCode() != -1;
 	}
-	
-	public boolean calculateRotation(){
+
+	public boolean calculateRotationAndTranslation(){
 		boolean result = false;
 		if(nbOfMatchesFound==2){
 			Tile tt1 = matchesFromTeammate.get(0);
@@ -158,8 +175,8 @@ public class MazeMerger {
 			 * Now we will rotate the first tile from our teammate and compare it to our corresponding tile,
 			 * to get the translation vector.
 			 */
-			System.out.println(mergeRotationAngle);
 			calculateTranslation(ts1, tt1, mergeRotationAngle);
+			result = true;
 		}
 		return result;
 	}
