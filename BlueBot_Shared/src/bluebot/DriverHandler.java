@@ -7,6 +7,7 @@ import bluebot.actions.impl.MazeActionV2;
 import bluebot.actions.impl.MovementAction;
 import bluebot.actions.impl.PolygonAction;
 import bluebot.actions.impl.ReadBarcodeAction;
+import bluebot.actions.impl.SeesawAction;
 import bluebot.actions.impl.WhiteLineAction;
 import bluebot.graph.Tile;
 import bluebot.io.protocol.Packet;
@@ -16,6 +17,7 @@ import bluebot.io.protocol.impl.ConfigPacket;
 import bluebot.io.protocol.impl.MazePacket;
 import bluebot.io.protocol.impl.MovePacket;
 import bluebot.io.protocol.impl.PolygonPacket;
+import bluebot.io.protocol.impl.SeesawPacket;
 
 
 
@@ -50,6 +52,9 @@ public class DriverHandler implements PacketHandler {
 				break;
 			case Packet.OP_MAZE:
 				handlePacketMaze((MazePacket)packet);
+				break;
+			case Packet.OP_SEESAW:
+				handlePacketSeeSaw((SeesawPacket)packet);
 				break;
 			case Packet.OP_MOVE:
 				handlePacketMove((MovePacket)packet);
@@ -102,6 +107,10 @@ public class DriverHandler implements PacketHandler {
 //		queue.queue(new MazeAction());
 //		queue.queue(new MazeActionV2(packet.getPlayerIds(), packet.getPlayerId()));
 //		queue.queue(new TestAction());
+	}
+	
+	private final void handlePacketSeeSaw(final SeesawPacket packet) {
+		queue.queue(new SeesawAction());
 	}
 	
 	private final void handlePacketMove(final MovePacket packet) {

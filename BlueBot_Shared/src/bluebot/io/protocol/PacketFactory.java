@@ -259,8 +259,8 @@ public class PacketFactory {
 	 * 
 	 * @return a {@link Packet} object
 	 */
-	public Packet createSeesaw(final int barcode, final boolean locked) {
-		return new SeesawPacket(barcode, locked);
+	public Packet createSeesaw() {
+		return new SeesawPacket();
 	}
 	
 	/**
@@ -345,6 +345,8 @@ public class PacketFactory {
 	public Packet createTurnRight(final float degrees) {
 		return new MovePacket(MovePacket.TURN_RIGHT, degrees);
 	}
+	
+	
 	
 	/**
 	 * Returns the (current) {@link PacketFactory} instance
