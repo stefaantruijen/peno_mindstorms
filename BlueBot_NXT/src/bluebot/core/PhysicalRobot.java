@@ -17,7 +17,6 @@ import lejos.robotics.navigation.Pose;
 import lejos.robotics.RegulatedMotor;
 import bluebot.AbstractRobot;
 import bluebot.Robot;
-import bluebot.graph.Tile;
 import bluebot.util.Orientation;
 import bluebot.util.Utils;
 
@@ -241,8 +240,8 @@ public class PhysicalRobot extends AbstractRobot {
 		public void modify() {
 			final Pose pose = getPose();
 			pose.setLocation(
-					round(pose.getX(), Tile.SIZE),
-					round(pose.getY(), Tile.SIZE));
+					round(pose.getX(), 400F), 
+					round(pose.getY(), 400F)); //400F=Tile.SIZE
 			pose.setHeading(round(pose.getHeading(), 90F));
 			setPose(pose);
 		}
