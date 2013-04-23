@@ -8,5 +8,7 @@
 	<classpathentry kind="lib" path="lib/commons-io-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/rabbitmq-client.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/BlueBot_Shared"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/peno_protocol"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
