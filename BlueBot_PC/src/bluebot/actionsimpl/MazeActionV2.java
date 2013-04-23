@@ -852,7 +852,7 @@ public class MazeActionV2 extends Action {
 		}
 		final int speed = getDriver().getSpeed();
 
-		controller.doReadBarcode(tile);
+		controller.doReadBarcode();
 		getDriver().setSpeed(speed);
 		
 		int bar =Integer.MIN_VALUE;

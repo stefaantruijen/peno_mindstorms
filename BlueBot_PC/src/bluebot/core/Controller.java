@@ -50,7 +50,7 @@ public interface Controller extends EventDispatcher<ControllerListener> {
 	
 	public void doSeesaw();
 	
-	public void doReadBarcode(Tile tile);
+	public void doReadBarcode();
 	
 	public void setStartLocation(int playerNumber);
 	

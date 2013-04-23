@@ -39,6 +39,10 @@ public class ClientTranslator extends Translator {
 		sendPacket(getPacketFactory().createCommandWhiteLineOrientation());
 	}
 	
+	public void doSeeSaw(){
+		sendPacket(getPacketFactory().createSeesaw());
+	}
+	
 	public void moveBackward() {
 		sendPacket(getPacketFactory().createMoveBackward());
 	}
@@ -96,6 +100,7 @@ public class ClientTranslator extends Translator {
 	}
 	
 	public void readBarcode(){
+		sendPacket(getPacketFactory().createReadBarcode());
 		//sendPacket(getPacketFactory().cr)
 	}
 	

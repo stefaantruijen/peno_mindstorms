@@ -256,9 +256,6 @@ public class DefaultController extends AbstractController {
 				case OP_MOTION:
 					handlePacketMotion((MotionPacket)packet);
 					break;
-				case OP_SEESAW:
-					handlePacketSeesaw((SeesawPacket)packet);
-					break;
 				case OP_SENSOR:
 					handlePacketSensor((SensorPacket)packet);
 					break;
@@ -308,37 +305,7 @@ public class DefaultController extends AbstractController {
 					packet.getHeadingHead());
 		}
 		
-		private final void handlePacketSeesaw(final SeesawPacket packet) {
-			final PlayerClient client = getGameClient();
-			if (client == null) {
-				return;
-			}
-			
-			try {
-				final int barcode = packet.getBarcode();
-				if (packet.isLocked()) {
-					if (!client.hasLockOnSeesaw()) {
-						client.lockSeesaw(barcode);
-//						client.requestSeesawLock(barcode, new Callback<Boolean>() {
-//							public void onFailure(final Throwable error) {
-//								error.printStackTrace();
-//							}
-//							
-//							public void onSuccess(final Boolean result) {
-//								System.out.println("Seesaw lock:  " + result);
-//							}
-//						});
-					}
-				} else if (client.hasLockOnSeesaw(barcode)) {
-					client.unlockSeesaw();
-				}
-			} catch (final IllegalStateException e) {
-				//	This should not be possible!
-				e.printStackTrace();
-			} catch (final IOException e) {
-				e.printStackTrace();
-			}
-		}
+		
 		
 		private final void handlePacketSensor(final SensorPacket packet) {
 			switch (packet.getSensorType()) {
@@ -433,15 +400,15 @@ public class DefaultController extends AbstractController {
 
 	@Override
 	public void doSeesaw() {
-		//TODO
+		getTranslator().doSeeSaw();
 		
 	}
 
 
 
 	@Override
-	public void doReadBarcode(Tile tile) {
-		//TODO
+	public void doReadBarcode() {
+		getTranslator().readBarcode();
 		
 	}
 
