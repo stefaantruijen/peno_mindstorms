@@ -94,7 +94,6 @@ public class MazeMerger {
 		double angle = getMergeRotationAngle();
 		Direction result = Direction.UP;
 		if(angle>0){
-			Direction direction = Direction.UP; //is ignored
 			if(angle==90){
 				result = Direction.RIGHT;
 			}
@@ -104,7 +103,8 @@ public class MazeMerger {
 			else if(angle==270){
 				result = Direction.LEFT;
 			}
-			return result;
+		}
+		return result;
 	}
 
 	/**
@@ -187,7 +187,7 @@ public class MazeMerger {
 	private void searchForMatches(){
 		int size1 = tilesFromTeammate.size();
 		int size2 = tilesFromSelf.size();
-		if((size1+size2)>4){
+		if((size1+size2)>=4){
 			for(Tile t1:tilesFromTeammate){
 				if(!matchesFromTeammate.contains(t1)){
 					for(Tile t2:tilesFromSelf){
@@ -304,19 +304,13 @@ public class MazeMerger {
 	 * @param rotation	The rotation angle between our tile and our teammates tile.
 	 */
 	private void calculateTranslation(Tile ts1, Tile tt1, Direction rotation) {
-			tt1.rotate(rotation);
-			mergeTranslationVector.add(tt1.getX()-ts1.getX());
-			mergeTranslationVector.add(tt1.getY()-ts1.getY());
-			System.out.println(mergeTranslationVector.toString());
-			//Restore tt1 to its original value
-			 switch (rotation) {
-		        case LEFT:
-		        	tt1.rotate(Direction.RIGHT);
-		        case RIGHT:
-		        	tt1.rotate(Direction.LEFT);
-		        case DOWN:
-		        	tt1.rotate(Direction.DOWN);
-			 }
+			//Copy so dont alter tt1
+			Tile copy = new Tile(tt1.getX(),tt1.getY());
+			copy.rotate(rotation);
+			//Order of subtraction is important! we want the vector that changes teammates tiles to our system
+			//not the other way around!
+			mergeTranslationVector.add(ts1.getX()-copy.getX());
+			mergeTranslationVector.add(ts1.getY()-copy.getY());
 	}
 
 }
