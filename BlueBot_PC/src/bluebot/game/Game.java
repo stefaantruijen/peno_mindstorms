@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bluebot.actionsimpl.MazeActionV2;
+import bluebot.actionsimpl.MazeActionV2.MazePosition;
 import bluebot.core.Controller;
+import bluebot.graph.Orientation;
 import bluebot.graph.Tile;
 import bluebot.io.rabbitmq.RabbitMQ;
 import bluebot.maze.MazeListener;
@@ -113,19 +115,14 @@ public class Game implements MazeListener {
 		
 		final AffineTransform transform = gfx.getTransform();
 		
-		//	TODO:	Obtain positional information from maze algorithm
-		final float px = 0F;	//	player.getX();
-		final float py = 0F;	//	player.getY();
+		final MazePosition pos = explorer.getPosition();
 		
-		final double ratio = (tileResolution / Tile.SIZE);
+		final int px = pos.getX();
+		final int py = pos.getY();
 		
-		int dx = (int)Math.round(ratio * px);
-		int dy = (int)Math.round(ratio * py);
-		
-		dx += (tileResolution / 2);
-		dy += (tileResolution / 2);
-		
-		gfx.translate(-dx, -dy);
+		final int dx = ((px * tileResolution) + (tileResolution / 2));
+		final int dy = ((py * tileResolution) - (tileResolution / 2));
+		gfx.translate(-dx, dy);
 		final AffineTransform origin = gfx.getTransform();
 		
 		final MazeMerger merger = explorer.getMazeMerger();
@@ -145,8 +142,7 @@ public class Game implements MazeListener {
 		}
 		
 		gfx.setTransform(transform);
-		//	TODO:	Obtain rotational information from maze algorithm
-		RenderingUtils.renderPlayer(gfx, 0D, 0D);
+		RenderingUtils.renderPlayer(gfx, toAngle(pos.getBody()), toAngle(pos.getHead()));
 		gfx.setTransform(transform);
 	}
 	
@@ -156,6 +152,21 @@ public class Game implements MazeListener {
 	
 	public void stop() {
 		leaveGame();
+	}
+	
+	private static final double toAngle(final Orientation dir) {
+		switch (dir) {
+			case NORTH:
+				return 0D;
+			case EAST:
+				return (Math.PI / 2D);
+			case SOUTH:
+				return Math.PI;
+			case WEST:
+				return (Math.PI * 3D / 2D);
+			default:
+				throw new IllegalArgumentException("Invalid direction:  " + dir);
+		}
 	}
 	
 	

@@ -108,7 +108,6 @@ public class DefaultController extends AbstractController {
 		//	TODO:	Somehow start the maze algorithm
 		return maze;
 	}
-
 	
 	public void doPolygon(final int corners, final float length) {
 		getTranslator().doPolygon(corners, length);
