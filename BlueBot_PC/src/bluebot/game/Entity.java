@@ -9,37 +9,37 @@ package bluebot.game;
  */
 public abstract class Entity {
 	
-	private float x, y;
+	private long x, y;
 	
 	
 	public Entity() {
-		this(0F, 0F);
+		this(0L, 0L);
 	}
-	public Entity(final float x, final float y) {
+	public Entity(final long x, final long y) {
 		setX(x);
 		setY(y);
 	}
 	
 	
 	
-	public float getX() {
+	public long getX() {
 		return x;
 	}
 	
-	public float getY() {
+	public long getY() {
 		return y;
 	}
 	
-	public void setPosition(final float x, final float y) {
+	public void setPosition(final long x, final long y) {
 		setX(x);
 		setY(y);
 	}
 	
-	public void setX(final float x) {
+	public void setX(final long x) {
 		this.x = x;
 	}
 	
-	public void setY(final float y) {
+	public void setY(final long y) {
 		this.y = y;
 	}
 	

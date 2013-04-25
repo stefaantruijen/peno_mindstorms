@@ -4,17 +4,15 @@ package bluebot.core;
 import static bluebot.io.protocol.Packet.*;
 
 import java.io.IOException;
-import java.util.List;
 
 import peno.htttp.Callback;
 import peno.htttp.PlayerClient;
-import peno.htttp.PlayerHandler;
 
+import bluebot.actionsimpl.MazeActionV2;
 import bluebot.game.Game;
-import bluebot.game.GameAdapter;
+import bluebot.game.GameCallback;
 import bluebot.game.GameException;
 import bluebot.game.World;
-import bluebot.graph.Tile;
 import bluebot.io.ClientTranslator;
 import bluebot.io.Communicator;
 import bluebot.io.Connection;
@@ -29,9 +27,8 @@ import bluebot.io.protocol.impl.ItemPacket;
 import bluebot.io.protocol.impl.MQMessagePacket;
 import bluebot.io.protocol.impl.MessagePacket;
 import bluebot.io.protocol.impl.MotionPacket;
-import bluebot.io.protocol.impl.SeesawPacket;
 import bluebot.io.protocol.impl.SensorPacket;
-import bluebot.util.Barcode;
+import bluebot.maze.MazeListener;
 
 
 
@@ -86,11 +83,8 @@ public class DefaultController extends AbstractController {
 	}
 	
 	public Game doGame(final String gameId, final String playerId,
-			final PlayerHandler handler) throws GameException, IOException {
-		final Game game = new Game(gameId,
-				playerId,
-				new PlayerMonitor(handler),
-				getWorld());
+			final GameCallback callback) throws GameException, IOException {
+		final Game game = new Game(this, gameId, playerId, callback);
 		System.out.println("JOIN");
 		game.init(new Callback<Void>() {
 			public void onFailure(final Throwable error) {
@@ -105,6 +99,14 @@ public class DefaultController extends AbstractController {
 			}
 		});
 		return game;
+	}
+	
+	public MazeActionV2 doMaze(final int playerNumber, final int objectNumber,
+			final MazeListener listener) {
+		final MazeActionV2 maze =
+				new MazeActionV2(this, playerNumber, objectNumber, listener);
+		//	TODO:	Somehow start the maze algorithm
+		return maze;
 	}
 
 	
@@ -328,96 +330,16 @@ public class DefaultController extends AbstractController {
 		
 	}
 	
-	
-	
-	
-	
-	private final class PlayerMonitor extends GameAdapter implements PlayerHandler {
-		
-		private PlayerHandler delegate;
-		private int objectNumber;
-		private int playerNumber;
-		
-		
-		public PlayerMonitor(final PlayerHandler delegate) {
-			this.delegate = delegate;
-		}
-		
-		
-		
-		public void gameRolled(final int playerNumber, final int objectNumber) {
-			final Thread thread = new Thread(new Runnable() {
-				public void run() {
-					boolean ready;
-					try {
-						delegate.gameRolled(playerNumber, objectNumber);
-						ready = true;
-					} catch (final Exception e) {
-						e.printStackTrace();
-						ready = false;
-					}
-					
-					try {
-						getGameClient().setReady(ready);
-					} catch (final IOException e) {
-						e.printStackTrace();
-					}
-					
-					PlayerMonitor.this.objectNumber = objectNumber;
-					PlayerMonitor.this.playerNumber = playerNumber;
-				}
-			});
-			thread.setDaemon(true);
-			thread.start();
-		}
-		
-		@Override
-		public void gameStarted() {
-			doMaze(playerNumber, objectNumber);
-		}
-		
-		public void playerJoined(final String playerId) {
-			System.out.println("Player joined:  " + playerId);
-		}
-		
-		public void teamConnected(final String partnerId) {
-			//	TODO
-		}
-		
-		public void teamPosition(final double x, final double y, final double angle) {
-			//	TODO
-		}
-		
-		public void teamTilesReceived(final List<peno.htttp.Tile> tiles) {
-			//	TODO
-		}
-		
-	}
-
-
-
-
-
-	@Override
 	public void doSeesaw() {
 		getTranslator().doSeeSaw();
-		
 	}
-
-
-
-	@Override
+	
 	public void doReadBarcode() {
 		getTranslator().readBarcode();
-		
 	}
-
-
-
-	@Override
+	
 	public void setStartLocation(int playerNumber) {
-		// TODO Auto-generated method stub
-		
+		//	TODO
 	}
 	
 }

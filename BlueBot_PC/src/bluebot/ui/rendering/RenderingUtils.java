@@ -4,6 +4,10 @@ package bluebot.ui.rendering;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Paint;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 import bluebot.graph.Border;
 import bluebot.graph.Orientation;
@@ -19,9 +23,39 @@ import bluebot.util.Resources;
 public class RenderingUtils {
 	
 	private static final Color COLOR_WALL = new Color(0xFF593E1A, true);
+	private static final BufferedImage IMAGE_BRICK;
+	private static final double IMAGE_BRICK_SCALE = 0.5D;
+	private static final BufferedImage IMAGE_SENSOR;
+	private static final double IMAGE_SENSOR_SCALE = 0.2D;
 	private static final Paint TEXTURE_TILE = loadTexture();
+	static {
+		IMAGE_BRICK  = loadImage("nxt_brick.png");
+		IMAGE_SENSOR = loadImage("nxt_sensor.png");
+	}
 	
 	
+	
+	private static final int[] calculateScaledSize(final BufferedImage img,
+			final double scale) {
+		int dx = img.getWidth();
+		int dy = img.getHeight();
+		
+		final int max = (int)Math.round(scale * Tile.RESOLUTION);
+		
+		if (dx < dy) {
+			if (dy != max) {
+				dx = (int)Math.round((double)max * dx / dy);
+				dy = max;
+			}
+		} else {
+			if (dx != max) {
+				dy = (int)Math.round((double)max * dy / dx);
+				dx = max;
+			}
+		}
+		
+		return new int[] { dx, dy };
+	}
 	
 	private static final Color getBorderColor(final Border border) {
 		switch (border) {
@@ -37,10 +71,74 @@ public class RenderingUtils {
 		}
 	}
 	
+	private static final BufferedImage loadImage(final String name) {
+		try {
+			return ImageIO.read(RenderingUtils.class.getResource(name));
+		} catch (final IOException e) {
+			return null;
+		}
+	}
+	
 	private static final Paint loadTexture() {
 		final Paint texture =
 				Resources.loadTexture(RenderingUtils.class, "hardboard.jpg");
 		return ((texture == null) ? Color.YELLOW : texture);
+	}
+	
+	public static final void renderPlayer(final Graphics2D gfx,
+			final double body, final double head) {
+		int dx, dy;
+		BufferedImage img;
+		int[] size;
+		
+		//	BODY
+		gfx.rotate(body);
+		
+		img = IMAGE_BRICK;
+		size = calculateScaledSize(img, IMAGE_BRICK_SCALE);
+		dx = size[0];
+		dy = size[1];
+		
+		gfx.drawImage(img, -(dx / 2), -(dy / 2), dx, dy, null);
+		
+		gfx.setColor(new Color(0x330000FF, true));
+		gfx.fillRect((1 - (dx / 2)), (1 - (dy / 2)), (dx - 2), (dy - 2));
+		
+		//	HEAD
+		gfx.rotate(head);
+		
+		final double cos = Math.cos(head);
+		final double sin = Math.sin(head);
+		
+		final int offset = (int)Math.round(0.55D
+				* ((sin * sin * dx / 2D) + (cos * cos * dy / 2D)));
+		
+		img = IMAGE_SENSOR;
+		size = calculateScaledSize(img, IMAGE_SENSOR_SCALE);
+		dx = size[0];
+		dy = size[1];
+		
+		gfx.drawImage(img, -(dx / 2), -(offset + dy), dx, dy, null);
+	}
+	
+	public static final void renderPlayer(final Graphics2D gfx,
+			final double body, final Color color) {
+		int dx, dy;
+		BufferedImage img;
+		int[] size;
+		
+		//	BODY
+		gfx.rotate(body);
+		
+		img = IMAGE_BRICK;
+		size = calculateScaledSize(img, IMAGE_BRICK_SCALE);
+		dx = size[0];
+		dy = size[1];
+		
+		gfx.drawImage(img, -(dx / 2), -(dy / 2), dx, dy, null);
+		
+		gfx.setColor(color);
+		gfx.fillRect((1 - (dx / 2)), (1 - (dy / 2)), (dx - 2), (dy - 2));
 	}
 	
 	public static final void renderSeesaw(final Graphics2D gfx,

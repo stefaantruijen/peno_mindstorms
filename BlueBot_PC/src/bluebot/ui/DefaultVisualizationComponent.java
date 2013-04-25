@@ -32,21 +32,6 @@ public class DefaultVisualizationComponent extends VisualizationComponent {
 	
 	
 	
-	@Override
-	public void onMotion(final float x, final float y,
-			float body, float head) {
-		super.onMotion(x, y, body, head);
-		
-		final Game game = this.game;
-		if (game != null) {
-			game.setPlayerHeadingHead(Math.toRadians(head));
-		}
-	}
-	
-	public void onTileUpdate(final Tile tile) {
-		//	ignored
-	}
-	
 	protected void render(final Graphics2D gfx, final int w, final int h) {
 		gfx.setColor(getBackground());
 		gfx.fillRect(0, 0, w, h);
@@ -67,7 +52,7 @@ public class DefaultVisualizationComponent extends VisualizationComponent {
 					((h / 2) - (fm.getHeight() / 2)));
 		} else {
 			gfx.translate(((w / 2) + dx), ((h / 2) + dy));
-			game.render(gfx);
+			game.render(gfx, Tile.RESOLUTION);
 		}
 	}
 	

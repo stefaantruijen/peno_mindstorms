@@ -4,7 +4,6 @@ package bluebot.ui;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import bluebot.maze.MazeListener;
 import bluebot.util.Utils;
 
 
@@ -14,8 +13,7 @@ import bluebot.util.Utils;
  * @author Ruben Feyen
  */
 public abstract class VisualizationComponent
-		extends RenderingComponent
-		implements MazeListener {
+		extends RenderingComponent {
 	private static final long serialVersionUID = 1L;
 	
 	protected static final Color COLOR_WALL;

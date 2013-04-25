@@ -52,12 +52,12 @@ public class Player extends Entity {
 		this.number = number;
 	}
 	
-	private final void setPosition(final float x, final float y, final float angle) {
+	private final void setPosition(final long x, final long y, final float angle) {
 		setPosition(x, y);
 		setAngle(angle);
 	}
 	
-	public void update(final float x, final float y, final float angle,
+	public void update(final long x, final long y, final float angle,
 			final int number, final boolean item) {
 		setNumber(number);
 		setPosition(x, y, angle);

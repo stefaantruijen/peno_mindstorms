@@ -20,7 +20,7 @@ import bluebot.ConfigListener;
 import bluebot.core.Controller;
 import bluebot.core.ControllerListener;
 import bluebot.game.Game;
-import bluebot.game.PlayerAdapter;
+import bluebot.game.GameCallback;
 import bluebot.graph.Tile;
 import bluebot.sensors.SensorListener;
 import bluebot.ui.TerminalComponent.SuggestionProvider;
@@ -293,7 +293,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		canvas = new DefaultVisualizationComponent();
 //		canvas = new VisualizationComponent2D();
 //		canvas = new VisualizationComponent3D();
-		controller.addListener(canvas);
+//		controller.addListener(canvas);
 		
 		barcode = new BarcodeComponent();
 		barcode.setPreferredSize(new Dimension(-1, 24));
@@ -337,18 +337,18 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 	private final void doGame(final String[] args) {
 		final Game game;
 		try {
-			game = controller.doGame(args[1], args[2], new PlayerAdapter() {
-				@Override
-				public void gameRolled(final int playerNumber, final int objectNumber) {
+			game = controller.doGame(args[1], args[2], new GameCallback() {
+				public boolean prepareForGameStart(int playerNumber, int objectNumber) {
 					final Tile start = controller.getWorld().getStart(playerNumber);
 					if (start == null) {
 						onError("Unable to determine start location");
-						throw new IllegalArgumentException("INTERRUPT");
+						return false;
 					}
 					
 					final String msg = String.format("Place the robot on %s facing %s",
 							start, start.getStartOrientation());
 					onMessage(msg, "The game has been rolled");
+					return true;
 				}
 			});
 		} catch (final Exception e) {

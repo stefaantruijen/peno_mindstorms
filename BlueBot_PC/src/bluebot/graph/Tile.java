@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import bluebot.maze.TileBuilder;
 import bluebot.util.Barcode;
 
 
@@ -47,6 +48,13 @@ public class Tile implements Comparable<Tile> {
 		
 	}
 
+	
+	
+	public peno.htttp.Tile export() {
+		return new peno.htttp.Tile(getX(), getY(),
+				TileBuilder.fromTileToString(this));
+	}
+	
 	public boolean hasItem() {
 		return hasItem;
 	}

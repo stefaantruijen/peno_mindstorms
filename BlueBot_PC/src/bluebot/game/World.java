@@ -18,6 +18,7 @@ import bluebot.simulator.IRModel;
 import bluebot.simulator.VirtualInfraredBall;
 import bluebot.ui.rendering.RenderingUtils;
 
+import peno.htttp.PlayerDetails;
 import peno.htttp.SpectatorHandler;
 
 
@@ -322,36 +323,26 @@ public class World {
 		gfx.setFont(FONT);
 		final FontMetrics fm = gfx.getFontMetrics(FONT);
 		for (final Player player : getPlayers()) {
-			final int number = player.getNumber();
+			final int dx = (((int)player.getX() * tileResolution) + (tileResolution / 2));
+			final int dy = (h - (tileResolution / 2) - ((int)player.getY() * tileResolution));
+			gfx.translate(dx, dy);
 			
-			//	TODO:	players
-			final Tile start = getStart(number);
-			if (start == null) {
-				continue;
-			}
+			RenderingUtils.renderPlayer(gfx, player.getAngle(), Color.YELLOW);
 			
-			final int x = (start.getX()
-					+ (int)(((Tile.SIZE / 2) + player.getX()) / Tile.SIZE));
-			final int y = (start.getY()
-					+ (int)(((Tile.SIZE / 2) + player.getY()) / Tile.SIZE));
-			
-			gfx.translate(
-					((x * tileResolution) + (tileResolution / 2)),
-					(h - (tileResolution / 2) - (y * tileResolution)));
-			
+			/*
 			final int off = -(tileResolution / 5);
 			final int size = (tileResolution * 3 / 5);
 			gfx.setColor(Color.YELLOW);
 			gfx.fillOval(off, off, size, size);
+			*/
 			
-			final String id = ((number < 0) ? "?" : Integer.toString(player.getNumber()));
+			final int number = player.getNumber();
+			final String id = ((number < 0) ? "?" : Integer.toString(number));
 			gfx.setColor(Color.BLUE);
 			gfx.drawString(id, -(fm.stringWidth(id) / 2), -(fm.getHeight() / 2));
 			
 			gfx.setTransform(origin);
 		}
-		
-		gfx.setTransform(origin);
 	}
 	
 	
@@ -395,23 +386,23 @@ public class World {
 			players.put(playerId, new Player(playerId));
 		}
 		
-		public void playerRolled(final String playerId, final int number) {
+		public void playerRolled(final PlayerDetails player, final int number) {
 			//	TODO
 		}
 		
-		public void playerUpdate(final String playerId,
+		public void playerUpdate(final PlayerDetails playerDetails,
 				final int playerNumber,
-				final double x, final double y, final double angle,
+				final long x, final long y, final double angle,
 				final boolean foundObject) {
-			final Player player = getPlayer(playerId);
+			final Player player = getPlayer(playerDetails.getPlayerID());
 			if (player == null) {
 				return;
 			}
 			
 			final Tile start = getStart(playerNumber);
 			player.update(
-					((start.getX() * Tile.SIZE) + (float)x),
-					((start.getY() * Tile.SIZE) + (float)y),
+					(start.getX() + x),
+					(start.getY() + y),
 					Protocol.angleExternalToInternal(angle),
 					playerNumber,
 					foundObject);

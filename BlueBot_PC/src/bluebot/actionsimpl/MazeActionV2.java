@@ -18,7 +18,6 @@ import bluebot.maze.Maze;
 import bluebot.maze.MazeListener;
 import bluebot.maze.MazeMerger;
 import bluebot.util.Timer;
-import bluebot.util.Utils;
 
 
 
@@ -397,7 +396,16 @@ public class MazeActionV2 extends Action {
 		this.found=true;
 	}
 	
+	@Deprecated
 	public void setTeammatePosition(Tile tile){
+		/*
+		 * @ Dario
+		 * 
+		 * Deze methode kan niet worden gebruikt omdat ik niet de Tile kan bepalen.
+		 * Ik krijg een (voor de teammate) relatieve X en Y (en een bepaalde angle),
+		 * zie de methode hieronder voor de effectieve call die ik maak.
+		 */
+		
 		this.setOtherRobotTile(tile);
 		if(!teamMateKnown){
 			for(Tile t : this.maze.getTiles()){
@@ -405,6 +413,20 @@ public class MazeActionV2 extends Action {
 			}
 		}
 		this.setTeamMateKnown();
+	}
+	
+	public void setTeammatePosition(final long x, final long y, final double angle) {
+		//	TODO
+		
+		/*
+		 * @ Dario
+		 * 
+		 * X en Y zijn relatieve coordinaten voor de teammate
+		 * (Moeten dus op een of andere manier worden vertaald naar eigen coordinaten)
+		 * 
+		 * Ik heb geen idee hoe de angle precies gedefinieerd is,
+		 * maar die is normaal gezien irrelevant voor u.
+		 */
 	}
 	
 	public void newTile(Tile tile){
@@ -599,7 +621,9 @@ public class MazeActionV2 extends Action {
 		
 		return borders;
 	}
+	
 	@Deprecated
+	@SuppressWarnings("unused")
 	private void followPath(final List<Tile> path)
 			throws ActionException, DriverException, InterruptedException {
 		getDriver().setSpeed(100);

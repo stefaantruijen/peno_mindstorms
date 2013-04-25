@@ -151,9 +151,10 @@ public abstract class AbstractController
 		
 		public void fireMotion(final float x, final float y,
 				final float body, final float head) {
-			for (final MazeListener listener : getListeners()) {
-				listener.onMotion(x, y, body, head);
-			}
+			//	TODO
+//			for (final MazeListener listener : getListeners()) {
+//				listener.onMotion(x, y, body, head);
+//			}
 		}
 		
 		public void fireTileUpdated(final Tile tile) {
