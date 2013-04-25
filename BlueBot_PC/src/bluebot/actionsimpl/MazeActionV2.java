@@ -428,6 +428,14 @@ public class MazeActionV2 extends Action {
 		 * maar die is normaal gezien irrelevant voor u.
 		 */
 	}
+	/**
+	 * ENKEL voor RUBEN in de GUI gebruiken.
+	 * 
+	 * @return een mazeposition
+	 */
+	public MazePosition getPosition(){
+		return new MazePosition(this.current.getX(),this.current.getY(),this.getDirectionBody(),this.getDirectionHead());
+	}
 	
 	public void newTile(Tile tile){
 		this.maze.addTile(tile.getX(), tile.getY()).copyBorders(tile);
@@ -1477,6 +1485,41 @@ public class MazeActionV2 extends Action {
 			}
 			return length;
 		}
+		
+		
+	}
+	
+	/**
+	 * Nested class, wordt ENKEL gebruikt door de GUI om de positie op te vragen. NIET gebruiken voor logica omtrent positiebepaling etc. Enkel een bundel aan info (x,y,body,head)
+	 */
+	public class MazePosition{
+		
+		private final int x,y;
+		private final Orientation body,head;
+		
+		public MazePosition(int x,int y,Orientation body, Orientation head){
+			this.x = x;
+			this.y = y;
+			this.body = body;
+			this.head = head;
+		}
+
+		public int getX() {
+			return x;
+		}
+
+		public int getY() {
+			return y;
+		}
+
+		public Orientation getBody() {
+			return body;
+		}
+
+		public Orientation getHead() {
+			return head;
+		}
+		
 		
 	}
 	
