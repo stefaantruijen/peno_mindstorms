@@ -27,6 +27,7 @@ public class MazeMerger {
 		this.matchesFromTeammate = new ArrayList<Tile>();
 		this.matchesFromSelf = new ArrayList<Tile>();
 		this.nbOfMatchesFound = 0;
+		this.mergeRotationAngle = -1;
 		mergeTranslationVector = new Vector<Integer>();
 		this.receivedNewTileSinceLastCheck = false;
 	}
@@ -82,6 +83,28 @@ public class MazeMerger {
 	 */
 	public double getMergeRotationAngle() {
 		return mergeRotationAngle;
+	}
+	
+	/**
+	 * This is the rotation needed to make our map equal to the map of our teammate (combined with translation ofcourse).
+	 * This is one of the 2 output values of the merging algorithm.
+	 * The other one is the Translation Vector.
+	 */
+	public Direction getMergeRotationDirection() {
+		double angle = getMergeRotationAngle();
+		Direction result = Direction.UP;
+		if(angle>0){
+			Direction direction = Direction.UP; //is ignored
+			if(angle==90){
+				result = Direction.RIGHT;
+			}
+			else if(angle==180){
+				result = Direction.DOWN;
+			}
+			else if(angle==270){
+				result = Direction.LEFT;
+			}
+			return result;
 	}
 
 	/**
@@ -285,6 +308,15 @@ public class MazeMerger {
 			mergeTranslationVector.add(tt1.getX()-ts1.getX());
 			mergeTranslationVector.add(tt1.getY()-ts1.getY());
 			System.out.println(mergeTranslationVector.toString());
+			//Restore tt1 to its original value
+			 switch (rotation) {
+		        case LEFT:
+		        	tt1.rotate(Direction.RIGHT);
+		        case RIGHT:
+		        	tt1.rotate(Direction.LEFT);
+		        case DOWN:
+		        	tt1.rotate(Direction.DOWN);
+			 }
 	}
 
 }

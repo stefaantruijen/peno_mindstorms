@@ -6,6 +6,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import bluebot.maze.TileBuilder;
 import bluebot.util.Barcode;
@@ -693,6 +694,40 @@ public class Tile implements Comparable<Tile> {
             break;
         }
     }
+    
+    /**
+     * Use this method to transform tiles according to the calculated values of the MazeMerger.
+     * @param angle		The angle difference between the 2 maps.
+     * @param mergeTranslationVector	The translational difference of the 2 maps after correcting for rotation.
+     */
+    public void transform(double angle, Vector<Integer> mergeTranslationVector){
+    	Direction direction = Direction.UP;
+    	if(angle>0){
+			if(angle==90){
+				direction = Direction.RIGHT;
+			}
+			else if(angle==180){
+				direction = Direction.DOWN;
+			}
+			else if(angle==270){
+				direction = Direction.LEFT;
+			}
+    	}
+    	this.transform(direction, mergeTranslationVector);
+    }
+    	
+    /**
+    * Use this method to transform tiles according to the calculated values of the MazeMerger.
+    * @param angle		The angle difference between the 2 maps.
+    * @param mergeTranslationVector	The translational difference of the 2 maps after correcting for rotation.
+    */
+    public void transform(Direction direction, Vector<Integer> mergeTranslationVector){
+        this.rotate(direction);
+        int dx = mergeTranslationVector.get(0);
+        int dy = mergeTranslationVector.get(1);
+        this.setX(this.getX()+dx);
+        this.setY(this.getY()+dy);
+     }
 
 	public Byte getByteRepresentation(){
 		return this.borders;
