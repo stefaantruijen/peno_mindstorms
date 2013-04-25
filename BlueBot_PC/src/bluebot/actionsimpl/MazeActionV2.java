@@ -250,7 +250,7 @@ public class MazeActionV2 extends Action {
 		return detectWall();
 	}
 	
-	public void execute()
+	protected void execute()
 			throws ActionException, DriverException, InterruptedException {
 		final Timer timer = new Timer();
 		timer.reset();
