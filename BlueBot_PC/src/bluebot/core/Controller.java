@@ -139,4 +139,9 @@ public interface Controller extends EventDispatcher<ControllerListener> {
 	 */
 	public void doPickUp();
 	
+	public void modifyOrientation();
+	
+	public void turnHeadClockwise(int offset);
+	
+	public void turnHeadCounterClockwise(int offset);
 }
