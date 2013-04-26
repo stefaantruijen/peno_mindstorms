@@ -8,34 +8,65 @@ import bluebot.graph.Direction;
 import bluebot.graph.Tile;
 
 public class MazeMerger {
+	
 	/**
-	 * General comment: when speaking of a tile, obviously we speak of a tile that contains a barcode.
+	 * HOW TO USE THE MAZE MERGER
+	 * --------------------------
+	 * Provide the maze merger with data (tiles) using the methods:
+	 * - addTileFromTeammate(tile)
+	 * - addTileFromSelf(tile)
+	 * The mazemerger will decide for itself whether tiles are useful data or not.
+	 * When the mazemerger has found 2 matching couples of tiles (aka: 2 matching barcodes)(nbOfMatchesFound==2)
+	 * then it can merge the 2 maps using: tryToMerge();
+	 * This method will return TRUE if the merge has been successful, FALSE otherwise.
+	 * 
+	 * GETTING RESULTS FROM THE MAZE MERGER
+	 * ------------------------------------
+	 * The mazemerger provides a mergeRotationAngle and a mergeTranslationVector that reflect the difference between the 2 maps.
+	 * These can be used to transform a tile (from our teammates different point of view) to our view using:
+	 * tile.transform(mazeMerger.getMergeRotationAngle(), mazeMerger.getMergeTranslationVector()).
+	 * 
+	 * The MazeMerger also transforms all known tiles from our teammate, this list can be obtained using getTilesFromTeammate().
 	 */
 	
-	private ArrayList<Tile> tilesFromTeammate;
-	private ArrayList<Tile> tilesFromSelf;
-	private ArrayList<Tile> matchesFromTeammate;
-	private ArrayList<Tile> matchesFromSelf;
-	private int nbOfMatchesFound;
-	private double mergeRotationAngle;
-	private Vector<Integer> mergeTranslationVector;
-	private boolean receivedNewTileSinceLastCheck;
+	private ArrayList<Tile> tilesFromTeammate; //ALL the tiles from our teammate, even those that do not have a barcode
+	private ArrayList<Tile> tilesFromSelf; //ALL tiles from ourselves, even those that do not have a barcode
+	private ArrayList<Tile> dataFromTeammate; //All tiles from our teammate that DO contain a barcode
+	private ArrayList<Tile> dataFromSelf; //All tiles from ourselves that DO contain a barcode
+	private ArrayList<Tile> matchesFromTeammate; //All tiles from our teammate that have a barcode AND of which we also have a tile with that same barcode
+	private ArrayList<Tile> matchesFromSelf; //All tiles from ourselves that contain a barcode AND for which our teammate also has a tile with that same barcode
+	private int nbOfMatchesFound; //The number of tiles-with-barcode couples that we have found that can be used to calculate merge vectors
+	private double mergeRotationAngle; //The rotational difference between our teammates map and our map
+	private Vector<Integer> mergeTranslationVector; //The translational difference, after rotating, between our teammates map and our map
+	private boolean receivedNewTileSinceLastCheck; //True if new tiles have been added after the last call of tryToMerge()
+	private boolean hasMerged; //True if this mazemerger has successfully calculated the rotation and translation vectors
 	
 	public MazeMerger(){
 		this.tilesFromTeammate = new ArrayList<Tile>();
 		this.tilesFromSelf = new ArrayList<Tile>();
+		this.dataFromTeammate = new ArrayList<Tile>();
+		this.dataFromSelf = new ArrayList<Tile>();
 		this.matchesFromTeammate = new ArrayList<Tile>();
 		this.matchesFromSelf = new ArrayList<Tile>();
 		this.nbOfMatchesFound = 0;
 		this.mergeRotationAngle = -1;
 		mergeTranslationVector = new Vector<Integer>();
 		this.receivedNewTileSinceLastCheck = false;
+		this.hasMerged = false;
 	}
 	
 	/**
 	 * Get all the tiles the teammate has sent us.
+	 * If hasMerged()==true, the tiles returned will be the transformed versions!
 	 */
 	public ArrayList<Tile> getTilesFromTeammate() {
+		//Uncomment this if an empty array should be returned if no merge has been successful yet
+//		if(this.hasMerged){
+//			return tilesFromTeammate;
+//		}
+//		else{
+//			return new ArrayList<Tile>();
+//		}
 		return tilesFromTeammate;
 	}
 
@@ -44,6 +75,13 @@ public class MazeMerger {
 	 */
 	public ArrayList<Tile> getTilesFromSelf() {
 		return tilesFromSelf;
+	}
+	
+	/**
+	 * Returns true if this MazeMerger has successfully merged 2 maps.
+	 */
+	public boolean hasMerged(){
+		return this.hasMerged;
 	}
 
 	/**
@@ -118,33 +156,47 @@ public class MazeMerger {
 
 	/**
 	 * Add a tile that our robot has scanned.
-	 * This has to be a tile that contains a barcode.
-	 * So this method should be called every time our robot reads a new barcode.
+	 * If the tile contains a barcode, it will be used as data to calculate the mergevectors.
 	 */
 	public boolean addTileFromSelf(Tile tile){
+		if(!tilesFromSelf.contains(tile)){
+			this.tilesFromSelf.add(tile);
+		}
 		if(!isValidTile(tile)){
 			return false;
 		}
 		else{
 			receivedNewTileSinceLastCheck = true;
-			tilesFromSelf.add(tile);
+			dataFromSelf.add(tile);
 			return true;
 		}
 	}
 	
 	/**
 	 * Add a tile that our teammate has scanned.
-	 * This has to be a tile that contains a barcode.
-	 * So this method should be called every time our teammate tells us he/she scanned a tile with a barcode.
+	 * If the tile contains a barcode, it will be used as data to calculate the mergevectors.
+	 * Returns true if the tile was useful data.
 	 */
 	public boolean addTileFromTeammate(Tile tile){
-		if(!isValidTile(tile)){
+		if(hasMerged){
+			tile.transform(this.getMergeRotationDirection(), this.getMergeTranslationVector());
+			if(!tilesFromTeammate.contains(tile)){
+				this.tilesFromTeammate.add(tile);
+			}
 			return false;
 		}
 		else{
-			receivedNewTileSinceLastCheck = true;
-			tilesFromTeammate.add(tile);
-			return true;
+			if(!tilesFromTeammate.contains(tile)){
+				this.tilesFromTeammate.add(tile);
+			}
+			if(!isValidTile(tile)){
+				return false;
+			}
+			else{
+				receivedNewTileSinceLastCheck = true;
+				dataFromTeammate.add(tile);
+				return true;
+			}
 		}
 	}
 	
@@ -171,26 +223,40 @@ public class MazeMerger {
 	 */
 	public boolean tryToMerge() {
 		boolean result = false;
-		searchForMatches();
-		if(this.getNbOfMatchesFound()==2){
-			result = calculateRotationAndTranslation();
+		if(this.hasMerged){
+			//Do nothing, just return success
+			result = true;
 		}
-		receivedNewTileSinceLastCheck = false;
+		else{
+			searchForMatches();
+			if(this.getNbOfMatchesFound()==2){
+				result = calculateRotationAndTranslation();
+			}
+			receivedNewTileSinceLastCheck = false;
+			if(result){
+				//Merge has been successful
+				this.hasMerged = true;
+				//Transform all tiles from our teammate
+				for(Tile t: tilesFromTeammate){
+					t.transform(this.getMergeRotationDirection(), this.getMergeTranslationVector());
+				}
+			}
+		}
 		return result;
 	}
 	
 	/**
-	 * This method will search the known tiles in tilesFromTeammate && tilesFromSelf
+	 * This method will search the known tiles in dataFromTeammate && dataFromSelf
 	 * for barcodes that are the same and will call addFoundMatch() when it finds a match.
 	 * note: the method will skip tiles that have already been matched.
 	 */
 	private void searchForMatches(){
-		int size1 = tilesFromTeammate.size();
-		int size2 = tilesFromSelf.size();
+		int size1 = dataFromTeammate.size();
+		int size2 = dataFromSelf.size();
 		if((size1+size2)>=4){
-			for(Tile t1:tilesFromTeammate){
+			for(Tile t1:dataFromTeammate){
 				if(!matchesFromTeammate.contains(t1)){
-					for(Tile t2:tilesFromSelf){
+					for(Tile t2:dataFromSelf){
 						if(!matchesFromSelf.contains(t2)){
 							if(t1.getBarCode()==t2.getBarCode()){
 								//Match found
@@ -212,7 +278,7 @@ public class MazeMerger {
 	 * This means that we have found 2 tiles that have identical barcode and thus can be used as data to merge.
 	 * The tile from our teammate is added to matchesFromTeammate.
 	 * Our tile is added to matchesFromSelf.
-	 * (This method may only be called on 2 tiles that have identical barcodes!)
+	 * (This method should only be called on 2 tiles that have identical barcodes)
 	 * @param t1 The tile with barcode from your teammate
 	 * @param t2 Own tile with barcode
 	 * @throws UnexpectedException 
