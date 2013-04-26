@@ -6,8 +6,9 @@ import static bluebot.io.protocol.Packet.*;
 import java.io.IOException;
 
 import peno.htttp.Callback;
-import peno.htttp.PlayerClient;
 
+import bluebot.DriverException;
+import bluebot.actions.ActionException;
 import bluebot.actionsimpl.MazeActionV2;
 import bluebot.game.Game;
 import bluebot.game.GameCallback;
@@ -23,8 +24,6 @@ import bluebot.io.protocol.impl.BarcodePacket;
 import bluebot.io.protocol.impl.ConfigPacket;
 import bluebot.io.protocol.impl.DebugPacket;
 import bluebot.io.protocol.impl.ErrorPacket;
-import bluebot.io.protocol.impl.ItemPacket;
-import bluebot.io.protocol.impl.MQMessagePacket;
 import bluebot.io.protocol.impl.MessagePacket;
 import bluebot.io.protocol.impl.MotionPacket;
 import bluebot.io.protocol.impl.SensorPacket;
@@ -39,7 +38,6 @@ import bluebot.maze.MazeListener;
 public class DefaultController extends AbstractController {
 	
 	private Communicator communicator;
-	private Game game;
 	private ClientTranslator translator;
 	private World world;
 	private int receivedBarcode;
@@ -69,12 +67,6 @@ public class DefaultController extends AbstractController {
 	public void dispose() {
 		super.dispose();
 		
-		final Game game = this.game;
-		if (game != null) {
-			this.game = null;
-			game.stop();
-		}
-		
 		getTranslator().disconnect();
 	}
 	
@@ -94,7 +86,6 @@ public class DefaultController extends AbstractController {
 			
 			public void onSuccess(final Void result) {
 				System.out.println("SUCCESS");
-				DefaultController.this.game = game;
 				game.start();
 			}
 		});
@@ -105,7 +96,23 @@ public class DefaultController extends AbstractController {
 			final MazeListener listener) {
 		final MazeActionV2 maze =
 				new MazeActionV2(this, playerNumber, objectNumber, listener);
-		//	TODO:	Somehow start the maze algorithm
+		
+		final Thread thread = new Thread(new Runnable() {
+			public void run() {
+				try {
+					maze.execute();
+				} catch (final ActionException e) {
+					e.printStackTrace();
+				} catch (final DriverException e) {
+					e.printStackTrace();
+				} catch (final InterruptedException e) {
+					//	ignored
+				}
+			}
+		});
+		thread.setDaemon(true);
+		thread.start();
+		
 		return maze;
 	}
 	
@@ -123,19 +130,6 @@ public class DefaultController extends AbstractController {
 	
 	private final Communicator getCommunicator() {
 		return communicator;
-	}
-	
-	private final Game getGame() {
-		return game;
-	}
-	
-	private final PlayerClient getGameClient() {
-		try {
-			return getGame().getClient();
-		} catch (final NullPointerException e) {
-			e.printStackTrace();
-			return null;
-		}
 	}
 	
 	private final ClientTranslator getTranslator() {
@@ -186,12 +180,6 @@ public class DefaultController extends AbstractController {
 	
 	public void stop() {
 		getTranslator().stop();
-		
-		final Game game = this.game;
-		if (game != null) {
-			this.game = null;
-			game.stop();
-		}
 	}
 	
 	public void turnLeft() {
@@ -244,15 +232,9 @@ public class DefaultController extends AbstractController {
 				case OP_ERROR:
 					fireError(((ErrorPacket)packet).getMessage());
 					break;
-				case OP_ITEM:
-					handlePacketItem((ItemPacket)packet);
-					break;
 				case OP_MESSAGE:
 					final MessagePacket p = (MessagePacket)packet;
 					fireMessage(p.getMessage(), p.getTitle());
-					break;
-				case OP_MQMESSAGE:
-					handlePacketMQMessage((MQMessagePacket)packet);
 					break;
 				case OP_MOTION:
 					handlePacketMotion((MotionPacket)packet);
@@ -272,32 +254,6 @@ public class DefaultController extends AbstractController {
 					fireSpeedChanged(packet.getValue().intValue());
 					break;
 			}
-		}
-		
-		private final void handlePacketItem(final ItemPacket packet) {
-			//	TODO
-			final PlayerClient client = getGameClient();
-			if (client == null) {
-				return;
-			}
-			
-			try {
-				if (!client.hasTeamNumber()) {
-					client.joinTeam(packet.getTeamId());
-				}
-				if (!client.hasFoundObject()) {
-					client.foundObject();
-				}
-			} catch (final IllegalStateException e) {
-				e.printStackTrace();
-			} catch (final IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		private final void handlePacketMQMessage(final MQMessagePacket packet) {
-//			sendMessageRabbitMQ(packet.getMessage());
-			//	TODO
 		}
 		
 		private final void handlePacketMotion(final MotionPacket packet) {

@@ -276,7 +276,7 @@ public class PhysicalRobot extends AbstractRobot {
 		return this.infraredSensor.getDirection();
 	}
 	@Override
-	public void setStartLocation(int playerID) {
+	public void setStartLocation(int x, int y, float heading) {
 		//nix doen
 	}
 	
