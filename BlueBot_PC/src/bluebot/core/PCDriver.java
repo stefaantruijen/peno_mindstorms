@@ -1,13 +1,10 @@
 package bluebot.core;
 
-import bluebot.DriverException;
+import javax.swing.JOptionPane;
+
 import bluebot.MotionListener;
-import bluebot.actions.ActionException;
-import bluebot.actionsimpl.MazeActionV2;
-import bluebot.maze.MazeListener;
 import bluebot.sensors.SensorListener;
 import bluebot.util.Orientation;
-import javax.swing.*;
 
 public class PCDriver implements SensorListener,MotionListener{
 	
@@ -27,23 +24,10 @@ public class PCDriver implements SensorListener,MotionListener{
 	
 	public PCDriver(Controller controller){
 		this.controller = controller;
+		System.out.println("Bam in pcdriver");
+		this.controller.addListener(this);
 	}
 	
-	/**
-	 * Makes a mazeAction and runs it.
-	 * 
-	 * @param 	playerNumber
-	 * 			The playerNumber for the mazeAction.
-	 * @param 	itemNumber
-	 * 			The itemNumber for the mazeAcction.
-	 * @throws InterruptedException 
-	 * @throws DriverException 
-	 * @throws ActionException 
-	 */
-	public void doMaze(int playerNumber, int itemNumber, MazeListener mazeListener) throws ActionException, DriverException, InterruptedException{
-		MazeActionV2 maze = new MazeActionV2(controller, playerNumber, itemNumber, mazeListener);
-		maze.execute();
-	}
 
 	@Override
 	public void onSensorValueInfrared(int value) {
@@ -92,6 +76,7 @@ public class PCDriver implements SensorListener,MotionListener{
 	 * @return the valueUltraSonic
 	 */
 	public int readSensorUltraSonic() {
+		System.out.println("Ultrasonic : "+this.valueUltraSonic+ " "+this);
 		return valueUltraSonic;
 	}
 	

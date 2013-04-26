@@ -18,6 +18,7 @@ import bluebot.graph.Tile;
 import bluebot.maze.Maze;
 import bluebot.maze.MazeListener;
 import bluebot.maze.MazeMerger;
+import bluebot.maze.TileBuilder;
 import bluebot.util.Timer;
 
 
@@ -52,7 +53,6 @@ public class MazeActionV2{
 		this.mazeMerger = new MazeMerger();
 		//TODO
 		this.mazeListener = mazeListener;
-		controller.setStartLocation(this.playerNumber);
 		this.driver = new PCDriver(controller);
 	}
 	
@@ -257,7 +257,7 @@ public class MazeActionV2{
 	}
 	
 	public void execute()
-			throws ActionException, DriverException, InterruptedException {
+			throws DriverException, InterruptedException {
 		final Timer timer = new Timer();
 		timer.reset();
 		
@@ -268,9 +268,11 @@ public class MazeActionV2{
 		twist = 0;
 	
 		Tile start = controller.getWorld().getStart(this.playerNumber);
+		//TODO:heading meegeven aan mazeaction (uit mazefile)
+		controller.setStartLocation(start.getX(), start.getY(), 0);
 		scanBorders(current = maze.addTile(start.getX(),start.getY()));
 		
-		
+		System.out.println(TileBuilder.fromTileToString(current));
 		graph.setRootTile(current);
 		
 		
@@ -439,7 +441,8 @@ public class MazeActionV2{
 	 * @return een mazeposition
 	 */
 	public MazePosition getPosition(){
-		return new MazePosition(this.current.getX(),this.current.getY(),this.getDirectionBody(),this.getDirectionHead());
+		return new MazePosition(getDriver().getX(),getDriver().getY(),getDriver().getBody(),getDriver().getHead());
+		//return new MazePosition(this.current.getX(),this.current.getY(),this.getDirectionBody(),this.getDirectionHead());
 	}
 	
 	public void newTile(Tile tile){
@@ -582,7 +585,7 @@ public class MazeActionV2{
 
 
 
-	private void pickUp() throws ActionException, DriverException, InterruptedException {
+	private void pickUp() throws  DriverException, InterruptedException {
 		this.resetHead();
 		this.controller.doPickUp();
 		this.setFound();
@@ -638,7 +641,7 @@ public class MazeActionV2{
 	@Deprecated
 	@SuppressWarnings("unused")
 	private void followPath(final List<Tile> path)
-			throws ActionException, DriverException, InterruptedException {
+			throws  DriverException, InterruptedException {
 		getDriver().setSpeed(100);
 		
 		ArrayList<Tile> straightLine = new ArrayList<Tile>();
@@ -828,12 +831,12 @@ public class MazeActionV2{
 	}
 	
 	private final void moveForward()
-			throws ActionException, DriverException, InterruptedException {
+			throws  DriverException, InterruptedException {
 		moves.moveForward();
 	}
 	
 	private final void moveTo(final Tile tile)
-			throws ActionException, DriverException, InterruptedException {
+			throws DriverException, InterruptedException {
 		final int dx = (tile.getX() - this.current.getX());
 		final int dy = (tile.getY() - this.current.getY());
 		
@@ -874,7 +877,7 @@ public class MazeActionV2{
 		}
 	}
 	
-	private final int scanBarcode(final Tile tile) throws ActionException,
+	private final int scanBarcode(final Tile tile) throws 
 			DriverException, InterruptedException {
 		int barcode = tile.getBarCode();
 		if (barcode == 0) {
@@ -979,7 +982,7 @@ public class MazeActionV2{
 	}
 	
 	private final void travelEast()
-			throws ActionException, DriverException, InterruptedException {
+			throws  DriverException, InterruptedException {
 		final Orientation body = getDirectionBody();
 		switch (body) {
 			case NORTH:
@@ -1001,7 +1004,7 @@ public class MazeActionV2{
 	}
 	
 	private final void travelNorth()
-			throws ActionException, DriverException, InterruptedException {
+			throws  DriverException, InterruptedException {
 		final Orientation body = getDirectionBody();
 		switch (body) {
 			case NORTH:
@@ -1023,7 +1026,7 @@ public class MazeActionV2{
 	}
 	
 	private final void travelSouth()
-			throws ActionException, DriverException, InterruptedException {
+			throws  DriverException, InterruptedException {
 		final Orientation body = getDirectionBody();
 		switch (body) {
 			case NORTH:
@@ -1045,7 +1048,7 @@ public class MazeActionV2{
 	}
 	
 	private final void travelWest()
-			throws ActionException, DriverException, InterruptedException {
+			throws  DriverException, InterruptedException {
 		final Orientation body = getDirectionBody();
 		switch (body) {
 			case NORTH:
@@ -1279,7 +1282,7 @@ public class MazeActionV2{
 	private Tile otherRobotTile;
 	private boolean aborted; 
 	
-	private void GoToRobot() throws ActionException, DriverException, InterruptedException{
+	private void GoToRobot() throws  DriverException, InterruptedException{
 		
 		while(true){
 			checkAborted();
@@ -1334,7 +1337,7 @@ public class MazeActionV2{
 		
 		
 		public void moveForward()
-				throws ActionException, DriverException, InterruptedException {
+				throws  DriverException, InterruptedException {
 			if (isTranslated()) {
 				// The error on the rotation is too big
 				// Execute white-line to correct this
@@ -1492,29 +1495,30 @@ public class MazeActionV2{
 	 */
 	public class MazePosition{
 		
-		private final int x,y;
-		private final Orientation body,head;
+		float x;
+		private final float y;
+		private final float body,head;
 		
-		public MazePosition(int x,int y,Orientation body, Orientation head){
-			this.x = x;
-			this.y = y;
-			this.body = body;
-			this.head = head;
+		public MazePosition(float f,float g,float h, float i){
+			this.x = f;
+			this.y = g;
+			this.body = h;
+			this.head = i;
 		}
 
-		public int getX() {
+		public float getX() {
 			return x;
 		}
 
-		public int getY() {
+		public float getY() {
 			return y;
 		}
 
-		public Orientation getBody() {
+		public float getBody() {
 			return body;
 		}
 
-		public Orientation getHead() {
+		public float getHead() {
 			return head;
 		}
 		

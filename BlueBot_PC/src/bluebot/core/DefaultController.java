@@ -101,9 +101,7 @@ public class DefaultController extends AbstractController {
 			public void run() {
 				try {
 					maze.execute();
-				} catch (final ActionException e) {
-					e.printStackTrace();
-				} catch (final DriverException e) {
+				}  catch (final DriverException e) {
 					e.printStackTrace();
 				} catch (final InterruptedException e) {
 					//	ignored
@@ -297,8 +295,8 @@ public class DefaultController extends AbstractController {
 		getTranslator().readBarcode();
 	}
 	
-	public void setStartLocation(int playerNumber) {
-		//	TODO
+	public void setStartLocation(int x, int y, float heading) {
+		getTranslator().setStartLocation(x,y,heading);
 	}
 
 
@@ -330,4 +328,6 @@ public class DefaultController extends AbstractController {
 	public void modifyOrientation(){
 		getTranslator().modifyOrientation();
 	}
+	
+
 }

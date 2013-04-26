@@ -206,6 +206,7 @@ public class VirtualRobot extends AbstractRobot {
 	}
 	
 	private void setStartTile(int x, int y, float heading){
+		System.out.println("Ik zin er "+x+" "+y);
 		clearAction();
 		int tileImgStartX_CM = (int) Math.round(x*TILE_SIZE_CM + TILE_SIZE_CM/2);
 		int tileImgStartY_CM = (int) Math.round(y*TILE_SIZE_CM + TILE_SIZE_CM/2);

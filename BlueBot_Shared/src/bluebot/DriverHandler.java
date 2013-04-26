@@ -17,6 +17,7 @@ import bluebot.io.protocol.impl.MovePacket;
 import bluebot.io.protocol.impl.PolygonPacket;
 import bluebot.io.protocol.impl.ReadBarcodePacket;
 import bluebot.io.protocol.impl.SeesawPacket;
+import bluebot.io.protocol.impl.StartLocationPacket;
 import bluebot.io.protocol.impl.TurnHeadClockwisePacket;
 import bluebot.io.protocol.impl.TurnHeadCounterClockwisePacket;
 
@@ -81,9 +82,18 @@ public class DriverHandler implements PacketHandler {
 			case Packet.OP_MODIFYORIENTATION:
 				handlePacketModifyOrientation();
 				break;
+			case Packet.OP_SETSTARTLOCATION:
+				handleSetStartLocation( (StartLocationPacket) packet);
+				break;
 		}
 	}
 	
+	private void handleSetStartLocation(StartLocationPacket packet) {
+		driver.setStartLocation(packet.getX(),packet.getY(),packet.getHeading());
+	}
+
+
+
 	private void handlePacketModifyOrientation() {
 		driver.modifyOrientation();
 	}

@@ -37,7 +37,7 @@ public abstract class Packet {
 	public static final int OP_TURNHEADCLOCKWISE 		= 0xE7;
 	public static final int OP_TURNHEADCOUNTERCLOCKWISE = 0xE8;
 	public static final int OP_MODIFYORIENTATION		= 0xE9;
-
+	public static final int OP_SETSTARTLOCATION			= 0xF0;
 	
 	
 	protected Packet() {}

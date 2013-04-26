@@ -54,7 +54,6 @@ public interface Controller extends EventDispatcher<ControllerListener> {
 	
 	public void doReadBarcode();
 	
-	public void setStartLocation(int playerNumber);
 	
 	/**
 	 * Returns the world reference
@@ -144,4 +143,6 @@ public interface Controller extends EventDispatcher<ControllerListener> {
 	public void turnHeadClockwise(int offset);
 	
 	public void turnHeadCounterClockwise(int offset);
+	
+	public void setStartLocation(int x,int y,float heading);
 }

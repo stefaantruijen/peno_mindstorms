@@ -117,11 +117,11 @@ public class Game implements MazeListener {
 		
 		final MazePosition pos = explorer.getPosition();
 		
-		final int px = pos.getX();
-		final int py = pos.getY();
+		final float px = pos.getX();
+		final float py = pos.getY();
 		
-		final int dx = ((px * tileResolution) + (tileResolution / 2));
-		final int dy = ((py * tileResolution) - (tileResolution / 2));
+		final float dx = ((px * tileResolution) + (tileResolution / 2));
+		final float dy = ((py * tileResolution) - (tileResolution / 2));
 		gfx.translate(-dx, dy);
 		final AffineTransform origin = gfx.getTransform();
 		
@@ -142,7 +142,7 @@ public class Game implements MazeListener {
 		}
 		
 		gfx.setTransform(transform);
-		RenderingUtils.renderPlayer(gfx, toAngle(pos.getBody()), toAngle(pos.getHead()));
+		RenderingUtils.renderPlayer(gfx, pos.getBody(), pos.getHead());
 		gfx.setTransform(transform);
 	}
 	
@@ -153,7 +153,7 @@ public class Game implements MazeListener {
 	public void stop() {
 		leaveGame();
 	}
-	
+	/*
 	private static final double toAngle(final Orientation dir) {
 		switch (dir) {
 			case NORTH:
@@ -167,7 +167,7 @@ public class Game implements MazeListener {
 			default:
 				throw new IllegalArgumentException("Invalid direction:  " + dir);
 		}
-	}
+	}*/
 	
 	public void updatePosition(final long x, final long y, final double angle) {
 		try {

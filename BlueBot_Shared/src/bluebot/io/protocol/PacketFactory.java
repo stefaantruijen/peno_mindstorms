@@ -21,6 +21,7 @@ import bluebot.io.protocol.impl.ReadBarcodePacket;
 import bluebot.io.protocol.impl.ResetPacket;
 import bluebot.io.protocol.impl.SeesawPacket;
 import bluebot.io.protocol.impl.SensorPacket;
+import bluebot.io.protocol.impl.StartLocationPacket;
 import bluebot.io.protocol.impl.StopPacket;
 import bluebot.io.protocol.impl.TurnHeadClockwisePacket;
 import bluebot.io.protocol.impl.TurnHeadCounterClockwisePacket;
@@ -373,6 +374,12 @@ public class PacketFactory {
 	
 	public Packet createModifyOrientation() {
 		return new ModifyOrientationPacket();
+	}
+
+
+
+	public Packet createStartLocation(int x, int y, float heading) {
+		return new StartLocationPacket(x, y, heading);
 	}
 	
 }

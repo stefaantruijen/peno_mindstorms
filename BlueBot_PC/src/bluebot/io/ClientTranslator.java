@@ -122,4 +122,8 @@ public class ClientTranslator extends Translator {
 	public void modifyOrientation() {
 		sendPacket(getPacketFactory().createModifyOrientation());
 	}
+
+	public void setStartLocation(int x, int y, float heading) {
+		sendPacket(getPacketFactory().createStartLocation(x,y,heading));
+	}
 }
