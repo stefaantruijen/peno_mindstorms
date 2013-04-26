@@ -169,6 +169,16 @@ public class Game implements MazeListener {
 		}
 	}
 	
+	public void updatePosition(final long x, final long y, final double angle) {
+		try {
+			getClient().updatePosition(x, y, angle);
+		} catch (final IllegalStateException e) {
+			e.printStackTrace();
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	
 	
 	
