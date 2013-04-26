@@ -4,6 +4,7 @@ package bluebot;
 import bluebot.actions.ActionQueue;
 import bluebot.actions.impl.CalibrationAction;
 import bluebot.actions.impl.MovementAction;
+import bluebot.actions.impl.PickUpAction;
 import bluebot.actions.impl.PolygonAction;
 import bluebot.actions.impl.ReadBarcodeAction;
 import bluebot.actions.impl.SeesawAction;
@@ -16,6 +17,8 @@ import bluebot.io.protocol.impl.MovePacket;
 import bluebot.io.protocol.impl.PolygonPacket;
 import bluebot.io.protocol.impl.ReadBarcodePacket;
 import bluebot.io.protocol.impl.SeesawPacket;
+import bluebot.io.protocol.impl.TurnHeadClockwisePacket;
+import bluebot.io.protocol.impl.TurnHeadCounterClockwisePacket;
 
 
 
@@ -66,9 +69,37 @@ public class DriverHandler implements PacketHandler {
 			case Packet.OP_STOP:
 				handlePacketStop();
 				break;
+			case Packet.OP_PICKUP:
+				handlePacketPickUp();
+				break;
+			case Packet.OP_TURNHEADCLOCKWISE:
+				handlePacketTurnHeadClockwise((TurnHeadClockwisePacket)packet);
+				break;
+			case Packet.OP_TURNHEADCOUNTERCLOCKWISE:
+				handlePacketTurnHeadCounterClockwise((TurnHeadCounterClockwisePacket)packet);
+				break;
+			case Packet.OP_MODIFYORIENTATION:
+				handlePacketModifyOrientation();
+				break;
 		}
 	}
 	
+	private void handlePacketModifyOrientation() {
+		driver.modifyOrientation();
+	}
+
+	private void handlePacketTurnHeadClockwise(final TurnHeadClockwisePacket packet) {
+		driver.turnHeadClockWise(packet.getOffset());
+	}
+
+	private void handlePacketTurnHeadCounterClockwise(final TurnHeadCounterClockwisePacket packet) {
+		driver.turnHeadCounterClockWise(packet.getOffset());
+	}
+
+	private void handlePacketPickUp() {
+		queue.queue(new PickUpAction());
+	}
+
 
 
 	private final void handlePacketCommand(final CommandPacket packet) {
