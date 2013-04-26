@@ -154,16 +154,16 @@ public class DefaultController extends AbstractController {
 		getTranslator().moveBackward();
 	}
 	
-	public void moveBackward(final float distance) {
-		getTranslator().moveBackward(distance);
+	public void moveBackward(final float distance,boolean b) {
+		getTranslator().moveBackward(distance,b);
 	}
 	
 	public void moveForward() {
 		getTranslator().moveForward();
 	}
 	
-	public void moveForward(final float distance) {
-		getTranslator().moveForward(distance);
+	public void moveForward(final float distance,final boolean b) {
+		getTranslator().moveForward(distance,b);
 	}
 	
 	public void removeListener(final ConnectionListener listener) {
@@ -198,16 +198,16 @@ public class DefaultController extends AbstractController {
 		getTranslator().turnLeft();
 	}
 	
-	public void turnLeft(final float angle) {
-		getTranslator().turnLeft(angle);
+	public void turnLeft(final float angle,boolean b) {
+		getTranslator().turnLeft(angle,b);
 	}
 	
 	public void turnRight() {
 		getTranslator().turnRight();
 	}
 	
-	public void turnRight(final float angle) {
-		getTranslator().turnRight(angle);
+	public void turnRight(final float angle,boolean b) {
+		getTranslator().turnRight(angle,b);
 	}
 	
 	public int getReceivedBarcode(){

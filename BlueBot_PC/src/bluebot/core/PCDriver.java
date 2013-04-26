@@ -7,7 +7,7 @@ import bluebot.actionsimpl.MazeActionV2;
 import bluebot.maze.MazeListener;
 import bluebot.sensors.SensorListener;
 import bluebot.util.Orientation;
-
+import javax.swing.*;
 
 public class PCDriver implements SensorListener,MotionListener{
 	
@@ -21,9 +21,11 @@ public class PCDriver implements SensorListener,MotionListener{
 	private float y = -1;
 	private float body = -1;
 	private float head = -1;
+	
+	private int speed = -1;
 	/*End sensor values*/
 	
-	PCDriver(Controller controller){
+	public PCDriver(Controller controller){
 		this.controller = controller;
 	}
 	
@@ -40,7 +42,7 @@ public class PCDriver implements SensorListener,MotionListener{
 	 */
 	public void doMaze(int playerNumber, int itemNumber, MazeListener mazeListener) throws ActionException, DriverException, InterruptedException{
 		MazeActionV2 maze = new MazeActionV2(controller, playerNumber, itemNumber, mazeListener);
-		maze.execute(this);
+		maze.execute();
 	}
 
 	@Override
@@ -150,8 +152,8 @@ public class PCDriver implements SensorListener,MotionListener{
 		controller.setSpeed(value);
 	}
 	
-	public void moveForward(float distance){
-		controller.moveForward(distance);
+	public void moveForward(float distance, boolean b){
+		controller.moveForward(distance,b);
 	}
 	
 	public void moveForward(){
@@ -162,12 +164,12 @@ public class PCDriver implements SensorListener,MotionListener{
 		controller.turnRight();
 	}
 	
-	public void turnRight(float angle){
-		controller.turnRight(angle);
+	public void turnRight(float angle, boolean b){
+		controller.turnRight(angle,b);
 	}
 	
-	public void turnLeft(float angle){
-		controller.turnLeft(angle);
+	public void turnLeft(float angle, boolean b){
+		controller.turnLeft(angle,b);
 	}
 	
 	public void turnLeft(){
@@ -182,8 +184,41 @@ public class PCDriver implements SensorListener,MotionListener{
 		controller.doWhiteLineOrientation();
 	}
 	
-	public void sendDebug(){
-		controller.
+	public void sendDebug(String string){
+		System.out.println(string);
 	}
+
+	public void turnHeadCounterClockWise(int i) {
+		controller.turnHeadCounterClockwise(i);
+	}
+
+	public void turnHeadClockWise(int i) {
+		controller.turnHeadClockwise(i);
+	}
+
+	public void sendItemFound(int teamNumber) {
+		//TODO: gui?
+	}
+
+	public void sendMessage(String string, String string2) {
+		JOptionPane.showMessageDialog(null,
+			    string2,
+			    string,
+			    JOptionPane.WARNING_MESSAGE);
+	}
+	
+	public void modifyOrientation(){
+		controller.modifyOrientation();
+	}
+
+	public int getSpeed() {
+		return this.speed;
+	}
+
+	@Override
+	public void onSensorSpeed(int value) {
+		this.speed = value;
+	}
+	
 	
 }

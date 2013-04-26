@@ -23,6 +23,7 @@ public class MovePacket extends Packet {
 	
 	private int direction;
 	private Float quantity;
+	private boolean b;
 	
 	
 	public MovePacket(final DataInput input) throws IOException {
@@ -31,13 +32,17 @@ public class MovePacket extends Packet {
 	public MovePacket(final int direction) {
 		setDirection(direction);
 	}
-	public MovePacket(final int direction, final float quantity) {
+	public MovePacket(final int direction, final float quantity,boolean b) {
 		this(direction);
 		setQuantity(quantity);
+		setWait(b);
 	}
 	
 	
 	
+	private void setWait(boolean b2) {
+		this.setB(b2);
+	}
 	/**
 	 * Returns the direction
 	 * 
@@ -83,6 +88,7 @@ public class MovePacket extends Packet {
 		setDirection(input.readUnsignedByte());
 		if (input.readBoolean()) {
 			setQuantity(input.readFloat());
+			setWait(input.readBoolean());
 		}
 	}
 	
@@ -134,9 +140,25 @@ public class MovePacket extends Packet {
 		if (isQuantified()) {
 			output.writeBoolean(true);
 			output.writeFloat(getQuantity());
+			output.writeBoolean(isB());
 		} else {
 			output.writeBoolean(false);
 		}
+	}
+	public boolean getWait() {
+		return this.isB();
+	}
+	/**
+	 * @return the b
+	 */
+	public boolean isB() {
+		return b;
+	}
+	/**
+	 * @param b the b to set
+	 */
+	public void setB(boolean b) {
+		this.b = b;
 	}
 	
 }

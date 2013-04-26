@@ -10,6 +10,7 @@ import bluebot.DriverException;
 import bluebot.actions.Action;
 import bluebot.actions.ActionException;
 import bluebot.core.Controller;
+import bluebot.core.PCDriver;
 import bluebot.graph.Border;
 import bluebot.graph.Graph;
 import bluebot.graph.Orientation;
@@ -24,7 +25,7 @@ import bluebot.util.Timer;
 /**
  * {@link Action} implementation for the maze exploration algorithm
  */
-public class MazeActionV2 extends Action {
+public class MazeActionV2{
 	
 	private Tile current=null;
 	private Maze maze;
@@ -38,6 +39,7 @@ public class MazeActionV2 extends Action {
 	private Controller controller;
 	private MazeMerger mazeMerger;
 	private boolean mergeSuccess = false;
+	private final PCDriver driver;
 	
 	
 	//TODO
@@ -51,7 +53,7 @@ public class MazeActionV2 extends Action {
 		//TODO
 		this.mazeListener = mazeListener;
 		controller.setStartLocation(this.playerNumber);
-		
+		this.driver = new PCDriver(controller);
 	}
 	
 	/**
@@ -187,6 +189,10 @@ public class MazeActionV2 extends Action {
 		return detectWall();
 	}
 	
+	public PCDriver getDriver(){
+		return this.driver;
+	}
+	
 	private final boolean detectWallNorth() throws InterruptedException {
 		final Orientation head = getDirectionHead();
 		switch (head) {
@@ -250,7 +256,7 @@ public class MazeActionV2 extends Action {
 		return detectWall();
 	}
 	
-	protected void execute()
+	public void execute()
 			throws ActionException, DriverException, InterruptedException {
 		final Timer timer = new Timer();
 		timer.reset();
@@ -279,7 +285,7 @@ public class MazeActionV2 extends Action {
 				checkAborted();
 				Tile next = path[i];
 				if(next.isSeesaw()){
-					while(this.getDriver().seeInfrared()){
+					while(this.getDriver().seeInfraRead()){
 						this.getDriver().sendDebug("Waiting...");
 						this.wait(1000);
 						checkAborted();
@@ -385,6 +391,12 @@ public class MazeActionV2 extends Action {
 	}
 	
 	
+	private void checkAborted() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
 	private boolean found = false;
 	private boolean teamMateKnown = false;
 	
@@ -568,7 +580,7 @@ public class MazeActionV2 extends Action {
 
 	private void pickUp() throws ActionException, DriverException, InterruptedException {
 		this.resetHead();
-		this.executePickUp();
+		this.controller.doPickUp();
 		this.setFound();
 		//because the robot is turned aroud, the moves.turns added with 2
 		moves.turns += 2;
@@ -1288,7 +1300,7 @@ public class MazeActionV2 extends Action {
 			checkAborted();
 			
 			if(path.get(0).isSeesaw()){
-				while(this.getDriver().seeInfrared()){
+				while(this.getDriver().seeInfraRead()){
 					this.getDriver().sendDebug("Waiting...");
 					this.wait(1000);
 					checkAborted();
@@ -1323,7 +1335,7 @@ public class MazeActionV2 extends Action {
 				// Execute white-line to correct this
 				getDriver().moveForward(70F, true);
 				resetHead();
-				executeWhiteLine();
+				controller.doWhiteLineOrientation();
 //				if (scan) {
 //					scanner.startScanning();
 //				}

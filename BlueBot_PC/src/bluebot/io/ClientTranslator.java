@@ -47,16 +47,16 @@ public class ClientTranslator extends Translator {
 		sendPacket(getPacketFactory().createMoveBackward());
 	}
 	
-	public void moveBackward(final float distance) {
-		sendPacket(getPacketFactory().createMoveBackward(distance));
+	public void moveBackward(final float distance,boolean b) {
+		sendPacket(getPacketFactory().createMoveBackward(distance,b));
 	}
 	
 	public void moveForward() {
 		sendPacket(getPacketFactory().createMoveForward());
 	}
 	
-	public void moveForward(final float distance) {
-		sendPacket(getPacketFactory().createMoveForward(distance));
+	public void moveForward(final float distance,boolean b) {
+		sendPacket(getPacketFactory().createMoveForward(distance,b));
 	}
 	
 	public void reset() {
@@ -87,16 +87,16 @@ public class ClientTranslator extends Translator {
 		sendPacket(getPacketFactory().createTurnLeft());
 	}
 	
-	public void turnLeft(final float angle) {
-		sendPacket(getPacketFactory().createTurnLeft(angle));
+	public void turnLeft(final float angle,boolean b) {
+		sendPacket(getPacketFactory().createTurnLeft(angle,b));
 	}
 	
 	public void turnRight() {
 		sendPacket(getPacketFactory().createTurnRight());
 	}
 	
-	public void turnRight(final float angle) {
-		sendPacket(getPacketFactory().createTurnRight(angle));
+	public void turnRight(final float angle,boolean b) {
+		sendPacket(getPacketFactory().createTurnRight(angle,b));
 	}
 	
 	public void readBarcode(){

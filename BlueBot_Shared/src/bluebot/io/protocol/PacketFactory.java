@@ -179,8 +179,8 @@ public class PacketFactory {
 	 * 
 	 * @return a {@link Packet} object
 	 */
-	private final Packet createMove(final int direction, final float quantity) {
-		return new MovePacket(direction, quantity);
+	private final Packet createMove(final int direction, final float quantity,boolean b) {
+		return new MovePacket(direction, quantity,b);
 	}
 	
 	/**
@@ -199,8 +199,8 @@ public class PacketFactory {
 	 * 
 	 * @return a {@link Packet} object
 	 */
-	public Packet createMoveBackward(final float distance) {
-		return createMove(MovePacket.MOVE_BACKWARD, distance);
+	public Packet createMoveBackward(final float distance,boolean b) {
+		return createMove(MovePacket.MOVE_BACKWARD, distance,b);
 	}
 	
 	/**
@@ -219,8 +219,8 @@ public class PacketFactory {
 	 * 
 	 * @return a {@link Packet} object
 	 */
-	public Packet createMoveForward(final float distance) {
-		return new MovePacket(MovePacket.MOVE_FORWARD, distance);
+	public Packet createMoveForward(final float distance,boolean b) {
+		return new MovePacket(MovePacket.MOVE_FORWARD, distance,b);
 	}
 	
 	/**
@@ -304,8 +304,8 @@ public class PacketFactory {
 	 * 
 	 * @return a {@link Packet} object
 	 */
-	public Packet createTurnLeft(final float degrees) {
-		return new MovePacket(MovePacket.TURN_LEFT, degrees);
+	public Packet createTurnLeft(final float degrees,boolean b) {
+		return new MovePacket(MovePacket.TURN_LEFT, degrees,b);
 	}
 	
 	/**
@@ -324,8 +324,8 @@ public class PacketFactory {
 	 * 
 	 * @return a {@link Packet} object
 	 */
-	public Packet createTurnRight(final float degrees) {
-		return new MovePacket(MovePacket.TURN_RIGHT, degrees);
+	public Packet createTurnRight(final float degrees,boolean b) {
+		return new MovePacket(MovePacket.TURN_RIGHT, degrees,b);
 	}
 	
 	

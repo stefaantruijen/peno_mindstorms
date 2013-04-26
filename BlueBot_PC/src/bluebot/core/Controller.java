@@ -75,7 +75,7 @@ public interface Controller extends EventDispatcher<ControllerListener> {
 	 * 
 	 * @param distance - the distance to move (in mm)
 	 */
-	public void moveBackward(float distance);
+	public void moveBackward(float distance,boolean b);
 	
 	/**
 	 * Moves forward
@@ -87,7 +87,7 @@ public interface Controller extends EventDispatcher<ControllerListener> {
 	 * 
 	 * @param distance - the distance to move (in mm)
 	 */
-	public void moveForward(float distance);
+	public void moveForward(float distance,boolean b);
 	
 	public void removeListener(ConfigListener listener);
 	
@@ -120,7 +120,7 @@ public interface Controller extends EventDispatcher<ControllerListener> {
 	 * 
 	 * @param angle - the angle to turn (in degrees)
 	 */
-	public void turnLeft(float angle);
+	public void turnLeft(float angle,boolean b);
 	
 	/**
 	 * Turns right
@@ -132,7 +132,7 @@ public interface Controller extends EventDispatcher<ControllerListener> {
 	 * 
 	 * @param angle - the angle to turn (in degrees)
 	 */
-	public void turnRight(float angle);
+	public void turnRight(float angle,boolean b);
 
 	/**
 	 * Start the pickUpAction

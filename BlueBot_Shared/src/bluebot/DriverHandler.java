@@ -142,7 +142,7 @@ public class DriverHandler implements PacketHandler {
 	
 	private final void handlePacketMove(final MovePacket packet) {
 		if (packet.isQuantified()) {
-			queue.queue(new MovementAction(packet.getDirection(), packet.getQuantity()));
+			queue.queue(new MovementAction(packet.getDirection(), packet.getQuantity(), packet.getWait()));
 		} else {
 			switch (packet.getDirection()) {
 				case MovePacket.MOVE_BACKWARD:
