@@ -319,6 +319,10 @@ public class DefaultController extends AbstractController {
 				case ULTRA_SONIC:
 					fireSensorUltraSonic(packet.getSensorValue());
 					break;
+				case SPEED:
+					break;
+				default:
+					break;
 			}
 		}
 		

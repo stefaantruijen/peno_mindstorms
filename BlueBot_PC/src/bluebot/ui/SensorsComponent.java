@@ -118,5 +118,12 @@ public class SensorsComponent extends JPanel
 		labelUltraSonic.setBackground(Color.getHSBColor(hue, 1F, 1F));
 		labelUltraSonic.setText(Integer.toString(value));
 	}
+
+
+
+	@Override
+	public void onSensorSpeed(int value) {
+		//nothing
+	}
 	
 }

@@ -101,11 +101,11 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 						switch (command[1].charAt(0)) {
 							case 'B':
 							case 'b':
-								controller.moveBackward(distance);
+								controller.moveBackward(distance,false);
 								break;
 							case 'F':
 							case 'f':
-								controller.moveForward(distance);
+								controller.moveForward(distance,false);
 								break;
 							default:
 								throw new IllegalArgumentException();
@@ -157,11 +157,11 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 						switch (command[1].toLowerCase().charAt(0)) {
 							case 'L':
 							case 'l':
-								controller.turnLeft(angle);
+								controller.turnLeft(angle,false);
 								break;
 							case 'R':
 							case 'r':
-								controller.turnRight(angle);
+								controller.turnRight(angle,false);
 								break;
 							default:
 								throw new IllegalArgumentException();
@@ -258,6 +258,12 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 			
 			public void onSensorValueUltraSonic(final int value) {
 				//	ignored
+			}
+
+			@Override
+			public void onSensorSpeed(int value) {
+				// ignored
+				
 			}
 		});
 		

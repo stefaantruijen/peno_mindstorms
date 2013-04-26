@@ -391,9 +391,14 @@ public class MazeActionV2{
 	}
 	
 	
-	private void checkAborted() {
-		// TODO Auto-generated method stub
-		
+	private void checkAborted() throws InterruptedException {
+		if (isAborted()) {
+			throw new InterruptedException("Action aborted");
+		}
+	}
+	
+	public boolean isAborted() {
+		return aborted;
 	}
 
 
@@ -1272,7 +1277,8 @@ public class MazeActionV2{
 		return true;
 	}
 	
-	private Tile otherRobotTile; 
+	private Tile otherRobotTile;
+	private boolean aborted; 
 	
 	private void GoToRobot() throws ActionException, DriverException, InterruptedException{
 		
@@ -1514,6 +1520,10 @@ public class MazeActionV2{
 		}
 		
 		
+	}
+
+	public void abort() {
+		this.aborted = true;
 	}
 	
 }

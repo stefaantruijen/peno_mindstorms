@@ -439,7 +439,7 @@ public class JoystickComponent extends JPanel {
 		
 		
 		public void onBackwardPressed(final boolean mod) {
-			getController().moveBackward(distance);
+			getController().moveBackward(distance,false);
 		}
 		
 		public void onBackwardReleased() {
@@ -447,7 +447,7 @@ public class JoystickComponent extends JPanel {
 		}
 		
 		public void onForwardPressed(final boolean mod) {
-			getController().moveForward(distance);
+			getController().moveForward(distance,false);
 		}
 		
 		public void onForwardReleased() {
@@ -455,7 +455,7 @@ public class JoystickComponent extends JPanel {
 		}
 		
 		public void onLeftPressed(final boolean mod) {
-			getController().turnLeft(ANGLE);
+			getController().turnLeft(ANGLE,false);
 		}
 		
 		public void onLeftReleased() {
@@ -463,7 +463,7 @@ public class JoystickComponent extends JPanel {
 		}
 		
 		public void onRightPressed(final boolean mod) {
-			getController().turnRight(ANGLE);
+			getController().turnRight(ANGLE,false);
 		}
 		
 		public void onRightReleased() {

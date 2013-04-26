@@ -673,5 +673,10 @@ public class VisualizationComponent2D extends VisualizationComponent
 		}
 		
 	}
+
+	@Override
+	public void updatePosition(long x, long y, double angle) {
+		//nothing
+	}
 	
 }
