@@ -103,5 +103,23 @@ public class ClientTranslator extends Translator {
 		sendPacket(getPacketFactory().createReadBarcode());
 		//sendPacket(getPacketFactory().cr)
 	}
-	
+
+	public void doPickUp() {
+		sendPacket(getPacketFactory().createPickUp());
+		
+	}
+
+	public void turnHeadClockwise(int offset) {
+		sendPacket(getPacketFactory().createTurnHeadClockwise(offset));
+		
+	}
+
+	public void turnHeadcounterClockwise(int offset) {
+		sendPacket(getPacketFactory().createTurnHeadCounterClockwise(offset));
+		
+	}
+
+	public void modifyOrientation() {
+		sendPacket(getPacketFactory().createModifyOrientation());
+	}
 }
