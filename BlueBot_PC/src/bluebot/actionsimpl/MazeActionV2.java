@@ -395,27 +395,16 @@ public class MazeActionV2 extends Action {
 	private void setFound(){
 		this.found=true;
 	}
+
 	
-	@Deprecated
-	public void setTeammatePosition(Tile tile){
-		/*
-		 * @ Dario
-		 * 
-		 * Deze methode kan niet worden gebruikt omdat ik niet de Tile kan bepalen.
-		 * Ik krijg een (voor de teammate) relatieve X en Y (en een bepaalde angle),
-		 * zie de methode hieronder voor de effectieve call die ik maak.
-		 */
-		
-		this.setOtherRobotTile(tile);
-		if(!teamMateKnown){
-			for(Tile t : this.maze.getTiles()){
-				mazeListener.onTileUpdate(t);
-			}
-		}
-		this.setTeamMateKnown();
-	}
 	
 	public void setTeammatePosition(final long x, final long y, final double angle) {
+		
+		if( mazeMerger.hasMerged()){
+			this.otherRobotTile = new Tile(Math.round(x),Math.round(y));
+			otherRobotTile.transform(mazeMerger.getMergeRotationDirection(), mazeMerger.getMergeTranslationVector());
+		}
+		
 		//	TODO
 		
 		/*
@@ -1272,14 +1261,6 @@ public class MazeActionV2 extends Action {
 	}
 	
 	private Tile otherRobotTile; 
-	
-	/**
-	 * sets the tile of the other robot to tile
-	 * @param tile
-	 */
-	private void setOtherRobotTile(Tile tile){
-		this.otherRobotTile = tile;
-	}
 	
 	private void GoToRobot() throws ActionException, DriverException, InterruptedException{
 		
