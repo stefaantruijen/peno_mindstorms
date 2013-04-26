@@ -92,6 +92,10 @@ public abstract class AbstractController
 		sensors.fireUltraSonic(value);
 	}
 	
+	protected void fireSpeed(final int value){
+		sensors.fireSpeed(value);
+	}
+	
 	protected void fireSpeedChanged(final int percentage) {
 		config.fireSpeedChanged(percentage);
 	}
@@ -198,6 +202,12 @@ public abstract class AbstractController
 			}
 		}
 		
+		public void fireSpeed(int value) {
+			for (final SensorListener listener : getListeners()) {
+				listener.onSensorSpeed(value);
+			}
+		}
+
 		public void fireLight(final int value) {
 			for (final SensorListener listener : getListeners()) {
 				listener.onSensorValueLight(value);
