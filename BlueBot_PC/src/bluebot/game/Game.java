@@ -265,7 +265,7 @@ public class Game implements MazeListener {
 			
 			final MazeMerger merger = explorer.getMazeMerger();
 			for (final peno.htttp.Tile tile : tiles) {
-				merger.addTileFromSelf(TileBuilder.getTile(tile.getToken(),
+				merger.addTileFromTeammate(TileBuilder.getTile(tile.getToken(),
 						(int)tile.getX(), (int)tile.getY()));
 			}
 		}
