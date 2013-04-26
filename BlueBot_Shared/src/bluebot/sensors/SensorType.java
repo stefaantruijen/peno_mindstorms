@@ -10,5 +10,6 @@ package bluebot.sensors;
 public enum SensorType {
 	INFRARED,
 	LIGHT,
-	ULTRA_SONIC;
+	ULTRA_SONIC,
+	SPEED;
 }

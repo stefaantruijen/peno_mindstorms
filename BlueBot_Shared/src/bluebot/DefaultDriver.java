@@ -255,6 +255,15 @@ public class DefaultDriver implements Driver {
 		sendSensor(value, SensorType.ULTRA_SONIC);
 	}
 	
+	/**
+	 * Sends a value from the speed sensor LOL
+	 * 
+	 * @param speed
+	 */
+	protected void sendSensorSpeed(int value) {
+		sendSensor(value, SensorType.SPEED);
+	}
+	
 	
 	private final void setRobot(final Robot robot) {
 		if (robot == null) {
@@ -378,11 +387,11 @@ public class DefaultDriver implements Driver {
 				sendSensorInfrared(getInfraredDirection());
 				sendSensorLight(readSensorLightValue());
 				sendSensorUltraSonic(readSensorUltraSonic());
+				sendSensorSpeed(getSpeed());
 			} catch (final RuntimeException e) {
 				// The robot is not in a happy place right now
 			}
-		}
-		
+		}		
 	}
 
 

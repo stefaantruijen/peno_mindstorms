@@ -41,4 +41,11 @@ public interface SensorListener extends EventListener {
 	 */
 	public void onSensorValueUltraSonic(int value);
 	
+	/**
+	 * This method is called whenever a speed value is received
+	 * 
+	 * @param value - the value of the speed
+	 */
+	public void onSensorSpeed(int value);
+	
 }
