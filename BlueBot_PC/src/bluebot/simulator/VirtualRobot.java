@@ -110,7 +110,7 @@ public class VirtualRobot extends AbstractRobot {
 	 */
 	private int imgStartY;
 	/**
-	 * Variable representing the absolute heading of this robot in degrees (0� being North) at the start of the movement. 
+	 * Variable representing the absolute heading of this robot in degrees (0��� being North) at the start of the movement. 
 	 * 	initAbsoluteHeading is initialized to 0 at construct. (So it always starts pointing 'north').
 	 */
 	private float initAbsoluteHeading;
@@ -198,11 +198,18 @@ public class VirtualRobot extends AbstractRobot {
 		}
 	}
 
-	public void setStartTile(Tile startTile) {
+	private void setStartTile(Tile startTile) {
 		clearAction();
 		int tileImgStartX_CM = (int) Math.round(startTile.getX()*TILE_SIZE_CM + TILE_SIZE_CM/2);
 		int tileImgStartY_CM = (int) Math.round(startTile.getY()*TILE_SIZE_CM + TILE_SIZE_CM/2);
 		setOrientation(tileImgStartX_CM, tileImgStartY_CM, 0);
+	}
+	
+	private void setStartTile(int x, int y, float heading){
+		clearAction();
+		int tileImgStartX_CM = (int) Math.round(x*TILE_SIZE_CM + TILE_SIZE_CM/2);
+		int tileImgStartY_CM = (int) Math.round(y*TILE_SIZE_CM + TILE_SIZE_CM/2);
+		setOrientation(tileImgStartX_CM, tileImgStartY_CM, heading);
 	}
 	
 	private Tile findInitialStartTile() {
@@ -456,7 +463,7 @@ public class VirtualRobot extends AbstractRobot {
 
 	
 	/**
-	 * This is the absolute direction of the sonar head. (where 0� = north)
+	 * This is the absolute direction of the sonar head. (where 0��� = north)
 	 * @return
 	 * 		A float in the range of [0, 360)
 	 */
@@ -1133,17 +1140,19 @@ public class VirtualRobot extends AbstractRobot {
 		return irsensor.getInfraredDirection(getImgX(), getImgY(), getHeading());
 	}
 
+//	@Override
+//	public void setStartLocation(int playerID) {
+//		for(Tile t : tilesList){
+//			if(t.isStartPosition()){
+//				if(t.getStartPlayerId()==playerID){
+//					this.setStartTile(t);
+//					break;
+//				}
+//			}
+//		}
+//	}	
 	@Override
-	public void setStartLocation(int playerID) {
-		for(Tile t : tilesList){
-			if(t.isStartPosition()){
-				if(t.getStartPlayerId()==playerID){
-					this.setStartTile(t);
-					break;
-				}
-			}
-		}
-		
-	}
-	
+	public void setStartLocation(int x, int y, float heading) {
+		this.setStartTile(x, y, heading);
+	}	
 }

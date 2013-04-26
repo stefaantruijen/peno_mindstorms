@@ -165,8 +165,7 @@ public interface Driver extends Mobile {
 	/**
 	 * 
 	 * sets start location
-	 * @param playerNumber
 	 */
-	public void setStartLocation(int playerNumber);
+	public void setStartLocation(int x, int y, float heading);
 	
 }

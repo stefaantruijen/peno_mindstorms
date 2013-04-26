@@ -102,8 +102,7 @@ public interface Robot extends Mobile {
 	/**
 	 * 
 	 * sets start location
-	 * @param playerID
 	 */
-	public void setStartLocation(int playerID);
+	public void setStartLocation(int x, int y, float heading);
 	
 }
