@@ -12,14 +12,18 @@ import bluebot.io.protocol.impl.ErrorPacket;
 import bluebot.io.protocol.impl.ItemPacket;
 import bluebot.io.protocol.impl.MQMessagePacket;
 import bluebot.io.protocol.impl.MessagePacket;
+import bluebot.io.protocol.impl.ModifyOrientationPacket;
 import bluebot.io.protocol.impl.MotionPacket;
 import bluebot.io.protocol.impl.MovePacket;
+import bluebot.io.protocol.impl.PickUpPacket;
 import bluebot.io.protocol.impl.PolygonPacket;
 import bluebot.io.protocol.impl.ReadBarcodePacket;
 import bluebot.io.protocol.impl.ResetPacket;
 import bluebot.io.protocol.impl.SeesawPacket;
 import bluebot.io.protocol.impl.SensorPacket;
 import bluebot.io.protocol.impl.StopPacket;
+import bluebot.io.protocol.impl.TurnHeadClockwisePacket;
+import bluebot.io.protocol.impl.TurnHeadCounterClockwisePacket;
 import bluebot.sensors.SensorType;
 
 
@@ -352,6 +356,23 @@ public class PacketFactory {
 			singleton = new PacketFactory();
 		}
 		return singleton;
+	}
+
+	
+	public Packet createPickUp() {
+		return new PickUpPacket();
+	}
+
+	public Packet createTurnHeadClockwise(int offset) {
+		return new TurnHeadClockwisePacket(offset);
+	}
+
+	public Packet createTurnHeadCounterClockwise(int offset) {
+		return new TurnHeadCounterClockwisePacket(offset);
+	}
+	
+	public Packet createModifyOrientation() {
+		return new ModifyOrientationPacket();
 	}
 	
 }

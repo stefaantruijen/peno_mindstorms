@@ -133,5 +133,10 @@ public interface Controller extends EventDispatcher<ControllerListener> {
 	 * @param angle - the angle to turn (in degrees)
 	 */
 	public void turnRight(float angle);
+
+	/**
+	 * Start the pickUpAction
+	 */
+	public void doPickUp();
 	
 }

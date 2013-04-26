@@ -340,5 +340,34 @@ public class DefaultController extends AbstractController {
 	public void setStartLocation(int playerNumber) {
 		//	TODO
 	}
+
+
+	/**
+	 * Send a packet to do the pickUpAction
+	 */
+	@Override
+	public void doPickUp() {
+		getTranslator().doPickUp();
+	}
 	
+	/**
+	 * Send a packet to turn the head clockwise
+	 */
+	public void turnHeadClockwise(int offset) {
+		getTranslator().turnHeadClockwise(offset);
+	}
+	
+	/**
+	 * Send a packet to turn the head counterclockwise.
+	 */
+	public void turnHeadCounterClockwise(int offset) {
+		getTranslator().turnHeadcounterClockwise(offset);
+	}
+	
+	/**
+	 * Modifies the orientation of the robot to the closest of the following values: 0,90,180,270
+	 */
+	public void modifyOrientation(){
+		getTranslator().modifyOrientation();
+	}
 }
