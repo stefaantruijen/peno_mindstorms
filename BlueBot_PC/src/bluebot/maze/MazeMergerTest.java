@@ -2,12 +2,14 @@ package bluebot.maze;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
 import java.util.Vector;
 
 import org.junit.Test;
 
 import bluebot.graph.Border;
 import bluebot.graph.Direction;
+import bluebot.graph.Graph;
 import bluebot.graph.Tile;
 import bluebot.maze.MazeMerger;
 
@@ -306,4 +308,32 @@ public class MazeMergerTest {
 		assertEquals(ty.getX(), t6.getX());
 		assertEquals(ty.getY(), t6.getY());
 	}
+	
+	@Test
+	public void testMerge4(){
+		MazeReader reader = new MazeReader();
+		Graph g1 = reader.parseMaze("testMaze26.txt");
+		List<Tile> tiles1 = g1.getVerticies();
+		Graph g2 = reader.parseMaze("testMaze26gedraaid.txt");
+		List<Tile> tiles2 = g2.getVerticies();
+		MazeMerger mm = new MazeMerger();
+		for(Tile t : tiles1){
+			mm.addTileFromSelf(t);
+		}
+		for(Tile t : tiles2){
+			mm.addTileFromTeammate(t);
+		}
+		
+		mm.tryToMerge();
+		
+		for(Tile t1 : tiles1){
+			for(Tile t2 : tiles2){
+				assertEquals(t1.getX(), t2.getX());
+				assertEquals(t1.getY(), t2.getY());
+			}
+		}
+		
+	}
+	
 }
+
