@@ -266,10 +266,9 @@ public class MazeActionV2{
 		moves = new Movement();
 		maze = new Maze();
 		twist = 0;
-		
-
-		
-		scanBorders(current = maze.addTile(0, 0));
+	
+		Tile start = controller.getWorld().getStart(this.playerNumber);
+		scanBorders(current = maze.addTile(start.getX(),start.getY()));
 		
 		
 		graph.setRootTile(current);
