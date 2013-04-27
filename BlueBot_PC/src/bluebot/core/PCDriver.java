@@ -25,7 +25,9 @@ public class PCDriver implements SensorListener,MotionListener{
 	public PCDriver(Controller controller){
 		this.controller = controller;
 		System.out.println("Bam in pcdriver");
-		this.controller.addListener(this);
+		this.controller.addListener((SensorListener) this);
+		this.controller.addListener((MotionListener) this);
+		
 	
 	}
 	
@@ -93,15 +95,6 @@ public class PCDriver implements SensorListener,MotionListener{
 	 */
 	public void setValueUltraSonic(int valueUltraSonic) {
 		this.valueUltraSonic = valueUltraSonic;
-	}
-
-	@Override
-	public void onMotion(float x, float y, float body, float head) {
-		this.x = x;
-		this.y = y;
-		this.body = body;
-		this.head = head;
-		
 	}
 
 	public Controller getController() {
@@ -204,6 +197,15 @@ public class PCDriver implements SensorListener,MotionListener{
 	@Override
 	public void onSensorSpeed(int value) {
 		this.speed = value;
+	}
+
+
+	@Override
+	public void onMotion(float x, float y, float body, float head) {
+		this.x = x;
+		this.y = y;
+		this.body = body;
+		this.head = head;
 	}
 	
 	

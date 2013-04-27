@@ -8,7 +8,6 @@ import java.util.List;
 import algorithms.Dijkstra;
 import bluebot.DriverException;
 import bluebot.actions.Action;
-import bluebot.actions.ActionException;
 import bluebot.core.Controller;
 import bluebot.core.PCDriver;
 import bluebot.graph.Border;
@@ -270,8 +269,9 @@ public class MazeActionV2{
 		Tile start = controller.getWorld().getStart(this.playerNumber);
 		//TODO:heading meegeven aan mazeaction (uit mazefile)
 		controller.setStartLocation(start.getX(), start.getY(), 0);
-		scanBorders(current = maze.addTile(start.getX(),start.getY()));
 		
+		scanBorders(current = maze.addTile(start.getX(),start.getY()));
+		mazeListener.updatePosition(current.getX(), current.getY(), 0);
 		System.out.println(TileBuilder.fromTileToString(current));
 		graph.setRootTile(current);
 		
