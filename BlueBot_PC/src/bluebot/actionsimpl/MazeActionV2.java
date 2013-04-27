@@ -41,8 +41,6 @@ public class MazeActionV2{
 	private boolean mergeSuccess = false;
 	private final PCDriver driver;
 	
-	
-	//TODO
 	private MazeListener mazeListener;
 	
 	public MazeActionV2(final Controller controller, final int playerNumber,final int objectNumber, final MazeListener mazeListener) {
@@ -50,7 +48,6 @@ public class MazeActionV2{
 		this.objectNumber = objectNumber;
 		this.controller = controller;
 		this.mazeMerger = new MazeMerger();
-		//TODO
 		this.mazeListener = mazeListener;
 		this.driver = new PCDriver(controller);
 	}
@@ -260,21 +257,16 @@ public class MazeActionV2{
 		final Timer timer = new Timer();
 		timer.reset();
 		
-		getDriver().resetOrientation();
+		//getDriver().resetOrientation();
 		
 		moves = new Movement();
 		maze = new Maze();
 		twist = 0;
-	
-		Tile start = controller.getWorld().getStart(this.playerNumber);
-		//TODO:heading meegeven aan mazeaction (uit mazefile)
-		controller.setStartLocation(start.getX(), start.getY(), 0);
-		
-		scanBorders(current = maze.addTile(start.getX(),start.getY()));
-		mazeListener.updatePosition(current.getX(), current.getY(), 0);
+		Thread.sleep(1000);
+		scanBorders(current = maze.addTile(0, 0));
+		mazeListener.updatePosition(0, 0, 0);
 		System.out.println(TileBuilder.fromTileToString(current));
 		graph.setRootTile(current);
-		
 		
 		for (Tile[] path; (path = getPathToNextTile(false)) != null;) {
 			if (path.length == 1) {
@@ -358,6 +350,7 @@ public class MazeActionV2{
 				}
 			}
 		}
+		System.out.println("Waiting - done exploring");
 		this.GoToRobot();
 		/**final long timeExploration = timer.read();
 		
@@ -675,14 +668,13 @@ public class MazeActionV2{
 	}
 	
 	private final Orientation getDirectionBody() {
-		return Orientation.forHeading(getDriver().getOrientation().getHeadingBody());
+		return Orientation.forHeading(getDriver().getHead());
 	}
 	
 	private final Orientation getDirectionHead() {
-		final bluebot.util.Orientation pos = getDriver().getOrientation();
 		
-		final Orientation body = Orientation.forHeading(pos.getHeadingBody());
-		switch (Orientation.forHeading(pos.getHeadingHead())) {
+		final Orientation body = Orientation.forHeading(getDriver().getBody());
+		switch (Orientation.forHeading(getDriver().getHead())) {
 			case NORTH:
 				return body;
 			case EAST:
@@ -1291,7 +1283,7 @@ public class MazeActionV2{
 			while(otherRobotTile == null){
 				checkAborted();
 				Thread.sleep(1000);
-				System.out.println("Waiting for tile from other robot");
+				//.println("Waiting for tile from other robot");
 			}
 			
 

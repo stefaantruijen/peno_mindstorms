@@ -4,7 +4,6 @@ import javax.swing.JOptionPane;
 
 import bluebot.MotionListener;
 import bluebot.sensors.SensorListener;
-import bluebot.util.Orientation;
 
 public class PCDriver implements SensorListener,MotionListener{
 	
@@ -24,7 +23,6 @@ public class PCDriver implements SensorListener,MotionListener{
 	
 	public PCDriver(Controller controller){
 		this.controller = controller;
-		System.out.println("Bam in pcdriver");
 		this.controller.addListener((SensorListener) this);
 		this.controller.addListener((MotionListener) this);
 		
@@ -123,8 +121,9 @@ public class PCDriver implements SensorListener,MotionListener{
 		return head;
 	}
 	
-	public Orientation getOrientation(){
-		return new Orientation(this.getX(), this.getY(), this.getBody(), this.getHead());
+	
+	public bluebot.graph.Orientation getOrientationBody(){
+		return bluebot.graph.Orientation.forHeading(this.getBody());
 	}
 	
 	public void setSpeed(int value){
