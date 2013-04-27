@@ -189,6 +189,8 @@ public class VirtualRobot extends AbstractRobot {
 			this.sensors = new Sensors(world);
 			lightSensor = sensors.getLightSensor();
 			sonar = sensors.getSonar();
+			//	TODO:	Is this the right way to initialize the "irsensor" variable?
+			irsensor = sensors.getIRSensor();
 			setTravelSpeed(DEFAULT_SPEED_TRAVEL);
 			setRotateSpeed(DEFAULT_SPEED_ROTATE);
 			setSonarRotateSpeed(STANDARD_SONAR_ROTATE_SPEED);
