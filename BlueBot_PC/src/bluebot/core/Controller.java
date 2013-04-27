@@ -4,6 +4,7 @@ package bluebot.core;
 import java.io.IOException;
 
 import bluebot.ConfigListener;
+import bluebot.MotionListener;
 import bluebot.actionsimpl.MazeActionV2;
 import bluebot.game.Game;
 import bluebot.game.GameCallback;
@@ -31,6 +32,8 @@ public interface Controller extends EventDispatcher<ControllerListener> {
 	public void addListener(MazeListener listener);
 	
 	public void addListener(MessageListener listener);
+	
+	public void addListener(MotionListener listener);
 	
 	public void addListener(SensorListener listener);
 	
@@ -95,6 +98,8 @@ public interface Controller extends EventDispatcher<ControllerListener> {
 	public void removeListener(MazeListener listener);
 	
 	public void removeListener(MessageListener listener);
+	
+	public void removeListener(MotionListener listener);
 	
 	public void removeListener(SensorListener listener);
 	

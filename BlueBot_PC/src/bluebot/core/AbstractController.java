@@ -2,6 +2,7 @@ package bluebot.core;
 
 
 import bluebot.ConfigListener;
+import bluebot.MotionListener;
 import bluebot.graph.Tile;
 import bluebot.io.Message;
 import bluebot.io.MessageListener;
@@ -23,6 +24,7 @@ public abstract class AbstractController
 	private ConfigDispatcher config;
 	private MazeDispatcher maze;
 	private MessageDispatcher messages;
+	private MotionDispatcher motion;
 	private SensorDispatcher sensors;
 	
 	
@@ -30,6 +32,7 @@ public abstract class AbstractController
 		this.config = new ConfigDispatcher();
 		this.maze = new MazeDispatcher();
 		this.messages = new MessageDispatcher();
+		this.motion = new MotionDispatcher();
 		this.sensors = new SensorDispatcher();
 	}
 	
@@ -45,6 +48,10 @@ public abstract class AbstractController
 	
 	public void addListener(final MessageListener listener) {
 		messages.addListener(listener);
+	}
+	
+	public void addListener(final MotionListener listener) {
+		motion.addListener(listener);
 	}
 	
 	public void addListener(final SensorListener listener) {
@@ -77,7 +84,7 @@ public abstract class AbstractController
 	
 	protected void fireMotion(final float x, final float y,
 			final float body, final float head) {
-		maze.fireMotion(x, y, body, head);
+		motion.fireMotion(x, y, body, head);
 	}
 	
 	protected void fireSensorInfrared(final int value) {
@@ -114,6 +121,10 @@ public abstract class AbstractController
 	
 	public void removeListener(final MessageListener listener) {
 		messages.removeListener(listener);
+	}
+	
+	public void removeListener(final MotionListener listener) {
+		motion.removeListener(listener);
 	}
 	
 	public void removeListener(final SensorListener listener) {
@@ -153,14 +164,6 @@ public abstract class AbstractController
 	
 	private static final class MazeDispatcher extends AbstractEventDispatcher<MazeListener> {
 		
-		public void fireMotion(final float x, final float y,
-				final float body, final float head) {
-			//	TODO
-//			for (final MazeListener listener : getListeners()) {
-//				listener.onMotion(x, y, body, head);
-//			}
-		}
-		
 		public void fireTileUpdated(final Tile tile) {
 			for (final MazeListener listener : getListeners()) {
 				listener.onTileUpdate(tile);
@@ -185,6 +188,22 @@ public abstract class AbstractController
 		public void fireMessageOutgoing(final Message msg) {
 			for (final MessageListener listener : getListeners()) {
 				listener.onMessageOutgoing(msg);
+			}
+		}
+		
+	}
+	
+	
+	
+	
+	
+	private static final class MotionDispatcher
+			extends AbstractEventDispatcher<MotionListener> {
+		
+		public void fireMotion(final float x, final float y,
+				final float body, final float head) {
+			for (final MotionListener listener : getListeners()) {
+				listener.onMotion(x, y, body, head);
 			}
 		}
 		
