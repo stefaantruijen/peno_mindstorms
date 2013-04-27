@@ -26,6 +26,7 @@ public class PCDriver implements SensorListener,MotionListener{
 		this.controller = controller;
 		System.out.println("Bam in pcdriver");
 		this.controller.addListener(this);
+	
 	}
 	
 
