@@ -353,6 +353,25 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 						return false;
 					}
 					
+					final float heading;
+					switch (start.getStartOrientation()) {
+						case NORTH:
+							heading = 0F;
+							break;
+						case EAST:
+							heading = 90F;
+							break;
+						case SOUTH:
+							heading = 180F;
+							break;
+						case WEST:
+							heading = 270F;
+							break;
+						default:
+							throw new IllegalArgumentException("Invalid initial orientation");
+					}
+					controller.setStartLocation(start.getX(), start.getY(), heading);
+					
 					final String msg = String.format("Place the robot on %s facing %s",
 							start, start.getStartOrientation());
 					onMessage(msg, "The game has been rolled");
