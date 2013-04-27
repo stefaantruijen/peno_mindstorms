@@ -1,6 +1,7 @@
 package bluebot.ui;
 
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -300,6 +301,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 //		canvas = new VisualizationComponent2D();
 //		canvas = new VisualizationComponent3D();
 //		controller.addListener(canvas);
+		canvas.setBackground(Color.WHITE);
 		
 		barcode = new BarcodeComponent();
 		barcode.setPreferredSize(new Dimension(-1, 24));

@@ -39,7 +39,7 @@ public class DefaultVisualizationComponent extends VisualizationComponent {
 		final Game game = this.game;
 //		System.out.println("RENDER:  " + game);
 		if (game == null) {
-			final String msg = "<Insert Coint>";
+			final String msg = "<Insert Coin>";
 			
 			final Font font = new Font(Font.SANS_SERIF, Font.BOLD, 16);
 			gfx.setColor(getForeground());

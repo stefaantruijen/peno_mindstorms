@@ -11,7 +11,6 @@ import java.util.List;
 import bluebot.actionsimpl.MazeActionV2;
 import bluebot.actionsimpl.MazeActionV2.MazePosition;
 import bluebot.core.Controller;
-import bluebot.graph.Orientation;
 import bluebot.graph.Tile;
 import bluebot.io.rabbitmq.RabbitMQ;
 import bluebot.maze.MazeListener;
