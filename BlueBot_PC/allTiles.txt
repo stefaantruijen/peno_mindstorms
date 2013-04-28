@@ -1,0 +1,9 @@
+4 7
+#dit is een database van tiles NOOIT VERWIJDEREN
+Cross		Cross		Cross		Cross	
+T.N			T.E			T.S			T.W
+Corner.N 	Corner.E 	Corner.S 	Corner.W
+Straight.N 	Straight.E 	Straight.S 	Straight.W
+DeadEnd.N 	DeadEnd.E 	DeadEnd.S 	DeadEnd.W	
+Closed		Closed		Closed 		Seesaw.N
+Seesaw.E 	Seesaw.W	Closed 		Seesaw.S	
