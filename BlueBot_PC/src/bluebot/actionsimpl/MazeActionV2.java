@@ -36,7 +36,6 @@ public class MazeActionV2{
 	private final static int[] seesawBarcodes = new int[]{11,13,15,17,19,21};
 	private final static int[] itemBarcodes = new int[]{0,1,2,3,4,5,6,7};
 	private int teamNumber = -1;
-	private Controller controller;
 	private MazeMerger mazeMerger;
 	private boolean mergeSuccess = false;
 	private final PCDriver driver;
@@ -46,7 +45,6 @@ public class MazeActionV2{
 	public MazeActionV2(final Controller controller, final int playerNumber,final int objectNumber, final MazeListener mazeListener) {
 		this.playerNumber = playerNumber;
 		this.objectNumber = objectNumber;
-		this.controller = controller;
 		this.mazeMerger = new MazeMerger();
 		this.mazeListener = mazeListener;
 		this.driver = new PCDriver(controller);
@@ -283,7 +281,7 @@ public class MazeActionV2{
 						this.wait(1000);
 						checkAborted();
 					}
-					controller.doSeesaw();
+					getDriver().doSeesaw();
 					i = i+2;
 					this.current = path[i];
 				}else{
@@ -580,7 +578,7 @@ public class MazeActionV2{
 
 	private void pickUp() throws  DriverException, InterruptedException {
 		this.resetHead();
-		this.controller.doPickUp();
+		getDriver().doPickUp();
 		this.setFound();
 		//because the robot is turned aroud, the moves.turns added with 2
 		moves.turns += 2;
@@ -884,12 +882,12 @@ public class MazeActionV2{
 		}
 		final int speed = getDriver().getSpeed();
 
-		controller.doReadBarcode();
+		getDriver().doReadBarcode();
 		getDriver().setSpeed(speed);
 		
 		int bar =Integer.MIN_VALUE;
 		while(true){
-			bar = controller.getReceivedBarcode();
+			bar = getDriver().getReceivedBarcode();
 			if(bar!=Integer.MIN_VALUE){
 				break;
 			}
@@ -1305,7 +1303,7 @@ public class MazeActionV2{
 					this.wait(1000);
 					checkAborted();
 				}
-				controller.doSeesaw();
+				getDriver().doSeesaw();
 				this.current = path.get(2);
 
 			}
@@ -1335,7 +1333,7 @@ public class MazeActionV2{
 				// Execute white-line to correct this
 				getDriver().moveForward(70F, true);
 				resetHead();
-				controller.doWhiteLineOrientation();
+				getDriver().doWhiteLineOrientation();
 //				if (scan) {
 //					scanner.startScanning();
 //				}

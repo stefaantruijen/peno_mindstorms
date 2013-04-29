@@ -77,7 +77,7 @@ public class PCDriver implements SensorListener,MotionListener{
 	 * @return the valueUltraSonic
 	 */
 	public int readSensorUltraSonic() {
-		System.out.println("Ultrasonic : "+this.valueUltraSonic+ " "+this);
+		//System.out.println("Ultrasonic : "+this.valueUltraSonic+ " "+this);
 		return valueUltraSonic;
 	}
 	
@@ -99,9 +99,9 @@ public class PCDriver implements SensorListener,MotionListener{
 		return controller;
 	}
 
-	public void setController(Controller controller) {
-		this.controller = controller;
-	}
+//	public void setController(Controller controller) {
+//		this.controller = controller;
+//	} -> Dit mag toch niet aangepast worden?
 
 	public float getX() {
 		return x;
@@ -207,5 +207,24 @@ public class PCDriver implements SensorListener,MotionListener{
 		this.head = head;
 	}
 	
+	public void doSeesaw(){
+		controller.doSeesaw();
+	}
+	
+	public void doPickUp(){
+		controller.doPickUp();
+	}
+	
+	public void doReadBarcode(){
+		controller.doReadBarcode();
+	}
+	
+	public int getReceivedBarcode(){
+		return controller.getReceivedBarcode();
+	}
+	
+	public void doWhiteLineOrientation(){
+		controller.doWhiteLineOrientation();
+	}
 	
 }
