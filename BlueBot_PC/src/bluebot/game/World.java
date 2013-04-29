@@ -327,7 +327,9 @@ public class World {
 			final int dy = (h - (tileResolution / 2) - ((int)player.getY() * tileResolution));
 			gfx.translate(dx, dy);
 			
-			RenderingUtils.renderPlayer(gfx, player.getAngle(), Color.YELLOW);
+			RenderingUtils.renderPlayer(gfx,
+					Math.toRadians(player.getAngle()),
+					Color.YELLOW);
 			
 			/*
 			final int off = -(tileResolution / 5);

@@ -147,7 +147,9 @@ public class Game implements MazeListener {
 		gfx.setTransform(transform);
 //		System.out.println("body = " + pos.getBody());
 //		System.out.println("head = " + pos.getHead());
-		RenderingUtils.renderPlayer(gfx, pos.getBody(), pos.getHead());
+		RenderingUtils.renderPlayer(gfx,
+				Math.toRadians(pos.getBody()),
+				Math.toRadians(pos.getHead()));
 		gfx.setTransform(transform);
 	}
 	
