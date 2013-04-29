@@ -126,21 +126,26 @@ public class Game implements MazeListener {
 		
 		final MazeMerger merger = explorer.getMazeMerger();
 		
+		ArrayList<Tile> tiles;
+		
 		gfx.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.50F));
-		for (final Tile tile : merger.getTilesFromTeammate()) {
+		tiles = new ArrayList<Tile>(merger.getTilesFromTeammate());
+		for (final Tile tile : tiles) {
 			gfx.translate((tileResolution * tile.getX()), -(tileResolution * tile.getY()));
 			RenderingUtils.renderTile(gfx, tile, tileResolution);
 			gfx.setTransform(origin);
 		}
 		
 		gfx.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.00F));
-		for (final Tile tile : merger.getTilesFromSelf()) {
+		tiles = new ArrayList<Tile>(merger.getTilesFromSelf());
+		for (final Tile tile : tiles) {
 			gfx.translate((tileResolution * tile.getX()), -(tileResolution * tile.getY()));
 			RenderingUtils.renderTile(gfx, tile, tileResolution);
 			gfx.setTransform(origin);
 		}
 		
 		gfx.setTransform(transform);
+		System.out.println("body = " + pos.getBody());
 		RenderingUtils.renderPlayer(gfx, pos.getBody(), pos.getHead());
 		gfx.setTransform(transform);
 	}
@@ -152,6 +157,7 @@ public class Game implements MazeListener {
 	public void stop() {
 		leaveGame();
 	}
+	
 	/*
 	private static final double toAngle(final Orientation dir) {
 		switch (dir) {
