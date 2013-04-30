@@ -13,8 +13,6 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import bluebot.actionsimpl.MazeActionV2;
-import bluebot.core.Controller;
-import bluebot.core.ControllerFactory;
 import bluebot.game.Game;
 import bluebot.game.GameCallback;
 import bluebot.game.World;
@@ -49,16 +47,24 @@ public class Debugger {
 		
 		final World world = new World(array);
 		
-		final Controller controller =
-				ControllerFactory.getControllerFactory().connectToSimulator(world);
+		final Operator operator = OperatorFactory.connectToSimulator(world);
 		
-		final Game game = new Game(controller, GAME_ID, PLAYER_ID, new GameCallback() {
+		final Game game = new Game(null, GAME_ID, PLAYER_ID, new GameCallback() {
 			public boolean prepareForGameStart(int playerNumber, int objectNumber) {
 				return true;
 			}
 		});
 		
-		final MazeActionV2 maze = controller.doMaze(PLAYER_NUMBER, OBJECT_NUMBER, game);
+		//	[EDIT]
+		//	TODO:	Uncomment code & fill in blanks
+		final MazeActionV2 maze = null;	//	new MazeActionV2(PLAYER_NUMBER, OBJECT_NUMBER, game);
+		final Thread thread = new Thread(new Runnable() {
+			public void run() {
+				//	maze.execute(operator);
+			}
+		});
+		thread.setDaemon(true);
+		//	[/EDIT]
 		
 		final Field field = Game.class.getDeclaredField("explorer");
 		field.setAccessible(true);
@@ -82,6 +88,7 @@ public class Debugger {
 					@Override
 					public void windowOpened(final WindowEvent event) {
 						canvas.startRendering();
+						thread.start();
 					}
 				});
 				frame.setVisible(true);

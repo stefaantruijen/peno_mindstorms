@@ -17,6 +17,8 @@ import javax.swing.JComponent;
 public abstract class RenderingComponent extends JComponent {
 	private static final long serialVersionUID = 1L;
 	
+	private static final long INTERVAL = 100;
+	
 	private RenderTask renderer;
 	
 	
@@ -86,15 +88,21 @@ public abstract class RenderingComponent extends JComponent {
 		}
 		
 		public void run() {
-			while (rendering) {
-				try {
-					Thread.sleep(80);
-					if (isVisible()) {
-						repaint(0L);
+			for (long diff, next = System.currentTimeMillis(); rendering; next += INTERVAL) {
+				while ((diff = (next - System.currentTimeMillis())) > 0) {
+					try {
+						Thread.sleep(diff);
+					} catch (final InterruptedException e) {
+						kill();
+						return;
 					}
-				} catch (final InterruptedException e) {
-					kill();
 				}
+				
+				if (isVisible()) {
+					repaint(0L);
+				}
+				
+				next += INTERVAL;
 			}
 		}
 		

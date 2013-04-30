@@ -46,6 +46,14 @@ public class Channel {
 	
 	
 	
+	public DataInputStream getInput() {
+		return input;
+	}
+	
+	public DataOutputStream getOutput() {
+		return output;
+	}
+	
 	/**
 	 * Reads an incoming packet
 	 * 

@@ -11,5 +11,6 @@ public enum SensorType {
 	INFRARED,
 	LIGHT,
 	ULTRA_SONIC,
-	SPEED;
+	SPEED,
+	TOUCH;
 }
