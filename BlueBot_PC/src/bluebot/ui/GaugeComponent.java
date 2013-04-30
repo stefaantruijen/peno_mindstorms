@@ -14,7 +14,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import bluebot.core.Controller;
+import bluebot.Operator;
 
 
 
@@ -34,12 +34,13 @@ public class GaugeComponent extends RenderingComponent {
 		IMAGE_GAUGE = loadImage("gauge");
 	}
 	
-	private Controller controller;
-	private int infrared, value;
+	private int infrared;
+	private Operator operator;
+	private int value;
 	
 	
-	public GaugeComponent(final Controller controller) {
-		this.controller = controller;
+	public GaugeComponent(final Operator operator) {
+		this.operator = operator;
 		
 		setFocusable(false);
 		setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
@@ -258,7 +259,7 @@ public class GaugeComponent extends RenderingComponent {
 		private final void onEvent(final MouseEvent event) {
 			final int percentage = calculatePercentage(event.getX(), event.getY());
 			if ((percentage >= 0) && (percentage != getValue())) {
-				controller.setSpeed(percentage);
+				operator.setSpeed(percentage);
 			}
 		}
 		

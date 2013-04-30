@@ -29,6 +29,7 @@ import bluebot.ui.MainFrame;
 import bluebot.ui.RepeatingKeyReleasedEventsFix;
 import bluebot.ui.SwingUtils;
 import bluebot.ui.WorldFrame;
+import bluebot.util.Application;
 
 
 
@@ -111,6 +112,8 @@ public class Launcher {
 		
 		final World world = new World(maze);
 		
+		final Application app = new Application(world, gameId);
+		
 		final SpectatorClient spectator;
 		try {
 			spectator = new SpectatorClient(rabbit, world.createSpectatorHandler(), gameId);
@@ -125,7 +128,7 @@ public class Launcher {
 			public void run() {
 				new WorldFrame(world).setVisible(true);
 				
-				final MainFrame frame = new MainFrame(world, gameId);
+				final MainFrame frame = new MainFrame(app);
 				frame.addWindowListener(new WindowAdapter() {
 					@Override
 					public void windowClosing(final WindowEvent event) {

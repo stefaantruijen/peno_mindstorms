@@ -10,23 +10,21 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.BorderFactory;
-import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
-import bluebot.ConfigListener;
-import bluebot.core.Controller;
+import bluebot.Operator;
 import bluebot.core.ControllerListener;
 import bluebot.game.Game;
 import bluebot.game.GameCallback;
 import bluebot.graph.Tile;
-import bluebot.sensors.SensorListener;
 import bluebot.ui.TerminalComponent.SuggestionProvider;
 import bluebot.ui.util.RabbitListCellRenderer;
 import bluebot.ui.util.RabbitListModel;
+import bluebot.util.Application;
 
 
 
@@ -34,32 +32,33 @@ import bluebot.ui.util.RabbitListModel;
  * 
  * @author Ruben Feyen
  */
-public class ControllerFrame extends JFrame implements ControllerListener {
+public class ControllerFrame extends AbstractFrame implements ControllerListener {
 	private static final long serialVersionUID = 1L;
 	
+	private Application application;
 	private BarcodeComponent barcode;
 	private DefaultVisualizationComponent canvas;
-	private Controller controller;
+	private Operator operator;
 	private RabbitListModel rabbit;
 	
 	
-	public ControllerFrame(final Controller controller) {
+	public ControllerFrame(final Application application, final Operator operator) {
 		super(MainFrame.TITLE);
-		this.controller = controller;
-
+		this.application = application;
+		this.operator = operator;
+		
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		initComponents();
 		pack();
 		setFocusTraversalKeysEnabled(false);
 		setFocusTraversalPolicyProvider(true);
-		setLocationRelativeTo(null);
 //		setResizable(false);
 		
-		controller.addListener(this);
+//		controller.addListener(this);
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(final WindowEvent event) {
-				controller.dispose();
+				operator.dispose();
 				
 				canvas.stopRendering();
 				canvas.reset();
@@ -71,7 +70,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 			}
 		});
 		
-		controller.init();
+		initOperator();
 	}
 	
 	private final Component createModuleCLI() {
@@ -83,12 +82,20 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 				if ((cmd == null) || cmd.isEmpty()) {
 					// ignored
 				} else if (cmd.equals("calibrate")) {
-					controller.doCalibrate();
+					launch(new Runnable() {
+						public void run() {
+							try {
+								operator.doCalibrate();
+							} catch (final Exception e) {
+								SwingUtils.showError(e.getMessage());
+							}
+						}
+					});
 				} else if (cmd.equals("game")) {
 					try {
 						doGame(command);
 					} catch (final Exception e) {
-						cli.echo("Syntax:  game <game-id> <player-id>");
+						cli.echo("Syntax:  game <player-id>");
 						e.printStackTrace();
 					}
 				} else if (cmd.equals("move")) {
@@ -102,11 +109,11 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 						switch (command[1].charAt(0)) {
 							case 'B':
 							case 'b':
-								controller.moveBackward(distance,false);
+								operator.moveBackward(distance,false);
 								break;
 							case 'F':
 							case 'f':
-								controller.moveForward(distance,false);
+								operator.moveForward(distance,false);
 								break;
 							default:
 								throw new IllegalArgumentException();
@@ -115,38 +122,46 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 						cli.echo("Syntax:  move <f|b> [<distance>]");
 					}
 				} else if (cmd.equals("orientate")) {
-					controller.doWhiteLineOrientation();
-				} else if (cmd.equals("polygon")) {
-					try {
-						controller.doPolygon(Integer.parseInt(command[1]),
-								Float.parseFloat(command[2]));
-					} catch (final Exception e) {
-						cli.echo("Syntax:  polygon <corners> <length>");
-					}
+					launch(new Runnable() {
+						public void run() {
+							try {
+								operator.doWhiteLine();
+							} catch (final Exception e) {
+								SwingUtils.showError(e.getMessage());
+							}
+						}
+					});
+//				} else if (cmd.equals("polygon")) {
+//					try {
+//						controller.doPolygon(Integer.parseInt(command[1]),
+//								Float.parseFloat(command[2]));
+//					} catch (final Exception e) {
+//						cli.echo("Syntax:  polygon <corners> <length>");
+//					}
 				} else if (cmd.equals("reset")) {
 					canvas.reset();
-					controller.reset();
+					operator.resetOrientation();
 				} else if (cmd.equals("set")) {
 					try {
 						final String setting = command[1].toLowerCase();
 						if (setting.isEmpty()) {
 							throw new IllegalArgumentException();
 						} else if (setting.equals("speed")) {
-							controller.setSpeed(Integer.parseInt(command[2]));
+							operator.setSpeed(Integer.parseInt(command[2]));
 						}
 					} catch (final Exception e) {
 						cli.echo("Syntax:  set <setting> <value>");
 					}
 				} else if (cmd.equals("speed")) {
 					try {
-						controller.setSpeed(Integer.parseInt(command[1]));
+						operator.setSpeed(Integer.parseInt(command[1]));
 					} catch (final Exception e) {
 						cli.echo("Syntax:  speed <percentage>");
 					}
 				} else if (cmd.equals("stop")) {
-					controller.stop();
-				} else if (cmd.equals("tile")) {
-					controller.doTile();
+					operator.stop();
+//				} else if (cmd.equals("tile")) {
+//					controller.doTile();
 				} else if (cmd.equals("turn")) {
 					try {
 						final float angle;
@@ -158,11 +173,11 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 						switch (command[1].toLowerCase().charAt(0)) {
 							case 'L':
 							case 'l':
-								controller.turnLeft(angle,false);
+								operator.turnLeft(angle,false);
 								break;
 							case 'R':
 							case 'r':
-								controller.turnRight(angle,false);
+								operator.turnRight(angle,false);
 								break;
 							default:
 								throw new IllegalArgumentException();
@@ -183,11 +198,11 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 						"game",
 						"move",
 						"orientate",
-						"polygon",
+//						"polygon",
 						"reset",
 						"stop",
 						"set",
-						"tile",
+//						"tile",
 						"turn"
 				};
 				for (final String command : commands) {
@@ -208,7 +223,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 	
 	private final Component createModuleCommunication() {
 		final CommunicationTable table = new CommunicationTable();
-		controller.addListener(table.getModel());
+//		controller.addListener(table.getModel());
 		
 		final JScrollPane scroll = table.createScrollPane();
 		scroll.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -216,9 +231,9 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 	}
 
 	private final Component createModuleControls() {
-		final GaugeComponent speed = new GaugeComponent(controller);
+		final GaugeComponent speed = new GaugeComponent(operator);
 		
-		final JoystickComponent joystick = new JoystickComponent(controller);
+		final JoystickComponent joystick = new JoystickComponent(operator);
 		joystick.setEnabled(false);
 		
 		final GridBagLayout layout = new GridBagLayout();
@@ -243,6 +258,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 				joystick.setEnabled(value > 0);
 			}
 		});
+		/*
 		controller.addListener(new ConfigListener() {
 			public void onSpeedChanged(final int percentage) {
 				speed.setValue(percentage);
@@ -267,6 +283,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 				
 			}
 		});
+		*/
 		
 		joystick.requestFocusInWindow();
 		ControllerFrame.this.setFocusTraversalPolicy(
@@ -292,7 +309,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 
 	private final Component createModuleSensors() {
 		final SensorsComponent sensors = new SensorsComponent();
-		controller.addListener(sensors);
+//		controller.addListener(sensors);
 		return sensors;
 	}
 	
@@ -345,9 +362,9 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 	private final void doGame(final String[] args) {
 		final Game game;
 		try {
-			game = controller.doGame(args[1], args[2], new GameCallback() {
+			game = new Game(operator, application.getGameId(), args[1], new GameCallback() {
 				public boolean prepareForGameStart(int playerNumber, int objectNumber) {
-					final Tile start = controller.getWorld().getStart(playerNumber);
+					final Tile start = application.getWorld().getStart(playerNumber);
 					if (start == null) {
 						onError("Unable to determine start location");
 						return false;
@@ -370,7 +387,7 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 						default:
 							throw new IllegalArgumentException("Invalid initial orientation");
 					}
-					controller.setStartLocation(start.getX(), start.getY(), heading);
+					operator.setStartLocation(start.getX(), start.getY(), heading);
 					
 					final String msg = String.format("Place the robot on %s facing %s",
 							start, start.getStartOrientation());
@@ -410,6 +427,16 @@ public class ControllerFrame extends JFrame implements ControllerListener {
 		
 		gbc.gridy++;
 		add(createTabsRight(), gbc);
+	}
+	
+	private final void initOperator() {
+		operator.setSpeed(100);
+	}
+	
+	private static final void launch(final Runnable task) {
+		final Thread thread = new Thread(task);
+		thread.setDaemon(true);
+		thread.start();
 	}
 	
 	public void onError(final String msg) {

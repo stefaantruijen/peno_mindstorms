@@ -21,7 +21,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JToggleButton;
 
-import bluebot.core.Controller;
+import bluebot.Operator;
 import bluebot.util.Resources;
 
 
@@ -39,8 +39,8 @@ public class JoystickComponent extends JPanel {
 	private boolean special;
 	
 	
-	public JoystickComponent(final Controller controller) {
-		setBehavior(new FixedBehavior(controller, FixedBehavior.DISTANCE_LONG));
+	public JoystickComponent(final Operator operator) {
+		setBehavior(new FixedBehavior(operator, FixedBehavior.DISTANCE_LONG));
 		
 		initComponents();
 		setComponentPopupMenu(createContextMenu());
@@ -257,18 +257,18 @@ public class JoystickComponent extends JPanel {
 	}
 	
 	private final void setBehaviorFixed() {
-		final Controller controller = getBehavior().getController();
+		final Operator operator = getBehavior().getOperator();
 		final Behavior behavior;
 		if (special) {
-			behavior = new FixedBehavior(controller, FixedBehavior.DISTANCE_SHORT);
+			behavior = new FixedBehavior(operator, FixedBehavior.DISTANCE_SHORT);
 		} else {
-			behavior = new FixedBehavior(controller, FixedBehavior.DISTANCE_LONG);
+			behavior = new FixedBehavior(operator, FixedBehavior.DISTANCE_LONG);
 		}
 		setBehavior(behavior);
 	}
 	
 	private final void setBehaviorFree() {
-		setBehavior(new FreeBehavior(getBehavior().getController()));
+		setBehavior(new FreeBehavior(getBehavior().getOperator()));
 	}
 	
 	@Override
@@ -292,17 +292,17 @@ public class JoystickComponent extends JPanel {
 	
 	private static abstract class Behavior {
 		
-		private Controller controller;
+		private Operator operator;
 		
 		
-		protected Behavior(final Controller controller) {
-			this.controller = controller;
+		protected Behavior(final Operator operator) {
+			this.operator = operator;
 		}
 		
 		
 		
-		protected final Controller getController() {
-			return controller;
+		protected final Operator getOperator() {
+			return operator;
 		}
 		
 		public abstract void onBackwardPressed(boolean mod);
@@ -322,7 +322,7 @@ public class JoystickComponent extends JPanel {
 		public abstract void onRightReleased();
 		
 		public void onStopPressed() {
-			getController().stop();
+			getOperator().stop();
 		}
 		
 		public void onStopReleased() {
@@ -431,15 +431,15 @@ public class JoystickComponent extends JPanel {
 		private float distance;
 		
 		
-		private FixedBehavior(final Controller controller, final float distance) {
-			super(controller);
+		private FixedBehavior(final Operator operator, final float distance) {
+			super(operator);
 			this.distance = distance;
 		}
 		
 		
 		
 		public void onBackwardPressed(final boolean mod) {
-			getController().moveBackward(distance,false);
+			getOperator().moveBackward(distance,false);
 		}
 		
 		public void onBackwardReleased() {
@@ -447,7 +447,7 @@ public class JoystickComponent extends JPanel {
 		}
 		
 		public void onForwardPressed(final boolean mod) {
-			getController().moveForward(distance,false);
+			getOperator().moveForward(distance,false);
 		}
 		
 		public void onForwardReleased() {
@@ -455,7 +455,7 @@ public class JoystickComponent extends JPanel {
 		}
 		
 		public void onLeftPressed(final boolean mod) {
-			getController().turnLeft(ANGLE,false);
+			getOperator().turnLeft(ANGLE,false);
 		}
 		
 		public void onLeftReleased() {
@@ -463,7 +463,7 @@ public class JoystickComponent extends JPanel {
 		}
 		
 		public void onRightPressed(final boolean mod) {
-			getController().turnRight(ANGLE,false);
+			getOperator().turnRight(ANGLE,false);
 		}
 		
 		public void onRightReleased() {
@@ -478,42 +478,42 @@ public class JoystickComponent extends JPanel {
 	
 	private static final class FreeBehavior extends Behavior {
 		
-		private FreeBehavior(final Controller controller) {
-			super(controller);
+		private FreeBehavior(final Operator operator) {
+			super(operator);
 		}
 		
 		
 		
 		public void onBackwardPressed(final boolean mod) {
-			getController().moveBackward();
+			getOperator().moveBackward();
 		}
 		
 		public void onBackwardReleased() {
-			getController().stop();
+			getOperator().stop();
 		}
 		
 		public void onForwardPressed(final boolean mod) {
-			getController().moveForward();
+			getOperator().moveForward();
 		}
 		
 		public void onForwardReleased() {
-			getController().stop();
+			getOperator().stop();
 		}
 		
 		public void onLeftPressed(final boolean mod) {
-			getController().turnLeft();
+			getOperator().turnLeft();
 		}
 		
 		public void onLeftReleased() {
-			getController().stop();
+			getOperator().stop();
 		}
 		
 		public void onRightPressed(final boolean mod) {
-			getController().turnRight();
+			getOperator().turnRight();
 		}
 		
 		public void onRightReleased() {
-			getController().stop();
+			getOperator().stop();
 		}
 		
 	}

@@ -1,8 +1,6 @@
 package bluebot.ui;
 
 
-import static bluebot.core.ControllerFactory.getControllerFactory;
-
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -17,8 +15,10 @@ import javax.swing.SwingUtilities;
 
 import lejos.pc.comm.NXTCommException;
 
-import bluebot.core.Controller;
+import bluebot.Operator;
+import bluebot.OperatorFactory;
 import bluebot.game.World;
+import bluebot.util.Application;
 
 
 
@@ -32,12 +32,12 @@ public class MainFrame extends RenderingFrame {
 	public static final String DEFAULT_BRICK_NAME = "BlueBot";
 	public static final String TITLE = "P&O BlueBot";
 	
-	private World world;
+	private Application application;
 	
 	
-	public MainFrame(final World world) {
+	public MainFrame(final Application application) {
 		super(TITLE);
-		this.world = world;
+		this.application = application;
 		
 		initComponents();
 		pack();
@@ -64,7 +64,7 @@ public class MainFrame extends RenderingFrame {
 		}
 		
 		try {
-			showController(getControllerFactory().connectToBrick(world, name));
+			showController(OperatorFactory.connectToBrick(name));
 		} catch (final IOException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this,
@@ -90,20 +90,8 @@ public class MainFrame extends RenderingFrame {
 	}
 	
 	private final void connectToSimulator() {
-		final World world = getWorld();
-		if (world == null) {
-			return;
-		}
-		
 		try {
-			showController(getControllerFactory().connectToSimulator(world));
-		} catch (final IOException e) {
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(this,
-					e.getMessage(),
-					"Connection failed",
-					JOptionPane.ERROR_MESSAGE);
-			return;
+			showController(OperatorFactory.connectToSimulator(getWorld()));
 		} catch (final Exception e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this,
@@ -114,33 +102,18 @@ public class MainFrame extends RenderingFrame {
 		}
 	}
 	
-//	@SuppressWarnings("unused")
-//	private final void connectToTestDummy() {
-//		final List<Tile> tiles = loadMaze();
-//		if (tiles == null) {
-//			return;
-//		}
-//		if (tiles.isEmpty()) {
-//			SwingUtils.showWarning("Invalid maze (no tiles)");
-//			return;
-//		}
-//		
-//		final Maze maze = new Maze();
-//		for (final Tile tile : tiles) {
-//			maze.addTile(tile.getX(), tile.getY()).copyBorders(tile);
-//		}
-//		
-//		showController(getControllerFactory().connectToTestDummy(maze));
-//	}
-	
 	private static final JButton createButton(final String text) {
 		final JButton button = new JButton(text);
 		button.setMinimumSize(new Dimension(1, 64));
 		return button;
 	}
 	
+	private final Application getApplication() {
+		return application;
+	}
+	
 	private final World getWorld() {
-		return world;
+		return getApplication().getWorld();
 	}
 	
 	private final void initComponents() {
@@ -187,12 +160,12 @@ public class MainFrame extends RenderingFrame {
 //		add(btnTestDummy, gbc);
 	}
 	
-	private final void showController(final Controller controller) {
+	private final void showController(final Operator operator) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				final JFrame frame =
 //						new ControllerFrame(controller);
-						new ControllerFrame(controller);
+						new ControllerFrame(application, operator);
 				frame.setVisible(true);
 			}
 		});
