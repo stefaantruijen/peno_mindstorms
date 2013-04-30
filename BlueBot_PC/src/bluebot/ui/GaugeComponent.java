@@ -183,6 +183,7 @@ public class GaugeComponent extends RenderingComponent {
 	public void setValue(int value) {
 		value = clamp(value);
 		if (value != this.value) {
+			operator.setSpeed(value);
 			this.value = value;
 			repaint(0L);
 			fireValueChanged(value);
@@ -246,10 +247,10 @@ public class GaugeComponent extends RenderingComponent {
 			return clamp((int)Math.round(100 * radians / DIAL_RANGE));
 		}
 		
-		@Override
-		public void mouseDragged(final MouseEvent event) {
-			onEvent(event);
-		}
+//		@Override
+//		public void mouseDragged(final MouseEvent event) {
+//			onEvent(event);
+//		}
 		
 		@Override
 		public void mousePressed(final MouseEvent event) {
@@ -259,7 +260,7 @@ public class GaugeComponent extends RenderingComponent {
 		private final void onEvent(final MouseEvent event) {
 			final int percentage = calculatePercentage(event.getX(), event.getY());
 			if ((percentage >= 0) && (percentage != getValue())) {
-				operator.setSpeed(percentage);
+				setValue(percentage);
 			}
 		}
 		

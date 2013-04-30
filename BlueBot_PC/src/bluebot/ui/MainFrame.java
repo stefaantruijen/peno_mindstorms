@@ -36,7 +36,7 @@ public class MainFrame extends RenderingFrame {
 	
 	
 	public MainFrame(final Application application) {
-		super(TITLE);
+		super(application.getGameId());
 		this.application = application;
 		
 		initComponents();

@@ -14,6 +14,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
+import peno.htttp.Callback;
+
 import bluebot.Application;
 import bluebot.Operator;
 import bluebot.core.ControllerListener;
@@ -36,12 +38,13 @@ public class ControllerFrame extends RenderingFrame implements ControllerListene
 	private Application application;
 	private BarcodeComponent barcode;
 	private DefaultVisualizationComponent canvas;
+	private GaugeComponent gauge;
 	private Operator operator;
 	private RabbitListModel rabbit;
 	
 	
 	public ControllerFrame(final Application application, final Operator operator) {
-		super(MainFrame.TITLE);
+		super(application.getGameId());
 		this.application = application;
 		this.operator = operator;
 		
@@ -212,7 +215,7 @@ public class ControllerFrame extends RenderingFrame implements ControllerListene
 	}
 
 	private final Component createModuleControls() {
-		final GaugeComponent speed = new GaugeComponent(operator);
+		gauge = new GaugeComponent(operator);
 		
 		final JoystickComponent joystick = new JoystickComponent(operator);
 		joystick.setEnabled(false);
@@ -229,12 +232,12 @@ public class ControllerFrame extends RenderingFrame implements ControllerListene
 		
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		panel.add(speed, gbc);
+		panel.add(gauge, gbc);
 		
 		gbc.gridx++;
 		panel.add(joystick, gbc);
 		
-		speed.addListener(new GaugeListener() {
+		gauge.addListener(new GaugeListener() {
 			public void onValueChanged(final int value) {
 				joystick.setEnabled(value > 0);
 			}
@@ -341,9 +344,11 @@ public class ControllerFrame extends RenderingFrame implements ControllerListene
 	}
 	
 	private final void doGame(final String[] args) {
+		final String playerId = args[1];
+		
 		final Game game;
 		try {
-			game = new Game(operator, application.getGameId(), args[1], new GameCallback() {
+			game = new Game(operator, application.getGameId(), playerId, new GameCallback() {
 				public boolean prepareForGameStart(int playerNumber, int objectNumber) {
 					final Tile start = application.getWorld().getStart(playerNumber);
 					if (start == null) {
@@ -376,13 +381,24 @@ public class ControllerFrame extends RenderingFrame implements ControllerListene
 					return true;
 				}
 			});
+			
+			game.init(new Callback<Void>() {
+				public void onFailure(final Throwable error) {
+					System.out.println("FAILURE");
+					onError(error.getMessage());
+				}
+				
+				public void onSuccess(final Void result) {
+					System.out.println("SUCCESS");
+					setTitle(application.getGameId() + " - " + playerId);
+					canvas.setGame(game);
+					game.start();
+				}
+			});
 		} catch (final Exception e) {
 			e.printStackTrace();
 			onError(e.getMessage());
-			return;
 		}
-		
-		canvas.setGame(game);
 	}
 	
 	private final void initComponents() {
@@ -411,7 +427,7 @@ public class ControllerFrame extends RenderingFrame implements ControllerListene
 	}
 	
 	private final void initOperator() {
-		operator.setSpeed(100);
+		gauge.setValue(100);
 	}
 	
 	private static final void launch(final Runnable task) {
