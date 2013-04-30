@@ -125,7 +125,7 @@ public class Launcher {
 			public void run() {
 				new WorldFrame(world).setVisible(true);
 				
-				final MainFrame frame = new MainFrame(world);
+				final MainFrame frame = new MainFrame(world, gameId);
 				frame.addWindowListener(new WindowAdapter() {
 					@Override
 					public void windowClosing(final WindowEvent event) {

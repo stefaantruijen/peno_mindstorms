@@ -197,18 +197,18 @@ public class RemoteOperator extends AbstractOperator {
 	}
 	
 	public void moveBackward(final float distance, final boolean wait) {
-		if (!wait) {
-			throw new UnsupportedOperationException();
-		}
-		
 		synchronized (lock) {
 			try {
 				sendOpcode(OP_MOVE_BACKWARD);
 				getOutput().writeFloat(distance);
-				receiveAck();
+				getOutput().writeBoolean(wait);
 			} catch (final IOException e) {
 				throw new IllegalStateException(e);
 			}
+		}
+		
+		if (wait) {
+			waitForMoving();
 		}
 	}
 	
@@ -217,18 +217,18 @@ public class RemoteOperator extends AbstractOperator {
 	}
 	
 	public void moveForward(final float distance, final boolean wait) {
-		if (!wait) {
-			throw new UnsupportedOperationException();
-		}
-		
 		synchronized (lock) {
 			try {
 				sendOpcode(OP_MOVE_FORWARD);
 				getOutput().writeFloat(distance);
-				receiveAck();
+				getOutput().writeBoolean(wait);
 			} catch (final IOException e) {
 				throw new IllegalStateException(e);
 			}
+		}
+		
+		if (wait) {
+			waitForMoving();
 		}
 	}
 	
@@ -358,18 +358,18 @@ public class RemoteOperator extends AbstractOperator {
 	}
 	
 	public void turnLeft(final float angle, final boolean wait) {
-		if (!wait) {
-			throw new UnsupportedOperationException();
-		}
-		
 		synchronized (lock) {
 			try {
 				sendOpcode(OP_TURN_LEFT);
 				getOutput().writeFloat(angle);
-				receiveAck();
+				getOutput().writeBoolean(wait);
 			} catch (final IOException e) {
 				throw new IllegalStateException(e);
 			}
+		}
+		
+		if (wait) {
+			waitForMoving();
 		}
 	}
 	
@@ -378,17 +378,27 @@ public class RemoteOperator extends AbstractOperator {
 	}
 	
 	public void turnRight(float angle, boolean wait) {
-		if (!wait) {
-			throw new UnsupportedOperationException();
-		}
-		
 		synchronized (lock) {
 			try {
 				sendOpcode(OP_TURN_RIGHT);
 				getOutput().writeFloat(angle);
-				receiveAck();
+				getOutput().writeBoolean(wait);
 			} catch (final IOException e) {
 				throw new IllegalStateException(e);
+			}
+		}
+		
+		if (wait) {
+			waitForMoving();
+		}
+	}
+	
+	private final void waitForMoving() {
+		while (isMoving()) {
+			try {
+				Thread.sleep(100L);
+			} catch (final InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 	}

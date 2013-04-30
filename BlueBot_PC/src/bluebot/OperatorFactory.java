@@ -1,6 +1,10 @@
 package bluebot;
 
 
+import java.io.IOException;
+
+import lejos.pc.comm.NXTCommException;
+
 import bluebot.game.World;
 import bluebot.simulator.VirtualRobot;
 
@@ -18,7 +22,8 @@ public class OperatorFactory {
 	
 	
 	
-	public static final Operator connectToBrick(final String name) {
+	public static final Operator connectToBrick(final String name)
+			throws IOException, NXTCommException {
 		//	TODO
 		throw new UnsupportedOperationException();
 	}

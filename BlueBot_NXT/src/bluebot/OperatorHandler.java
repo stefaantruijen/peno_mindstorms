@@ -7,6 +7,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import lejos.nxt.comm.BTConnection;
+
 import bluebot.io.protocol.Channel;
 import bluebot.operations.OperationException;
 import bluebot.sensors.CalibrationException;
@@ -25,6 +27,9 @@ public class OperatorHandler implements Runnable {
 	private Operator operator;
 	
 	
+	public OperatorHandler(final Operator operator, final BTConnection btc) {
+		this(operator, new Channel(btc.openDataInputStream(), btc.openDataOutputStream()));
+	}
 	public OperatorHandler(final Operator operator, final Channel channel) {
 		this.channel = channel;
 		this.operator = operator;
@@ -66,12 +71,10 @@ public class OperatorHandler implements Runnable {
 				handleDoWhiteLine();
 				break;
 			case OP_MOVE_BACKWARD:
-				getOperator().moveBackward(getInput().readFloat(), true);
-				sendAck();
+				getOperator().moveBackward(getInput().readFloat(), getInput().readBoolean());
 				break;
 			case OP_MOVE_FORWARD:
-				getOperator().moveForward(getInput().readFloat(), true);
-				sendAck();
+				getOperator().moveForward(getInput().readFloat(), getInput().readBoolean());
 				break;
 			case OP_MOVING:
 				getOutput().writeBoolean(getOperator().isMoving());
@@ -90,11 +93,35 @@ public class OperatorHandler implements Runnable {
 			case OP_SENSOR:
 				handleSensor();
 				break;
+			case OP_SPEED_GET:
+				getOutput().writeByte(getOperator().getSpeed());
+				break;
+			case OP_SPEED_SET:
+				getOperator().setSpeed(getInput().readUnsignedByte());
+				sendAck();
+				break;
+			case OP_STOP:
+				getOperator().stop();
+				sendAck();
+				break;
+			case OP_TURN_HEAD_CCW:
+				getOperator().turnHeadCounterClockWise(getInput().readInt());
+				sendAck();
+				break;
+			case OP_TURN_HEAD_CW:
+				getOperator().turnHeadClockWise(getInput().readInt());
+				sendAck();
+				break;
+			case OP_TURN_LEFT:
+				getOperator().turnLeft(getInput().readFloat(), getInput().readBoolean());
+				break;
+			case OP_TURN_RIGHT:
+				getOperator().turnRight(getInput().readFloat(), getInput().readBoolean());
+				break;
 			default:
 				System.out.println("IGNORED: " + opcode);
 				break;
 		}
-		//	TODO
 	}
 	
 	private final void handleDoBarcode() throws IOException {

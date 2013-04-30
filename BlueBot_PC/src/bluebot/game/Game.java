@@ -8,15 +8,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import bluebot.Operator;
 import bluebot.actionsimpl.MazeActionV2;
-import bluebot.actionsimpl.MazeActionV2.MazePosition;
-import bluebot.core.Controller;
 import bluebot.graph.Tile;
 import bluebot.io.rabbitmq.RabbitMQ;
 import bluebot.maze.MazeListener;
 import bluebot.maze.MazeMerger;
 import bluebot.maze.TileBuilder;
 import bluebot.ui.rendering.RenderingUtils;
+import bluebot.util.Orientation;
 
 import peno.htttp.Callback;
 import peno.htttp.PlayerClient;
@@ -34,15 +34,15 @@ import peno.htttp.PlayerType;
 public class Game implements MazeListener {
 	
 	private PlayerClient client;
-	private Controller controller;
 	private MazeActionV2 explorer;
+	private Operator operator;
 	
 	
-	public Game(final Controller controller,
+	public Game(final Operator operator,
 			final String gameId, final String playerId,
 			final GameCallback callback) throws IOException {
 		this.client = createClient(gameId, playerId, callback);
-		this.controller = controller;
+		this.operator = operator;
 	}
 	
 	
@@ -114,13 +114,12 @@ public class Game implements MazeListener {
 		
 		final AffineTransform transform = gfx.getTransform();
 		
-		final MazePosition pos = explorer.getPosition();
+		final Orientation pos = operator.getOrientation();
 		
-		final float px = pos.getX();
-		final float py = pos.getY();
-		
-		final float dx = ((px * tileResolution) + (tileResolution / 2));
-		final float dy = ((py * tileResolution) - (tileResolution / 2));
+		final int dx = (Math.round(pos.getX() * tileResolution / Tile.SIZE)
+				+ (tileResolution / 2));
+		final int dy = (Math.round(pos.getY() * tileResolution / Tile.SIZE)
+				- (tileResolution / 2));
 		gfx.translate(-dx, dy);
 		final AffineTransform origin = gfx.getTransform();
 		
@@ -148,8 +147,8 @@ public class Game implements MazeListener {
 //		System.out.println("body = " + pos.getBody());
 //		System.out.println("head = " + pos.getHead());
 		RenderingUtils.renderPlayer(gfx,
-				Math.toRadians(pos.getBody()),
-				Math.toRadians(pos.getHead()));
+				Math.toRadians(pos.getHeadingBody()),
+				Math.toRadians(pos.getHeadingHead()));
 		gfx.setTransform(transform);
 	}
 	
@@ -235,7 +234,19 @@ public class Game implements MazeListener {
 				gameStopped();
 			}
 			
-			explorer = controller.doMaze(playerNumber, objectNumber, Game.this);
+			explorer = new MazeActionV2(playerNumber, objectNumber, Game.this);
+			
+			final Thread thread = new Thread(new Runnable() {
+				public void run() {
+					try {
+						explorer.execute(operator);
+					} catch (final Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+			thread.setDaemon(true);
+			thread.start();
 		}
 		
 		@Override
@@ -243,7 +254,7 @@ public class Game implements MazeListener {
 			final MazeActionV2 explorer = getExplorer();
 			if (explorer != null) {
 				explorer.abort();
-				controller.stop();
+				operator.stop();
 				Game.this.explorer = null;
 			}
 		}
