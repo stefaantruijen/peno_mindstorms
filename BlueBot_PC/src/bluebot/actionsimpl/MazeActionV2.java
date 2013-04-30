@@ -6,10 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import algorithms.Dijkstra;
-import bluebot.DriverException;
 import bluebot.actions.Action;
 import bluebot.core.Controller;
-import bluebot.core.PCDriver;
 import bluebot.graph.Border;
 import bluebot.graph.Graph;
 import bluebot.graph.Orientation;
@@ -18,6 +16,9 @@ import bluebot.maze.Maze;
 import bluebot.maze.MazeListener;
 import bluebot.maze.MazeMerger;
 import bluebot.maze.TileBuilder;
+import bluebot.operations.Operation;
+import bluebot.operations.OperationException;
+import bluebot.sensors.CalibrationException;
 import bluebot.util.Timer;
 
 
@@ -25,7 +26,7 @@ import bluebot.util.Timer;
 /**
  * {@link Action} implementation for the maze exploration algorithm
  */
-public class MazeActionV2{
+public class MazeActionV2 extends Operation{
 	
 	private Tile current=null;
 	private Maze maze;
@@ -38,16 +39,14 @@ public class MazeActionV2{
 	private int teamNumber = -1;
 	private MazeMerger mazeMerger;
 	private boolean mergeSuccess = false;
-	private final PCDriver driver;
 	
 	private MazeListener mazeListener;
 	
-	public MazeActionV2(final Controller controller, final int playerNumber,final int objectNumber, final MazeListener mazeListener) {
+	public MazeActionV2(final int playerNumber,final int objectNumber, final MazeListener mazeListener) {
 		this.playerNumber = playerNumber;
 		this.objectNumber = objectNumber;
 		this.mazeMerger = new MazeMerger();
 		this.mazeListener = mazeListener;
-		this.driver = new PCDriver(controller);
 	}
 	
 	/**
@@ -149,16 +148,16 @@ public class MazeActionV2{
 			return false;
 		}
 		
-		getDriver().turnHeadCounterClockWise(5);
+		getOperator().turnHeadCounterClockWise(5);
 		distance = readSensorUltraSonic();
 		if (distance < 25) {
-			getDriver().turnHeadClockWise(5);
+			getOperator().turnHeadClockWise(5);
 			return true;
 		}
 		
-		getDriver().turnHeadClockWise(10);
+		getOperator().turnHeadClockWise(10);
 		distance = readSensorUltraSonic();
-		getDriver().turnHeadCounterClockWise(5);
+		getOperator().turnHeadCounterClockWise(5);
 		return (distance < 25);
 	}
 	
@@ -183,9 +182,6 @@ public class MazeActionV2{
 		return detectWall();
 	}
 	
-	public PCDriver getDriver(){
-		return this.driver;
-	}
 	
 	private final boolean detectWallNorth() throws InterruptedException {
 		final Orientation head = getDirectionHead();
@@ -250,19 +246,15 @@ public class MazeActionV2{
 		return detectWall();
 	}
 	
-	public void execute()
-			throws DriverException, InterruptedException {
+	public Void execute() throws InterruptedException, CalibrationException, OperationException {
 		final Timer timer = new Timer();
 		timer.reset();
-		
-		//getDriver().resetOrientation();
-		
 		moves = new Movement();
 		maze = new Maze();
 		twist = 0;
-		Thread.sleep(1000);
-		scanBorders(current = maze.addTile(0, 0));
+		
 		mazeListener.updatePosition(0, 0, 0);
+		scanBorders(current = maze.addTile(0, 0));
 		System.out.println(TileBuilder.fromTileToString(current));
 		graph.setRootTile(current);
 		
@@ -276,12 +268,11 @@ public class MazeActionV2{
 				checkAborted();
 				Tile next = path[i];
 				if(next.isSeesaw()){
-					while(this.getDriver().seeInfraRead()){
-						this.getDriver().sendDebug("Waiting...");
+					while(this.getOperator().detectInfrared()){
 						this.wait(1000);
 						checkAborted();
 					}
-					getDriver().doSeesaw();
+					getOperator().doSeesaw();
 					i = i+2;
 					this.current = path[i];
 				}else{
@@ -312,7 +303,8 @@ public class MazeActionV2{
 						
 						if (isOurItem(barcode)) {
 							this.pickUp();
-							getDriver().sendItemFound(this.teamNumber);
+							//TODO:mazelistener
+							//getOperator().sendItemFound(this.teamNumber);
 						}
 					}else if(barcodeCanBeSeesaw(barcode)){
 						
@@ -378,16 +370,13 @@ public class MazeActionV2{
 				.append(" to explore the maze.\n")
 				.append(Utils.formatDuration(timeShortestPath))
 				.append(" to reach the finish.").toString();
-		getDriver().sendMessage(msg, "Finished");
+		getOperator().sendMessage(msg, "Finished");
 		**/
+		
+		return null;
 	}
 	
 	
-	private void checkAborted() throws InterruptedException {
-		if (isAborted()) {
-			throw new InterruptedException("Action aborted");
-		}
-	}
 	
 	public boolean isAborted() {
 		return aborted;
@@ -426,15 +415,7 @@ public class MazeActionV2{
 		 * maar die is normaal gezien irrelevant voor u.
 		 */
 	}
-	/**
-	 * ENKEL voor RUBEN in de GUI gebruiken.
-	 * 
-	 * @return een mazeposition
-	 */
-	public MazePosition getPosition(){
-		return new MazePosition(getDriver().getX(),getDriver().getY(),getDriver().getBody(),getDriver().getHead());
-		//return new MazePosition(this.current.getX(),this.current.getY(),this.getDirectionBody(),this.getDirectionHead());
-	}
+	
 	
 	public void newTile(Tile tile){
 		this.maze.addTile(tile.getX(), tile.getY()).copyBorders(tile);
@@ -576,31 +557,31 @@ public class MazeActionV2{
 
 
 
-	private void pickUp() throws  DriverException, InterruptedException {
+	private void pickUp() throws InterruptedException, OperationException, CalibrationException {
 		this.resetHead();
-		getDriver().doPickUp();
+		getOperator().doPickUp();
 		this.setFound();
 		//because the robot is turned aroud, the moves.turns added with 2
 		moves.turns += 2;
 		
 //		this.executeWhiteLine();
-//		this.getDriver().modifyOrientation();
+//		this.getOperator().modifyOrientation();
 //		
 //		
-//		int speed = this.getDriver().getSpeed();
-//		this.getDriver().setSpeed(30);
-//		this.getDriver().moveForward();
-//		while(!getDriver().isPressed()){
+//		int speed = this.getOperator().getSpeed();
+//		this.getOperator().setSpeed(30);
+//		this.getOperator().moveForward();
+//		while(!getOperator().isPressed()){
 //			
 //		}
-//		this.getDriver().stop();
+//		this.getOperator().stop();
 //		//robot rijdt naar achter zodat hij vrij 180 graden kan draaien
-//		this.getDriver().moveBackward(100F,true);
+//		this.getOperator().moveBackward(100F,true);
 //		this.turnAround();
 //		this.executeWhiteLine();
-//		this.getDriver().setSpeed(speed);
-//		this.getDriver().moveForward(200F, true);
-//		this.getDriver().sendMQMessage("Got the package, to the choppa!");
+//		this.getOperator().setSpeed(speed);
+//		this.getOperator().moveForward(200F, true);
+//		this.getOperator().sendMQMessage("Got the package, to the choppa!");
 		
 	}
 
@@ -632,8 +613,8 @@ public class MazeActionV2{
 	@Deprecated
 	@SuppressWarnings("unused")
 	private void followPath(final List<Tile> path)
-			throws  DriverException, InterruptedException {
-		getDriver().setSpeed(100);
+			throws  InterruptedException, CalibrationException, OperationException {
+		getOperator().setSpeed(100);
 		
 		ArrayList<Tile> straightLine = new ArrayList<Tile>();
 		for (Tile t : path) {
@@ -649,7 +630,7 @@ public class MazeActionV2{
 			} else {
 				if (straightLine.size() > 0) {
 					int distanceForward = (straightLine.size()) * 400;
-					this.getDriver().moveForward(distanceForward, true);
+					this.getOperator().moveForward(distanceForward, true);
 					this.current = straightLine.get(straightLine.size() - 1);
 				}
 				this.moveTo(t);
@@ -660,19 +641,19 @@ public class MazeActionV2{
 		}
 		if (straightLine.size() > 0) {
 			int distanceForward = (straightLine.size()) * 400;
-			this.getDriver().moveForward(distanceForward, true);
+			this.getOperator().moveForward(distanceForward, true);
 			this.current = straightLine.get(straightLine.size() - 1);
 		}
 	}
 	
 	private final Orientation getDirectionBody() {
-		return Orientation.forHeading(getDriver().getHead());
+		return Orientation.forHeading(getOperator().getOrientation().getHeadingBody());
 	}
 	
 	private final Orientation getDirectionHead() {
 		
-		final Orientation body = Orientation.forHeading(getDriver().getBody());
-		switch (Orientation.forHeading(getDriver().getHead())) {
+		final Orientation body = Orientation.forHeading(getOperator().getOrientation().getHeadingBody());
+		switch (Orientation.forHeading(getOperator().getOrientation().getHeadingHead())) {
 			case NORTH:
 				return body;
 			case EAST:
@@ -792,44 +773,44 @@ public class MazeActionV2{
 	
 	private final void lookAround() {
 		if (twist > 0) {
-			getDriver().turnHeadCounterClockWise(180);
+			getOperator().turnHeadCounterClockWise(180);
 			twist -= 2;
 		} else {
-			getDriver().turnHeadClockWise(180);
+			getOperator().turnHeadClockWise(180);
 			twist += 2;
 		}
 	}
 	
 	private final void lookLeft() {
 		if (twist > -2) {
-			getDriver().turnHeadCounterClockWise(90);
+			getOperator().turnHeadCounterClockWise(90);
 			twist--;
 		} else {
-			getDriver().turnHeadClockWise(270);
+			getOperator().turnHeadClockWise(270);
 			twist = 1;
 		}
 	}
 	
 	private final void lookRight() {
 		if (twist < 2) {
-			getDriver().turnHeadClockWise(90);
+			getOperator().turnHeadClockWise(90);
 			twist++;
 		} else {
-			getDriver().turnHeadCounterClockWise(270);
+			getOperator().turnHeadCounterClockWise(270);
 			twist = -1;
 		}
 	}
 	
 	private final void moveForward()
-			throws  DriverException, InterruptedException {
+			throws   InterruptedException, CalibrationException, OperationException {
 		moves.moveForward();
 	}
 	
 	private final void moveTo(final Tile tile)
-			throws DriverException, InterruptedException {
+			throws InterruptedException, CalibrationException, OperationException {
 		final int dx = (tile.getX() - this.current.getX());
 		final int dy = (tile.getY() - this.current.getY());
-		
+		mazeListener.updatePosition(dx, dy, this.getDirectionBody().getDouble());
 		if (dy > 0) {
 			travelNorth();
 		} else if (dx > 0) {
@@ -867,8 +848,7 @@ public class MazeActionV2{
 		}
 	}
 	
-	private final int scanBarcode(final Tile tile) throws 
-			DriverException, InterruptedException {
+	private final int scanBarcode(final Tile tile) throws InterruptedException, OperationException, CalibrationException {
 		int barcode = tile.getBarCode();
 		if (barcode == 0) {
 			// The tile has been checked before,
@@ -880,18 +860,13 @@ public class MazeActionV2{
 			// and it has a valid barcode
 			return barcode;
 		}
-		final int speed = getDriver().getSpeed();
+		final int speed = getOperator().getSpeed();
 
-		getDriver().doReadBarcode();
-		getDriver().setSpeed(speed);
+		int bar = getOperator().scanBarcode();
+		getOperator().setSpeed(speed);
 		
-		int bar =Integer.MIN_VALUE;
-		while(true){
-			bar = getDriver().getReceivedBarcode();
-			if(bar!=Integer.MIN_VALUE){
-				break;
-			}
-		}
+		
+
 		
 
 		if (bar == -1) {
@@ -968,11 +943,11 @@ public class MazeActionV2{
 	
 	private final int readSensorUltraSonic() throws InterruptedException {
 //		Thread.sleep(200);
-		return getDriver().readSensorUltraSonic();
+		return getOperator().readSensorUltrasonic();
 	}
 	
 	private final void travelEast()
-			throws  DriverException, InterruptedException {
+			throws  InterruptedException, CalibrationException, OperationException {
 		final Orientation body = getDirectionBody();
 		switch (body) {
 			case NORTH:
@@ -994,7 +969,7 @@ public class MazeActionV2{
 	}
 	
 	private final void travelNorth()
-			throws  DriverException, InterruptedException {
+			throws  InterruptedException, CalibrationException, OperationException {
 		final Orientation body = getDirectionBody();
 		switch (body) {
 			case NORTH:
@@ -1016,7 +991,7 @@ public class MazeActionV2{
 	}
 	
 	private final void travelSouth()
-			throws  DriverException, InterruptedException {
+			throws  InterruptedException, CalibrationException, OperationException {
 		final Orientation body = getDirectionBody();
 		switch (body) {
 			case NORTH:
@@ -1038,7 +1013,7 @@ public class MazeActionV2{
 	}
 	
 	private final void travelWest()
-			throws  DriverException, InterruptedException {
+			throws  InterruptedException, CalibrationException, OperationException {
 		final Orientation body = getDirectionBody();
 		switch (body) {
 			case NORTH:
@@ -1060,32 +1035,26 @@ public class MazeActionV2{
 	}
 	
 	private final void turnAround() {
-		getDriver().turnRight(180F, true);
+		getOperator().turnRight(180F, true);
 		moves.turns += 2;
 	}
 	
 	private final void turnLeft() {
-		getDriver().turnLeft(90F, true);
+		getOperator().turnLeft(90F, true);
 		moves.turns++;
 	}
 	
 	private final void turnRight() {
-		getDriver().turnRight(90F, true);
+		getOperator().turnRight(90F, true);
 		moves.turns++;
 	}
 	
 	private final void updateTiles(final Tile... tiles) {
 		for (final Tile tile : tiles) {
 			mazeListener.onTileUpdate(tile);
+			mazeMerger.addTileFromSelf(tile);
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	
@@ -1130,7 +1099,7 @@ public class MazeActionV2{
 		}
 		
 		private final float getPosition() {
-			final bluebot.util.Orientation pos = getDriver().getOrientation();
+			final bluebot.util.Orientation pos = getOperator().getOrientation();
 			switch (Orientation.forHeading(pos.getHeadingBody())) {
 				case NORTH:
 				case SOUTH:
@@ -1145,7 +1114,7 @@ public class MazeActionV2{
 		
 		private final Brightness readColor() {
 			try {
-				return getDriver().readSensorLightBrightness();
+				return getOperator().readSensorLightBrightness();
 			} catch (final CalibrationException e) {
 				throw new RuntimeException(e);
 			}
@@ -1272,7 +1241,7 @@ public class MazeActionV2{
 	private Tile otherRobotTile;
 	private boolean aborted; 
 	
-	private void GoToRobot() throws  DriverException, InterruptedException{
+	private void GoToRobot() throws  InterruptedException, OperationException, CalibrationException{
 		
 		while(true){
 			checkAborted();
@@ -1292,18 +1261,19 @@ public class MazeActionV2{
 			checkAborted();
 			
 			if(path.get(0).equals(otherRobotTile)){
-				this.getDriver().sendMessage("Teammate found", "Done");
+				System.out.println("Game is done");
+				//this.getOperator().sendMessage("Teammate found", "Done");
 				break;
 			}
 			checkAborted();
 			
 			if(path.get(0).isSeesaw()){
-				while(this.getDriver().seeInfraRead()){
-					this.getDriver().sendDebug("Waiting...");
+				while(this.getOperator().detectInfrared()){
+					//this.getOperator().sendDebug("Waiting...");
 					this.wait(1000);
 					checkAborted();
 				}
-				getDriver().doSeesaw();
+				getOperator().doSeesaw();
 				this.current = path.get(2);
 
 			}
@@ -1327,48 +1297,48 @@ public class MazeActionV2{
 		
 		
 		public void moveForward()
-				throws  DriverException, InterruptedException {
+				throws  InterruptedException, OperationException, CalibrationException {
 			if (isTranslated()) {
 				// The error on the rotation is too big
 				// Execute white-line to correct this
-				getDriver().moveForward(70F, true);
+				getOperator().moveForward(70F, true);
 				resetHead();
-				getDriver().doWhiteLineOrientation();
+				getOperator().doWhiteLine();
 //				if (scan) {
 //					scanner.startScanning();
 //				}
-				getDriver().moveForward(200F, true);
+				getOperator().moveForward(200F, true);
 				reset(true);
 /*
 			} else if (isTranslated()) {
 				// The error on the translation (X/Y) is too big
 				// Find a white line, then use it to move back
 				// to the center of a tile
-				final int speed = getDriver().getSpeed();
-				getDriver().moveForward(40F, true);
-				getDriver().setSpeed(25);
-				getDriver().moveForward();
+				final int speed = getOperator().getSpeed();
+				getOperator().moveForward(40F, true);
+				getOperator().setSpeed(25);
+				getOperator().moveForward();
 				waitForLightSensor(Brightness.WHITE, true);
 //				waitForLightSensor(Brightness.WHITE, false);
-				getDriver().stop();
-				getDriver().setSpeed(50);
-				getDriver().moveForward(Robot.OFFSET_SENSOR_LIGHT, true);
-				getDriver().setSpeed(speed);
+				getOperator().stop();
+				getOperator().setSpeed(50);
+				getOperator().moveForward(Robot.OFFSET_SENSOR_LIGHT, true);
+				getOperator().setSpeed(speed);
 //				if (scan) {
 //					scanner.startScanning();
 //				}
-				getDriver().moveForward(200F, true);
+				getOperator().moveForward(200F, true);
 				reset(false);
 */
 			} else {
 //				if (scan) {
-//					getDriver().moveForward(Tile.SIZE, false);
+//					getOperator().moveForward(Tile.SIZE, false);
 //					waitForLightSensor(Brightness.WHITE, true);
 //					waitForLightSensor(Brightness.WHITE, false);
 //					scanner.startScanning();
 //					waitForMoving(false);
 //				} else {
-					getDriver().moveForward(Tile.SIZE, true);
+					getOperator().moveForward(Tile.SIZE, true);
 //				}
 				/*
 				switch (getDirectionBody()) {
@@ -1389,7 +1359,7 @@ public class MazeActionV2{
 			}
 			horizontal++;
 			vertical++;
-			getDriver().modifyOrientation();
+			getOperator().modifyOrientation();
 		}
 		
 		@SuppressWarnings("unused")
