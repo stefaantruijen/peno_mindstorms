@@ -27,6 +27,7 @@ import bluebot.io.protocol.impl.MessagePacket;
 import bluebot.io.protocol.impl.MotionPacket;
 import bluebot.io.protocol.impl.SensorPacket;
 import bluebot.maze.MazeListener;
+import bluebot.operations.OperationException;
 
 
 
@@ -94,7 +95,7 @@ public class DefaultController extends AbstractController {
 	public MazeActionV2 doMaze(final int playerNumber, final int objectNumber,
 			final MazeListener listener) {
 		final MazeActionV2 maze =
-				new MazeActionV2(this, playerNumber, objectNumber, listener);
+				new MazeActionV2( playerNumber, objectNumber, listener);
 		
 		final Thread thread = new Thread(new Runnable() {
 			public void run() {
@@ -104,6 +105,9 @@ public class DefaultController extends AbstractController {
 					e.printStackTrace();
 				} catch (final InterruptedException e) {
 					//	ignored
+				} catch (OperationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 		});

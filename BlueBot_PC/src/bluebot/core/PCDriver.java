@@ -15,11 +15,13 @@ public class PCDriver implements SensorListener,MotionListener{
 	
 	private float x = -1;
 	private float y = -1;
-	private float body = -1;
-	private float head = -1;
+	private float body = 0;
+	private float head = 0;
 	
 	private int speed = -1;
 	/*End sensor values*/
+	
+	private boolean startedReceiving = false;
 	
 	public PCDriver(Controller controller){
 		this.controller = controller;
@@ -42,6 +44,7 @@ public class PCDriver implements SensorListener,MotionListener{
 
 	@Override
 	public void onSensorValueUltraSonic(int value) {
+		//System.out.println("PCDRIVER : Ultrasonic : "+value);
 		this.setValueUltraSonic(value);
 	}
 
@@ -201,10 +204,24 @@ public class PCDriver implements SensorListener,MotionListener{
 
 	@Override
 	public void onMotion(float x, float y, float body, float head) {
+		System.out.println("PCDRIVER : x : "+x+" y :"+y+" body "+body+" head "+head);
 		this.x = x;
 		this.y = y;
 		this.body = body;
 		this.head = head;
+		this.startedReceiving = true;
+	}
+	
+	public synchronized boolean startedReceiving(){
+		return this.startedReceiving;
+	}
+	
+	public void setHead(float h){
+		this.head = h;
+	}
+	
+	public void setBody(float b){
+		this.body = b;
 	}
 	
 	public void doSeesaw(){

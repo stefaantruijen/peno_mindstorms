@@ -892,6 +892,7 @@ public class VirtualRobot extends AbstractRobot {
 		calculateCurrentActionETA();
 		if(wait == true) {
 			try {
+				System.out.println(getCurrentActionETA()-System.currentTimeMillis());
 				Thread.sleep(getCurrentActionETA()-System.currentTimeMillis());
 			} catch (InterruptedException e) {
 				e.printStackTrace();

@@ -117,4 +117,19 @@ public enum Orientation {
 		}
 	}
 	
+	public double getDouble(){
+		switch(this){
+			case EAST:
+				return 90.0;
+			case NORTH:
+				return 0.0;
+			case SOUTH:
+				return 180.0;
+			case WEST:
+				return 270.0;
+		}
+		
+		throw new IllegalStateException("Impossible ORIENTATION");
+	}
+	
 }

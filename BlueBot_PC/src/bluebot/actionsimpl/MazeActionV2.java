@@ -257,7 +257,7 @@ public class MazeActionV2 extends Operation{
 		scanBorders(current = maze.addTile(0, 0));
 		System.out.println(TileBuilder.fromTileToString(current));
 		graph.setRootTile(current);
-		
+		getOperator().setSpeed(80);
 		for (Tile[] path; (path = getPathToNextTile(false)) != null;) {
 			if (path.length == 1) {
 				scanBorders(current);
@@ -294,7 +294,7 @@ public class MazeActionV2 extends Operation{
 			if (tile.canHaveBarcode()) {
 				final int barcode = scanBarcode(tile);
 				checkAborted();
-				if (barcode > 0) {
+				if (barcode >= 0) {
 					if(barcodeCanBeItemBarcode(barcode)){
 						tile = createItem(tile, getDirectionBody(), barcode);
 						//send barcode to merger
@@ -810,7 +810,7 @@ public class MazeActionV2 extends Operation{
 			throws InterruptedException, CalibrationException, OperationException {
 		final int dx = (tile.getX() - this.current.getX());
 		final int dy = (tile.getY() - this.current.getY());
-		mazeListener.updatePosition(dx, dy, this.getDirectionBody().getDouble());
+		//mazeListener.updatePosition(dx, dy, this.getDirectionBody().getDouble());
 		if (dy > 0) {
 			travelNorth();
 		} else if (dx > 0) {

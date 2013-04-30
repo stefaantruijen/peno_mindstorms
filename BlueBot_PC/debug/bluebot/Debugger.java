@@ -19,6 +19,8 @@ import bluebot.game.World;
 import bluebot.graph.Graph;
 import bluebot.graph.Tile;
 import bluebot.maze.MazeReader;
+import bluebot.operations.OperationException;
+import bluebot.sensors.CalibrationException;
 import bluebot.ui.DefaultVisualizationComponent;
 
 
@@ -49,18 +51,33 @@ public class Debugger {
 		
 		final Operator operator = OperatorFactory.connectToSimulator(world);
 		
-		final Game game = new Game(null, GAME_ID, PLAYER_ID, new GameCallback() {
+		final Game game = new Game(operator, GAME_ID, PLAYER_ID, new GameCallback() {
 			public boolean prepareForGameStart(int playerNumber, int objectNumber) {
+				
 				return true;
 			}
 		});
 		
+		final Tile start = world.getStart(PLAYER_NUMBER);
+		operator.setStartLocation(start.getX(), start.getY(), (int) start.getStartOrientation().getDouble());
+		
 		//	[EDIT]
 		//	TODO:	Uncomment code & fill in blanks
-		final MazeActionV2 maze = null;	//	new MazeActionV2(PLAYER_NUMBER, OBJECT_NUMBER, game);
+		final MazeActionV2 maze =new MazeActionV2(PLAYER_NUMBER, OBJECT_NUMBER, game);
 		final Thread thread = new Thread(new Runnable() {
 			public void run() {
-				//	maze.execute(operator);
+				try {
+					maze.execute(operator);
+				} catch (CalibrationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (OperationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
 		thread.setDaemon(true);
