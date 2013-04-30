@@ -255,7 +255,6 @@ public class MazeActionV2 extends Operation{
 		
 		mazeListener.updatePosition(0, 0, 0);
 		scanBorders(current = maze.addTile(0, 0));
-		System.out.println(TileBuilder.fromTileToString(current));
 		graph.setRootTile(current);
 		getOperator().setSpeed(80);
 		for (Tile[] path; (path = getPathToNextTile(false)) != null;) {
@@ -307,7 +306,6 @@ public class MazeActionV2 extends Operation{
 							//getOperator().sendItemFound(this.teamNumber);
 						}
 					}else if(barcodeCanBeSeesaw(barcode)){
-						
 						checkAborted();
 						Tile tile1 = createSeesawTile(tile, getDirectionBody());
 						tile1.setSeesaw(true);
@@ -319,7 +317,9 @@ public class MazeActionV2 extends Operation{
 						checkAborted();
 						mazeListener.onTileUpdate(tile3);
 						
-						//send barcode to merger
+						//send tiles to merger
+						mazeMerger.addTileFromSelf(tile1);
+						mazeMerger.addTileFromSelf(tile2);
 						mazeMerger.addTileFromSelf(tile3);
 						
 						
@@ -828,8 +828,8 @@ public class MazeActionV2 extends Operation{
 		if (!tile.isExplored()) {
 			return true;
 		}
-		if (tile.canHaveBarcode() && tile.isScanned() == false) {
-			return true;
+		if (tile.canHaveBarcode()) {
+			return (tile.getBarCode() < 0);
 		}
 		return false;
 	}
@@ -875,10 +875,10 @@ public class MazeActionV2 extends Operation{
 			return -1;
 		}
 
-		tile.setBarCode(barcode);
+		tile.setBarCode(bar);
 		mazeListener.onTileUpdate(tile);
-		tile.setScanned(true);
-		return barcode;
+		
+		return bar;
 	}
 	
 	private final void scanBorder(final Tile tile, final Orientation dir)
