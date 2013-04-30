@@ -71,21 +71,32 @@ public class MazeActionV2 extends Operation{
 		switch(dir){
 			case EAST:
 				seesawTile = maze.addTile(x+1, y);
+				seesawTile.setAllBordersOpen(true);
+				seesawTile.setBorderNorth(Border.CLOSED);
+				seesawTile.setBorderSouth(Border.CLOSED);
 				break;
 			case NORTH:
 				seesawTile = maze.addTile(x, y+1);
+				seesawTile.setAllBordersOpen(true);
+				seesawTile.setBorderEast(Border.CLOSED);
+				seesawTile.setBorderWest(Border.CLOSED);
 				break;
 			case SOUTH:
 				seesawTile = maze.addTile(x, y-1);
+				seesawTile.setAllBordersOpen(true);
+				seesawTile.setBorderEast(Border.CLOSED);
+				seesawTile.setBorderWest(Border.CLOSED);
 				break;
 			case WEST:
 				seesawTile = maze.addTile(x-1, y);
+				seesawTile.setAllBordersOpen(true);
+				seesawTile.setBorderNorth(Border.CLOSED);
+				seesawTile.setBorderSouth(Border.CLOSED);
 				break;
 			default:
 				break;
 		
 		}
-		tile.setSeesaw(true);
 		//tile.setBarCode(seesawBarcode);
 		return seesawTile;
 	}
@@ -266,7 +277,9 @@ public class MazeActionV2 extends Operation{
 			for (int i = 1; i < (path.length - 1); i++) {
 				checkAborted();
 				Tile next = path[i];
+				System.out.println(next.toString());
 				if(next.isSeesaw()){
+					System.out.println("next is seesaw");
 					while(this.getOperator().detectInfrared()){
 						this.wait(1000);
 						checkAborted();
@@ -280,7 +293,21 @@ public class MazeActionV2 extends Operation{
 			}
 			
 			checkAborted();
-			moveTo(path[path.length - 1]);
+			
+			Tile next = path[path.length - 1];
+			System.out.println(next.toString());
+			if(next.isSeesaw()){
+				System.out.println("next is seesaw");
+				while(this.getOperator().detectInfrared()){
+					this.wait(1000);
+					checkAborted();
+				}
+				getOperator().doSeesaw();
+				//TODO this.current = ;
+			}else{
+				moveTo(next);
+			}
+			
 
 			Tile tile = current;
 			
@@ -321,6 +348,27 @@ public class MazeActionV2 extends Operation{
 						mazeMerger.addTileFromSelf(tile1);
 						mazeMerger.addTileFromSelf(tile2);
 						mazeMerger.addTileFromSelf(tile3);
+						
+						Tile unknown = null;
+						int x = tile3.getX();
+						int y = tile3.getY();
+						switch(getDirectionBody()){
+							case EAST:
+								unknown = maze.addTile(x+1, y);
+								break;
+							case NORTH:
+								unknown = maze.addTile(x, y+1);
+								break;
+							case SOUTH:
+								unknown = maze.addTile(x, y-1);
+								break;
+							case WEST:
+								unknown = maze.addTile(x-1, y);
+								break;
+							default:
+								break;
+						}
+						mazeMerger.addTileFromSelf(unknown);
 						
 						
 					}else{
@@ -726,8 +774,22 @@ public class MazeActionV2 extends Operation{
 			final Tile t = getNeighbor(tile, d);
 			if (t != null) {
 				if(canGoOverSeesaw){
-					nodes.add(new Node(t, d, node));
-					tiles.add(t);
+					if(t.isSeesaw()){
+						Node n1 = new Node(t, d, node);
+						nodes.add(n1);
+						tiles.add(t);
+						Tile t2 = getNeighbor(t, d);
+						Node n2 = new Node(t2, d, n1);
+						nodes.add(n2);
+						tiles.add(t2);
+						Tile t3 = getNeighbor(t2, d);
+						Node n3 = new Node(t3, d, n2);
+						nodes.add(n3);
+						tiles.add(t3);
+					}else{
+						nodes.add(new Node(t, d, node));
+						tiles.add(t);
+					}
 				} else if (!canGoOverSeesaw){
 					if(t.isSeesaw()){
 						wantsToGoOverSeesaw = true;
