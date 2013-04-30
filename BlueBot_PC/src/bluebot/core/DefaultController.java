@@ -5,8 +5,6 @@ import static bluebot.io.protocol.Packet.*;
 
 import java.io.IOException;
 
-import peno.htttp.Callback;
-
 import bluebot.DriverException;
 import bluebot.actionsimpl.MazeActionV2;
 import bluebot.game.Game;
@@ -76,20 +74,21 @@ public class DefaultController extends AbstractController {
 	
 	public Game doGame(final String gameId, final String playerId,
 			final GameCallback callback) throws GameException, IOException {
-		final Game game = new Game(this, gameId, playerId, callback);
-		System.out.println("JOIN");
-		game.init(new Callback<Void>() {
-			public void onFailure(final Throwable error) {
-				System.out.println("FAILURE");
-				fireError(error.getMessage());
-			}
-			
-			public void onSuccess(final Void result) {
-				System.out.println("SUCCESS");
-				game.start();
-			}
-		});
-		return game;
+//		final Game game = new Game(this, gameId, playerId, callback);
+//		System.out.println("JOIN");
+//		game.init(new Callback<Void>() {
+//			public void onFailure(final Throwable error) {
+//				System.out.println("FAILURE");
+//				fireError(error.getMessage());
+//			}
+//			
+//			public void onSuccess(final Void result) {
+//				System.out.println("SUCCESS");
+//				game.start();
+//			}
+//		});
+//		return game;
+		throw new UnsupportedOperationException();
 	}
 	
 	public MazeActionV2 doMaze(final int playerNumber, final int objectNumber,
