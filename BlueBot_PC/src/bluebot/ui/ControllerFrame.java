@@ -205,6 +205,7 @@ public class ControllerFrame extends RenderingFrame implements ControllerListene
 		return scroll;
 	}
 	
+	@SuppressWarnings("unused")
 	private final Component createModuleCommunication() {
 		final CommunicationTable table = new CommunicationTable();
 //		controller.addListener(table.getModel());
@@ -276,6 +277,7 @@ public class ControllerFrame extends RenderingFrame implements ControllerListene
 		return panel;
 	}
 	
+	@SuppressWarnings("unused")
 	private final Component createModuleRabbitMQ() {
 		rabbit = new RabbitListModel();
 		
@@ -331,7 +333,7 @@ public class ControllerFrame extends RenderingFrame implements ControllerListene
 	private final Component createTabsLeft() {
 		final JTabbedPane tabs = new IconTabbedPane();
 		tabs.addTab("icon_visualization", createModuleVisualization());
-		tabs.addTab("icon_bluetooth", createModuleCommunication());
+//		tabs.addTab("icon_bluetooth", createModuleCommunication());
 		return tabs;
 	}
 	
@@ -339,7 +341,7 @@ public class ControllerFrame extends RenderingFrame implements ControllerListene
 		final JTabbedPane tabs = new IconTabbedPane();
 		tabs.addTab("icon_cli", createModuleCLI());
 		tabs.addTab("icon_sensors", createModuleSensors());
-		tabs.addTab("icon_rabbitmq", createModuleRabbitMQ());
+//		tabs.addTab("icon_rabbitmq", createModuleRabbitMQ());
 		return tabs;
 	}
 	

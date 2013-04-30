@@ -39,12 +39,10 @@ public class MainFrame extends RenderingFrame {
 		super(application.getGameId());
 		this.application = application;
 		
-		initComponents();
-		pack();
-		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setResizable(false);
-		setLocationRelativeTo(null);
+		initComponents();
+		pack();
 	}
 	
 	
