@@ -828,8 +828,8 @@ public class MazeActionV2 extends Operation{
 		if (!tile.isExplored()) {
 			return true;
 		}
-		if (tile.canHaveBarcode()) {
-			return (tile.getBarCode() < 0);
+		if (tile.canHaveBarcode() && tile.isScanned() == false) {
+			return true;
 		}
 		return false;
 	}
@@ -877,7 +877,7 @@ public class MazeActionV2 extends Operation{
 
 		tile.setBarCode(barcode);
 		mazeListener.onTileUpdate(tile);
-		
+		tile.setScanned(true);
 		return barcode;
 	}
 	

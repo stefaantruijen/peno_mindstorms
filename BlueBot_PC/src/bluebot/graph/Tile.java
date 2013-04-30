@@ -33,6 +33,17 @@ public class Tile implements Comparable<Tile> {
 	private boolean startPosition = false;
 	private int startOrientation = -1;
 	private int startPlayerId = -1;
+	private boolean scanned = false;
+
+	public boolean isScanned() {
+		return scanned;
+	}
+
+
+
+	public void setScanned(boolean scanned) {
+		this.scanned = scanned;
+	}
 
 	private double distanceFromStart;
 
