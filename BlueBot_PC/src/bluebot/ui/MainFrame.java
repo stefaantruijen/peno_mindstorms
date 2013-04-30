@@ -15,10 +15,10 @@ import javax.swing.SwingUtilities;
 
 import lejos.pc.comm.NXTCommException;
 
+import bluebot.Application;
 import bluebot.Operator;
 import bluebot.OperatorFactory;
 import bluebot.game.World;
-import bluebot.util.Application;
 
 
 

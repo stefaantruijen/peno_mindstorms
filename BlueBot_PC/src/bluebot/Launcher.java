@@ -29,7 +29,6 @@ import bluebot.ui.MainFrame;
 import bluebot.ui.RepeatingKeyReleasedEventsFix;
 import bluebot.ui.SwingUtils;
 import bluebot.ui.WorldFrame;
-import bluebot.util.Application;
 
 
 

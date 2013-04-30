@@ -6,8 +6,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JList;
@@ -16,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
+import bluebot.Application;
 import bluebot.Operator;
 import bluebot.core.ControllerListener;
 import bluebot.game.Game;
@@ -24,7 +23,6 @@ import bluebot.graph.Tile;
 import bluebot.ui.TerminalComponent.SuggestionProvider;
 import bluebot.ui.util.RabbitListCellRenderer;
 import bluebot.ui.util.RabbitListModel;
-import bluebot.util.Application;
 
 
 
@@ -32,7 +30,7 @@ import bluebot.util.Application;
  * 
  * @author Ruben Feyen
  */
-public class ControllerFrame extends AbstractFrame implements ControllerListener {
+public class ControllerFrame extends RenderingFrame implements ControllerListener {
 	private static final long serialVersionUID = 1L;
 	
 	private Application application;
@@ -47,29 +45,12 @@ public class ControllerFrame extends AbstractFrame implements ControllerListener
 		this.application = application;
 		this.operator = operator;
 		
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		initComponents();
 		pack();
 		setFocusTraversalKeysEnabled(false);
 		setFocusTraversalPolicyProvider(true);
-//		setResizable(false);
 		
 //		controller.addListener(this);
-		addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(final WindowEvent event) {
-				operator.dispose();
-				
-				canvas.stopRendering();
-				canvas.reset();
-			}
-			
-			@Override
-			public void windowOpened(final WindowEvent event) {
-				canvas.startRendering();
-			}
-		});
-		
 		initOperator();
 	}
 	
@@ -453,6 +434,17 @@ public class ControllerFrame extends AbstractFrame implements ControllerListener
 			JOptionPane.showMessageDialog(this, msg, title,
 					JOptionPane.INFORMATION_MESSAGE);
 		}
+	}
+	
+	protected void startRendering() {
+		canvas.startRendering();
+	}
+	
+	protected void stopRendering() {
+		operator.dispose();
+		
+		canvas.stopRendering();
+		canvas.reset();
 	}
 	
 }

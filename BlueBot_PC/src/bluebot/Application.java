@@ -1,4 +1,4 @@
-package bluebot.util;
+package bluebot;
 
 
 import bluebot.game.World;
