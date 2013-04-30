@@ -269,12 +269,12 @@ public class MazeActionV2 extends Operation{
 		graph.setRootTile(current);
 		getOperator().setSpeed(80);
 		for (Tile[] path; (path = getPathToNextTile(false)) != null;) {
+			System.out.println(path.length);
 			if (path.length == 1) {
 				scanBorders(current);
 				continue;
 			}
-			
-			for (int i = 1; i < (path.length - 1); i++) {
+			for (int i = 1; i < (path.length); i++) {
 				checkAborted();
 				Tile next = path[i];
 				System.out.println(next.toString());
@@ -285,29 +285,25 @@ public class MazeActionV2 extends Operation{
 						checkAborted();
 					}
 					getOperator().doSeesaw();
-					i = i+2;
+					i = i+3;//Zet op tile achter de barcode na de wip
 					this.current = path[i];
 				}else{
 					moveTo(path[i]);
 				}
 			}
-			
-			checkAborted();
-			
-			Tile next = path[path.length - 1];
-			System.out.println(next.toString());
-			if(next.isSeesaw()){
-				System.out.println("next is seesaw");
-				while(this.getOperator().detectInfrared()){
-					this.wait(1000);
-					checkAborted();
-				}
-				getOperator().doSeesaw();
-				//TODO this.current = ;
-			}else{
-				moveTo(next);
-			}
-			
+//			System.out.println(next.toString());
+//			if(next.isSeesaw()){
+//				System.out.println("next is seesaw");
+//				while(this.getOperator().detectInfrared()){
+//					this.wait(1000);
+//					checkAborted();
+//				}
+//				getOperator().doSeesaw();
+//				//TODO this.current = ;
+//			}else{
+//				moveTo(next);
+//			}
+//			
 
 			Tile tile = current;
 			
@@ -319,9 +315,12 @@ public class MazeActionV2 extends Operation{
 			checkAborted();
 			if (tile.canHaveBarcode()) {
 				final int barcode = scanBarcode(tile);
+				System.out.println("I scanned barcode "+barcode);
 				checkAborted();
 				if (barcode >= 0) {
+					System.out.println("barcode > 0");
 					if(barcodeCanBeItemBarcode(barcode)){
+						System.out.println("can be item barcode");
 						tile = createItem(tile, getDirectionBody(), barcode);
 						//send barcode to merger
 						mazeMerger.addTileFromSelf(tile);
@@ -562,9 +561,10 @@ public class MazeActionV2 extends Operation{
 				teamNumber = 1;
 				break;
 		}
-		
+		System.out.println("barcode="+barcode+"    ballnumber="+ballnumber+"  ournumber="+this.objectNumber);
 		if(ballnumber == this.objectNumber){
 			this.teamNumber=teamNumber;
+			System.out.println("our teamnumber is: "+teamNumber);
 			return true;
 		}else{
 			return false;
@@ -607,6 +607,7 @@ public class MazeActionV2 extends Operation{
 
 	private void pickUp() throws InterruptedException, OperationException, CalibrationException {
 		this.resetHead();
+		System.out.println("I am really gonna do pickup! :)");
 		getOperator().doPickUp();
 		this.setFound();
 		//because the robot is turned aroud, the moves.turns added with 2
@@ -776,12 +777,12 @@ public class MazeActionV2 extends Operation{
 				if(canGoOverSeesaw){
 					if(t.isSeesaw()){
 						Node n1 = new Node(t, d, node);
-						nodes.add(n1);
-						tiles.add(t);
+//						nodes.add(n1);
+//						tiles.add(t);
 						Tile t2 = getNeighbor(t, d);
 						Node n2 = new Node(t2, d, n1);
-						nodes.add(n2);
-						tiles.add(t2);
+//						nodes.add(n2);
+//						tiles.add(t2);
 						Tile t3 = getNeighbor(t2, d);
 						Node n3 = new Node(t3, d, n2);
 						nodes.add(n3);
@@ -912,12 +913,12 @@ public class MazeActionV2 extends Operation{
 	
 	private final int scanBarcode(final Tile tile) throws InterruptedException, OperationException, CalibrationException {
 		int barcode = tile.getBarCode();
-		if (barcode == 0) {
+		if (barcode == -2) {
 			// The tile has been checked before,
 			// and it has no barcode
-			return -1;
+			return -2;
 		}
-		if (barcode > 0) {
+		if (barcode >= 0) {
 			// The tile has been checked before,
 			// and it has a valid barcode
 			return barcode;
@@ -933,8 +934,8 @@ public class MazeActionV2 extends Operation{
 
 		if (bar == -1) {
 			// Remember to not check this tile again
-			tile.setBarCode(0);
-			return -1;
+			tile.setBarCode(-2);
+			return -2;
 		}
 
 		tile.setBarCode(bar);
