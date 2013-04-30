@@ -9,6 +9,7 @@ package bluebot.util;
 public class BarcodeValidator {
 	
 	private static final int[] VALID = {
+		0,
 		1,
 		2,
 		3,
