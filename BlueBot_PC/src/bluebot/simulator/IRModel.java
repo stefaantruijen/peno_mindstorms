@@ -1,6 +1,8 @@
 package bluebot.simulator;
 
+
 import java.util.ArrayList;
+
 
 
 /**
@@ -12,7 +14,7 @@ import java.util.ArrayList;
  */
 public class IRModel {
 	
-	private static IRModel model = new IRModel();
+//	private static IRModel model = new IRModel();
 	private ArrayList<InfraRedSource> sources;
 	
 	/**

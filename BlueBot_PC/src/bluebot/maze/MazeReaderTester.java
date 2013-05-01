@@ -3,11 +3,12 @@
  */
 package bluebot.maze;
 
-import static org.junit.Assert.*;
 
 import org.junit.Test;
 
 import bluebot.graph.Graph;
+
+
 
 /**
  * @author Incalza Dario

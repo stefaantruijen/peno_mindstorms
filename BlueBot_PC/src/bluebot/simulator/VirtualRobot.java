@@ -1,4 +1,6 @@
 package bluebot.simulator;
+
+
 import java.awt.Toolkit;
 import java.io.File;
 import java.util.Random;
@@ -162,7 +164,7 @@ public class VirtualRobot extends AbstractRobot {
 	/**
 	 * The world in which the VirtualRobot is driving.
 	 */
-	private World world;
+//	private World world;
 	/**
 	 * Minimal offset of the borders of a tile for placing the VirtualRobot randomly in one.
 	 */
@@ -179,7 +181,7 @@ public class VirtualRobot extends AbstractRobot {
 	 * 			Tile at which the robot will start.
 	 */
 	public VirtualRobot(World world){
-		this.world = world;
+//		this.world = world;
 		tilesList = world.getMaze();
 		Tile startTile = findInitialStartTile();
 		if(isValid(tilesList,startTile)){

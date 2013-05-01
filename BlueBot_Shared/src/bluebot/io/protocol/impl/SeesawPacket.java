@@ -15,8 +15,8 @@ import bluebot.io.protocol.Packet;
  */
 public class SeesawPacket extends Packet {
 	
-	private int barcode;
-	private boolean locked;
+//	private int barcode;
+//	private boolean locked;
 	
 	
 	public SeesawPacket(final DataInput input) throws IOException {

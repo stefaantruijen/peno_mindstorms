@@ -1,14 +1,14 @@
 package bluebot.actions.impl;
 
+
 import bluebot.DriverException;
 import bluebot.actions.Action;
 import bluebot.actions.ActionException;
 
+
+
 public class PickUpAction extends Action{
 	
-	private WhiteLineAction white = new WhiteLineAction();
-
-	@Override
 	protected void execute() throws ActionException, DriverException,
 			InterruptedException {
 		//this.resetHead();

@@ -1,7 +1,6 @@
 package bluebot.simulator;
 
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
+
 
 /**
  * Interface providing InfraRedSource functionality.

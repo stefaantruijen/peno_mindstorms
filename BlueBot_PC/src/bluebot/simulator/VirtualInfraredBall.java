@@ -1,6 +1,5 @@
 package bluebot.simulator;
 
-import java.util.NoSuchElementException;
 
 
 /**

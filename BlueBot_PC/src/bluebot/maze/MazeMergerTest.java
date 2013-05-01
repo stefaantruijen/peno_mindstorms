@@ -1,9 +1,9 @@
 package bluebot.maze;
 
+
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
-import java.util.Vector;
 
 import org.junit.Test;
 
@@ -12,6 +12,7 @@ import bluebot.graph.Direction;
 import bluebot.graph.Graph;
 import bluebot.graph.Tile;
 import bluebot.maze.MazeMerger;
+
 
 
 public class MazeMergerTest {

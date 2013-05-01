@@ -1,8 +1,7 @@
 package bluebot.simulator;
 
-import static org.junit.Assert.assertEquals;
 
-import java.util.Vector;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
@@ -10,6 +9,7 @@ import bluebot.graph.Border;
 import bluebot.graph.Direction;
 import bluebot.graph.Tile;
 import bluebot.maze.MazeMerger;
+
 
 
 public class MazeMergerTest {

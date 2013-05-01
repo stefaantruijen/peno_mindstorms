@@ -1,13 +1,11 @@
 package bluebot.core;
 
 
-import lejos.nxt.I2CSensor;
 import lejos.nxt.LightSensor;
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
 import lejos.nxt.TouchSensor;
 import lejos.nxt.UltrasonicSensor;
-import lejos.nxt.addon.IRSeeker;
 import lejos.nxt.addon.IRSeekerV2;
 import lejos.nxt.addon.IRSeekerV2.Mode;
 import lejos.robotics.localization.OdometryPoseProvider;

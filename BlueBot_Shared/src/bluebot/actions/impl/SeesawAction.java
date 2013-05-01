@@ -1,15 +1,14 @@
 package bluebot.actions.impl;
 
+
 import bluebot.DriverException;
 import bluebot.actions.Action;
 import bluebot.actions.ActionException;
-import bluebot.sensors.CalibrationException;
+
+
 
 public class SeesawAction extends Action{
 	
-	WhiteLineAction white = new WhiteLineAction();
-
-	@Override
 	protected void execute() throws ActionException, DriverException,
 			InterruptedException {
 		if(!this.getDriver().seeInfrared()){
@@ -34,7 +33,7 @@ public class SeesawAction extends Action{
 		System.out.println("STARTED SEESAW 6");
 		this.getDriver().stop();
 		System.out.println("STARTED SEESAW 7");
-		white.execute(this.getDriver());
+		executeWhiteLine();
 		System.out.println("STARTED SEESAW 8");
 		this.getDriver().moveForward(20, true);
 		System.out.println("STARTED SEESAW 9");
