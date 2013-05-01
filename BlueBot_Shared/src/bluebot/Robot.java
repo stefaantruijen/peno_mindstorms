@@ -10,7 +10,7 @@ public interface Robot extends Mobile {
 	public final static double DEFAULT_SPEED_ROTATE = 75;
 	public final static double DEFAULT_SPEED_TRAVEL = 0;
 	public static final int DEFAULT_ACCELERATION = 500;
-	public static final float OFFSET_SENSOR_LIGHT = 70F;
+	public static final float OFFSET_SENSOR_LIGHT = 42F;
 	public static final float OFFSET_SENSOR_ULTRASONIC = 30F;
 	
 	
