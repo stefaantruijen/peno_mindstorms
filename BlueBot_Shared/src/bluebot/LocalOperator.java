@@ -69,6 +69,10 @@ public class LocalOperator extends AbstractOperator {
 		return getRobot().getOrientation();
 	}
 	
+	public String getPlayerType() {
+		return "VIRTUAL";
+	}
+	
 	private final Robot getRobot() {
 		return robot;
 	}

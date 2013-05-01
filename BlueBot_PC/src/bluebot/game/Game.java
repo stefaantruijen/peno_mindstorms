@@ -41,8 +41,8 @@ public class Game implements MazeListener {
 	public Game(final Operator operator,
 			final String gameId, final String playerId,
 			final GameCallback callback) throws IOException {
-		this.client = createClient(gameId, playerId, callback);
 		this.operator = operator;
+		this.client = createClient(gameId, playerId, callback);
 	}
 	
 	
@@ -58,7 +58,7 @@ public class Game implements MazeListener {
 	private final PlayerDetails createPlayerDetails(final String playerId) {
 		//	TODO:	Collect useful data from ... somewhere
 		return new PlayerDetails(playerId,
-				PlayerType.PHYSICAL,
+				PlayerType.valueOf(operator.getPlayerType()),
 				(Tile.SIZE / 2D),
 				(Tile.SIZE / 2D));
 	}

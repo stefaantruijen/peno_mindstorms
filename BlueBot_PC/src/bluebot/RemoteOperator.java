@@ -8,7 +8,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
-import bluebot.io.protocol.Channel;
+import peno.htttp.PlayerType;
+
+import bluebot.io.Link;
 import bluebot.operations.OperationException;
 import bluebot.sensors.Calibration;
 import bluebot.sensors.CalibrationException;
@@ -26,8 +28,8 @@ public class RemoteOperator extends AbstractOperator {
 	private RemoteCallManager caller;
 	
 	
-	public RemoteOperator(final Channel channel) {
-		this.caller = new RemoteCallManager(channel);
+	public RemoteOperator(final Link link) {
+		this.caller = new RemoteCallManager(link);
 		
 		final Thread thread = new Thread(caller);
 		thread.setDaemon(true);
@@ -148,6 +150,10 @@ public class RemoteOperator extends AbstractOperator {
 				//	no args
 			}
 		});
+	}
+	
+	public String getPlayerType() {
+		return PlayerType.PHYSICAL.toString();
 	}
 	
 	public int getSpeed() {
@@ -365,11 +371,11 @@ public class RemoteOperator extends AbstractOperator {
 				new HashMap<Integer, LinkedList<RemoteCall<?>>>();
 		private final Object lock = new Object();
 		
-		private Channel channel;
+		private Link link;
 		
 		
-		private RemoteCallManager(final Channel channel) {
-			this.channel = channel;
+		private RemoteCallManager(final Link link) {
+			this.link = link;
 		}
 		
 		
@@ -386,7 +392,7 @@ public class RemoteOperator extends AbstractOperator {
 		
 		public void disconnect() {
 			try {
-				getInput().close();
+				getLink().close();
 			} catch (final IOException e) {
 				//	ignored
 			}
@@ -402,19 +408,20 @@ public class RemoteOperator extends AbstractOperator {
 			}
 		}
 		
-		private final Channel getChannel() {
-			return channel;
+		private final DataInputStream getInput() {
+			return getLink().getInput();
 		}
 		
-		private final DataInputStream getInput() {
-			return getChannel().getInput();
+		private final Link getLink() {
+			return link;
 		}
 		
 		private final DataOutputStream getOutput() {
-			return getChannel().getOutput();
+			return getLink().getOutput();
 		}
 		
 		private final void handle(final int opcode) throws IOException {
+//			System.out.println("Reading response 0x" + Integer.toHexString(opcode));
 			final RemoteCall<?> call = getCall(opcode);
 			if (call != null) {
 				call.onReturn(getInput());
@@ -422,6 +429,7 @@ public class RemoteOperator extends AbstractOperator {
 		}
 		
 		public void makeCall(final int opcode) {
+//			System.out.println("Make call " + Integer.toHexString(opcode));
 			makeCall(opcode, new RemoteCall<Void>() {
 				
 				protected Void read(final DataInputStream stream) throws IOException {
@@ -436,6 +444,7 @@ public class RemoteOperator extends AbstractOperator {
 		}
 		
 		public <T> T makeCall(final int opcode, final RemoteCall<T> call) {
+//			System.out.printf("Make call %s (%s)%n", Integer.toHexString(opcode), call);
 			addCall(opcode, call);
 			
 			try {
@@ -466,6 +475,7 @@ public class RemoteOperator extends AbstractOperator {
 					handle(readOpcode());
 				} catch (final IOException e) {
 					System.out.println(getClass().getSimpleName() + " disconnected");
+					e.printStackTrace();
 					return;
 				}
 			}
