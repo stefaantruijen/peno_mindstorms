@@ -5,10 +5,13 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import lejos.robotics.pathfinding.DijkstraPathFinder;
+
 import algorithms.Dijkstra;
 import bluebot.actions.Action;
 import bluebot.core.Controller;
 import bluebot.graph.Border;
+import bluebot.graph.Direction;
 import bluebot.graph.Graph;
 import bluebot.graph.Orientation;
 import bluebot.graph.Tile;
@@ -266,9 +269,10 @@ public class MazeActionV2 extends Operation{
 							mazeListener.unlockSeesaw();
 							crossedSeesaw = true;
 						}else{
-							sideStepFromSeesaw(current);
-							wait(10000);
-							returnToSeesaw(current);
+							Tile barcodeTile = current;
+							Tile safeZoneTile = sideStepFromSeesaw(current);
+							Thread.sleep(5000);
+							returnToSeesaw(safeZoneTile, barcodeTile);
 						}
 					}
 				}else{
@@ -290,7 +294,7 @@ public class MazeActionV2 extends Operation{
 						System.out.println("can be item barcode");
 						tile = createItem(tile, getDirectionBody(), barcode);
 						//send barcode to merger
-						mazeMerger.addTileFromSelf(tile);
+						addTileToMazeMergerAndTeammate(tile);
 						checkAborted();
 						
 						ArrayList<Integer> numbers = getItemnumber(barcode);
@@ -299,8 +303,6 @@ public class MazeActionV2 extends Operation{
 						//If this is our object AND we haven't picked up our object already
 						if (itemNumber == this.objectNumber && teamNb== this.teamNumber) {
 							this.pickUp();
-							
-							//TODO:mazelistener
 							mazeListener.notifyObjectFound();
 						}
 					}else if(barcodeCanBeSeesaw(barcode)){
@@ -332,7 +334,7 @@ public class MazeActionV2 extends Operation{
 		//---READY TO GO TO TEAMMATE
 			System.out.println("Object found, teammate known, merge succes: to the choppa!");
 			this.GoToRobot();
-			
+			mazeListener.notifyGameOver();
 		}
 		else{
 			//---MAZE FULLY EXPLORED--- (canGoToTeammte() always true)
@@ -344,6 +346,7 @@ public class MazeActionV2 extends Operation{
 			}
 			System.out.println("Merged succesfully! To the choppa!");
 			this.GoToRobot();
+			mazeListener.notifyGameOver();
 		}
 		
 		
@@ -387,9 +390,12 @@ public class MazeActionV2 extends Operation{
 	 * he should return to the seesaw after a while, using this method.
 	 * @param tile
 	 */
-	private void returnToSeesaw(Tile tile) {
+	private void returnToSeesaw(Tile safeZone,Tile barcodeTile) {
 		try {
-			moveTo(tile);
+			graph.addVerticies(maze.getTiles());
+			Dijkstra dijkstra = new Dijkstra(graph);
+			List<Tile> path = dijkstra.findShortestPath(safeZone, barcodeTile);
+			this.followPath(path);
 		} catch (CalibrationException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
@@ -407,8 +413,8 @@ public class MazeActionV2 extends Operation{
 	 * if the robot is currently standing on 'current' tile.
 	 * @param current	The tile the robot is currently standing on.
 	 */
-	private void sideStepFromSeesaw(Tile current) {
-		List<Tile> neighbors = current.getNeighbors();
+	private Tile sideStepFromSeesaw(Tile current) {
+		List<Tile> neighbors = getNeighborsOfTile(current);
 		Tile currentTile = null;
 		Tile lastTile = current;
 		for(Tile t: neighbors){
@@ -419,7 +425,10 @@ public class MazeActionV2 extends Operation{
 		neighbors = searchForTileWithMoreThanThreeNeighbors(currentTile, lastTile);
 		Tile toTile = neighbors.get(0);
 		try {
-			moveTo(toTile);
+			graph.addVerticies(maze.getTiles());
+			Dijkstra dijkstra = new Dijkstra(graph);
+			List<Tile> path = dijkstra.findShortestPath(current, toTile);
+			this.followPath(path);
 		} catch (CalibrationException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
@@ -427,6 +436,7 @@ public class MazeActionV2 extends Operation{
 		} catch (OperationException e) {
 			e.printStackTrace();
 		}
+		return toTile;
 	}
 	
 	/**
@@ -439,14 +449,21 @@ public class MazeActionV2 extends Operation{
 	private List<Tile> searchForTileWithMoreThanThreeNeighbors(Tile tile, Tile without){
 		List<Tile> neighbors = getNeighborsWithout(tile, without);
 		for(Tile n : neighbors){
-			List<Tile> neighbors2 = searchForTileWithMoreThanThreeNeighbors(n,tile);
-			if(neighbors2.size()>=3 && neighbors2!=null){
+			List<Tile> neighbors2 = getNeighborsWithout(tile, without);
+			if(neighbors2.size()>=2 && neighbors2!=null){
 				return neighbors2;
+			}
+			else{
+				return searchForTileWithMoreThanThreeNeighbors(n,tile);
 			}
 		}
 		//shouldnt reach this code
 		System.out.println("recursief = null in mazeV2");
 		return null;
+	}
+	public void addTileToMazeMergerAndTeammate(Tile tile){
+		mazeMerger.addTileFromSelf(tile);
+		mazeListener.sendTile(tile);
 	}
 	
 	/**
@@ -454,9 +471,34 @@ public class MazeActionV2 extends Operation{
 	 * This ofcourse means that 'without' has to be a neighbor of tile.
 	 */
 	private List<Tile> getNeighborsWithout(Tile tile, Tile without){
-		List<Tile> neighbors = tile.getNeighbors();
+		List<Tile> neighbors = getNeighborsOfTile(tile);
 		neighbors.remove(without);
 		return neighbors;
+	}
+	
+	/**
+	 * Get the neighbors of this tile.
+	 * 
+	 * IllegalStateException is thrown : if(!isExplored)
+	 * @return
+	 */
+	public List<Tile> getNeighborsOfTile(Tile tile){
+			List<Tile> neighbors = new ArrayList<Tile>();
+			if(tile.getBorderEast()==Border.OPEN){
+				neighbors.add(getNeighbor(tile, Orientation.EAST));
+			}
+			if(tile.getBorderNorth()==Border.OPEN){
+				neighbors.add(getNeighbor(tile, Orientation.NORTH));
+			}
+			
+			if(tile.getBorderSouth()==Border.OPEN){
+				neighbors.add(getNeighbor(tile, Orientation.SOUTH));
+			}
+			
+			if(tile.getBorderWest()==Border.OPEN){
+				neighbors.add(getNeighbor(tile, Orientation.WEST));
+			}
+			return neighbors;
 	}
 
 	public boolean isAborted() {
@@ -781,40 +823,45 @@ public class MazeActionV2 extends Operation{
 		return borders;
 	}
 	
-	@Deprecated
-	@SuppressWarnings("unused")
+	/**
+	 * Kan NIET over een seesaw
+	 * @param path
+	 * @throws InterruptedException
+	 * @throws CalibrationException
+	 * @throws OperationException
+	 */
 	private void followPath(final List<Tile> path)
 			throws  InterruptedException, CalibrationException, OperationException {
 		getOperator().setSpeed(100);
-		
-		ArrayList<Tile> straightLine = new ArrayList<Tile>();
+		System.out.println(path);
+//		ArrayList<Tile> straightLine = new ArrayList<Tile>();
 		for (Tile t : path) {
-			Tile currentTileInList = null;
-			if (straightLine.size() > 0) {
-				currentTileInList = straightLine.get(straightLine.size() - 1);
-			} else {
-				currentTileInList = this.current;
-			}
-
-			if (this.isOnStraighLine(currentTileInList, t)) {
-				straightLine.add(t);
-			} else {
-				if (straightLine.size() > 0) {
-					int distanceForward = (straightLine.size()) * 400;
-					this.getOperator().moveForward(distanceForward, true);
-					this.current = straightLine.get(straightLine.size() - 1);
-				}
+			System.out.println("moving to: "+t);
+//			Tile currentTileInList = null;
+//			if (straightLine.size() > 0) {
+//				currentTileInList = straightLine.get(straightLine.size() - 1);
+//			} else {
+//				currentTileInList = t;
+//			}
+//
+//			if (this.isOnStraighLine(currentTileInList, t)) {
+//				straightLine.add(t);
+//			} else {
+//				if (straightLine.size() > 0) {
+//					int distanceForward = (straightLine.size()) * 400;
+//					this.getOperator().moveForward(distanceForward, true);
+//					this.current = straightLine.get(straightLine.size() - 1);
+//				}
 				this.moveTo(t);
-				straightLine.clear();
-				this.current = t;
-			}
-
+//				straightLine.clear();
+//				this.current = t;
+//			}
 		}
-		if (straightLine.size() > 0) {
-			int distanceForward = (straightLine.size()) * 400;
-			this.getOperator().moveForward(distanceForward, true);
-			this.current = straightLine.get(straightLine.size() - 1);
-		}
+//		if (straightLine.size() > 0) {
+//			int distanceForward = (straightLine.size()) * 400;
+//			this.getOperator().moveForward(distanceForward, true);
+//			this.current = straightLine.get(straightLine.size() - 1);
+//		}
 	}
 	
 	private final Orientation getDirectionBody() {
@@ -1242,7 +1289,7 @@ public class MazeActionV2 extends Operation{
 	private final void updateTiles(final Tile... tiles) {
 		for (final Tile tile : tiles) {
 			mazeListener.sendTile(tile);
-			mazeMerger.addTileFromSelf(tile);
+			addTileToMazeMergerAndTeammate(tile);
 		}
 	}
 	
@@ -1472,6 +1519,7 @@ public class MazeActionV2 extends Operation{
 			}
 			checkAborted();
 		}
+		
 	}
 	
 	
