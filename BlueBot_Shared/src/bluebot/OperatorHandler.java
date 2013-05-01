@@ -7,9 +7,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import lejos.nxt.comm.BTConnection;
-
-import bluebot.io.protocol.Channel;
+import bluebot.io.Link;
 import bluebot.operations.OperationException;
 import bluebot.sensors.CalibrationException;
 import bluebot.sensors.SensorType;
@@ -25,15 +23,12 @@ public class OperatorHandler implements Runnable {
 	
 	private final Object lock = new Object();
 	
-	private Channel channel;
+	private Link link;
 	private Operator operator;
 	
 	
-	public OperatorHandler(final Operator operator, final BTConnection btc) {
-		this(operator, new Channel(btc.openDataInputStream(), btc.openDataOutputStream()));
-	}
-	public OperatorHandler(final Operator operator, final Channel channel) {
-		this.channel = channel;
+	public OperatorHandler(final Operator operator, final Link link) {
+		this.link = link;
 		this.operator = operator;
 	}
 	
@@ -422,12 +417,12 @@ public class OperatorHandler implements Runnable {
 		thread.start();
 	}
 	
-	private final Channel getChannel() {
-		return channel;
+	private final DataInputStream getInput() {
+		return getLink().getInput();
 	}
 	
-	private final DataInputStream getInput() {
-		return getChannel().getInput();
+	private final Link getLink() {
+		return link;
 	}
 	
 	private final Operator getOperator() {
@@ -435,7 +430,7 @@ public class OperatorHandler implements Runnable {
 	}
 	
 	private final DataOutputStream getOutput() {
-		return getChannel().getOutput();
+		return getLink().getOutput();
 	}
 	
 	private final void handle(final int opcode) throws IOException {

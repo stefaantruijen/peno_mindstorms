@@ -58,7 +58,7 @@ public class Game implements MazeListener {
 	private final PlayerDetails createPlayerDetails(final String playerId) {
 		//	TODO:	Collect useful data from ... somewhere
 		return new PlayerDetails(playerId,
-				PlayerType.PHYSICAL,
+				PlayerType.valueOf(operator.getPlayerType()),
 				(Tile.SIZE / 2D),
 				(Tile.SIZE / 2D));
 	}

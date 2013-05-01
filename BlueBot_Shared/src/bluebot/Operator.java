@@ -58,6 +58,8 @@ public interface Operator extends Mobile {
 	
 	public Calibration getCalibration();
 	
+	public String getPlayerType();
+	
 	public boolean isSensorLightBrightnessBlack() throws CalibrationException;
 	
 	public boolean isSensorLightBrightnessGray() throws CalibrationException;

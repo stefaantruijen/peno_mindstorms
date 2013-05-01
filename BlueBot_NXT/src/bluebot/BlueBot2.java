@@ -5,6 +5,7 @@ import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
 
 import bluebot.core.PhysicalRobot;
+import bluebot.io.ServerLink;
 
 
 
@@ -22,7 +23,8 @@ public class BlueBot2 {
 				System.out.println("CONNECTED");
 				
 				final Operator operator = new LocalOperator(new PhysicalRobot());
-				final OperatorHandler handler = new OperatorHandler(operator, btc);
+				final OperatorHandler handler =
+						new OperatorHandler(operator, new ServerLink(btc));
 				
 				try {
 					handler.run();
