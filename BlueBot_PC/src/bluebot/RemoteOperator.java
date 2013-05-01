@@ -4,6 +4,9 @@ package bluebot;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.NoSuchElementException;
 
 import bluebot.io.protocol.Channel;
 import bluebot.operations.OperationException;
@@ -20,102 +23,102 @@ import bluebot.util.Orientation;
  */
 public class RemoteOperator extends AbstractOperator {
 	
-	private final Object lock = new Object();
-	
-	private Channel channel;
+	private RemoteCallManager caller;
 	
 	
 	public RemoteOperator(final Channel channel) {
-		this.channel = channel;
+		this.caller = new RemoteCallManager(channel);
+		
+		final Thread thread = new Thread(caller);
+		thread.setDaemon(true);
+		thread.start();
 	}
 	
 	
 	
 	public void doCalibrate() throws InterruptedException, OperationException {
-		synchronized (lock) {
-			try {
-				sendOpcode(OP_DO_CALIBRATE);
-				switch (getInput().readUnsignedByte()) {
-					case 0:
-						break;
-					case 1:
-						//	CalibrationException
-						throw new Error(getInput().readUTF());
-					case 2:
-						throw new InterruptedException(getInput().readUTF());
-					case 3:
-						throw new OperationException(getInput().readUTF());
-				}
-			} catch (final IOException e) {
-				throw new IllegalStateException(e);
-			}
+		try {
+			doRoutine(OP_DO_CALIBRATE);
+		} catch (final CalibrationException e) {
+			throw new Error(e);
 		}
+	}
+	
+	private final void doMotionBody(final int opcode,
+			final float quantity, final boolean wait) {
+		getCallManager().makeCall(opcode, new RemoteCall<Void>() {
+			protected Void read(final DataInputStream stream) throws IOException {
+				return null;
+			}
+			
+			protected void write(final DataOutputStream stream) throws IOException {
+				stream.writeFloat(quantity);
+				stream.writeBoolean(wait);
+			}
+		});
+	}
+	
+	private final void doMotionHead(final int opcode, final int angle) {
+		getCallManager().makeCall(opcode, new RemoteCall<Void>() {
+			protected Void read(final DataInputStream stream) throws IOException {
+				return null;
+			}
+			
+			protected void write(final DataOutputStream stream) throws IOException {
+				stream.writeInt(angle);
+			}
+		});
 	}
 	
 	public void doPickUp()
 			throws CalibrationException, InterruptedException, OperationException {
-		synchronized (lock) {
-			try {
-				sendOpcode(OP_DO_PICKUP);
-				switch (getInput().readUnsignedByte()) {
-					case 0:
-						break;
-					case 1:
-						//	CalibrationException
-						throw new Error(getInput().readUTF());
-					case 2:
-						throw new InterruptedException(getInput().readUTF());
-					case 3:
-						throw new OperationException(getInput().readUTF());
+		doRoutine(OP_DO_PICKUP);
+	}
+	
+	private final void doRoutine(final int opcode)
+			throws CalibrationException, InterruptedException, OperationException {
+		final ErrorTemplate error = new ErrorTemplate();
+		getCallManager().makeCall(opcode, new RemoteCall<Void>() {
+			protected Void read(final DataInputStream stream) throws IOException {
+				final int errorCode = stream.readUnsignedByte();
+				error.id = errorCode;
+				if (errorCode > 0) {
+					error.msg = stream.readUTF();
 				}
-			} catch (final IOException e) {
-				throw new IllegalStateException(e);
+				return null;
 			}
+			
+			protected void write(final DataOutputStream stream) throws IOException {
+				//	no args
+			}
+		});
+		switch (error.id) {
+			case 0:
+				break;
+			case 1:
+				throw new CalibrationException(error.msg);
+			case 2:
+				throw new InterruptedException(error.msg);
+			case 3:
+				throw new OperationException(error.msg);
 		}
 	}
 	
 	public void doSeesaw()
 			throws CalibrationException, InterruptedException, OperationException {
-		synchronized (lock) {
-			try {
-				sendOpcode(OP_DO_SEESAW);
-				switch (getInput().readUnsignedByte()) {
-					case 0:
-						break;
-					case 1:
-						//	CalibrationException
-						throw new Error(getInput().readUTF());
-					case 2:
-						throw new InterruptedException(getInput().readUTF());
-					case 3:
-						throw new OperationException(getInput().readUTF());
-				}
-			} catch (final IOException e) {
-				throw new IllegalStateException(e);
-			}
-		}
+		doRoutine(OP_DO_SEESAW);
 	}
 	
 	public void doWhiteLine()
 			throws CalibrationException, InterruptedException, OperationException {
-		synchronized (lock) {
-			try {
-				sendOpcode(OP_DO_WHITELINE);
-				switch (getInput().readUnsignedByte()) {
-					case 0:
-						break;
-					case 1:
-						//	CalibrationException
-						throw new Error(getInput().readUTF());
-					case 2:
-						throw new InterruptedException(getInput().readUTF());
-					case 3:
-						throw new OperationException(getInput().readUTF());
-				}
-			} catch (final IOException e) {
-				throw new IllegalStateException(e);
-			}
-		}
+		doRoutine(OP_DO_WHITELINE);
+	}
+	
+	@Override
+	public void dispose() {
+		super.dispose();
+		
+		getCallManager().disconnect();
 	}
 	
 	public float getAngleIncrement() {
@@ -126,70 +129,53 @@ public class RemoteOperator extends AbstractOperator {
 		throw new UnsupportedOperationException();
 	}
 	
+	private final RemoteCallManager getCallManager() {
+		return caller;
+	}
+	
 	public Calibration getCalibration() {
 		throw new UnsupportedOperationException();
 	}
 	
-	private final Channel getChannel() {
-		return channel;
-	}
-	
-	private final DataInputStream getInput() {
-		return getChannel().getInput();
-	}
-	
 	public Orientation getOrientation() {
-		final float x, y, body, head;
-		synchronized (lock) {
-			try {
-				sendOpcode(OP_ORIENTATION_GET);
-				
-				x = getInput().readFloat();
-				y = getInput().readFloat();
-				body = getInput().readFloat();
-				head = getInput().readFloat();
-			} catch (final IOException e) {
-				throw new IllegalStateException(e);
+		return getCallManager().makeCall(OP_ORIENTATION_GET, new RemoteCall<Orientation>() {
+			protected Orientation read(final DataInputStream stream) throws IOException {
+				return new Orientation(stream.readFloat(), stream.readFloat(),
+						stream.readFloat(), stream.readFloat());
 			}
-		}
-		return new Orientation(x, y, body, head);
-	}
-	
-	private final DataOutputStream getOutput() {
-		return getChannel().getOutput();
+			
+			protected void write(final DataOutputStream stream) throws IOException {
+				//	no args
+			}
+		});
 	}
 	
 	public int getSpeed() {
-		synchronized (lock) {
-			try {
-				sendOpcode(OP_SPEED_GET);
-				return getInput().readUnsignedByte();
-			} catch (final IOException e) {
-				throw new IllegalStateException(e);
+		return getCallManager().makeCall(OP_SPEED_GET, new RemoteCall<Integer>() {
+			protected Integer read(final DataInputStream stream) throws IOException {
+				return stream.readUnsignedByte();
 			}
-		}
+			
+			protected void write(final DataOutputStream stream) throws IOException {
+				//	no args
+			}
+		});
 	}
 	
 	public boolean isMoving() {
-		synchronized (lock) {
-			try {
-				sendOpcode(OP_MOVING);
-				return getInput().readBoolean();
-			} catch (final IOException e) {
-				throw new IllegalStateException(e);
+		return getCallManager().makeCall(OP_MOVING, new RemoteCall<Boolean>() {
+			protected Boolean read(final DataInputStream stream) throws IOException {
+				return stream.readBoolean();
 			}
-		}
+			
+			protected void write(final DataOutputStream stream) throws IOException {
+				//	no args
+			}
+		});
 	}
 	
 	public void modifyOrientation() {
-		synchronized (lock) {
-			try {
-				sendOpcode(OP_ORIENTATION_MODIFY);
-				receiveAck();
-			} catch (final IOException e) {
-				throw new IllegalStateException(e);
-			}
-		}
+		getCallManager().makeCall(OP_ORIENTATION_MODIFY);
 	}
 	
 	public void moveBackward() {
@@ -197,19 +183,7 @@ public class RemoteOperator extends AbstractOperator {
 	}
 	
 	public void moveBackward(final float distance, final boolean wait) {
-		synchronized (lock) {
-			try {
-				sendOpcode(OP_MOVE_BACKWARD);
-				getOutput().writeFloat(distance);
-				getOutput().writeBoolean(wait);
-			} catch (final IOException e) {
-				throw new IllegalStateException(e);
-			}
-		}
-		
-		if (wait) {
-			waitForMoving();
-		}
+		doMotionBody(OP_MOVE_BACKWARD, distance, wait);
 	}
 	
 	public void moveForward() {
@@ -217,33 +191,19 @@ public class RemoteOperator extends AbstractOperator {
 	}
 	
 	public void moveForward(final float distance, final boolean wait) {
-		synchronized (lock) {
-			try {
-				sendOpcode(OP_MOVE_FORWARD);
-				getOutput().writeFloat(distance);
-				getOutput().writeBoolean(wait);
-			} catch (final IOException e) {
-				throw new IllegalStateException(e);
-			}
-		}
-		
-		if (wait) {
-			waitForMoving();
-		}
+		doMotionBody(OP_MOVE_FORWARD, distance, wait);
 	}
 	
 	private final int readSensor(final SensorType sensor) {
-		final int value;
-		synchronized (lock) {
-			try {
-				sendOpcode(OP_SENSOR);
-				getOutput().writeByte(sensor.ordinal());
-				value = getInput().readShort();
-			} catch (final IOException e) {
-				throw new IllegalStateException(e);
+		return getCallManager().makeCall(OP_SENSOR, new RemoteCall<Integer>() {
+			protected Integer read(final DataInputStream stream) throws IOException {
+				return  Integer.valueOf(stream.readShort());
 			}
-		}
-		return value;
+			
+			protected void write(final DataOutputStream stream) throws IOException {
+				stream.writeByte(sensor.ordinal());
+			}
+		});
 	}
 	
 	public int readSensorInfrared() {
@@ -262,56 +222,53 @@ public class RemoteOperator extends AbstractOperator {
 		return readSensor(SensorType.ULTRA_SONIC);
 	}
 	
-	private final void receiveAck() throws IOException {
-		getInput().readUnsignedByte();
-	}
-	
 	public void resetOrientation() {
-		synchronized (lock) {
-			try {
-				sendOpcode(OP_ORIENTATION_RESET);
-				receiveAck();
-			} catch (final IOException e) {
-				throw new IllegalStateException(e);
-			}
-		}
+		getCallManager().makeCall(OP_ORIENTATION_RESET);
 	}
 	
 	public int scanBarcode()
 			throws CalibrationException, InterruptedException, OperationException {
-		synchronized (lock) {
-			try {
-				sendOpcode(OP_DO_BARCODE);
-				switch (getInput().readUnsignedByte()) {
-					case 0:
-						return getInput().readInt();
-					case 1:
-						throw new CalibrationException(getInput().readUTF());
-					case 2:
-						throw new InterruptedException(getInput().readUTF());
-					default:
-						throw new OperationException(getInput().readUTF());
-				}
-			} catch (final IOException e) {
-				throw new IllegalStateException(e);
+		final ErrorTemplate error = new ErrorTemplate();
+		final Integer code = getCallManager().makeCall(OP_DO_BARCODE,
+				new RemoteCall<Integer>() {
+			protected Integer read(final DataInputStream stream) throws IOException {
+				final int errorCode = stream.readUnsignedByte();
+				error.id = errorCode;
+				if (errorCode > 0) {
+					error.msg = stream.readUTF();
+					return null;
+				} 
+				return stream.readInt();
 			}
+			
+			protected void write(final DataOutputStream stream) throws IOException {
+				//	no args
+			}
+		});
+		switch (error.id) {
+			case 0:
+				return code;
+			case 1:
+				throw new CalibrationException(error.msg);
+			case 2:
+				throw new InterruptedException(error.msg);
+			case 3:
+				throw new OperationException(error.msg);
+			default:
+				throw new RuntimeException("Unexpected error-code:  " + error.id);
 		}
-	}
-	
-	private final void sendOpcode(final int opcode) throws IOException {
-		getOutput().writeByte(opcode);
 	}
 	
 	public void setSpeed(final int percentage) {
-		synchronized (lock) {
-			try {
-				sendOpcode(OP_SPEED_SET);
-				getOutput().writeByte(percentage);
-				receiveAck();
-			} catch (final IOException e) {
-				throw new IllegalStateException(e);
+		getCallManager().makeCall(OP_SPEED_SET, new RemoteCall<Void>() {
+			protected Void read(final DataInputStream stream) throws IOException {
+				return null;
 			}
-		}
+			
+			protected void write(final DataOutputStream stream) throws IOException {
+				stream.writeByte(percentage);
+			}
+		});
 	}
 	
 	public void setStartLocation(final int x, final int y, final float angle) {
@@ -319,38 +276,15 @@ public class RemoteOperator extends AbstractOperator {
 	}
 	
 	public void stop() {
-		synchronized (lock) {
-			try {
-				sendOpcode(OP_STOP);
-				receiveAck();
-			} catch (final IOException e) {
-				throw new IllegalStateException(e);
-			}
-		}
+		getCallManager().makeCall(OP_STOP);
 	}
 	
 	public void turnHeadClockWise(final int angle) {
-		synchronized (lock) {
-			try {
-				sendOpcode(OP_TURN_HEAD_CW);
-				getOutput().writeInt(angle);
-				receiveAck();
-			} catch (final IOException e) {
-				throw new IllegalStateException(e);
-			}
-		}
+		doMotionHead(OP_TURN_HEAD_CW, angle);
 	}
 	
 	public void turnHeadCounterClockWise(final int angle) {
-		synchronized (lock) {
-			try {
-				sendOpcode(OP_TURN_HEAD_CCW);
-				getOutput().writeInt(angle);
-				receiveAck();
-			} catch (final IOException e) {
-				throw new IllegalStateException(e);
-			}
-		}
+		doMotionHead(OP_TURN_HEAD_CCW, angle);
 	}
 	
 	public void turnLeft() {
@@ -358,19 +292,7 @@ public class RemoteOperator extends AbstractOperator {
 	}
 	
 	public void turnLeft(final float angle, final boolean wait) {
-		synchronized (lock) {
-			try {
-				sendOpcode(OP_TURN_LEFT);
-				getOutput().writeFloat(angle);
-				getOutput().writeBoolean(wait);
-			} catch (final IOException e) {
-				throw new IllegalStateException(e);
-			}
-		}
-		
-		if (wait) {
-			waitForMoving();
-		}
+		doMotionBody(OP_TURN_LEFT, angle, wait);
 	}
 	
 	public void turnRight() {
@@ -378,29 +300,181 @@ public class RemoteOperator extends AbstractOperator {
 	}
 	
 	public void turnRight(float angle, boolean wait) {
-		synchronized (lock) {
-			try {
-				sendOpcode(OP_TURN_RIGHT);
-				getOutput().writeFloat(angle);
-				getOutput().writeBoolean(wait);
-			} catch (final IOException e) {
-				throw new IllegalStateException(e);
+		doMotionBody(OP_TURN_RIGHT, angle, wait);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	private static final class ErrorTemplate {
+		
+		public int id;
+		public String msg;
+		
+	}
+	
+	
+	
+	
+	
+	private static abstract class RemoteCall<T> {
+		
+		private final Object lock = new Object();
+		
+		private T result;
+		
+		
+		
+		public final T getResult() {
+			return result;
+		}
+		
+		public final void idle() throws InterruptedException {
+			synchronized (lock) {
+				lock.wait();
 			}
 		}
 		
-		if (wait) {
-			waitForMoving();
-		}
-	}
-	
-	private final void waitForMoving() {
-		while (isMoving()) {
-			try {
-				Thread.sleep(100L);
-			} catch (final InterruptedException e) {
-				e.printStackTrace();
+		public final void onReturn(final DataInputStream stream) throws IOException {
+			result = read(stream);
+			
+			synchronized (lock) {
+				lock.notify();
 			}
 		}
+		
+		protected abstract T read(DataInputStream stream) throws IOException;
+		
+		protected abstract void write(DataOutputStream stream) throws IOException;
+		
+	}
+	
+	
+	
+	
+	
+	private class RemoteCallManager implements Runnable {
+		
+		private final HashMap<Integer, LinkedList<RemoteCall<?>>> calls =
+				new HashMap<Integer, LinkedList<RemoteCall<?>>>();
+		private final Object lock = new Object();
+		
+		private Channel channel;
+		
+		
+		private RemoteCallManager(final Channel channel) {
+			this.channel = channel;
+		}
+		
+		
+		
+		private synchronized final void addCall(final int opcode, final RemoteCall<?> call) {
+			final Integer key = Integer.valueOf(opcode);
+			LinkedList<RemoteCall<?>> list = calls.get(key);
+			if (list == null) {
+				list = new LinkedList<RemoteCall<?>>();
+				calls.put(key, list);
+			}
+			list.addLast(call);
+		}
+		
+		public void disconnect() {
+			try {
+				getInput().close();
+			} catch (final IOException e) {
+				//	ignored
+			}
+		}
+		
+		private synchronized final RemoteCall<?> getCall(final int opcode) {
+			try {
+				return calls.get(Integer.valueOf(opcode)).removeFirst();
+			} catch (final NoSuchElementException e) {
+				return null;
+			} catch (final NullPointerException e) {
+				return null;
+			}
+		}
+		
+		private final Channel getChannel() {
+			return channel;
+		}
+		
+		private final DataInputStream getInput() {
+			return getChannel().getInput();
+		}
+		
+		private final DataOutputStream getOutput() {
+			return getChannel().getOutput();
+		}
+		
+		private final void handle(final int opcode) throws IOException {
+			final RemoteCall<?> call = getCall(opcode);
+			if (call != null) {
+				call.onReturn(getInput());
+			}
+		}
+		
+		public void makeCall(final int opcode) {
+			makeCall(opcode, new RemoteCall<Void>() {
+				
+				protected Void read(final DataInputStream stream) throws IOException {
+					return null;
+				}
+				
+				protected void write(final DataOutputStream stream) throws IOException {
+					//	no args
+				}
+				
+			});
+		}
+		
+		public <T> T makeCall(final int opcode, final RemoteCall<T> call) {
+			addCall(opcode, call);
+			
+			try {
+				synchronized (lock) {
+					writeOpcode(opcode);
+					call.write(getOutput());
+				}
+			} catch (final IOException e) {
+				throw new IllegalStateException(e);
+			}
+			
+			try {
+				call.idle();
+			} catch (final InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+			
+			return call.getResult();
+		}
+		
+		private final int readOpcode() throws IOException {
+			return getInput().readUnsignedByte();
+		}
+		
+		public void run() {
+			for (;;) {
+				try {
+					handle(readOpcode());
+				} catch (final IOException e) {
+					System.out.println(getClass().getSimpleName() + " disconnected");
+					return;
+				}
+			}
+		}
+		
+		private final void writeOpcode(final int opcode) throws IOException {
+			getOutput().writeByte(opcode);
+		}
+		
 	}
 	
 }
