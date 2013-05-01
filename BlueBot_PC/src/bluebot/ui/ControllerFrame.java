@@ -4,6 +4,8 @@ package bluebot.ui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.DisplayMode;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
@@ -48,6 +50,7 @@ public class ControllerFrame extends RenderingFrame implements ControllerListene
 		this.application = application;
 		this.operator = operator;
 		
+		setPreferredSize(getPreferredSize());
 		initComponents();
 		pack();
 		setFocusTraversalKeysEnabled(false);
@@ -59,6 +62,7 @@ public class ControllerFrame extends RenderingFrame implements ControllerListene
 	
 	private final Component createModuleCLI() {
 		final TerminalComponent cli = new TerminalComponent();
+//		cli.setPreferredSize(new Dimension(1, 1));
 		cli.addListener(new TerminalListener() {
 			public void onTerminalCommand(final TerminalComponent component,
 					final String[] command) {
@@ -401,6 +405,13 @@ public class ControllerFrame extends RenderingFrame implements ControllerListene
 			e.printStackTrace();
 			onError(e.getMessage());
 		}
+	}
+	
+	@Override
+	public Dimension getPreferredSize() {
+		final DisplayMode mode = GraphicsEnvironment.getLocalGraphicsEnvironment()
+				.getDefaultScreenDevice().getDisplayMode();
+		return new Dimension((mode.getWidth() * 2 / 3), (mode.getHeight() * 2 / 3));
 	}
 	
 	private final void initComponents() {
