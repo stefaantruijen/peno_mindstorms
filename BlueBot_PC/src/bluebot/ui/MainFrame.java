@@ -56,11 +56,6 @@ public class MainFrame extends RenderingFrame {
 	}
 	
 	private final void connectToBrick(final String name) {
-		final World world = getWorld();
-		if (world == null) {
-			return;
-		}
-		
 		try {
 			showController(OperatorFactory.connectToBrick(name));
 		} catch (final IOException e) {

@@ -12,7 +12,7 @@ import bluebot.Operator;
 import bluebot.actionsimpl.MazeActionV2;
 import bluebot.graph.Tile;
 import bluebot.io.rabbitmq.RabbitMQ;
-import bluebot.maze.MazeListener;
+import bluebot.maze.MazeCallback;
 import bluebot.maze.MazeMerger;
 import bluebot.maze.TileBuilder;
 import bluebot.ui.rendering.RenderingUtils;
@@ -31,7 +31,7 @@ import peno.htttp.PlayerType;
  * 
  * @author Ruben Feyen
  */
-public class Game implements MazeListener {
+public class Game {
 	
 	private PlayerClient client;
 	private MazeActionV2 explorer;
@@ -53,6 +53,10 @@ public class Game implements MazeListener {
 				new GameHandler(callback),
 				gameId,
 				createPlayerDetails(playerId));
+	}
+	
+	public MazeCallback createMazeCallback() {
+		return new MazeCallbackImpl();
 	}
 	
 	private final PlayerDetails createPlayerDetails(final String playerId) {
@@ -234,7 +238,7 @@ public class Game implements MazeListener {
 				gameStopped();
 			}
 			
-			explorer = new MazeActionV2(playerNumber, objectNumber, Game.this);
+			explorer = new MazeActionV2(playerNumber, objectNumber, createMazeCallback());
 			
 			final Thread thread = new Thread(new Runnable() {
 				public void run() {
@@ -296,6 +300,83 @@ public class Game implements MazeListener {
 			for (final peno.htttp.Tile tile : tiles) {
 				merger.addTileFromTeammate(TileBuilder.getTile(tile.getToken(),
 						(int)tile.getX(), (int)tile.getY()));
+			}
+		}
+		
+	}
+	
+	
+	
+	
+	
+	private final class MazeCallbackImpl implements MazeCallback {
+		
+		public boolean lockSeesaw(final int barcode) {
+			final PlayerClient client = getClient();
+			try {
+				client.lockSeesaw(barcode);
+			} catch (final Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+			
+			final long timeout = (System.currentTimeMillis() + 5000L);
+			while (System.currentTimeMillis() < timeout) {
+				if (client.hasLockOnSeesaw(barcode)) {
+					return true;
+				}
+				
+				try {
+					Thread.sleep(10L);
+				} catch (final InterruptedException e) {
+					e.printStackTrace();
+					return false;
+				}
+			}
+			
+			return false;
+		}
+		
+		public void notifyGameOver() {
+			try {
+				getClient().win();
+			} catch (final Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		public void notifyObjectFound() {
+			try {
+				getClient().foundObject();
+			} catch (final Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		public void sendTile(final Tile tile) {
+			try {
+				if (getClient().hasTeamPartner()) {
+					getClient().sendTiles(tile.export());
+				}
+			} catch (final Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		public void unlockSeesaw() {
+			try {
+				getClient().unlockSeesaw();
+			} catch (final Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		public void updatePosition(final long x, final long y, final double angle) {
+			try {
+				getClient().updatePosition(x, y,
+						Protocol.angleInternalToExternal((float)angle));
+			} catch (final Exception e) {
+				e.printStackTrace();
 			}
 		}
 		

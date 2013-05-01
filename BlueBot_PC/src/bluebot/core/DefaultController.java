@@ -5,7 +5,6 @@ import static bluebot.io.protocol.Packet.*;
 
 import java.io.IOException;
 
-import bluebot.DriverException;
 import bluebot.actionsimpl.MazeActionV2;
 import bluebot.game.Game;
 import bluebot.game.GameCallback;
@@ -25,7 +24,6 @@ import bluebot.io.protocol.impl.MessagePacket;
 import bluebot.io.protocol.impl.MotionPacket;
 import bluebot.io.protocol.impl.SensorPacket;
 import bluebot.maze.MazeListener;
-import bluebot.operations.OperationException;
 
 
 
@@ -93,27 +91,7 @@ public class DefaultController extends AbstractController {
 	
 	public MazeActionV2 doMaze(final int playerNumber, final int objectNumber,
 			final MazeListener listener) {
-		final MazeActionV2 maze =
-				new MazeActionV2( playerNumber, objectNumber, listener);
-		
-		final Thread thread = new Thread(new Runnable() {
-			public void run() {
-				try {
-					maze.execute();
-				}  catch (final DriverException e) {
-					e.printStackTrace();
-				} catch (final InterruptedException e) {
-					//	ignored
-				} catch (OperationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		});
-		thread.setDaemon(true);
-		thread.start();
-		
-		return maze;
+		throw new UnsupportedOperationException();
 	}
 	
 	public void doPolygon(final int corners, final float length) {

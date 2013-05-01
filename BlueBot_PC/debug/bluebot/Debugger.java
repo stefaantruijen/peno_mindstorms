@@ -63,7 +63,7 @@ public class Debugger {
 		
 		//	[EDIT]
 		//	TODO:	Uncomment code & fill in blanks
-		final MazeActionV2 maze =new MazeActionV2(PLAYER_NUMBER, OBJECT_NUMBER, game);
+		final MazeActionV2 maze =new MazeActionV2(PLAYER_NUMBER, OBJECT_NUMBER, game.createMazeCallback());
 		final Thread thread = new Thread(new Runnable() {
 			public void run() {
 				try {
