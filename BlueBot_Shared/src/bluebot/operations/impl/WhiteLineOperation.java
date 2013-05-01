@@ -33,6 +33,7 @@ public class WhiteLineOperation extends Operation<Void> {
 		}
 		
 		// backward until white line (12%)
+		getOperator().moveForward(10, true);//Hack for simulator to also go a bit over the white line
 		getOperator().setSpeed(12);
 		getOperator().moveBackward();
 		waitForLightSensor(Brightness.WHITE, true);
