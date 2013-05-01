@@ -28,6 +28,12 @@ import bluebot.util.Timer;
  */
 public class MazeActionV2 extends Operation{
 	
+	/**
+	 * DEFAULT NUMBERS
+	 */
+	private static final int DEFAULT_TEAMNUMBER = -1;
+	private static final boolean DEFAULT_MERGESUCCESS = false;
+	//-------------
 	private Tile current=null;
 	private Maze maze;
 	private Movement moves;
@@ -36,9 +42,9 @@ public class MazeActionV2 extends Operation{
 	private int twist;
 	private final static int[] seesawBarcodes = new int[]{11,13,15,17,19,21};
 	private final static int[] itemBarcodes = new int[]{0,1,2,3,4,5,6,7};
-	private int teamNumber = -1;
+	private int teamNumber = DEFAULT_TEAMNUMBER;
 	private MazeMerger mazeMerger;
-	private boolean mergeSuccess = false;
+	private boolean mergeSuccess = DEFAULT_MERGESUCCESS;
 	
 	private MazeListener mazeListener;
 	
@@ -56,51 +62,14 @@ public class MazeActionV2 extends Operation{
 	public MazeMerger getMazeMerger() {
 		return this.mazeMerger;
 	}
+	
 	/**
-	 * Create a seesaw tile. 
-	 * 
+	 * Create a tile that has an item on it (with itemid = id)
 	 * @param tile
 	 * @param dir
+	 * @param id
 	 * @return
 	 */
-	private final Tile createSeesawTile(Tile tile,final Orientation dir){
-		//TODO CHECK IF CORRECT?
-		Tile seesawTile = null;
-		int x = tile.getX();
-		int y = tile.getY();
-		switch(dir){
-			case EAST:
-				seesawTile = maze.addTile(x+1, y);
-				seesawTile.setAllBordersOpen(true);
-				seesawTile.setBorderNorth(Border.CLOSED);
-				seesawTile.setBorderSouth(Border.CLOSED);
-				break;
-			case NORTH:
-				seesawTile = maze.addTile(x, y+1);
-				seesawTile.setAllBordersOpen(true);
-				seesawTile.setBorderEast(Border.CLOSED);
-				seesawTile.setBorderWest(Border.CLOSED);
-				break;
-			case SOUTH:
-				seesawTile = maze.addTile(x, y-1);
-				seesawTile.setAllBordersOpen(true);
-				seesawTile.setBorderEast(Border.CLOSED);
-				seesawTile.setBorderWest(Border.CLOSED);
-				break;
-			case WEST:
-				seesawTile = maze.addTile(x-1, y);
-				seesawTile.setAllBordersOpen(true);
-				seesawTile.setBorderNorth(Border.CLOSED);
-				seesawTile.setBorderSouth(Border.CLOSED);
-				break;
-			default:
-				break;
-		
-		}
-		//tile.setBarCode(seesawBarcode);
-		return seesawTile;
-	}
-	
 	private final Tile createItem(Tile tile, final Orientation dir, final int id) {
 		tile = maze.addTile(tile.getX(), tile.getY(), dir);
 		
@@ -281,6 +250,7 @@ public class MazeActionV2 extends Operation{
 				if(next.isSeesaw()){
 					System.out.println("next is seesaw");
 					while(this.getOperator().detectInfrared()){
+						System.out.println("i see infrared");
 						this.wait(1000);
 						checkAborted();
 					}
@@ -326,50 +296,18 @@ public class MazeActionV2 extends Operation{
 						mazeMerger.addTileFromSelf(tile);
 						checkAborted();
 						
-						if (isOurItem(barcode)) {
+						ArrayList<Integer> numbers = getItemnumber(barcode);
+						int itemNumber = numbers.get(0);
+						int teamNb = numbers.get(1);
+						//If this is our object AND we haven't picked up our object already
+						if (itemNumber == this.objectNumber && teamNb== this.teamNumber) {
 							this.pickUp();
 							//TODO:mazelistener
 							//getOperator().sendItemFound(this.teamNumber);
 						}
 					}else if(barcodeCanBeSeesaw(barcode)){
 						checkAborted();
-						Tile tile1 = createSeesawTile(tile, getDirectionBody());
-						tile1.setSeesaw(true);
-						mazeListener.onTileUpdate(tile1);
-						Tile tile2 = createSeesawTile(tile1, getDirectionBody());
-						tile2.setSeesaw(true);
-						mazeListener.onTileUpdate(tile2);
-						Tile tile3 = createEndSeesawTile(tile2,getDirectionBody(),barcode);
-						checkAborted();
-						mazeListener.onTileUpdate(tile3);
-						
-						//send tiles to merger
-						mazeMerger.addTileFromSelf(tile1);
-						mazeMerger.addTileFromSelf(tile2);
-						mazeMerger.addTileFromSelf(tile3);
-						
-						Tile unknown = null;
-						int x = tile3.getX();
-						int y = tile3.getY();
-						switch(getDirectionBody()){
-							case EAST:
-								unknown = maze.addTile(x+1, y);
-								break;
-							case NORTH:
-								unknown = maze.addTile(x, y+1);
-								break;
-							case SOUTH:
-								unknown = maze.addTile(x, y-1);
-								break;
-							case WEST:
-								unknown = maze.addTile(x-1, y);
-								break;
-							default:
-								break;
-						}
-						mazeMerger.addTileFromSelf(unknown);
-						
-						
+						handleSeesawBarcode(barcode);
 					}else{
 						//TODO:Checkpoint logica ?
 					}
@@ -387,8 +325,26 @@ public class MazeActionV2 extends Operation{
 				}
 			}
 		}
-		System.out.println("Waiting - done exploring");
-		this.GoToRobot();
+		/*
+		 * Reaching this point means we have either merged maps and can go to our teammate
+		 * OR
+		 * We have no teammate yet and have fully explored the maze
+		 */
+		if(this.found && this.teamMateKnown && mergeSuccess){
+		//---READY TO GO TO TEAMMATE
+			this.GoToRobot();
+		}
+		else{
+			//---MAZE FULLY EXPLORED--- (canGoToTeammte() always true)
+			while(!mergeSuccess){
+				if(mazeMerger.hasReceivedNewTileSinceLastCheck()){
+					mergeSuccess = mazeMerger.tryToMerge();
+				}
+			}
+			this.GoToRobot();
+		}
+		
+		
 		/**final long timeExploration = timer.read();
 		
 		
@@ -472,6 +428,92 @@ public class MazeActionV2 extends Operation{
 		}
 	}
 	
+	/**
+	 * Alle tiles die aangemaakt worden zijn tiles die reeds beredeneerd kunnen worden.
+	 * 
+	 * @param bar
+	 */
+	private void handleSeesawBarcode(int bar) {
+		current.setBarCode(bar);
+		
+		Tile firstSeesawTile = maze.addTile(current.getX(),current.getY(), this.getDirectionBody());
+		firstSeesawTile.setSeesaw(true);
+		firstSeesawTile.setAllBordersOpen(true);
+		firstSeesawTile.setBorder(getDirectionBody().rotateCW(), false);
+		firstSeesawTile.setBorder(getDirectionBody().rotateCCW(),false);
+		
+		Tile firstNeighbor1 = maze.addTile(firstSeesawTile.getX(), firstSeesawTile.getY(),this.getDirectionBody().rotateCW());
+		firstNeighbor1.setBorder(this.getDirectionBody().rotateCW().getOpposite(), false);
+		
+		Tile firstNeighbor2 = maze.addTile(firstSeesawTile.getX(), firstSeesawTile.getY(),this.getDirectionBody().rotateCCW());
+		firstNeighbor2.setBorder(this.getDirectionBody().rotateCCW().getOpposite(), false);
+
+		Tile secondSeesawTile = maze.addTile(firstSeesawTile.getX(),firstSeesawTile.getY(),this.getDirectionBody());
+		secondSeesawTile.setAllBordersOpen(true);
+		secondSeesawTile.setBorder(getDirectionBody().rotateCW(), false);
+		secondSeesawTile.setBorder(getDirectionBody().rotateCCW(),false);
+		secondSeesawTile.setSeesaw(true);
+		Tile secondNeighbor1 = maze.addTile(secondSeesawTile.getX(), secondSeesawTile.getY(),this.getDirectionBody().rotateCW());
+		secondNeighbor1.setBorder(this.getDirectionBody().rotateCW().getOpposite(), false);
+		Tile secondNeighbor2 = maze.addTile(secondSeesawTile.getX(), secondSeesawTile.getY(),this.getDirectionBody().rotateCCW());
+		secondNeighbor2.setBorder(this.getDirectionBody().rotateCCW().getOpposite(), false);
+		Tile endingSeesawTile = maze.addTile(secondSeesawTile.getX(), secondSeesawTile.getY(),this.getDirectionBody());
+		endingSeesawTile.setAllBordersOpen(true);
+		endingSeesawTile.setBorder(getDirectionBody().rotateCW(), false);
+		
+		
+		
+		endingSeesawTile.setBorder(getDirectionBody().rotateCCW(),false);
+		if(bar == 11 || bar == 15 || bar == 17){
+			endingSeesawTile.setBarCode(bar+2);
+		}else{
+			endingSeesawTile.setBarCode(bar-2);
+		}
+		
+		Tile last = maze.addTile(endingSeesawTile.getX(), endingSeesawTile.getY(),this.getDirectionBody());
+		last.setBorder(getDirectionBody().getOpposite(), true);
+		updateTiles(new Tile[]{current,firstSeesawTile,secondSeesawTile,endingSeesawTile,last,secondNeighbor1,secondNeighbor2,firstNeighbor1,firstNeighbor2});
+	}
+	
+	
+	/**
+	 * Create a seesaw tile. 
+	 * 
+	 * @param tile
+	 * @param dir
+	 * @return
+	 */
+	private final Tile createSeesawTile(Tile tile,final Orientation dir){
+		//TODO CHECK IF CORRECT?
+		Tile seesawTile = maze.addTile(tile.getX(), tile.getY(), dir);
+		seesawTile.setAllBordersOpen(true);
+		switch(dir){
+			case EAST:
+				seesawTile.setBorderNorth(Border.CLOSED);
+				seesawTile.setBorderSouth(Border.CLOSED);
+				break;
+			case NORTH:
+				seesawTile.setBorderEast(Border.CLOSED);
+				seesawTile.setBorderWest(Border.CLOSED);
+				break;
+			case SOUTH:
+				seesawTile.setBorderEast(Border.CLOSED);
+				seesawTile.setBorderWest(Border.CLOSED);
+				break;
+			case WEST:
+				seesawTile.setBorderNorth(Border.CLOSED);
+				seesawTile.setBorderSouth(Border.CLOSED);
+				break;
+			default:
+				break;
+		
+		}
+		
+		mazeListener.onTileUpdate(seesawTile);
+		//tile.setBarCode(seesawBarcode);
+		return seesawTile;
+	}
+	
 	
 	/**
 	 * Create the tile after the seesaw.
@@ -519,57 +561,59 @@ public class MazeActionV2 extends Operation{
 		return endTile;
 	}
 	/**
-	 * Check if this barcode points to our item.
+	 * Get the itemnumber and teamnumber that belong to the given barcode.
+	 * If the itemNumber is our objectNumber AND we haven't received a teamnumber yet
+	 * our teamnumber is set to the corresponding teamnumber.
 	 * 
 	 * @param barcode
 	 * @return
 	 */
-	private boolean isOurItem(int barcode) {
-		int ballnumber=-1;
+	private ArrayList<Integer> getItemnumber(int barcode) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		int ballNumber=-1;
 		int teamNumber=-1;
 		switch(barcode){
 			case 0:
-				ballnumber = 0;
+				ballNumber = 0;
 				teamNumber = 0;
 				break;
 			case 1:
-				ballnumber = 1;
+				ballNumber = 1;
 				teamNumber = 0;
 				break;
 			case 2:
-				ballnumber = 2;
+				ballNumber = 2;
 				teamNumber = 0;
 				break;
 			case 3:
-				ballnumber = 3;
+				ballNumber = 3;
 				teamNumber = 0;
 				break;
 			case 4:
-				ballnumber = 0;
+				ballNumber = 0;
 				teamNumber = 1;
 				break;
 			case 5:
-				ballnumber = 1;
+				ballNumber = 1;
 				teamNumber = 1;
 				break;
 			case 6:
-				ballnumber = 2;
+				ballNumber = 2;
 				teamNumber = 1;
 				break;
 			case 7:
-				ballnumber = 3;
+				ballNumber = 3;
 				teamNumber = 1;
 				break;
 		}
-		System.out.println("barcode="+barcode+"    ballnumber="+ballnumber+"  ournumber="+this.objectNumber);
-		if(ballnumber == this.objectNumber){
-			this.teamNumber=teamNumber;
-			System.out.println("our teamnumber is: "+teamNumber);
-			return true;
-		}else{
-			return false;
+		//If we didnt get a teamnumber yet, assign it
+		if(ballNumber==this.objectNumber && this.teamNumber == DEFAULT_TEAMNUMBER){
+			this.teamNumber = teamNumber;
 		}
-		
+		System.out.println("barcode="+barcode+"    ballnumber="+ballNumber+"  ournumber="+this.objectNumber);
+		result.add(ballNumber);
+		result.add(teamNumber);
+		return result;	
 	}
 	/**
 	 * Check if this barcode is a possible seesaw barcode, regardin the specified barcodes.
@@ -888,11 +932,15 @@ public class MazeActionV2 extends Operation{
 	}
 	
 	private final boolean needsExploration(final Tile tile) {
-		if (!tile.isExplored()) {
-			return true;
+		if(tile.isSeesaw()){
+			return false;
 		}
 		if (tile.canHaveBarcode()) {
-			return (tile.getBarCode() < 0);
+			int bar = tile.getBarCode();
+			return (bar < 0 && bar!=-2);
+		}
+		if (!tile.isExplored()) {
+			return true;
 		}
 		return false;
 	}

@@ -38,11 +38,11 @@ public class VirtualRobot extends AbstractRobot {
 	/**
  	 *Static that holds the maximum travel speed in degrees/s.
 	 */
-	private static final float MaxRotateSpeed = 500;
+	private static final float MaxRotateSpeed = 800;
 	/**
  	 *Static that holds the maximum travel speed in mm/s.
 	 */
-	private static final float MaxTravelSpeed = 500;
+	private static final float MaxTravelSpeed = 1000;
 	/**
 	 * The size of the tiles in cm on which the VirtualRobot will be driving.
 	 */
@@ -559,6 +559,10 @@ public class VirtualRobot extends AbstractRobot {
 			moveForward(Float.MAX_VALUE, false);
 	}
 	
+	/**
+	 * Move the robot forward 'distance' MILLIMETERS.
+	 * ATTENTION: distance in MILLIMETERS!
+	 */
 	@Override
 	public void moveForward(float distance, boolean wait) {
 		if(checkFrontClearDistance()<=OBSTRUCTION_THRESHOLD_FRONT_CM){
@@ -892,7 +896,6 @@ public class VirtualRobot extends AbstractRobot {
 		calculateCurrentActionETA();
 		if(wait == true) {
 			try {
-				System.out.println(getCurrentActionETA()-System.currentTimeMillis());
 				Thread.sleep(getCurrentActionETA()-System.currentTimeMillis());
 			} catch (InterruptedException e) {
 				e.printStackTrace();

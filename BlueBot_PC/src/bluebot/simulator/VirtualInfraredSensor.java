@@ -63,7 +63,7 @@ public class VirtualInfraredSensor {
 	/**
 	 * The maximum distance an IRSensor can see in centimeters.
 	 */
-    private static int distanceIRSensorCanSee_CM = 30;
+    private static int distanceIRSensorCanSee_CM = 80;
 	
 	
 	/**
