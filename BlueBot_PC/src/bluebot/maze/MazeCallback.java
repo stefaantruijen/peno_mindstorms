@@ -11,6 +11,11 @@ import bluebot.graph.Tile;
  */
 public interface MazeCallback {
 	
+	/**
+	 * This method should be called when the player has found his/her object
+	 * 
+	 * @param teamNumber - the number of the team
+	 */
 	public void joinTeam(int teamNumber);
 	
 	/**
