@@ -341,7 +341,7 @@ public class World {
 			final int number = player.getNumber();
 			final String id = ((number < 0) ? "?" : Integer.toString(number));
 			gfx.setColor(Color.BLUE);
-			gfx.drawString(id, -(fm.stringWidth(id) / 2), -(fm.getHeight() / 2));
+			gfx.drawString(id, -(fm.stringWidth(id) / 2), (fm.getHeight() / 2));
 			
 			gfx.setTransform(origin);
 		}
