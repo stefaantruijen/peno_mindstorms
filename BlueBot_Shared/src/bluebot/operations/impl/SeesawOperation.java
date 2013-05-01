@@ -19,15 +19,20 @@ public class SeesawOperation extends Operation<Void> {
 			return null;
 		}
 		
+		int speed = getOperator().getSpeed();
 		getOperator().setSpeed(50);
 		getOperator().moveForward();
 		while(getOperator().isMoving() && !getOperator().isSensorLightBrightnessGray());
 		while(getOperator().isMoving() && !getOperator().isSensorLightBrightnessBlack());
+		getOperator().stop();
 		getOperator().setSpeed(12);
+		getOperator().moveForward();
 		while(getOperator().isMoving() && !getOperator().isSensorLightBrightnessGray());
 		getOperator().stop();
 		getOperator().doWhiteLine();
-		getOperator().moveForward(20, true);
+		getOperator().stop();
+		getOperator().setSpeed(speed);
+		getOperator().moveForward(200, true);
 		return null;
 	}
 	
