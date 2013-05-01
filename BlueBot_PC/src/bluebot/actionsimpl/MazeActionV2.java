@@ -332,15 +332,19 @@ public class MazeActionV2 extends Operation{
 		 */
 		if(this.found && this.teamMateKnown && mergeSuccess){
 		//---READY TO GO TO TEAMMATE
+			System.out.println("Object found, teammate known, merge succes: to the choppa!");
 			this.GoToRobot();
+			
 		}
 		else{
 			//---MAZE FULLY EXPLORED--- (canGoToTeammte() always true)
+			System.out.println("Maze fully explored, waiting for data to merge...");
 			while(!mergeSuccess){
 				if(mazeMerger.hasReceivedNewTileSinceLastCheck()){
 					mergeSuccess = mazeMerger.tryToMerge();
 				}
 			}
+			System.out.println("Merged succesfully! To the choppa!");
 			this.GoToRobot();
 		}
 		
