@@ -13,6 +13,7 @@ import bluebot.graph.Graph;
 import bluebot.graph.Orientation;
 import bluebot.graph.Tile;
 import bluebot.maze.Maze;
+import bluebot.maze.MazeCallback;
 import bluebot.maze.MazeListener;
 import bluebot.maze.MazeMerger;
 import bluebot.maze.TileBuilder;
@@ -46,9 +47,9 @@ public class MazeActionV2 extends Operation{
 	private MazeMerger mazeMerger;
 	private boolean mergeSuccess = DEFAULT_MERGESUCCESS;
 	
-	private MazeListener mazeListener;
+	private MazeCallback mazeListener;
 	
-	public MazeActionV2(final int playerNumber,final int objectNumber, final MazeListener mazeListener) {
+	public MazeActionV2(final int playerNumber,final int objectNumber, final MazeCallback mazeListener) {
 		this.playerNumber = playerNumber;
 		this.objectNumber = objectNumber;
 		this.mazeMerger = new MazeMerger();
@@ -92,29 +93,29 @@ public class MazeActionV2 extends Operation{
 		}
 		
 		tile.setItemId(id);
-		mazeListener.onTileUpdate(tile);
+		mazeListener.sendTile(tile);
 		
 		final int x = tile.getX();
 		final int y = tile.getY();
 		if (dir != Orientation.NORTH) {
 			final Tile neighbor = maze.addTile(x, y - 1);
 			neighbor.setBorderNorth(Border.CLOSED);
-			mazeListener.onTileUpdate(neighbor);
+			mazeListener.sendTile(neighbor);
 		}
 		if (dir != Orientation.EAST) {
 			final Tile neighbor = maze.addTile(x - 1, y);
 			neighbor.setBorderEast(Border.CLOSED);
-			mazeListener.onTileUpdate(neighbor);
+			mazeListener.sendTile(neighbor);
 		}
 		if (dir != Orientation.SOUTH) {
 			final Tile neighbor = maze.addTile(x, y + 1);
 			neighbor.setBorderSouth(Border.CLOSED);
-			mazeListener.onTileUpdate(neighbor);
+			mazeListener.sendTile(neighbor);
 		}
 		if (dir != Orientation.WEST) {
 			final Tile neighbor = maze.addTile(x + 1, y);
 			neighbor.setBorderWest(Border.CLOSED);
-			mazeListener.onTileUpdate(neighbor);
+			mazeListener.sendTile(neighbor);
 		}
 		return tile;
 	}
@@ -249,38 +250,34 @@ public class MazeActionV2 extends Operation{
 				System.out.println(next.toString());
 				if(next.isSeesaw()){
 					System.out.println("next is seesaw");
-					while(this.getOperator().detectInfrared()){
-						System.out.println("i see infrared");
-						this.wait(1000);
-						checkAborted();
+					boolean crossedSeesaw = false;
+					while(!crossedSeesaw){
+						if(!this.getOperator().detectInfrared() 
+								&& mazeListener.lockSeesaw(current.getBarCode())){
+							int j = i+3;
+							//i+3 zet de robot op de tile achter de barcode achter de wip
+							while(i!=j){
+								i++;
+								Tile goTo = path[i];
+								mazeListener.updatePosition(goTo.getX(), goTo.getY(), getOperator().getOrientation().getHeadingBody());
+							}
+							getOperator().doSeesaw();
+							this.current = path[i];
+							mazeListener.unlockSeesaw();
+							crossedSeesaw = true;
+						}else{
+							sideStepFromSeesaw(current);
+							wait(10000);
+							returnToSeesaw(current);
+						}
 					}
-					getOperator().doSeesaw();
-					i = i+3;//Zet op tile achter de barcode na de wip
-					this.current = path[i];
 				}else{
 					moveTo(path[i]);
 				}
 			}
-//			System.out.println(next.toString());
-//			if(next.isSeesaw()){
-//				System.out.println("next is seesaw");
-//				while(this.getOperator().detectInfrared()){
-//					this.wait(1000);
-//					checkAborted();
-//				}
-//				getOperator().doSeesaw();
-//				//TODO this.current = ;
-//			}else{
-//				moveTo(next);
-//			}
-//			
-
 			Tile tile = current;
-			
-
 			checkAborted();
 			scanBorders(tile);
-			
 			
 			checkAborted();
 			if (tile.canHaveBarcode()) {
@@ -302,8 +299,9 @@ public class MazeActionV2 extends Operation{
 						//If this is our object AND we haven't picked up our object already
 						if (itemNumber == this.objectNumber && teamNb== this.teamNumber) {
 							this.pickUp();
+							
 							//TODO:mazelistener
-							//getOperator().sendItemFound(this.teamNumber);
+							mazeListener.notifyObjectFound();
 						}
 					}else if(barcodeCanBeSeesaw(barcode)){
 						checkAborted();
@@ -385,6 +383,58 @@ public class MazeActionV2 extends Operation{
 	
 	
 	
+	private void returnToSeesaw(Tile tile) {
+		try {
+			moveTo(tile);
+		} catch (CalibrationException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (OperationException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void sideStepFromSeesaw(Tile current) {
+		List<Tile> neighbors = current.getNeighbors();
+		Tile currentTile = null;
+		Tile lastTile = current;
+		for(Tile t: neighbors){
+			if(!t.isSeesaw()){
+				currentTile = t;
+			}
+		}
+		neighbors = recursief(currentTile, lastTile);
+		Tile toTile = neighbors.get(0);
+		try {
+			moveTo(toTile);
+		} catch (CalibrationException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (OperationException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private List<Tile> recursief(Tile tile, Tile without){
+		List<Tile> neighbors = getNeighborsWithout(tile, without);
+		for(Tile n : neighbors){
+			List<Tile> neighbors2 = recursief(n,tile);
+			if(neighbors2.size()>=3 && neighbors2!=null){
+				return neighbors2;
+			}
+		}
+		System.out.println("recursief = null in mazeV2");
+		return null;
+	}
+	
+	private List<Tile> getNeighborsWithout(Tile tile, Tile without){
+		List<Tile> neighbors = tile.getNeighbors();
+		neighbors.remove(without);
+		return neighbors;
+	}
+
 	public boolean isAborted() {
 		return aborted;
 	}
@@ -513,7 +563,7 @@ public class MazeActionV2 extends Operation{
 		
 		}
 		
-		mazeListener.onTileUpdate(seesawTile);
+		mazeListener.sendTile(seesawTile);
 		//tile.setBarCode(seesawBarcode);
 		return seesawTile;
 	}
@@ -554,7 +604,7 @@ public class MazeActionV2 extends Operation{
 		}
 		
 		
-	    mazeListener.onTileUpdate(endTile);
+	    mazeListener.sendTile(endTile);
 		
 		if(barcode==11||barcode == 13 ||barcode ==15){
 			endTile.setBarCode(barcode+2);
@@ -922,6 +972,7 @@ public class MazeActionV2 extends Operation{
 		final int dx = (tile.getX() - this.current.getX());
 		final int dy = (tile.getY() - this.current.getY());
 		//mazeListener.updatePosition(dx, dy, this.getDirectionBody().getDouble());
+		mazeListener.updatePosition(tile.getX(),tile.getY(),getOperator().getOrientation().getHeadingBody());
 		if (dy > 0) {
 			travelNorth();
 		} else if (dx > 0) {
@@ -991,7 +1042,7 @@ public class MazeActionV2 extends Operation{
 		}
 
 		tile.setBarCode(bar);
-		mazeListener.onTileUpdate(tile);
+		mazeListener.sendTile(tile);
 		
 		return bar;
 	}
@@ -1166,7 +1217,7 @@ public class MazeActionV2 extends Operation{
 	
 	private final void updateTiles(final Tile... tiles) {
 		for (final Tile tile : tiles) {
-			mazeListener.onTileUpdate(tile);
+			mazeListener.sendTile(tile);
 			mazeMerger.addTileFromSelf(tile);
 		}
 	}
