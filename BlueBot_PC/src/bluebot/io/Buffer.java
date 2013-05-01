@@ -36,30 +36,39 @@ public class Buffer {
 		return (tail == limit);
 	}
 	
-	public synchronized int read() throws IOException {
-		if (isEmpty()) {
-			synchronized (lock) {
+	public int read() throws IOException {
+		synchronized (lock) {
+			if (isEmpty()) {
 				try {
 					lock.wait();
 				} catch (final InterruptedException e) {
 					throw new IOException(e);
 				}
+				return read();
 			}
-			return read();
+			
+			try {
+				return (buffer[head] & 0xFF);
+			} finally {
+				if (++head >= buffer.length) {
+					head = 0;
+				}
+			}
 		}
-		
-		return buffer[head++];
 	}
 	
-	public synchronized void write(final int b) throws IOException {
-		if (isFull()) {
-			throw new BufferOverflowException();
-		}
-		
-		buffer[tail++] = (byte)b;
-		
+	public void write(final int b) throws IOException {
 		synchronized (lock) {
-			lock.notifyAll();
+			if (isFull()) {
+				throw new BufferOverflowException();
+			}
+			
+			buffer[tail] = (byte)b;
+			if (++tail >= buffer.length) {
+				tail = 0;
+			}
+			
+			lock.notify();
 		}
 	}
 	

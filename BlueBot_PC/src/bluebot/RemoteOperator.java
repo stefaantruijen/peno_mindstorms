@@ -421,6 +421,7 @@ public class RemoteOperator extends AbstractOperator {
 		}
 		
 		private final void handle(final int opcode) throws IOException {
+//			System.out.println("Reading response 0x" + Integer.toHexString(opcode));
 			final RemoteCall<?> call = getCall(opcode);
 			if (call != null) {
 				call.onReturn(getInput());
@@ -428,6 +429,7 @@ public class RemoteOperator extends AbstractOperator {
 		}
 		
 		public void makeCall(final int opcode) {
+//			System.out.println("Make call " + Integer.toHexString(opcode));
 			makeCall(opcode, new RemoteCall<Void>() {
 				
 				protected Void read(final DataInputStream stream) throws IOException {
@@ -442,6 +444,7 @@ public class RemoteOperator extends AbstractOperator {
 		}
 		
 		public <T> T makeCall(final int opcode, final RemoteCall<T> call) {
+//			System.out.printf("Make call %s (%s)%n", Integer.toHexString(opcode), call);
 			addCall(opcode, call);
 			
 			try {
@@ -472,6 +475,7 @@ public class RemoteOperator extends AbstractOperator {
 					handle(readOpcode());
 				} catch (final IOException e) {
 					System.out.println(getClass().getSimpleName() + " disconnected");
+					e.printStackTrace();
 					return;
 				}
 			}
