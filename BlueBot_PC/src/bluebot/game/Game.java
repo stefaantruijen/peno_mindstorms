@@ -311,6 +311,14 @@ public class Game {
 	
 	private final class MazeCallbackImpl implements MazeCallback {
 		
+		public void joinTeam(final int teamNumber) {
+			try {
+				getClient().joinTeam(teamNumber);
+			} catch (final Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
 		public boolean lockSeesaw(final int barcode) {
 			final PlayerClient client = getClient();
 			try {

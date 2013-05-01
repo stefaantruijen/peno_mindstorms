@@ -11,6 +11,8 @@ import bluebot.graph.Tile;
  */
 public interface MazeCallback {
 	
+	public void joinTeam(int teamNumber);
+	
 	/**
 	 * "Ik wil over de wip rijden"
 	 * @param barcode
