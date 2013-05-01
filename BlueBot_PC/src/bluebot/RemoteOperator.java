@@ -429,7 +429,7 @@ public class RemoteOperator extends AbstractOperator {
 		}
 		
 		public void makeCall(final int opcode) {
-//			System.out.println("Make call " + Integer.toHexString(opcode));
+//			System.out.println("Make call 0x" + Integer.toHexString(opcode));
 			makeCall(opcode, new RemoteCall<Void>() {
 				
 				protected Void read(final DataInputStream stream) throws IOException {
@@ -444,13 +444,14 @@ public class RemoteOperator extends AbstractOperator {
 		}
 		
 		public <T> T makeCall(final int opcode, final RemoteCall<T> call) {
-//			System.out.printf("Make call %s (%s)%n", Integer.toHexString(opcode), call);
+//			System.out.printf("Make call 0x%s (%s)%n", Integer.toHexString(opcode), call);
 			addCall(opcode, call);
 			
 			try {
 				synchronized (lock) {
 					writeOpcode(opcode);
 					call.write(getOutput());
+					getOutput().flush();
 				}
 			} catch (final IOException e) {
 				throw new IllegalStateException(e);

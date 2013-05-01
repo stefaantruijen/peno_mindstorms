@@ -453,6 +453,7 @@ public class OperatorHandler implements Runnable {
 					try {
 						stream.writeByte(opcode);
 						handler.write(stream);
+						stream.flush();
 					} catch (final IOException e) {
 						//	ignored
 					}
