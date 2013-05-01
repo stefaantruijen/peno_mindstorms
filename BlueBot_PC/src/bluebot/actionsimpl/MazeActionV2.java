@@ -259,7 +259,7 @@ public class MazeActionV2 extends Operation{
 							while(i!=j){
 								i++;
 								Tile goTo = path[i];
-								mazeListener.updatePosition(goTo.getX(), goTo.getY(), getOperator().getOrientation().getHeadingBody());
+								mazeListener.updatePosition(goTo.getX(), goTo.getY(), getDirectionBody().getDouble());
 							}
 							getOperator().doSeesaw();
 							this.current = path[i];
@@ -382,7 +382,11 @@ public class MazeActionV2 extends Operation{
 	}
 	
 	
-	
+	/**
+	 * When the robot has stepped away from a seesaw in order to let another robot pass,
+	 * he should return to the seesaw after a while, using this method.
+	 * @param tile
+	 */
 	private void returnToSeesaw(Tile tile) {
 		try {
 			moveTo(tile);
@@ -395,6 +399,14 @@ public class MazeActionV2 extends Operation{
 		}
 	}
 
+	/**
+	 * When the seesaw is locked or we cannot pass it for any reason.
+	 * The robot should move away from the entrance in order to let another robot pass over the seesaw
+	 * in the other direction.
+	 * This method will search for a 'safe zone' tile to move away to,
+	 * if the robot is currently standing on 'current' tile.
+	 * @param current	The tile the robot is currently standing on.
+	 */
 	private void sideStepFromSeesaw(Tile current) {
 		List<Tile> neighbors = current.getNeighbors();
 		Tile currentTile = null;
@@ -404,7 +416,7 @@ public class MazeActionV2 extends Operation{
 				currentTile = t;
 			}
 		}
-		neighbors = recursief(currentTile, lastTile);
+		neighbors = searchForTileWithMoreThanThreeNeighbors(currentTile, lastTile);
 		Tile toTile = neighbors.get(0);
 		try {
 			moveTo(toTile);
@@ -417,18 +429,30 @@ public class MazeActionV2 extends Operation{
 		}
 	}
 	
-	private List<Tile> recursief(Tile tile, Tile without){
+	/**
+	 * This method will recursively search for a tile that has more than 3 or just 3 neighbors.
+	 * It will return those 3 neighbors.
+	 * @param tile		The tile from which the search starts.
+	 * @param without	This neighbor will not be added to the neighbors of tile.
+	 * @return
+	 */
+	private List<Tile> searchForTileWithMoreThanThreeNeighbors(Tile tile, Tile without){
 		List<Tile> neighbors = getNeighborsWithout(tile, without);
 		for(Tile n : neighbors){
-			List<Tile> neighbors2 = recursief(n,tile);
+			List<Tile> neighbors2 = searchForTileWithMoreThanThreeNeighbors(n,tile);
 			if(neighbors2.size()>=3 && neighbors2!=null){
 				return neighbors2;
 			}
 		}
+		//shouldnt reach this code
 		System.out.println("recursief = null in mazeV2");
 		return null;
 	}
 	
+	/**
+	 * Get all neighbors of tile, but exclude 'without'.
+	 * This ofcourse means that 'without' has to be a neighbor of tile.
+	 */
 	private List<Tile> getNeighborsWithout(Tile tile, Tile without){
 		List<Tile> neighbors = tile.getNeighbors();
 		neighbors.remove(without);
@@ -972,7 +996,7 @@ public class MazeActionV2 extends Operation{
 		final int dx = (tile.getX() - this.current.getX());
 		final int dy = (tile.getY() - this.current.getY());
 		//mazeListener.updatePosition(dx, dy, this.getDirectionBody().getDouble());
-		mazeListener.updatePosition(tile.getX(),tile.getY(),getOperator().getOrientation().getHeadingBody());
+		mazeListener.updatePosition(tile.getX(),tile.getY(),getDirectionBody().getDouble());
 		if (dy > 0) {
 			travelNorth();
 		} else if (dx > 0) {
