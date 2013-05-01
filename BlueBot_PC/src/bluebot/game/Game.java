@@ -41,8 +41,8 @@ public class Game implements MazeListener {
 	public Game(final Operator operator,
 			final String gameId, final String playerId,
 			final GameCallback callback) throws IOException {
-		this.client = createClient(gameId, playerId, callback);
 		this.operator = operator;
+		this.client = createClient(gameId, playerId, callback);
 	}
 	
 	

@@ -150,21 +150,6 @@ public class RenderingUtils {
 		//	TODO
 		gfx.setColor(Color.GRAY);
 		if (locked) {
-			switch (dir) {
-				case NORTH:
-					gfx.fillRect(off, quarter, quarter, (half + quarter));
-					break;
-				case EAST:
-					gfx.fillRect(0, off, (half + quarter), quarter);
-					break;
-				case SOUTH:
-					gfx.fillRect(off, 0, quarter, (half + quarter));
-					break;
-				case WEST:
-					gfx.fillRect(quarter, off, (half + quarter), quarter);
-					break;
-			}
-		} else {
 			final int[] xx = new int[3];
 			final int[] yy = new int[3];
 			switch (dir) {
@@ -206,6 +191,21 @@ public class RenderingUtils {
 					break;
 			}
 			gfx.fillPolygon(xx, yy, 3);
+		} else {
+			switch (dir) {
+				case NORTH:
+					gfx.fillRect(off, quarter, quarter, (half + quarter));
+					break;
+				case EAST:
+					gfx.fillRect(0, off, (half + quarter), quarter);
+					break;
+				case SOUTH:
+					gfx.fillRect(off, 0, quarter, (half + quarter));
+					break;
+				case WEST:
+					gfx.fillRect(quarter, off, (half + quarter), quarter);
+					break;
+			}
 		}
 	}
 	
