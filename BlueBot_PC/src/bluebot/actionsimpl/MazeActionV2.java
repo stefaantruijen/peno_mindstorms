@@ -236,6 +236,7 @@ public class MazeActionV2 extends Operation{
 		moves = new Movement();
 		maze = new Maze();
 		twist = 0;
+		int seesaws = 0;
 		
 		mazeListener.updatePosition(0, 0, 0);
 		scanBorders(current = maze.addTile(0, 0));
@@ -269,10 +270,26 @@ public class MazeActionV2 extends Operation{
 							mazeListener.unlockSeesaw();
 							crossedSeesaw = true;
 						}else{
-							Tile barcodeTile = current;
-							Tile safeZoneTile = sideStepFromSeesaw(current);
-							Thread.sleep(5000);
-							returnToSeesaw(safeZoneTile, barcodeTile);
+							if(seesaws > 1){
+								List<Tile> seesaw = getSeesaw(current, next);
+								graph.addVerticies(maze.getTiles());
+								Dijkstra dijkstra = new Dijkstra(graph);
+								next = seesaw.get(0);
+								List<Tile> wayToFollow = dijkstra.findShortestPath(current,next);
+								i=path.length;
+								path = new Tile[wayToFollow.size()+1];
+								path[0] = current;
+								for(int a=0; a<wayToFollow.size(); a++){
+									path[a+1] = wayToFollow.get(a);
+								}	
+								break;
+							}
+							else{
+								Tile barcodeTile = current;
+								Tile safeZoneTile = sideStepFromSeesaw(current);
+								Thread.sleep(5000);
+								returnToSeesaw(safeZoneTile, barcodeTile);
+							}
 						}
 					}
 				}else{
@@ -307,6 +324,7 @@ public class MazeActionV2 extends Operation{
 						}
 					}else if(barcodeCanBeSeesaw(barcode)){
 						checkAborted();
+						seesaws++;
 						handleSeesawBarcode(barcode);
 					}else{
 						//TODO:Checkpoint logica ?
@@ -474,6 +492,37 @@ public class MazeActionV2 extends Operation{
 		List<Tile> neighbors = getNeighborsOfTile(tile);
 		neighbors.remove(without);
 		return neighbors;
+	}
+	
+	/**
+	 * Searches a seesaw closest to the given tile. The given tile is the current
+	 * and the without is a seesawTile that will not be reached
+	 */
+	public List<Tile> getSeesaw(Tile tile, Tile without){
+		List<Tile> neighbors = getNeighborsWithout(tile, without);
+		
+		for(Tile n : neighbors){
+			if(n.isSeesaw()){
+				List<Tile> returnList = new ArrayList<Tile>();
+				returnList.add(n);
+				return returnList;
+			}
+		}
+		List<Tile> list = new ArrayList<Tile>();
+		for(Tile n : neighbors){
+			List<Tile> list2 = getSeesaw(n, tile);
+			if(list2 !=null){
+				list.addAll(list2);
+			}
+		}
+		for(Tile n : list){
+			if(n != null && n.isSeesaw()){
+				List<Tile> returnList = new ArrayList<Tile>();
+				returnList.add(n);
+				return returnList;
+			}
+		}
+		return null;
 	}
 	
 	/**
