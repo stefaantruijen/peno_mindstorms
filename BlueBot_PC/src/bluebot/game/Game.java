@@ -75,6 +75,10 @@ public class Game {
 		return explorer;
 	}
 	
+	public Operator getOperator() {
+		return operator;
+	}
+	
 	public void init(final Callback<Void> callback) throws IOException {
 		final PlayerClient client = getClient();
 		if (client.isConnected()) {

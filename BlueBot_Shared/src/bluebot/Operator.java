@@ -28,13 +28,17 @@ public interface Operator extends Mobile {
 	public static final int OP_SPEED_GET			= 0x31;
 	public static final int OP_SPEED_SET			= 0x32;
 	public static final int OP_SENSOR				= 0x41;
+	public static final int OP_SENSORS				= 0x42;
 	public static final int OP_DO_BARCODE			= 0x51;
 	public static final int OP_DO_CALIBRATE			= 0x52;
 	public static final int OP_DO_PICKUP			= 0x53;
 	public static final int OP_DO_SEESAW			= 0x54;
 	public static final int OP_DO_WHITELINE			= 0x55;
+	public static final int OP_EVENT_SPEED			= 0x61;
 	
 	
+	
+	public void addListener(OperatorListener listener);
 	
 	public boolean detectInfrared();
 	
@@ -68,6 +72,13 @@ public interface Operator extends Mobile {
 	
 	public void modifyOrientation();
 	
+	/**
+	 * This method should only be used by the GUI
+	 * 
+	 * @return all sensor values
+	 */
+	public int[] readSensors();
+	
 	public int readSensorInfrared();
 	
 	public int readSensorLight();
@@ -77,6 +88,8 @@ public interface Operator extends Mobile {
 	public boolean readSensorTouch();
 	
 	public int readSensorUltrasonic();
+	
+	public void removeListener(OperatorListener listener);
 	
 	public int scanBarcode()
 			throws CalibrationException, InterruptedException, OperationException;

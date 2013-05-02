@@ -20,10 +20,12 @@ import peno.htttp.Callback;
 
 import bluebot.Application;
 import bluebot.Operator;
+import bluebot.OperatorListener;
 import bluebot.core.ControllerListener;
 import bluebot.game.Game;
 import bluebot.game.GameCallback;
 import bluebot.graph.Tile;
+import bluebot.sensors.SensorType;
 import bluebot.ui.TerminalComponent.SuggestionProvider;
 import bluebot.ui.util.RabbitListCellRenderer;
 import bluebot.ui.util.RabbitListModel;
@@ -43,6 +45,8 @@ public class ControllerFrame extends RenderingFrame implements ControllerListene
 	private GaugeComponent gauge;
 	private Operator operator;
 	private RabbitListModel rabbit;
+	private SensorsComponent sensors;
+	private UpdateThread updater;
 	
 	
 	public ControllerFrame(final Application application, final Operator operator) {
@@ -220,7 +224,7 @@ public class ControllerFrame extends RenderingFrame implements ControllerListene
 	}
 
 	private final Component createModuleControls() {
-		gauge = new GaugeComponent(operator);
+		gauge = new GaugeComponent();
 		
 		final JoystickComponent joystick = new JoystickComponent(operator);
 		joystick.setEnabled(false);
@@ -245,6 +249,10 @@ public class ControllerFrame extends RenderingFrame implements ControllerListene
 		gauge.addListener(new GaugeListener() {
 			public void onValueChanged(final int value) {
 				joystick.setEnabled(value > 0);
+			}
+			
+			public void onValueRequested(final int value) {
+				operator.setSpeed(value);
 			}
 		});
 		/*
@@ -296,9 +304,9 @@ public class ControllerFrame extends RenderingFrame implements ControllerListene
 		scroll.setPreferredSize(new Dimension(1, 1));
 		return scroll;
 	}
-
+	
 	private final Component createModuleSensors() {
-		final SensorsComponent sensors = new SensorsComponent();
+		sensors = new SensorsComponent();
 //		controller.addListener(sensors);
 		return sensors;
 	}
@@ -440,7 +448,9 @@ public class ControllerFrame extends RenderingFrame implements ControllerListene
 	}
 	
 	private final void initOperator() {
-		gauge.setValue(100);
+		operator.addListener(new OperatorMonitor());
+		
+		operator.setSpeed(100);
 	}
 	
 	private static final void launch(final Runnable task) {
@@ -466,14 +476,86 @@ public class ControllerFrame extends RenderingFrame implements ControllerListene
 	}
 	
 	protected void startRendering() {
+		canvas.setOperator(operator);
 		canvas.startRendering();
+		
+		if (updater == null) {
+			updater = new UpdateThread();
+			updater.start();
+		}
 	}
 	
 	protected void stopRendering() {
-		operator.dispose();
-		
 		canvas.stopRendering();
 		canvas.reset();
+		
+		if (updater != null) {
+			updater.running = false;
+			updater = null;
+		}
+		
+		operator.dispose();
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	private final class OperatorMonitor implements OperatorListener {
+		
+		public void onSpeedChanged(final int percentage) {
+			gauge.setValue(percentage);
+		}
+		
+	}
+	
+	
+	
+	
+	
+	private final class UpdateThread extends Thread {
+		
+		private boolean running = true;
+		
+		
+		private UpdateThread() {
+			super(UpdateThread.class.getSimpleName());
+			setDaemon(true);
+		}
+		
+		
+		
+		@Override
+		public void run() {
+			long next = System.currentTimeMillis();
+			while (running) {
+				while (System.currentTimeMillis() < next) {
+					try {
+						Thread.sleep(10L);
+					} catch (final InterruptedException e) {
+						System.out.println("GUI UPDATE THREAD INTERRUPTED");
+						running = false;
+						return;
+					}
+				}
+				
+				update(operator.readSensors());
+				next += 100L;
+			}
+		}
+		
+		private final void update(final int[] values) {
+			sensors.onSensorValueLight(values[SensorType.LIGHT.ordinal()]);
+			sensors.onSensorValueUltraSonic(values[SensorType.ULTRA_SONIC.ordinal()]);
+			
+			gauge.setInfrared(values[SensorType.INFRARED.ordinal()]);
+		}
+		
 	}
 	
 }

@@ -255,16 +255,6 @@ public class DefaultDriver implements Driver {
 		sendSensor(value, SensorType.ULTRA_SONIC);
 	}
 	
-	/**
-	 * Sends a value from the speed sensor LOL
-	 * 
-	 * @param speed
-	 */
-	protected void sendSensorSpeed(int value) {
-		sendSensor(value, SensorType.SPEED);
-	}
-	
-	
 	private final void setRobot(final Robot robot) {
 		if (robot == null) {
 			throw new NullPointerException();
@@ -387,33 +377,28 @@ public class DefaultDriver implements Driver {
 				sendSensorInfrared(getInfraredDirection());
 				sendSensorLight(readSensorLightValue());
 				sendSensorUltraSonic(readSensorUltraSonic());
-				sendSensorSpeed(getSpeed());
 			} catch (final RuntimeException e) {
 				// The robot is not in a happy place right now
 			}
-		}		
+		}
 	}
-
-
-	@Override
+	
 	public boolean isPressed() {
 		return getRobot().isPressed();
 	}
-	@Override
+	
 	public boolean seeInfrared() {
-		
 		return getRobot().seeInfrared();
 	}
-	@Override
+	
 	public int getInfraredDirection() {
 		return getRobot().getInfraredDirection();
 	}
-	@Override
+	
 	public void setStartLocation(int x, int y, float heading) {
 		this.getRobot().setStartLocation(x,y,heading);
-		
 	}
-	@Override
+	
 	public void sendBarcode(int barcode) {
 		getTranslator().sendBarcode(barcode);
 	}

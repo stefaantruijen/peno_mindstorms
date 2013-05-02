@@ -212,6 +212,33 @@ public class RemoteOperator extends AbstractOperator {
 		});
 	}
 	
+	public int[] readSensors() {
+		return getCallManager().makeCall(OP_SENSORS,
+				new RemoteCall<int[]>() {
+			protected int[] read(final DataInputStream stream) throws IOException {
+				final int[] values = new int[SensorType.values().length];
+				for (final SensorType sensor : SensorType.values()) {
+					values[sensor.ordinal()] = readValue(stream, sensor);
+				}
+				return values;
+			}
+			
+			private final int readValue(final DataInputStream stream,
+					final SensorType sensor) throws IOException {
+				switch (sensor) {
+					case TOUCH:
+						return stream.readUnsignedByte();
+					default:
+						return stream.readShort();
+				}
+			}
+			
+			protected void write(final DataOutputStream stream) throws IOException {
+				//	no args
+			}
+		});
+	}
+	
 	public int readSensorInfrared() {
 		return readSensor(SensorType.INFRARED);
 	}
@@ -422,9 +449,17 @@ public class RemoteOperator extends AbstractOperator {
 		
 		private final void handle(final int opcode) throws IOException {
 //			System.out.println("Reading response 0x" + Integer.toHexString(opcode));
-			final RemoteCall<?> call = getCall(opcode);
-			if (call != null) {
-				call.onReturn(getInput());
+			switch (opcode) {
+				case OP_EVENT_SPEED:
+					fireSpeedChanged(getInput().readUnsignedByte());
+					break;
+					
+				default:
+					final RemoteCall<?> call = getCall(opcode);
+					if (call != null) {
+						call.onReturn(getInput());
+					}
+					break;
 			}
 		}
 		

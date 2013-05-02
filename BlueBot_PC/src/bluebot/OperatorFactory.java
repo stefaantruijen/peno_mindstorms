@@ -6,10 +6,8 @@ import java.io.IOException;
 import lejos.pc.comm.NXTCommException;
 
 import bluebot.game.World;
-import bluebot.io.Buffer;
 import bluebot.io.Link;
 import bluebot.io.PhysicalClientConnector;
-import bluebot.io.VirtualClientLink;
 import bluebot.simulator.VirtualRobot;
 
 
@@ -39,6 +37,7 @@ public class OperatorFactory {
 		return new LocalOperator(new VirtualRobot(world));
 	}
 	
+	/*
 	public static final Operator connectToSimulatorRemotely(final World world) {
 		final Operator local = connectToSimulator(world);
 		
@@ -55,5 +54,6 @@ public class OperatorFactory {
 		
 		return connectTo(new VirtualClientLink(server2client, client2server));
 	}
+	*/
 	
 }

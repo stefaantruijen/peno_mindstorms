@@ -7,8 +7,11 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import bluebot.Operator;
 import bluebot.game.Game;
 import bluebot.graph.Tile;
+import bluebot.ui.rendering.RenderingUtils;
+import bluebot.util.Orientation;
 
 
 
@@ -21,6 +24,7 @@ public class DefaultVisualizationComponent extends VisualizationComponent {
 	
 	private int dx, dy;
 	private Game game;
+	private Operator operator;
 	
 	
 	public DefaultVisualizationComponent() {
@@ -36,9 +40,18 @@ public class DefaultVisualizationComponent extends VisualizationComponent {
 		gfx.setColor(getBackground());
 		gfx.fillRect(0, 0, w, h);
 		
+		gfx.translate(((w / 2) + dx), ((h / 2) + dy));
+		
 		final Game game = this.game;
-//		System.out.println("RENDER:  " + game);
-		if (game == null) {
+		final Operator operator = this.operator;
+		if (game != null) {
+			game.render(gfx, Tile.RESOLUTION);
+		} else if (operator != null) {
+			final Orientation pos = operator.getOrientation();
+			RenderingUtils.renderPlayer(gfx,
+					Math.toRadians(pos.getHeadingBody()),
+					Math.toRadians(pos.getHeadingHead()));
+		} else {
 			final String msg = "<Insert Coin>";
 			
 			final Font font = new Font(Font.SANS_SERIF, Font.BOLD, 16);
@@ -48,11 +61,8 @@ public class DefaultVisualizationComponent extends VisualizationComponent {
 			final FontMetrics fm = gfx.getFontMetrics(font);
 			
 			gfx.drawString(msg,
-					((w / 2) - (fm.stringWidth(msg) / 2)),
-					((h / 2) - (fm.getHeight() / 2)));
-		} else {
-			gfx.translate(((w / 2) + dx), ((h / 2) + dy));
-			game.render(gfx, Tile.RESOLUTION);
+					-(fm.stringWidth(msg) / 2),
+					(fm.getHeight() / 2));
 		}
 	}
 	
@@ -67,6 +77,11 @@ public class DefaultVisualizationComponent extends VisualizationComponent {
 		}
 		
 		this.game = game;
+		repaint(0L);
+	}
+	
+	public void setOperator(final Operator operator) {
+		this.operator = operator;
 		repaint(0L);
 	}
 	

@@ -14,4 +14,6 @@ public interface GaugeListener extends EventListener {
 	
 	public void onValueChanged(int value);
 	
+	public void onValueRequested(int value);
+	
 }

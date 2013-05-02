@@ -250,12 +250,6 @@ public class DefaultController extends AbstractController {
 				case LIGHT:
 					fireSensorLight(packet.getSensorValue());
 					break;
-				case SPEED:
-					final int speed = packet.getSensorValue();
-					//	TODO:	Check whether or not both have to be fired
-					fireSpeed(speed);
-					fireSpeedChanged(speed);
-					break;
 				case ULTRA_SONIC:
 					fireSensorUltraSonic(packet.getSensorValue());
 					break;

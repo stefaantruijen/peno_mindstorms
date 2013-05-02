@@ -9,6 +9,7 @@ import bluebot.operations.impl.SeesawOperation;
 import bluebot.operations.impl.WhiteLineOperation;
 import bluebot.sensors.Calibration;
 import bluebot.sensors.CalibrationException;
+import bluebot.sensors.SensorType;
 import bluebot.util.Orientation;
 
 
@@ -105,6 +106,15 @@ public class LocalOperator extends AbstractOperator {
 		getRobot().moveForward(distance, wait);
 	}
 	
+	public int[] readSensors() {
+		final int[] values = new int[SensorType.values().length];
+		values[SensorType.INFRARED.ordinal()] = readSensorInfrared();
+		values[SensorType.LIGHT.ordinal()] = readSensorLight();
+		values[SensorType.TOUCH.ordinal()] = (readSensorTouch() ? 1 : 0);
+		values[SensorType.ULTRA_SONIC.ordinal()] = readSensorUltrasonic();
+		return values;
+	}
+	
 	public int readSensorInfrared() {
 		return getRobot().getInfraredDirection();
 	}
@@ -132,6 +142,7 @@ public class LocalOperator extends AbstractOperator {
 	
 	public void setSpeed(final int percentage) {
 		getRobot().setSpeed(percentage);
+		fireSpeedChanged(percentage);
 	}
 	
 	public void setStartLocation(final int x, final int y, final float angle) {

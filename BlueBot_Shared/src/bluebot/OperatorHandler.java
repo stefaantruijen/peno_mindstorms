@@ -30,6 +30,8 @@ public class OperatorHandler implements Runnable {
 	public OperatorHandler(final Operator operator, final Link link) {
 		this.link = link;
 		this.operator = operator;
+		
+		operator.addListener(new OperatorMonitor());
 	}
 	
 	
@@ -66,6 +68,8 @@ public class OperatorHandler implements Runnable {
 				
 			case OP_SENSOR:
 				return createHandlerSensor();
+			case OP_SENSORS:
+				return createHandlerSensors();
 				
 			case OP_SPEED_GET:
 				return createHandlerSpeedGet();
@@ -349,6 +353,42 @@ public class OperatorHandler implements Runnable {
 		};
 	}
 	
+	private final Handler createHandlerSensors() {
+		return new Handler() {
+			
+			private int[] values;
+			
+			
+			
+			public void handle() {
+				values = getOperator().readSensors();
+			}
+			
+			public void read(final DataInputStream stream) throws IOException {
+				//	no args
+			}
+			
+			public void write(final DataOutputStream stream) throws IOException {
+				for (final SensorType sensor : SensorType.values()) {
+					writeValue(stream, sensor, values[sensor.ordinal()]);
+				}
+			}
+			
+			private final void writeValue(final DataOutputStream stream,
+					final SensorType sensor, final int value) throws IOException {
+				switch (sensor) {
+					case TOUCH:
+						stream.writeByte(value);
+						break;
+					default:
+						stream.writeShort(value);
+						break;
+				}
+			}
+			
+		};
+	}
+	
 	private final Handler createHandlerSpeedGet() {
 		return new Handler() {
 			
@@ -489,6 +529,26 @@ public class OperatorHandler implements Runnable {
 		public abstract void read(DataInputStream stream) throws IOException;
 		
 		public abstract void write(DataOutputStream stream) throws IOException;
+		
+	}
+	
+	
+	
+	
+	
+	private final class OperatorMonitor implements OperatorListener {
+		
+		public void onSpeedChanged(final int percentage) {
+			try {
+				final DataOutputStream stream = getOutput();
+				synchronized (lock) {
+					stream.writeByte(OP_EVENT_SPEED);
+					stream.writeByte(percentage);
+				}
+			} catch (final IOException e) {
+				e.printStackTrace();
+			}
+		}
 		
 	}
 	

@@ -14,8 +14,6 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import bluebot.Operator;
-
 
 
 /**
@@ -35,13 +33,10 @@ public class GaugeComponent extends RenderingComponent {
 	}
 	
 	private int infrared;
-	private Operator operator;
 	private int value;
 	
 	
-	public GaugeComponent(final Operator operator) {
-		this.operator = operator;
-		
+	public GaugeComponent() {
 		setFocusable(false);
 		setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
 		setOpaque(false);
@@ -65,6 +60,12 @@ public class GaugeComponent extends RenderingComponent {
 	private final void fireValueChanged(final int value) {
 		for (final GaugeListener listener : getListeners()) {
 			listener.onValueChanged(value);
+		}
+	}
+	
+	private final void fireValueRequested(final int value) {
+		for (final GaugeListener listener : getListeners()) {
+			listener.onValueRequested(value);
 		}
 	}
 	
@@ -183,7 +184,6 @@ public class GaugeComponent extends RenderingComponent {
 	public void setValue(int value) {
 		value = clamp(value);
 		if (value != this.value) {
-			operator.setSpeed(value);
 			this.value = value;
 			repaint(0L);
 			fireValueChanged(value);
@@ -260,7 +260,7 @@ public class GaugeComponent extends RenderingComponent {
 		private final void onEvent(final MouseEvent event) {
 			final int percentage = calculatePercentage(event.getX(), event.getY());
 			if ((percentage >= 0) && (percentage != getValue())) {
-				setValue(percentage);
+				fireValueRequested(percentage);
 			}
 		}
 		
