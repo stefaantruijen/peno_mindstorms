@@ -379,7 +379,7 @@ public class World {
 		
 		public void lockedSeesaw(final String playerId,
 				final int playerNumber, final int barcode) {
-			//	ignored
+			seesaws.add(Integer.valueOf(barcode));
 		}
 		
 		@Override
@@ -437,7 +437,6 @@ public class World {
 					return;
 			}
 			seesaws.remove(Integer.valueOf(end));
-			seesaws.add(Integer.valueOf(barcode));
 		}
 		
 	}
