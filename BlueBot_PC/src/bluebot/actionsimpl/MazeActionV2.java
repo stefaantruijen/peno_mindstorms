@@ -246,7 +246,7 @@ public class MazeActionV2 extends Operation{
 		graph.setRootTile(current);
 		getOperator().setSpeed(80);
 		for (Tile[] path; (path = getPathToNextTile(false)) != null;) {
-			System.out.println(path.length);
+			//System.out.println(path.length);
 			if (path.length == 1) {
 				scanBorders(current);
 				continue;
@@ -254,13 +254,13 @@ public class MazeActionV2 extends Operation{
 			for (int i = 1; i < (path.length); i++) {
 				checkAborted();
 				Tile next = path[i];
-				System.out.println(next.toString());
+				//System.out.println(next.toString());
 				if(next.isSeesaw()){
-					System.out.println("next is seesaw");
+					//System.out.println("next is seesaw");
 					boolean crossedSeesaw = false;
 					while(!crossedSeesaw){
-						if(!this.getOperator().detectInfrared() 
-								&& mazeListener.lockSeesaw(current.getBarCode())){
+						if(!this.getOperator().detectInfrared() ){
+							mazeListener.lockSeesaw(current.getBarCode());
 							int j = i+3;
 							//i+3 zet de robot op de tile achter de barcode achter de wip
 							while(i!=j){
@@ -268,6 +268,7 @@ public class MazeActionV2 extends Operation{
 								Tile goTo = path[i];
 								mazeListener.updatePosition(goTo.getX(), goTo.getY(), getDirectionBody().getDouble());
 							}
+							resetHead();
 							getOperator().doSeesaw();
 							this.current = path[i];
 							mazeListener.unlockSeesaw();
@@ -306,12 +307,12 @@ public class MazeActionV2 extends Operation{
 				checkAborted();
 				if (tile.canHaveBarcode()) {
 					final int barcode = scanBarcode(tile);
-					System.out.println("I scanned barcode "+barcode);
+					//System.out.println("I scanned barcode "+barcode);
 					checkAborted();
 					if (barcode >= 0) {
-						System.out.println("barcode > 0");
+						//System.out.println("barcode > 0");
 						if(barcodeCanBeItemBarcode(barcode)){
-							System.out.println("can be item barcode");
+							//System.out.println("can be item barcode");
 							tile = createItem(tile, getDirectionBody(), barcode);
 							//send barcode to merger
 							addTileToMazeMergerAndTeammate(tile);
@@ -354,7 +355,7 @@ public class MazeActionV2 extends Operation{
 		 */
 		if(this.found && this.teamMateKnown && mergeSuccess){
 		//---READY TO GO TO TEAMMATE
-			System.out.println("Object found, teammate known, merge succes: to the choppa!");
+			//System.out.println("Object found, teammate known, merge succes: to the choppa!");
 			this.GoToRobot();
 			mazeListener.notifyGameOver();
 		}
@@ -784,7 +785,7 @@ public class MazeActionV2 extends Operation{
 		if(ballNumber==this.objectNumber && this.teamNumber == DEFAULT_TEAMNUMBER){
 			this.teamNumber = teamNumber;
 		}
-		System.out.println("barcode="+barcode+"    ballnumber="+ballNumber+"  ournumber="+this.objectNumber);
+		//System.out.println("barcode="+barcode+"    ballnumber="+ballNumber+"  ournumber="+this.objectNumber);
 		result.add(ballNumber);
 		result.add(teamNumber);
 		return result;	
@@ -825,7 +826,7 @@ public class MazeActionV2 extends Operation{
 
 	private void pickUp() throws InterruptedException, OperationException, CalibrationException {
 		this.resetHead();
-		System.out.println("I am really gonna do pickup! :)");
+		//System.out.println("I am really gonna do pickup! :)");
 		getOperator().doPickUp();
 		this.setFound();
 		//because the robot is turned aroud, the moves.turns added with 2
@@ -887,7 +888,7 @@ public class MazeActionV2 extends Operation{
 	private void followPath(final List<Tile> path)
 			throws  InterruptedException, CalibrationException, OperationException {
 		getOperator().setSpeed(100);
-		System.out.println(path);
+		//System.out.println(path);
 //		ArrayList<Tile> straightLine = new ArrayList<Tile>();
 		for (Tile t : path) {
 			System.out.println("moving to: "+t);

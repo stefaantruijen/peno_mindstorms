@@ -1,0 +1,10 @@
+8 8
+
+DeadEnd.N.V        DeadEnd.N.V        Corner.N    T.N              T.N           T.N              T.N              Corner.E 
+Straight.N.0       Straight.N.04    Corner.W    T.S              T.S           T.S              Cross            T.E      
+T.W.S4N              T.S              T.N         T.N              DeadEnd.E    DeadEnd.N.S3W         T.W              T.E      
+Straight.N.13    DeadEnd.N        Corner.W.S2N    T.E              DeadEnd.N     Straight.N.15    T.W              T.E      
+Seesaw.N       T.W              Corner.E    Straight.N.05    Straight.N    Seesaw.N       T.W              T.E      
+Seesaw.N       T.W              T.E         DeadEnd.S.V        Straight.N    Seesaw.N       T.W              T.E      
+Straight.N.11    T.W              Cross       T.N              T.E           Straight.N.17    Corner.W         Corner.S 
+DeadEnd.S.S1E        Corner.W         T.S         T.S              Corner.S      Corner.W         Straight.E.01    DeadEnd.E.V
