@@ -323,30 +323,12 @@ public class Game {
 			}
 		}
 		
-		public boolean lockSeesaw(final int barcode) {
-			final PlayerClient client = getClient();
+		public void lockSeesaw(final int barcode) {
 			try {
-				client.lockSeesaw(barcode);
+				getClient().lockSeesaw(barcode);
 			} catch (final Exception e) {
 				e.printStackTrace();
-				return false;
 			}
-			
-			final long timeout = (System.currentTimeMillis() + 5000L);
-			while (System.currentTimeMillis() < timeout) {
-				if (client.hasLockOnSeesaw(barcode)) {
-					return true;
-				}
-				
-				try {
-					Thread.sleep(10L);
-				} catch (final InterruptedException e) {
-					e.printStackTrace();
-					return false;
-				}
-			}
-			
-			return false;
 		}
 		
 		public void notifyGameOver() {

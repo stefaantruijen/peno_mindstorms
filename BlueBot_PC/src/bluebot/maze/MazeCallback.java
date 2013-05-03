@@ -19,35 +19,41 @@ public interface MazeCallback {
 	public void joinTeam(int teamNumber);
 	
 	/**
-	 * "Ik wil over de wip rijden"
-	 * @param barcode
-	 * @return true: toestemming om over de wip rijden
-	 * 		   false: geen toestemming
+	 * This method should be called when the player is going to driver over a seesaw
+	 * 
+	 * @param barcode - the barcode that was read in front of the seesaw
 	 */
-	public boolean lockSeesaw(int barcode);
+	public void lockSeesaw(int barcode);
 	
-	public void notifyGameOver();
 	/**
-	 * wordt gestuurd indien robot object heeft
+	 * This method should be called when the player has 'touched' the teammate
+	 */
+	public void notifyGameOver();
+	
+	/**
+	 * This method should be called when the player has found the object
 	 */
 	public void notifyObjectFound();
 	
 	/**
-	 * zend tile naar teammate
-	 * @param tile
+	 * This method sends the information of a {@link Tile} to the teammate
+	 * 
+	 * @param tile - the {@link Tile} to be sent
 	 */
 	public void sendTile(Tile tile);
 	
 	/**
-	 * Over de wip gereden
+	 * This method should be called when the player has driven over a seesaw
 	 */
 	public void unlockSeesaw();
 	
 	/**
+	 * This method sends the position of the player
 	 * 
-	 * @param x
-	 * @param y
-	 * @param angle heading van de body
+	 * @param x - relative X (in tile coordinates)
+	 * @param y - relative Y (in tile coordinates)
+	 * @param angle - the rotation of the player (in degrees),
+	 * 					measured clockwise from the positive Y axis
 	 */
 	public void updatePosition(long x, long y, double angle);
 	
