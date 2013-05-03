@@ -301,41 +301,42 @@ public class MazeActionV2 extends Operation{
 			}
 			Tile tile = current;
 			checkAborted();
-			scanBorders(tile);
-			
-			checkAborted();
-			if (tile.canHaveBarcode()) {
-				final int barcode = scanBarcode(tile);
-				System.out.println("I scanned barcode "+barcode);
+			if(needsExploration(tile)){
+				scanBorders(tile);
 				checkAborted();
-				if (barcode >= 0) {
-					System.out.println("barcode > 0");
-					if(barcodeCanBeItemBarcode(barcode)){
-						System.out.println("can be item barcode");
-						tile = createItem(tile, getDirectionBody(), barcode);
-						//send barcode to merger
-						addTileToMazeMergerAndTeammate(tile);
-						checkAborted();
-						
-						ArrayList<Integer> numbers = getItemnumber(barcode);
-						int itemNumber = numbers.get(0);
-						int teamNb = numbers.get(1);
-						//If this is our object AND we haven't picked up our object already
-						if (itemNumber == this.objectNumber && teamNb== this.teamNumber) {
-							this.pickUp();
-							mazeListener.notifyObjectFound();
+				if (tile.canHaveBarcode()) {
+					final int barcode = scanBarcode(tile);
+					System.out.println("I scanned barcode "+barcode);
+					checkAborted();
+					if (barcode >= 0) {
+						System.out.println("barcode > 0");
+						if(barcodeCanBeItemBarcode(barcode)){
+							System.out.println("can be item barcode");
+							tile = createItem(tile, getDirectionBody(), barcode);
+							//send barcode to merger
+							addTileToMazeMergerAndTeammate(tile);
+							checkAborted();
+							
+							ArrayList<Integer> numbers = getItemnumber(barcode);
+							int itemNumber = numbers.get(0);
+							int teamNb = numbers.get(1);
+							//If this is our object AND we haven't picked up our object already
+							if (itemNumber == this.objectNumber && teamNb== this.teamNumber) {
+								this.pickUp();
+								mazeListener.notifyObjectFound();
+							}
+						}else if(barcodeCanBeSeesaw(barcode)){
+							checkAborted();
+							seesaws++;
+							handleSeesawBarcode(barcode);
+						}else{
+							//TODO:Checkpoint logica ?
 						}
-					}else if(barcodeCanBeSeesaw(barcode)){
-						checkAborted();
-						seesaws++;
-						handleSeesawBarcode(barcode);
-					}else{
-						//TODO:Checkpoint logica ?
+						
 					}
-					
 				}
 			}
-			
+
 			if(this.found && this.teamMateKnown){
 				//Try merge
 				if(mazeMerger.hasReceivedNewTileSinceLastCheck()){
