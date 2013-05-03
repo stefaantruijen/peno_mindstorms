@@ -91,7 +91,7 @@ public class VirtualInfraredSensor {
                              * Deze moet nog geïmplementeerd worden en gebruik maken van GameState?.
                              */
                     	//TODO: implement seeing further then one tile? 
-                            if(noWallBetween(x, y, heading, distBetween) && !sensors.getWorld().isSeesawLocked(sensors.getTileAt(x,y).getBarCode())){
+                            if(noWallBetween(x, y, heading, distBetween) && sensors.getWorld().isSeesawLocked(sensors.getTileAt(x,y).getBarCode())){
                                     return irSource;
                             }
                      }

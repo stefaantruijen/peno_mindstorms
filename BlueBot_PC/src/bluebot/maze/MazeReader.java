@@ -70,7 +70,7 @@ public class MazeReader {
 		List<Tile> rowList = new ArrayList<Tile>();
 		int x = 0;
 		int i = 0;
-		String[] tilesources = row.replaceAll(" ", "").split("\t");
+		String[] tilesources = row.split("\\s+");
 		while(x < xLimit){
 			if(tilesources[i].startsWith("#")){
 				return null;

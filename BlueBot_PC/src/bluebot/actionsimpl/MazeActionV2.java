@@ -436,6 +436,7 @@ public class MazeActionV2 extends Operation{
 	 * @param current	The tile the robot is currently standing on.
 	 */
 	private Tile sideStepFromSeesaw(Tile current) {
+		//TODO: blyven staan indien geen andere mogelijkheid
 		List<Tile> neighbors = getNeighborsOfTile(current);
 		Tile currentTile = null;
 		Tile lastTile = current;
