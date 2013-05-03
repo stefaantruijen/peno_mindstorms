@@ -69,6 +69,8 @@ public class MazeActionV2 extends Operation{
 	
 	/**
 	 * Create a tile that has an item on it (with itemid = id)
+	 * and sends tile and the neighbor of the tile to the mazelistener
+	 * and to the mazemerger.
 	 * @param tile
 	 * @param dir
 	 * @param id
@@ -103,23 +105,24 @@ public class MazeActionV2 extends Operation{
 		if (dir != Orientation.NORTH) {
 			final Tile neighbor = maze.addTile(x, y - 1);
 			neighbor.setBorderNorth(Border.CLOSED);
-			mazeListener.sendTile(neighbor);
+			addTileToMazeMergerAndTeammate(neighbor);
 		}
 		if (dir != Orientation.EAST) {
 			final Tile neighbor = maze.addTile(x - 1, y);
 			neighbor.setBorderEast(Border.CLOSED);
-			mazeListener.sendTile(neighbor);
+			addTileToMazeMergerAndTeammate(neighbor);
 		}
 		if (dir != Orientation.SOUTH) {
 			final Tile neighbor = maze.addTile(x, y + 1);
 			neighbor.setBorderSouth(Border.CLOSED);
-			mazeListener.sendTile(neighbor);
+			addTileToMazeMergerAndTeammate(neighbor);
 		}
 		if (dir != Orientation.WEST) {
 			final Tile neighbor = maze.addTile(x + 1, y);
 			neighbor.setBorderWest(Border.CLOSED);
-			mazeListener.sendTile(neighbor);
+			addTileToMazeMergerAndTeammate(neighbor);
 		}
+		addTileToMazeMergerAndTeammate(tile);
 		return tile;
 	}
 	
