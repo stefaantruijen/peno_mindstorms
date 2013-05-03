@@ -15,10 +15,6 @@ public class SeesawOperation extends Operation<Void> {
 	
 	protected Void execute()
 			throws CalibrationException, InterruptedException, OperationException {
-		if (getOperator().detectInfrared()) {
-			return null;
-		}
-		
 		int speed = getOperator().getSpeed();
 		getOperator().setSpeed(50);
 		getOperator().moveForward();
