@@ -357,9 +357,7 @@ public class ControllerFrame extends RenderingFrame implements ControllerListene
 		return tabs;
 	}
 	
-	private final void doGame(final String[] args) {
-		final String playerId = args[1];
-		
+	public void doGame(final String playerId) {
 		final Game game;
 		try {
 			game = new Game(operator, application.getGameId(), playerId, new GameCallback() {
@@ -370,24 +368,10 @@ public class ControllerFrame extends RenderingFrame implements ControllerListene
 						return false;
 					}
 					
-					final float heading;
-					switch (start.getStartOrientation()) {
-						case NORTH:
-							heading = 0F;
-							break;
-						case EAST:
-							heading = 90F;
-							break;
-						case SOUTH:
-							heading = 180F;
-							break;
-						case WEST:
-							heading = 270F;
-							break;
-						default:
-							throw new IllegalArgumentException("Invalid initial orientation");
+					if (operator.setStartLocation(start.getX(), start.getY(),
+							start.getStartOrientation().getAngle())) {
+						return true;
 					}
-					operator.setStartLocation(start.getX(), start.getY(), heading);
 					
 					final String msg = String.format("Place the robot on %s facing %s",
 							start, start.getStartOrientation());
@@ -413,6 +397,11 @@ public class ControllerFrame extends RenderingFrame implements ControllerListene
 			e.printStackTrace();
 			onError(e.getMessage());
 		}
+	}
+	
+	private final void doGame(final String[] args) {
+		final String playerId = args[1];
+		doGame(playerId);
 	}
 	
 	@Override

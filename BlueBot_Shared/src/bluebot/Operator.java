@@ -35,6 +35,7 @@ public interface Operator extends Mobile {
 	public static final int OP_DO_SEESAW			= 0x54;
 	public static final int OP_DO_WHITELINE			= 0x55;
 	public static final int OP_EVENT_SPEED			= 0x61;
+	public static final int OP_START_LOCATION		= 0x71;
 	
 	
 	
@@ -94,6 +95,6 @@ public interface Operator extends Mobile {
 	public int scanBarcode()
 			throws CalibrationException, InterruptedException, OperationException;
 	
-	public void setStartLocation(int x, int y, float angle);
+	public boolean setStartLocation(int x, int y, float angle);
 	
 }

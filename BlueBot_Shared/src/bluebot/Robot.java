@@ -100,9 +100,16 @@ public interface Robot extends Mobile {
 	public int getInfraredDirection();
 	
 	/**
+	 * Sets the start location
 	 * 
-	 * sets start location
+	 * @param x - the absolute X coordinate (in tile-space)
+	 * @param y - the absolute Y coordinate (in tile-space)
+	 * @param heading - the rotation (in degrees),
+	 * 						measured clockwise from the positive Y axis
+	 * 
+	 * @return <code>FALSE</code> if the start location has to be set physically,
+	 * 			<code>TRUE</code> otherwise
 	 */
-	public void setStartLocation(int x, int y, float heading);
+	public boolean setStartLocation(int x, int y, float heading);
 	
 }

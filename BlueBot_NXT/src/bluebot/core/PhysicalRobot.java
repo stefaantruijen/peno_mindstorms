@@ -27,7 +27,6 @@ import bluebot.util.Utils;
  */
 public class PhysicalRobot extends AbstractRobot {
 	
-	
 	public static final long INTERVAL_ULTRA_SONIC = 50L;
 	public static final float WHEEL_DIAMETER_LEFT  = 55.18F;
 	public static final float WHEEL_DIAMETER_RIGHT = 54.82F;
@@ -166,6 +165,11 @@ public class PhysicalRobot extends AbstractRobot {
 		getPilot().setTravelSpeed(speed);
 	}
 	
+	public boolean setStartLocation(int x, int y, float heading) {
+		//	The NXT brick has to be placed manually
+		return false;
+	}
+	
 	public void stop() {
 //		getPilot().quickStop();
 		getPilot().stop();
@@ -186,12 +190,11 @@ public class PhysicalRobot extends AbstractRobot {
 	public void turnRight(final float angle, final boolean wait) {
 		getPilot().rotate(-Math.abs(angle), !wait);
 	}
-	@Override
+	
 	public float getAngleIncrement() {
 		return getPilot().getAngleIncrement();
 	}
 	
-	@Override
 	public float getArcLimit() {
 		return 150;
 	}
@@ -255,12 +258,11 @@ public class PhysicalRobot extends AbstractRobot {
 		}
 		
 	}
-
-	@Override
+	
 	public boolean isPressed() {
 		return touchSensor.isPressed();
 	}
-	@Override
+	
 	public boolean seeInfrared() {
 		int direction = this.getInfraredDirection();
 		if(direction > 2 && direction <8){
@@ -269,13 +271,8 @@ public class PhysicalRobot extends AbstractRobot {
 		return false;
 	}
 	
-	@Override
 	public int getInfraredDirection() {
 		return this.infraredSensor.getDirection();
-	}
-	@Override
-	public void setStartLocation(int x, int y, float heading) {
-		//nix doen
 	}
 	
 }

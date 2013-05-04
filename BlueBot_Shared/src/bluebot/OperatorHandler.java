@@ -76,6 +76,9 @@ public class OperatorHandler implements Runnable {
 			case OP_SPEED_SET:
 				return createHandlerSpeedSet();
 				
+			case OP_START_LOCATION:
+				return createHandlerStartLocation();
+				
 			case OP_STOP:
 				return createHandlerStop();
 				
@@ -428,6 +431,32 @@ public class OperatorHandler implements Runnable {
 			
 			public void write(final DataOutputStream stream) throws IOException {
 				//	void
+			}
+			
+		};
+	}
+	
+	private final Handler createHandlerStartLocation() {
+		return new Handler() {
+			
+			private float angle;
+			private boolean result;
+			private int x, y;
+			
+			
+			
+			public void handle() {
+				result = getOperator().setStartLocation(x, y, angle);
+			}
+			
+			public void read(final DataInputStream stream) throws IOException {
+				x = stream.readShort();
+				y = stream.readShort();
+				angle = stream.readFloat();
+			}
+			
+			public void write(final DataOutputStream stream) throws IOException {
+				stream.writeBoolean(result);
 			}
 			
 		};

@@ -304,8 +304,18 @@ public class RemoteOperator extends AbstractOperator {
 		});
 	}
 	
-	public void setStartLocation(final int x, final int y, final float angle) {
-		//	ignored
+	public boolean setStartLocation(final int x, final int y, final float angle) {
+		return getCallManager().makeCall(OP_START_LOCATION, new RemoteCall<Boolean>() {
+			protected Boolean read(final DataInputStream stream) throws IOException {
+				return stream.readBoolean();
+			}
+			
+			protected void write(final DataOutputStream stream) throws IOException {
+				stream.writeShort(x);
+				stream.writeShort(y);
+				stream.writeFloat(angle);
+			}
+		});
 	}
 	
 	public void stop() {

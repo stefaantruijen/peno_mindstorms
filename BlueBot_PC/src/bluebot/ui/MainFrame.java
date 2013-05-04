@@ -9,9 +9,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 import lejos.pc.comm.NXTCommException;
 
@@ -26,7 +24,7 @@ import bluebot.game.World;
  * 
  * @author Ruben Feyen
  */
-public class MainFrame extends RenderingFrame {
+public class MainFrame extends AbstractFrame {
 	private static final long serialVersionUID = 1L;
 	
 	public static final String DEFAULT_BRICK_NAME = "BlueBot";
@@ -82,16 +80,16 @@ public class MainFrame extends RenderingFrame {
 		}
 	}
 	
-	private final void connectToSimulator() {
+	private final ControllerFrame connectToSimulator() {
 		try {
-			showController(OperatorFactory.connectToSimulator(getWorld()));
+			return showController(OperatorFactory.connectToSimulator(getWorld()));
 		} catch (final Exception e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this,
 					e.getMessage(),
 					"Error",
 					JOptionPane.ERROR_MESSAGE);
-			return;
+			return null;
 		}
 	}
 	
@@ -133,9 +131,22 @@ public class MainFrame extends RenderingFrame {
 		});
 		*/
 		
+		final JButton btnDebug = createButton("DEBUG (4x sim)");
+		btnDebug.addActionListener(new ActionListener() {
+			public void actionPerformed(final ActionEvent event) {
+				final String[] playerIds = { "A", "B", "C", "D" };
+				for (final String playerId : playerIds) {
+					final ControllerFrame gui = connectToSimulator();
+					if (gui != null) {
+						gui.doGame(playerId);
+					}
+				}
+			}
+		});
+		
 		final GridBagLayout layout = new GridBagLayout();
 		layout.columnWeights = new double[] { 1D };
-		layout.rowHeights = new int[] { 64, 64, /* 64 */ };
+		layout.rowHeights = new int[] { 64, 64, 64 };
 		layout.rowWeights = new double[] { 1D, 1D, 1D };
 		setLayout(layout);
 		
@@ -149,27 +160,21 @@ public class MainFrame extends RenderingFrame {
 		gbc.gridy++;
 		add(btnSim, gbc);
 		
-//		gbc.gridy++;
-//		add(btnTestDummy, gbc);
+		gbc.gridy++;
+		add(btnDebug, gbc);
 	}
 	
-	private final void showController(final Operator operator) {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				final JFrame frame =
-//						new ControllerFrame(controller);
-						new ControllerFrame(application, operator);
-				frame.setVisible(true);
-			}
-		});
-	}
-	
-	protected void startRendering() {
-		//	TODO
-	}
-	
-	protected void stopRendering() {
-		//	TODO
+	/**
+	 * IMPORTANT:	This method has to be invoked on the EDT
+	 * 
+	 * @param operator - an {@link Operator}
+	 * 
+	 * @return the resulting {@link ControllerFrame}
+	 */
+	private final ControllerFrame showController(final Operator operator) {
+		final ControllerFrame frame = new ControllerFrame(application, operator);
+		frame.setVisible(true);
+		return frame;
 	}
 	
 }

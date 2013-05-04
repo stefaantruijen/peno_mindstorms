@@ -145,8 +145,8 @@ public class LocalOperator extends AbstractOperator {
 		fireSpeedChanged(percentage);
 	}
 	
-	public void setStartLocation(final int x, final int y, final float angle) {
-		getRobot().setStartLocation(x, y, angle);
+	public boolean setStartLocation(final int x, final int y, final float angle) {
+		return getRobot().setStartLocation(x, y, angle);
 	}
 	
 	public void stop() {

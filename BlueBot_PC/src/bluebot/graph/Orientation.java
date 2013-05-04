@@ -6,13 +6,26 @@ package bluebot.graph;
  *
  */
 public enum Orientation {
-	NORTH("N"),EAST("E"),SOUTH("S"),WEST("W");
+	NORTH	("N",	  0F),
+	EAST	("E",	 90F),
+	SOUTH	("S",	180F),
+	WEST	("W",	270F);
+	
+	
+	
+	
 	
 	private final String source;
 	
-	private Orientation(String v){
-		this.source = v;
+	private float angle;
+	
+	
+	private Orientation(final String source, final float angle) {
+		this.angle = angle;
+		this.source = source;
 	}
+	
+	
 	
 	/**
 	 * Calculates the matching orientation for a given heading
@@ -35,6 +48,14 @@ public enum Orientation {
 			return Orientation.EAST;
 		}
 		return Orientation.NORTH;
+	}
+	
+	/**
+	 * Returns the angle (in degrees),
+	 * measured clockwise from the positive Y axis
+	 */
+	public float getAngle() {
+		return angle;
 	}
 	
 	/**

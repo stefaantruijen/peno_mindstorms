@@ -1159,9 +1159,10 @@ public class VirtualRobot extends AbstractRobot {
 //				}
 //			}
 //		}
-//	}	
-	@Override
-	public void setStartLocation(int x, int y, float heading) {
+//	}
+	
+	public boolean setStartLocation(int x, int y, float heading) {
 		this.setStartTile(x, y, heading);
+		return true;
 	}	
 }
