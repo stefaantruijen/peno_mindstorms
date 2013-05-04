@@ -570,6 +570,7 @@ public class MazeActionV2 extends Operation{
 	
 	private void setFound(){
 		this.found=true;
+		mazeListener.joinTeam(teamNumber);
 	}
 
 	
@@ -581,17 +582,6 @@ public class MazeActionV2 extends Operation{
 			otherRobotTile.transform(mazeMerger.getMergeRotationDirection(), mazeMerger.getMergeTranslationVector());
 		}
 		
-		//	TODO
-		
-		/*
-		 * @ Dario
-		 * 
-		 * X en Y zijn relatieve coordinaten voor de teammate
-		 * (Moeten dus op een of andere manier worden vertaald naar eigen coordinaten)
-		 * 
-		 * Ik heb geen idee hoe de angle precies gedefinieerd is,
-		 * maar die is normaal gezien irrelevant voor u.
-		 */
 	}
 	
 	
@@ -1098,7 +1088,7 @@ public class MazeActionV2 extends Operation{
 		final int dx = (tile.getX() - this.current.getX());
 		final int dy = (tile.getY() - this.current.getY());
 		//mazeListener.updatePosition(dx, dy, this.getDirectionBody().getDouble());
-		mazeListener.updatePosition(tile.getX(),tile.getY(),getDirectionBody().getDouble());
+		mazeListener.updatePosition(tile.getX(), tile.getY(), this.getDirectionBody().getDouble());
 		if (dy > 0) {
 			travelNorth();
 		} else if (dx > 0) {
@@ -1257,6 +1247,7 @@ public class MazeActionV2 extends Operation{
 			default:
 				throw new RuntimeException("Invalid direction:  " + body);
 		}
+		mazeListener.updatePosition(current.getX(), current.getY(), getDirectionBody().getDouble());
 		moveForward();
 	}
 	
@@ -1279,6 +1270,7 @@ public class MazeActionV2 extends Operation{
 			default:
 				throw new RuntimeException("Invalid direction:  " + body);
 		}
+		
 		moveForward();
 	}
 	
