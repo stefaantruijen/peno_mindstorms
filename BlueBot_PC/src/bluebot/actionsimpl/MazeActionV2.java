@@ -322,9 +322,11 @@ public class MazeActionV2 extends Operation{
 							int itemNumber = numbers.get(0);
 							int teamNb = numbers.get(1);
 							//If this is our object AND we haven't picked up our object already
+							//System.out.println(playerNumber+ "found object "+ itemNumber + "("+objectNumber+"), team "+ teamNumber + "("+teamNb+")");
 							if (itemNumber == this.objectNumber && teamNb== this.teamNumber) {
 								this.pickUp();
 								mazeListener.notifyObjectFound();
+								System.out.println(playerNumber+ "joined team "+ teamNumber);
 							}
 						}else if(barcodeCanBeSeesaw(barcode)){
 							checkAborted();
@@ -341,7 +343,9 @@ public class MazeActionV2 extends Operation{
 			if(this.found && this.teamMateKnown){
 				//Try merge
 				if(mazeMerger.hasReceivedNewTileSinceLastCheck()){
+					System.out.println(playerNumber+" data me: "+mazeMerger.dataFromSelf + ", data other: "+mazeMerger.dataFromTeammate);
 					mergeSuccess = mazeMerger.tryToMerge();
+					System.out.println(playerNumber+ "trying to merge: "+ mergeSuccess);
 					if(mergeSuccess && this.canGoToTeammate()){
 						break;
 					}
@@ -486,8 +490,11 @@ public class MazeActionV2 extends Operation{
 		return null;
 	}
 	public void addTileToMazeMergerAndTeammate(Tile tile){
+		if(tile.isExplored()){
+			mazeListener.sendTile(tile);
+			//if tile is not fully explored do net send to teammate!!
+		}
 		mazeMerger.addTileFromSelf(tile);
-		mazeListener.sendTile(tile);
 	}
 	
 	/**
@@ -576,7 +583,15 @@ public class MazeActionV2 extends Operation{
 	
 	
 	public void setTeammatePosition(final long x, final long y, final double angle) {
-		
+		if(!teamMateKnown){
+			this.setTeamMateKnown();
+			for(Tile t: mazeMerger.getTilesFromSelf()){
+				if(t.isExplored()){
+					mazeListener.sendTile(t);
+				}
+			}
+			System.out.println(playerNumber+ "teammateknown");
+		}
 		if( mazeMerger.hasMerged()){
 			this.otherRobotTile = new Tile(Math.round(x),Math.round(y));
 			otherRobotTile.transform(mazeMerger.getMergeRotationDirection(), mazeMerger.getMergeTranslationVector());
@@ -1182,6 +1197,7 @@ public class MazeActionV2 extends Operation{
 
 		tile.setBarCode(bar);
 		mazeListener.sendTile(tile);
+		mazeMerger.addTileFromSelf(tile);
 		
 		return bar;
 	}
@@ -1358,7 +1374,10 @@ public class MazeActionV2 extends Operation{
 	
 	private final void updateTiles(final Tile... tiles) {
 		for (final Tile tile : tiles) {
-			mazeListener.sendTile(tile);
+			if(tile.isExplored()){
+				mazeListener.sendTile(tile);
+				//only send if fully explored
+			}
 			addTileToMazeMergerAndTeammate(tile);
 		}
 	}

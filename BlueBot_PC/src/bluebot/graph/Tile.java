@@ -180,7 +180,7 @@ public class Tile implements Comparable<Tile> {
 		}
 		if (obj instanceof Tile) {
 			final Tile tile = (Tile)obj;
-			return ((tile.x == x) && (tile.y == y));
+			return ((tile.x == x) && (tile.y == y) &&(tile.barcode==barcode));
 		}
 		return false;
 	}
@@ -738,4 +738,5 @@ public class Tile implements Comparable<Tile> {
 	public Byte getByteRepresentation(){
 		return this.borders;
 	}
+	
 }

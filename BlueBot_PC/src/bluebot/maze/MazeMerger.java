@@ -31,8 +31,8 @@ public class MazeMerger {
 	
 	private ArrayList<Tile> tilesFromTeammate; //ALL the tiles from our teammate, even those that do not have a barcode
 	private ArrayList<Tile> tilesFromSelf; //ALL tiles from ourselves, even those that do not have a barcode
-	private ArrayList<Tile> dataFromTeammate; //All tiles from our teammate that DO contain a barcode
-	private ArrayList<Tile> dataFromSelf; //All tiles from ourselves that DO contain a barcode
+	public ArrayList<Tile> dataFromTeammate; //All tiles from our teammate that DO contain a barcode
+	public ArrayList<Tile> dataFromSelf; //All tiles from ourselves that DO contain a barcode
 	private ArrayList<Tile> matchesFromTeammate; //All tiles from our teammate that have a barcode AND of which we also have a tile with that same barcode
 	private ArrayList<Tile> matchesFromSelf; //All tiles from ourselves that contain a barcode AND for which our teammate also has a tile with that same barcode
 	private int nbOfMatchesFound; //The number of tiles-with-barcode couples that we have found that can be used to calculate merge vectors
@@ -275,6 +275,7 @@ public class MazeMerger {
 								//Match found
 								try {
 									addFoundMatch(t1,t2);
+									System.out.println("match found");
 								} catch (UnexpectedException e) {
 									e.printStackTrace();
 								}
@@ -318,7 +319,7 @@ public class MazeMerger {
 	}
 	
 	private boolean isValidTile(Tile tile){
-		return tile.getBarCode() != -1;
+		return tile.getBarCode() >= 0;
 	}
 
 	/**
