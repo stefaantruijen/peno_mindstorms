@@ -117,6 +117,11 @@ public class TileBuilder {
 	}
 	
 	public static String fromTileToString(Tile t){
+		
+		if(!t.isExplored()){
+			throw new IllegalArgumentException("Tile should be fully explored before it can be sent. Some borders are still unknown. Thank you, please come again");
+		}
+		
 		if(tileDb == null){
 			MazeReader reader = new MazeReader();
 			reader.parseMaze("allTiles.txt");
@@ -124,6 +129,7 @@ public class TileBuilder {
 		}
 		
 		String tile = tileDb.get(t.getByteRepresentation());
+		
 		if(t.isSeesaw() && tile.contains("Straight")){
 			tile = tile.replace("Straight", "Seesaw");
 		}
