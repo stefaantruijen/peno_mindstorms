@@ -123,7 +123,20 @@ public class TileBuilder {
 			tileDb = reader.getTileDb();
 		}
 		
-		return tileDb.get(t.getByteRepresentation());
+		String tile = tileDb.get(t.getByteRepresentation());
+		if(t.isSeesaw() && tile.contains("Straight")){
+			tile = tile.replace("Straight", "Seesaw");
+		}
+		
+		if(!t.isSeesaw() && !tile.contains("Straight")){
+			tile = tile.replace("Seesaw", "Straight");
+		}
+		
+		if(t.getBarCode()>-1){
+			tile = tile.concat("."+t.getBarCode());
+		}
+		System.out.println(tile);
+		return tile;
 		
 		
 	}
