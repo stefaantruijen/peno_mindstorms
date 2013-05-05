@@ -1,0 +1,14 @@
+12 12
+
+DeadEnd.N.V        Corner.N      Straight.E       Straight.E    Corner.E      DeadEnd.N     Corner.N      Corner.E      Corner.N      Straight.E    Straight.E    Corner.E 
+Straight.N.06    T.W           T.N              T.N           Cross         T.S           T.E           Straight.N    Corner.W      DeadEnd.E     Corner.N      Corner.S 
+Straight.N       Corner.W      Corner.S         Corner.W      Corner.S      Corner.N      T.E           T.W           Corner.E      Corner.N      T.S           DeadEnd.E
+T.W.S3N           Straight.E    T.N              T.N           DeadEnd.E     Straight.N    Corner.W      T.E           Corner.W      T.E           Corner.N      DeadEnd.E
+Corner.W         Corner.E      Corner.W         Corner.S      Corner.N      Corner.S      Corner.N      T.E           Corner.N      T.E           T.W           Corner.E 
+Corner.N         T.S           Corner.E         DeadEnd.N     Corner.W      T.N           T.E           Straight.N    DeadEnd.S     DeadEnd.S     T.W           Corner.S 
+Corner.W         Corner.E      T.W              Cross         Straight.E    T.E           Straight.N    T.W           T.N           T.N           T.E           DeadEnd.N
+DeadEnd.W        Corner.S      DeadEnd.S        DeadEnd.S     DeadEnd.W     T.S           Cross         Corner.S      Straight.N    T.W           T.S           T.E      
+DeadEnd.W        Corner.E      DeadEnd.N.V        DeadEnd.N     DeadEnd.N     Corner.N      Cross         Straight.E    Corner.S      Straight.N    DeadEnd.W     T.E      
+Corner.N.S2S         T.E           Straight.N.07    T.W           T.S           Corner.S      Corner.W      Straight.E    Straight.E    T.E           Corner.N      Corner.S 
+Straight.N.01    T.W           T.S.S4N              Corner.S      DeadEnd.W     T.N           Corner.E      DeadEnd.W     Corner.E      T.W           Cross         Corner.E 
+DeadEnd.S.V        Corner.W.S1E      Straight.E       Straight.E.0    DeadEnd.E.V     Corner.W      Corner.S      DeadEnd.W     T.S           Corner.S      Corner.W      Corner.S 
