@@ -1031,8 +1031,31 @@ public class MazeActionV2 extends Operation{
 			for (final Orientation d : dirs) {
 				final Tile t = getNeighbor(tile, d);
 				if ((t != null) && !tiles.contains(t)) {
-					nodes.add(new Node(t, d, node));
-					tiles.add(t);
+					if(canGoOverSeesaw){
+						if(t.isSeesaw()){
+							Node n1 = new Node(t, d, node);
+//							nodes.add(n1);
+//							tiles.add(t);
+							Tile t2 = getNeighbor(t, d);
+							Node n2 = new Node(t2, d, n1);
+//							nodes.add(n2);
+//							tiles.add(t2);
+							Tile t3 = getNeighbor(t2, d);
+							Node n3 = new Node(t3, d, n2);
+							nodes.add(n3);
+							tiles.add(t3);
+						}else{
+							nodes.add(new Node(t, d, node));
+							tiles.add(t);
+						}
+					} else if (!canGoOverSeesaw){
+						if(t.isSeesaw()){
+							wantsToGoOverSeesaw = true;
+						} else if (!t.isSeesaw()){
+							nodes.add(new Node(t, d, node));
+							tiles.add(t);
+						}
+					}
 				}
 			}
 		}
