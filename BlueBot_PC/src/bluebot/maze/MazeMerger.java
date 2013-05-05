@@ -60,28 +60,26 @@ public class MazeMerger {
 	 * If hasMerged()==true, the tiles returned will be the transformed versions!
 	 */
 	public ArrayList<Tile> getTilesFromTeammate() {
-		//Uncomment this if an empty array should be returned if no merge has been successful yet
-//		if(this.hasMerged){
-//			return tilesFromTeammate;
-//		}
-//		else{
-//			return new ArrayList<Tile>();
-//		}
-		return tilesFromTeammate;
+		if(this.hasMerged){
+			return tilesFromTeammate;
+		}
+		else{
+			return new ArrayList<Tile>();
+		}
 	}
 	
-	public ArrayList<Tile> getTilesFromTeammateTranslated(){
-		ArrayList<Tile> tiles = new ArrayList<Tile>();
-		if(!hasMerged){
-			return tiles;
-		}
-		for(Tile t : this.tilesFromTeammate){
-			Tile tile = t;
-			tile.transform(this.getMergeRotationDirection(), this.getMergeTranslationVector());
-			tiles.add(tile);
-		}
-		return tiles;
-	}
+//	public ArrayList<Tile> getTilesFromTeammateTranslated(){
+//		ArrayList<Tile> tiles = new ArrayList<Tile>();
+//		if(!hasMerged){
+//			return tiles;
+//		}
+//		for(Tile t : this.tilesFromTeammate){
+//			Tile tile = t;
+//			tile.transform(this.getMergeRotationDirection(), this.getMergeTranslationVector());
+//			tiles.add(tile);
+//		}
+//		return tiles;
+//	}
 
 	/**
 	 * Get all tiles we found ourselves.
