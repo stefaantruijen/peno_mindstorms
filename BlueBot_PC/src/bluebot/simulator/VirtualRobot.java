@@ -111,17 +111,11 @@ public class VirtualRobot extends AbstractRobot {
 	 * Starting y coordinate of the robot in the global plane (or on the 'image').
 	 */
 	private int imgStartY;
-	
 	/**
-	 * Start heading according to the given maze file.
+	 * Variable representing the absolute heading of this robot in degrees (0��� being North) at the start of the movement. 
+	 * 	initAbsoluteHeading is initialized to 0 at construct. (So it always starts pointing 'north').
 	 */
-	private float imgStartHeading;
-	
-	/**
-	 * This is the orientation the robot thinks he has. 
-	 * Initially this is always 90 because thats how it is defined in the protocol specifications.
-	 */
-	private float initAbsoluteHeading = 90;
+	private float initAbsoluteHeading;
 
 	/**
 	 * Variable hodling the rotate speed of the sonar.
@@ -478,8 +472,8 @@ public class VirtualRobot extends AbstractRobot {
 	 * @return
 	 * 		A float in the range of [0, 360)
 	 */
-	private float getAbsoluteSonarDirection(){
-		return Utils.clampAngleDegrees(getImgHeading() + getRelativeSonarDirection());
+	public float getAbsoluteSonarDirection(){
+		return Utils.clampAngleDegrees(getHeading() + getRelativeSonarDirection());
 	}
 	
 	//IMPLEMENTATION OF ABSTRACT METHODS (all @Override methods)
@@ -606,7 +600,7 @@ public class VirtualRobot extends AbstractRobot {
 	 */
 	@Override
 	public int readSensorLight() {
-		double radialHeading = Math.toRadians(getImgHeading());
+		double radialHeading = Math.toRadians(getHeading());
 		int sensorX = calculateOffsettedXByRadialHeading(radialHeading, LIGHT_SENSOR_OFFSET_CM);
 		int sensorY = calculateOffsettedYByRadialHeading(radialHeading, LIGHT_SENSOR_OFFSET_CM);
 		return lightSensor.getLightValuePercentage(sensorX, sensorY);
@@ -618,7 +612,7 @@ public class VirtualRobot extends AbstractRobot {
 	 * @return A number between
 	 */
 	public int readSensorLightValue() {
-		double radialHeading = Math.toRadians(getImgHeading());
+		double radialHeading = Math.toRadians(getHeading());
 		int sensorX = calculateOffsettedXByRadialHeading(radialHeading, LIGHT_SENSOR_OFFSET_CM);
 		int sensorY = calculateOffsettedYByRadialHeading(radialHeading, LIGHT_SENSOR_OFFSET_CM);
 		return lightSensor.getLightValue(sensorX, sensorY);
@@ -1117,11 +1111,10 @@ public class VirtualRobot extends AbstractRobot {
 	        clearAction();                          // Clears currentAction, currentArgument and currentETA
 	        setImgStartX(x);						// self explanatory
 	        setImgStartY(y);						// self explanatory
-	        setImgStartHeading(body);
 	        setInitAbsoluteX(0);                    // self explanatory
 	        setInitAbsoluteY(0);                    // self explanatory
-	        setInitAbsoluteHeading(90);           // self explanatory
-	        setInitSonarDirection(90);            // self explanatory
+	        setInitAbsoluteHeading(body);           // self explanatory
+	        setInitSonarDirection(body);            // self explanatory
 	}
 
     /**
@@ -1171,17 +1164,5 @@ public class VirtualRobot extends AbstractRobot {
 	public boolean setStartLocation(int x, int y, float heading) {
 		this.setStartTile(x, y, heading);
 		return true;
-	}
-
-	public float getImgHeading(){
-		return getImgStartHeading() + getAngleIncrement();
-	}
-	
-	public float getImgStartHeading() {
-		return imgStartHeading;
-	}
-
-	public void setImgStartHeading(float imgStartHeading) {
-		this.imgStartHeading = imgStartHeading;
 	}	
 }
