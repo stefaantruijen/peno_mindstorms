@@ -102,18 +102,6 @@ public class Game {
 		}
 	}
 	
-	public void onTileUpdate(final Tile tile) {
-		try {
-			if (getClient().hasTeamPartner()) {
-				getClient().sendTiles(tile.export());
-			}
-		} catch (final IllegalStateException e) {
-			e.printStackTrace();
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	public void render(final Graphics2D gfx, final int tileResolution) {
 		final MazeActionV2 explorer = getExplorer();
 		if (explorer == null) {
@@ -267,7 +255,7 @@ public class Game {
 			}
 		}
 		
-		public void teamConnected(final String partnerId) {
+		public void teamConnected(final String playerId) {
 			final MazeActionV2 explorer = getExplorer();
 			if (explorer == null) {
 				return;
@@ -285,6 +273,10 @@ public class Game {
 			} catch (final IOException e) {
 				e.printStackTrace();
 			}
+		}
+		
+		public void teamDisconnected(final String playerId) {
+			//	ignored
 		}
 		
 		public void teamPosition(final long x, final long y, final double angle) {

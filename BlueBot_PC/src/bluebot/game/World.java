@@ -18,6 +18,7 @@ import bluebot.simulator.IRModel;
 import bluebot.simulator.VirtualInfraredBall;
 import bluebot.ui.rendering.RenderingUtils;
 
+import peno.htttp.DisconnectReason;
 import peno.htttp.PlayerDetails;
 import peno.htttp.SpectatorHandler;
 
@@ -380,6 +381,13 @@ public class World {
 		public void lockedSeesaw(final String playerId,
 				final int playerNumber, final int barcode) {
 			seesaws.add(Integer.valueOf(barcode));
+		}
+		
+		@Override
+		public void playerDisconnected(final String playerId,
+				final DisconnectReason reason) {
+			System.out.printf("'%s' disconnected (%s)%n", playerId, reason);
+			players.remove(playerId);
 		}
 		
 		@Override
