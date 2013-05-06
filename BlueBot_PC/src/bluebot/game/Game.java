@@ -7,9 +7,11 @@ import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import bluebot.Operator;
 import bluebot.actionsimpl.MazeActionV2;
+import bluebot.graph.Direction;
 import bluebot.graph.Tile;
 import bluebot.io.rabbitmq.RabbitMQ;
 import bluebot.maze.MazeCallback;
@@ -17,6 +19,7 @@ import bluebot.maze.MazeMerger;
 import bluebot.maze.TileBuilder;
 import bluebot.ui.rendering.RenderingUtils;
 import bluebot.util.Orientation;
+import bluebot.util.Utils;
 
 import peno.htttp.Callback;
 import peno.htttp.PlayerClient;
@@ -171,7 +174,7 @@ public class Game {
 				throw new IllegalArgumentException("Invalid direction:  " + dir);
 		}
 	}*/
-	
+	@Deprecated
 	public void updatePosition(final long x, final long y, final double angle) {
 		try {
 			getClient().updatePosition(x, y, angle);
@@ -280,9 +283,28 @@ public class Game {
 		}
 		
 		public void teamPosition(final long x, final long y, final double angle) {
+//			/**
+//			 * Chunk of code to transform x and y coördinates from the 90° rotated system.
+//			 */
+			System.out.println(getClient().getPlayerID()+" RECIEVED X Y = "+x+" "+y + "       angle:"+ angle );
+
+			Tile tempT = new Tile(Math.round(x),Math.round(y));
+			Vector<Integer> tempV = new Vector<Integer>();
+			tempV.add(0);
+			tempV.add(0);
+			tempT.transform(Direction.LEFT, tempV);
+			long modX = tempT.getX();
+			long modY = tempT.getY();
+//			/**
+//			 * Modify angle from weird system
+//			 */
+//			double modAngle = -angle+360;
+//			System.out.println("("+modX+","+modY+") " +modAngle );
 			final MazeActionV2 explorer = getExplorer();
 			if (explorer != null) {
-				explorer.setTeammatePosition(x, y, angle);
+				float modAngle = Protocol.angleExternalToInternal(angle);
+				System.out.println(getClient().getPlayerID()+" ORIGINAL X Y = "+modX+" "+modY + "       angle:"+ modAngle );
+				explorer.setTeammatePosition(modX, modY, modAngle);
 			}
 		}
 		
@@ -296,6 +318,10 @@ public class Game {
 			for (final peno.htttp.Tile tile : tiles) {
 				Tile t = TileBuilder.getTile(tile.getToken(),(int)tile.getX(), (int)tile.getY());
 				t.setPriority(Tile.PRIORITY_TEAMMATE);
+//				Vector<Integer> vector = new Vector<Integer>();
+//				vector.add(0);
+//				vector.add(0);
+//				t.transform(Direction.LEFT, vector);
 				merger.addTileFromTeammate(t);
 			}
 			if(merger.hasMerged()){
@@ -363,8 +389,30 @@ public class Game {
 		
 		public void updatePosition(final long x, final long y, final double angle) {
 			try {
-				getClient().updatePosition(x, y,
-						Protocol.angleInternalToExternal((float)angle));
+				System.out.println(getClient().getPlayerID()+" X Y = "+x+" "+y + "       angle:"+ angle );
+//				System.out.println(getClient().getPlayerID()+" updating pos: ("+x+","+y+") "+angle);
+//				/**
+//				 * Chunk of code to transform x and y coördinates to 90° rotated system.
+//				 */
+				Tile tempT = new Tile(Math.round(x),Math.round(y));
+				Vector<Integer> tempV = new Vector<Integer>();
+				tempV.add(0);
+				tempV.add(0);
+				tempT.transform(Direction.RIGHT, tempV);
+				long modX = tempT.getX();
+				long modY = tempT.getY();
+				
+//				/**
+//				 * Also transform the Angle to the weird convention
+//				 * Is this in degrees?
+//				 */
+//				float angleF = (float) angle;
+//				double modAngle = Utils.clampAngleDegrees(-angleF);
+//				System.out.print("    into     ");
+				Double modAngle = Protocol.angleInternalToExternal((float) angle);
+				System.out.println(getClient().getPlayerID()+" pos: ("+modX+","+modY+") "+modAngle);
+				getClient().updatePosition(modX, modY, modAngle);
+				
 			} catch (final Exception e) {
 				e.printStackTrace();
 			}

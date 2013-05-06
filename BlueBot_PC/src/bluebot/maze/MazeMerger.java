@@ -243,6 +243,9 @@ public class MazeMerger {
 	 * If the tile contains a barcode, it will be used as data to calculate the mergevectors.
 	 */
 	public boolean addTileFromSelf(Tile tile){
+		if(tile == null){
+			return false;
+		}
 		if(!tilesFromSelf.contains(tile)){
 			this.tilesFromSelf.add(tile);
 		}
@@ -262,6 +265,9 @@ public class MazeMerger {
 	 * Returns true if the tile was useful data.
 	 */
 	public boolean addTileFromTeammate(Tile tile){
+		if(tile == null){
+			return false;
+		}
 		if(hasMerged){
 			tile.transform(this.getMergeRotationDirection(), this.getMergeTranslationVector());
 			if(!tilesFromTeammate.contains(tile)){

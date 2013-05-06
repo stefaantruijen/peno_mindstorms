@@ -11,7 +11,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Vector;
 
+import bluebot.graph.Direction;
 import bluebot.graph.Orientation;
 import bluebot.graph.Tile;
 import bluebot.simulator.IRModel;
@@ -409,10 +411,24 @@ public class World {
 				return;
 			}
 			
+			/**
+			 * The only thing in all this shit that is actually in the weird system convention of HTTTP
+			 * are the x and y values. The starts are relative to our system. So we just transform
+			 * the x and y also to our system and draw everything relative to our system.
+			 */
+			Tile tempT = new Tile(Math.round(x),Math.round(y));
+			Vector<Integer> tempV = new Vector<Integer>();
+			tempV.add(0);
+			tempV.add(0);
+			tempT.transform(Direction.LEFT, tempV);
+			long modX = tempT.getX();
+			long modY = tempT.getY();
+			
+			
 			final Tile start = getStart(playerNumber);
 			player.update(
-					(start.getX() + x),
-					(start.getY() + y),
+					(start.getX() + modX),
+					(start.getY() + modY),
 					Protocol.angleExternalToInternal(angle),
 					playerNumber,
 					foundObject);

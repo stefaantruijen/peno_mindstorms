@@ -16,14 +16,20 @@ public abstract class Protocol {
 	
 	
 	public static float angleExternalToInternal(final double external) {
-		float internal = (450F - (float)external);
-		for (; internal >= 360F; internal -= 360F);
+//		float internal = (450F - (float)external);
+//		for (; internal >= 360F; internal -= 360F);
+//		return internal;
+		float internal = (float) -external;
+		for(; internal <0; internal +=360F);
 		return internal;
 	}
 	
 	public static double angleInternalToExternal(final float internal) {
-		double external = (450D - internal);
-		for (; external >= 360D; external -= 360D);
+//		double external = (450D - internal);
+//		for (; external >= 360D; external -= 360D);
+//		return external;
+		float external = -internal;
+		for(; external <0; external +=360F);
 		return external;
 	}
 	
