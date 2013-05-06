@@ -7,6 +7,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import bluebot.graph.Border;
+import bluebot.graph.Direction;
 import bluebot.graph.Orientation;
 import bluebot.graph.Tile;
 
@@ -164,6 +165,24 @@ public class Maze {
 	
 	private static final Integer key(final int x, final int y) {
 		return Integer.valueOf(Tile.hashCode(x, y));
+	}
+	/**
+	 * adds tile, if tile does not matches ignore
+	 * @param tile
+	 */
+	public void addTile(Tile tile){
+		Tile t = getTile(tile.getX(), tile.getY());
+		if(t!=null){
+			if(t.getPriority()>=tile.getPriority()){
+				return;
+			}
+		}
+		table.put(key(tile.getX(), tile.getY()), tile);
+		addTile(tile.getX(), tile.getY(), Orientation.NORTH);
+		addTile(tile.getX(), tile.getY(), Orientation.SOUTH);
+		addTile(tile.getX(), tile.getY(), Orientation.WEST);
+		addTile(tile.getX(), tile.getY(), Orientation.EAST);
+		
 	}
 	
 }

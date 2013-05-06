@@ -73,13 +73,15 @@ public class MazeMerger {
 	}
 	
 	public ArrayList<Tile> getTilesFromSelfForGUI(){
-		ArrayList<Tile> tilesFromTeammate = this.getTilesFromTeammate();
+		ArrayList<Tile> tilesFromTeammate = this.getTilesFromTeammateForGUI();
 		ArrayList<Tile> tilesFromSelf = this.getTilesFromSelf();
 		ArrayList<Tile> tilesList = new ArrayList<Tile>();
+		//System.out.println("tilesteammate "+tilesFromTeammate);
 		for(Tile t : tilesFromSelf){
 			if(!t.isExplored()){
 				Tile same = containsPosition(tilesFromTeammate, t);
 				if(same!=null){
+					//System.out.println(same);
 					//draw the tile from our teammate instead
 				}
 				else{
@@ -99,7 +101,8 @@ public class MazeMerger {
 	 */
 	private Tile containsPosition(ArrayList<Tile> list, Tile t){
 		Tile result = null;
-		for(Tile tile : list){
+		ArrayList<Tile> copy = new ArrayList<Tile>(list);
+		for(Tile tile : copy){
 			if(tile.hasSamePosition(t)){
 				result = tile;
 				break;

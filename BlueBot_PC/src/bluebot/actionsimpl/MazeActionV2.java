@@ -246,6 +246,7 @@ public class MazeActionV2 extends Operation{
 		graph.setRootTile(current);
 		getOperator().setSpeed(80);
 		for (Tile[] path; (path = getPathToNextTile(false)) != null;) {
+			//System.out.println(playerNumber + " wants to go to " + path[path.length-1]);
 			//System.out.println(path.length);
 			if (path.length == 1) {
 				scanBorders(current);
@@ -340,16 +341,20 @@ public class MazeActionV2 extends Operation{
 				}
 			}
 
-			if(this.found && this.teamMateKnown){
+			if(this.found && this.teamMateKnown && !mergeSuccess){
 				//Try merge
 				if(mazeMerger.hasReceivedNewTileSinceLastCheck()){
 					System.out.println(playerNumber+" data me: "+mazeMerger.dataFromSelf + ", data other: "+mazeMerger.dataFromTeammate);
 					mergeSuccess = mazeMerger.tryToMerge();
 					System.out.println(playerNumber+ "trying to merge: "+ mergeSuccess);
-					if(mergeSuccess && this.canGoToTeammate()){
-						break;
+					if(mergeSuccess){
+						updateTilesFromTeammate();
+						System.out.println(playerNumber + " maze: "+ maze.toString());
 					}
 				}
+			}
+			if(mergeSuccess && this.canGoToTeammate()){
+				//break;
 			}
 		}
 		/*
@@ -580,7 +585,14 @@ public class MazeActionV2 extends Operation{
 		mazeListener.joinTeam(teamNumber);
 	}
 
-	
+	public void updateTilesFromTeammate(){
+		if(this.teamMateKnown && mergeSuccess){
+			for(Tile t : mazeMerger.getTilesFromTeammate()){
+				t.setPriority(Tile.PRIORITY_TEAMMATE);
+				maze.addTile(t);
+			}
+		}
+	}
 	
 	public void setTeammatePosition(final long x, final long y, final double angle) {
 		if(!teamMateKnown){
@@ -593,8 +605,11 @@ public class MazeActionV2 extends Operation{
 			System.out.println(playerNumber+ "teammateknown");
 		}
 		if( mazeMerger.hasMerged()){
+			//updateTilesFromTeammate();
 			this.otherRobotTile = new Tile(Math.round(x),Math.round(y));
-			otherRobotTile.transform(mazeMerger.getMergeRotationDirection(), mazeMerger.getMergeTranslationVector());
+			//otherRobotTile.transform(mazeMerger.getMergeRotationDirection(), mazeMerger.getMergeTranslationVector());
+			//otherRobotTile.setPriority(1);
+			//maze.addTile(otherRobotTile);
 		}
 		
 	}
@@ -980,6 +995,7 @@ public class MazeActionV2 extends Operation{
 	}
 	
 	private final Tile[] getPathToNextTile(boolean canGoOverSeesaw) {
+		//System.out.println(playerNumber+" maze: "+maze.getTiles());
 		boolean wantsToGoOverSeesaw = false;
 		Tile tile = current;
 		if (needsExploration(tile)) {
@@ -1036,7 +1052,11 @@ public class MazeActionV2 extends Operation{
 		while (!nodes.isEmpty()) {
 			node = nodes.remove(0);
 			tile = node.tile;
+		
 			if (needsExploration(tile)) {
+				if(tile.getPriority()==1){
+					System.out.println("node to explore is from teammate");
+				}
 				return node.getPath();
 			}
 			
@@ -1141,6 +1161,9 @@ public class MazeActionV2 extends Operation{
 	}
 	
 	private final boolean needsExploration(final Tile tile) {
+		if(tile.getPriority()==Tile.PRIORITY_TEAMMATE){
+			return false;
+		}
 		if(tile.isSeesaw()){
 			return false;
 		}
@@ -1206,7 +1229,7 @@ public class MazeActionV2 extends Operation{
 			throws InterruptedException {
 		final int x = tile.getX();
 		final int y = tile.getY();
-		
+		tile.setPriority(2);
 		final Border border;
 		final Tile neighbor;
 		switch (dir) {

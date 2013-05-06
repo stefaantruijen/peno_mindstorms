@@ -302,8 +302,12 @@ public class Game {
 			
 			final MazeMerger merger = explorer.getMazeMerger();
 			for (final peno.htttp.Tile tile : tiles) {
-				merger.addTileFromTeammate(TileBuilder.getTile(tile.getToken(),
-						(int)tile.getX(), (int)tile.getY()));
+				Tile t = TileBuilder.getTile(tile.getToken(),(int)tile.getX(), (int)tile.getY());
+				t.setPriority(Tile.PRIORITY_TEAMMATE);
+				merger.addTileFromTeammate(t);
+			}
+			if(merger.hasMerged()){
+				explorer.updateTilesFromTeammate();
 			}
 		}
 		
