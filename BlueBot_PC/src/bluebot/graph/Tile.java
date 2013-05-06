@@ -773,4 +773,13 @@ public class Tile implements Comparable<Tile> {
 		return this.borders;
 	}
 	
+	/**
+	 * checks if tile t has the same position
+	 * @param t
+	 * @return
+	 */
+	public boolean hasSamePosition(Tile t){
+		return this.getX()==t.getX() && this.getY()==t.getY();
+	}
+	
 }
