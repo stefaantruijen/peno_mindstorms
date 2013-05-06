@@ -373,8 +373,8 @@ public class ControllerFrame extends RenderingFrame implements ControllerListene
 						return true;
 					}
 					
-					final String msg = String.format("Place the robot on %s facing %s",
-							start, start.getStartOrientation());
+					final String msg = String.format("Place the robot with playerId : %s on %s facing %s",
+							playerId,start, start.getStartOrientation());
 					onMessage(msg, "The game has been rolled");
 					return true;
 				}
