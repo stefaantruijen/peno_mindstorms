@@ -55,10 +55,25 @@ public class Tile implements Comparable<Tile> {
 		this.distanceFromStart = Double.MAX_VALUE;
 	}
 	
+	/**
+	 * The priority of a tile is used to determine which tile is more relevant to us.
+	 * The order of "being more relevant than" is as follows:
+	 * least important: Unknown tiles (priority = 0 = Tile.PRIORITY_UNKNOWN)
+	 * 					Tiles from teammate (priority = 1 = Tile.PRIORITY_TEAMMATE)
+	 * 					Known (scanned) tiles (priority = 2 = Tile.PRIORITY_KNOWN)
+	 * Default priority = -1, a tile should not have this priority for very long.
+	 * @return
+	 */
 	public int getPriority(){
 		return this.priority;
 	}
 	
+	/**
+	 * Set the priority of this tile to the given value.
+	 * - Unknown tiles (priority = 0 = Tile.PRIORITY_UNKNOWN)
+	 * - Tiles from teammate (priority = 1 = Tile.PRIORITY_TEAMMATE)
+	 * - Known (scanned) tiles (priority = 2 = Tile.PRIORITY_KNOWN)
+	 */
 	public void setPriority(int priority) throws IllegalArgumentException{
 		if(priority>-2 && priority <3){
 			this.priority = priority;
