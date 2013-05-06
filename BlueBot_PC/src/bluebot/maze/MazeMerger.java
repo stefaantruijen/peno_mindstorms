@@ -60,14 +60,53 @@ public class MazeMerger {
 	 * If hasMerged()==true, the tiles returned will be the transformed versions!
 	 */
 	public ArrayList<Tile> getTilesFromTeammate() {
+		return tilesFromTeammate;
+	}
+	
+	public ArrayList<Tile> getTilesFromTeammateForGUI(){
 		if(this.hasMerged){
-			return tilesFromTeammate;
+			return getTilesFromTeammate();
 		}
 		else{
 			return new ArrayList<Tile>();
 		}
 	}
 	
+	public ArrayList<Tile> getTilesFromSelfForGUI(){
+		ArrayList<Tile> tilesFromTeammate = this.getTilesFromTeammate();
+		ArrayList<Tile> tilesFromSelf = this.getTilesFromSelf();
+		ArrayList<Tile> tilesList = new ArrayList<Tile>();
+		for(Tile t : tilesFromSelf){
+			if(!t.isExplored()){
+				Tile same = containsPosition(tilesFromTeammate, t);
+				if(same!=null){
+					//draw the tile from our teammate instead
+				}
+				else{
+					tilesList.add(t);
+				}
+			}
+			else{
+				tilesList.add(t);
+			}
+		}
+		return tilesList;
+	}
+	
+	/**
+	 * Same position = same X and Y.
+	 * Returns the tile with same position.
+	 */
+	private Tile containsPosition(ArrayList<Tile> list, Tile t){
+		Tile result = null;
+		for(Tile tile : list){
+			if(tile.hasSamePosition(t)){
+				result = tile;
+				break;
+			}
+		}
+		return result;
+	}
 //	public ArrayList<Tile> getTilesFromTeammateTranslated(){
 //		ArrayList<Tile> tiles = new ArrayList<Tile>();
 //		if(!hasMerged){
