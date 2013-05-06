@@ -159,6 +159,19 @@ public class Tile implements Comparable<Tile> {
 		}
 		
 	}
+	
+	public void setStartOrientation(Orientation startOrientation){
+		if(startOrientation==Orientation.getOrientation("E")){
+			setStartOrientation(1);
+		}
+		else if(startOrientation==Orientation.getOrientation("S")){
+			setStartOrientation(2);
+		}else if(startOrientation==Orientation.getOrientation("W")){
+			setStartOrientation(3);
+		}else{
+			setStartOrientation(0);
+		}
+	}
 
 	public void setStartOrientation(int startOrientation) {
 		this.startOrientation = startOrientation;

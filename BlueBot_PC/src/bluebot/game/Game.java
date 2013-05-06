@@ -19,7 +19,6 @@ import bluebot.maze.MazeMerger;
 import bluebot.maze.TileBuilder;
 import bluebot.ui.rendering.RenderingUtils;
 import bluebot.util.Orientation;
-import bluebot.util.Utils;
 
 import peno.htttp.Callback;
 import peno.htttp.PlayerClient;
@@ -318,10 +317,10 @@ public class Game {
 			for (final peno.htttp.Tile tile : tiles) {
 				Tile t = TileBuilder.getTile(tile.getToken(),(int)tile.getX(), (int)tile.getY());
 				t.setPriority(Tile.PRIORITY_TEAMMATE);
-//				Vector<Integer> vector = new Vector<Integer>();
-//				vector.add(0);
-//				vector.add(0);
-//				t.transform(Direction.LEFT, vector);
+				Vector<Integer> vector = new Vector<Integer>();
+				vector.add(0);
+				vector.add(0);
+				t.transform(Direction.LEFT, vector);
 				merger.addTileFromTeammate(t);
 			}
 			if(merger.hasMerged()){
@@ -372,7 +371,29 @@ public class Game {
 		public void sendTile(final Tile tile) {
 			try {
 				if (getClient().hasTeamPartner()) {
-					getClient().sendTiles(tile.export());
+					Tile tempT = new Tile(tile.getX(),tile.getY());
+					Vector<Integer> tempV = new Vector<Integer>();
+					tempV.add(0);
+					tempV.add(0);
+					int barcode = tile.getBarCode();
+					if(barcode!=-1){
+						tempT.setBarCode(barcode);
+					}
+					tempT.setBorderEast(tile.getBorderEast());
+					tempT.setBorderWest(tile.getBorderWest());
+					tempT.setBorderNorth(tile.getBorderNorth());
+					tempT.setBorderSouth(tile.getBorderSouth());
+					tempT.setSeesaw(tile.isSeesaw());
+					int playerId = tile.getStartPlayerId();
+					if(playerId!=-1){
+						tempT.setStartPlayerId(tile.getStartPlayerId());
+					}
+					bluebot.graph.Orientation orient = tile.getStartOrientation();
+					if(orient!=null){
+						tempT.setStartOrientation(orient);
+					}
+					tempT.transform(Direction.RIGHT, tempV);
+					getClient().sendTiles(tempT.export());
 				}
 			} catch (final Exception e) {
 				e.printStackTrace();
