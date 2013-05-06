@@ -104,7 +104,7 @@ public class MazeMerger {
 	}
 	
 	public ArrayList<Tile> getTilesFromSelfForGUI(){
-		ArrayList<Tile> tilesFromTeammate = this.getTilesFromTeammateForGUI();
+		ArrayList<Tile> tilesFromTeammate = new ArrayList<Tile>(this.getTilesFromTeammateForGUI());
 		ArrayList<Tile> tilesFromSelf = new ArrayList<Tile>(this.getTilesFromSelf());
 		ArrayList<Tile> tilesList = new ArrayList<Tile>();
 		//System.out.println("tilesteammate "+tilesFromTeammate);
@@ -243,6 +243,7 @@ public class MazeMerger {
 	 * If the tile contains a barcode, it will be used as data to calculate the mergevectors.
 	 */
 	public boolean addTileFromSelf(Tile tile){
+		System.out.println("Adding tile: "+tile);
 		if(tile == null){
 			return false;
 		}
@@ -344,10 +345,12 @@ public class MazeMerger {
 	private void searchForMatches(){
 		int size1 = dataFromTeammate.size();
 		int size2 = dataFromSelf.size();
+		ArrayList<Tile> dataTeamMate = new ArrayList<Tile>(dataFromTeammate);
+		ArrayList<Tile> dataSelf = new ArrayList<Tile>(dataFromSelf);
 		if((size1+size2)>=4){
-			for(Tile t1:dataFromTeammate){
-				if(!matchesFromTeammate.contains(t1)){
-					for(Tile t2:dataFromSelf){
+			for(Tile t1:dataTeamMate){
+				if(!dataTeamMate.contains(t1)){
+					for(Tile t2:dataSelf){
 						if(!matchesFromSelf.contains(t2)){
 							if(t1.getBarCode()==t2.getBarCode()){
 								//Match found
