@@ -136,7 +136,7 @@ public class Game {
 		ArrayList<Tile> tiles;
 		
 		gfx.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.50F));
-		tiles = new ArrayList<Tile>(merger.getTilesFromTeammate());
+		tiles = new ArrayList<Tile>(merger.getTilesFromTeammateForGUI());
 		for (final Tile tile : tiles) {
 			gfx.translate((tileResolution * tile.getX()), -(tileResolution * tile.getY()));
 			RenderingUtils.renderTile(gfx, tile, tileResolution);
@@ -144,7 +144,7 @@ public class Game {
 		}
 		
 		gfx.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.00F));
-		tiles = new ArrayList<Tile>(merger.getTilesFromSelf());
+		tiles = new ArrayList<Tile>(merger.getTilesFromSelfForGUI());
 		for (final Tile tile : tiles) {
 			gfx.translate((tileResolution * tile.getX()), -(tileResolution * tile.getY()));
 			RenderingUtils.renderTile(gfx, tile, tileResolution);
