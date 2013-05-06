@@ -1,9 +1,9 @@
 6 6
 
-DeadEnd.W.V Straight.W.04 T.N Straight.W Straight.W DeadEnd.N.S2S
-DeadEnd.W.S1E T.N Cross Straight.W.06 DeadEnd.E.V Straight.N.15
-DeadEnd.N Corner.N Cross T.E Closed Seesaw.N 
-Straight.N.03 T.W T.E Straight.N.01 Closed Seesaw.S
-T.W Cross T.E DeadEnd.S.V DeadEnd.N Straight.N.13
-Corner.W.S3N T.S Straight.W Straight.W T.S Corner.S.S4W
+DeadEnd.W.V 	Straight.W.04 	T.N 		Straight.W 		Straight.W 	Corner.E.S2S
+DeadEnd.W.S1E 	T.N 			Cross		Straight.W.06 	DeadEnd.E.V Straight.N.21
+DeadEnd.N.V		T.W 			Cross 		Corner.E 		Closed 		Seesaw.N 
+Straight.N.03 	T.W 			T.E 		Straight.N.01 	Closed 		Seesaw.S
+T.W 			Cross 			T.E 		DeadEnd.S.V 	DeadEnd.N 	Straight.N.19
+Corner.W.S3N 	T.S 			T.S		 	Straight.W 		T.S 		Corner.S.S4W
 
