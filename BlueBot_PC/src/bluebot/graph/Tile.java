@@ -23,6 +23,11 @@ public class Tile implements Comparable<Tile> {
 	public static final int RESOLUTION = 64;
 	/**    The size of a tile (in mm)    */
 	public static final float SIZE = 400F;
+	/**	   Priority possibilities     */
+	public static final int PRIORITY_DEFAULT = -1;
+	public static final int PRIORITY_UNKNOWN = 0;
+	public static final int PRIORITY_KNOWN = 1;
+	public static final int PRIORITY_TEAMMATE = 2;
 	
 	private int barcode = -1;
 	private byte borders;
@@ -33,6 +38,8 @@ public class Tile implements Comparable<Tile> {
 	private boolean startPosition = false;
 	private int startOrientation = -1;
 	private int startPlayerId = -1;
+	private int priority = Tile.PRIORITY_DEFAULT;
+	
 
 	private double distanceFromStart;
 
@@ -46,9 +53,21 @@ public class Tile implements Comparable<Tile> {
 		this.x = x;
 		this.y = y;
 		this.distanceFromStart = Double.MAX_VALUE;
-		
 	}
-
+	
+	public int getPriority(){
+		return this.priority;
+	}
+	
+	public void setPriority(int priority) throws IllegalArgumentException{
+		if(priority>-2 && priority <3){
+			this.priority = priority;
+		}
+		else{
+			System.out.println("Priority not set, invalid priority.");
+			throw new IllegalArgumentException();
+		}
+	}
 	
 	
 	public peno.htttp.Tile export() {
@@ -463,7 +482,7 @@ public class Tile implements Comparable<Tile> {
 		
 	}
 	/**
-	 * Set a certain border open (=true) or closed (=false) given a certain ori���ntation.
+	 * Set a certain border open (=true) or closed (=false) given a certain ori���������ntation.
 	 * @param o
 	 * @param flag
 	 */
