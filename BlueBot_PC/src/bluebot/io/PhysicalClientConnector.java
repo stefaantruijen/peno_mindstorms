@@ -36,13 +36,16 @@ public class PhysicalClientConnector {
 	 * @throws NXTCommException if connecting to the NXT brick fails for any reason
 	 */
 	public Link connectTo(final String name) throws NXTCommException {
+		System.out.println("Connect A");
 		final NXTInfo nxt = search(name);
 		if (nxt == null) {
 			throw new NXTCommException("Could not find the NXT brick");
 		}
+		System.out.println("Connect B");
 		if (!nxtc.open(nxt)) {
 			throw new NXTCommException("Failed to connect with the NXT brick");
 		}
+		System.out.println("Connect C");
 		return new PhysicalClientLink(nxtc);
 	}
 	
