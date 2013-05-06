@@ -349,7 +349,8 @@ public class MazeActionV2 extends Operation{
 					//System.out.println(playerNumber+ "trying to merge: "+ mergeSuccess);
 					if(mergeSuccess){
 						updateTilesFromTeammate();
-						//System.out.println(playerNumber + " maze: "+ maze.toString());
+						otherRobotTile=mazeMerger.getLastPositionFromTeammate();//TODO: nodig????
+						System.out.println(playerNumber + "merged ");
 					}
 				}
 			}
@@ -363,7 +364,7 @@ public class MazeActionV2 extends Operation{
 		 * OR
 		 * We have no teammate yet and have fully explored the maze
 		 */
-		if(this.found && this.teamMateKnown && mergeSuccess){
+		if(this.found && this.teamMateKnown && mergeSuccess && this.canGoToTeammate()){
 		//---READY TO GO TO TEAMMATE
 			//System.out.println("Object found, teammate known, merge succes: to the choppa!");
 			this.goToRobot2();
@@ -373,15 +374,21 @@ public class MazeActionV2 extends Operation{
 		}
 		else{
 			//---MAZE FULLY EXPLORED--- (canGoToTeammte() always true)
-			System.out.println("Maze fully explored, waiting for data to merge...");
+			System.out.println(playerNumber+" Maze fully explored, waiting for data to merge...");
 			while(!mergeSuccess){
 				if(mazeMerger.hasReceivedNewTileSinceLastCheck()){
 					mergeSuccess = mazeMerger.tryToMerge();
+					
 				}
 			}
-			System.out.println("Merged succesfully! To the choppa!");
+			while(mazeMerger.getLastPositionFromTeammate()==null){
+				//wait
+			}
+			otherRobotTile = mazeMerger.getLastPositionFromTeammate();
+			System.out.println(playerNumber+" Merged succesfully! To the choppa!");
 			this.goToRobot2();
-			mazeListener.notifyGameOver();
+			System.out.println(playerNumber+ " won!!");
+			//mazeListener.notifyGameOver();
 		}
 		
 		
@@ -608,9 +615,9 @@ public class MazeActionV2 extends Operation{
 			System.out.println(playerNumber+ "teammateknown");
 		}
 		if( mazeMerger.hasMerged()){
+			System.out.println(playerNumber+ " recieved teammatepos: "+x +" ,"+y);
 			mazeMerger.setLastPositionFromTeammate(Math.round(x), Math.round(y));
 			otherRobotTile=mazeMerger.getLastPositionFromTeammate();
-			
 		}
 		
 	}
