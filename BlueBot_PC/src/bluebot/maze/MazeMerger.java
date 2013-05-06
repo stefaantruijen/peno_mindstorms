@@ -40,6 +40,7 @@ public class MazeMerger {
 	private Vector<Integer> mergeTranslationVector; //The translational difference, after rotating, between our teammates map and our map
 	private boolean receivedNewTileSinceLastCheck; //True if new tiles have been added after the last call of tryToMerge()
 	private boolean hasMerged; //True if this mazemerger has successfully calculated the rotation and translation vectors
+	private Tile lastPositionFromTeammate = null;
 	
 	public MazeMerger(){
 		this.tilesFromTeammate = new ArrayList<Tile>();
@@ -55,6 +56,36 @@ public class MazeMerger {
 		this.hasMerged = false;
 	}
 	
+	public Tile getLastPositionFromTeammate(){
+		return this.lastPositionFromTeammate;
+	}
+	
+	/**
+	 * Set the last position of teammate after a position update.
+	 * This case will be useful when the other robot is for instance
+	 * backtracking. We will earch our known tiles for the tile that
+	 * was moved to and set that to its position.
+	 * In the case the robot is travelling to a new tile
+	 * this method will do nothing and instead lastPosition will be set
+	 * when the new tile is added through the addTileFromTeammate method
+	 * @param x
+	 * @param y
+	 */
+	public void setLastPositionFromTeammate(int x, int y){
+		if(hasMerged){
+			Tile t = new Tile(x,y);
+			t.transform(mergeRotationAngle, mergeTranslationVector);
+			Tile same = containsPosition(this.tilesFromSelf, t);
+			Tile same2 = containsPosition(this.tilesFromTeammate, t);
+			if(same!=null){
+				this.lastPositionFromTeammate = same;
+			}
+			else if(same2!=null){
+				this.lastPositionFromTeammate = same2;
+			}
+		}
+		
+	}
 	/**
 	 * Get all the tiles the teammate has sent us.
 	 * If hasMerged()==true, the tiles returned will be the transformed versions!
@@ -74,7 +105,7 @@ public class MazeMerger {
 	
 	public ArrayList<Tile> getTilesFromSelfForGUI(){
 		ArrayList<Tile> tilesFromTeammate = this.getTilesFromTeammateForGUI();
-		ArrayList<Tile> tilesFromSelf = this.getTilesFromSelf();
+		ArrayList<Tile> tilesFromSelf = new ArrayList<Tile>(this.getTilesFromSelf());
 		ArrayList<Tile> tilesList = new ArrayList<Tile>();
 		//System.out.println("tilesteammate "+tilesFromTeammate);
 		for(Tile t : tilesFromSelf){
@@ -236,6 +267,7 @@ public class MazeMerger {
 			if(!tilesFromTeammate.contains(tile)){
 				this.tilesFromTeammate.add(tile);
 			}
+			lastPositionFromTeammate = tile;
 			return false;
 		}
 		else{

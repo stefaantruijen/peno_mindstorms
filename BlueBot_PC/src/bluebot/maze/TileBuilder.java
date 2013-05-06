@@ -141,7 +141,7 @@ public class TileBuilder {
 		if(t.getBarCode()>-1){
 			tile = tile.concat("."+t.getBarCode());
 		}
-		System.out.println(tile);
+		//System.out.println(tile);
 		return tile;
 		
 		
